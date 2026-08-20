@@ -2489,22 +2489,41 @@ public class VideoPlayerUI {
 					
 					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 					
-					double value = (double) totalFrames * cursorWaveform.getLocation().x / waveformContainer.getSize().width;
-
-					//NTSC framerate
-					value = Timecode.getNTSCtimecode(value);
-					
-					VideoPlayerCore.playerSetTime(value);
-					
-					//Allows to wait for the last frame to load					
-					while (VideoPlayerCore.setTime.isAlive())
+					//Allows to setTime to the last mousePosition
+					Thread t = new Thread(new Runnable()
 					{
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {}						
-					}	
-					
-					VideoPlayerCore.dragSegmentIndex = VideoPlayerCore.activeSegmentIndex;
+						@Override
+						public void run() {
+							
+							while (mouseIsPressed)
+							{
+								//Slow down the loop
+								try {
+									Thread.sleep(1);
+								} catch (InterruptedException e) {}
+								
+								double value = (double) totalFrames * cursorWaveform.getLocation().x / waveformContainer.getSize().width;
+	
+								if (VideoPlayerCore.playerCurrentFrame != Math.floor(value))
+								{								
+									//NTSC framerate
+									value = Timecode.getNTSCtimecode(value);
+									
+									VideoPlayerCore.playerSetTime(value);
+									
+									//Allows to wait for the last frame to load					
+									do {
+										try {
+											Thread.sleep(1);
+										} catch (InterruptedException e1) {}						
+									} while (VideoPlayerCore.setTime.isAlive());
+									
+									VideoPlayerCore.dragSegmentIndex = VideoPlayerCore.activeSegmentIndex;
+								}
+							}
+						}				
+					});
+					t.start();
                 }
 			}
 
@@ -2575,7 +2594,7 @@ public class VideoPlayerUI {
 			
 		});		
 
-		waveformContainer.addMouseMotionListener(new MouseMotionListener(){
+		waveformContainer.addMouseMotionListener(new MouseMotionListener() {
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {

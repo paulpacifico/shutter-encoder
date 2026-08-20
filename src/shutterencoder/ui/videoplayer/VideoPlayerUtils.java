@@ -1070,7 +1070,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			String dropFrame = ":";
 			if (Timecode.isDropFrame())
 			{
-				time = Timecode.setDropFrameTimecode(time);				
+				time = Timecode.setDropFrameTimecode(time);		
 				dropFrame = ";";
 			}
 			

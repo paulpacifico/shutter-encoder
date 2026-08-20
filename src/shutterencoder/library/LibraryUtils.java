@@ -532,6 +532,9 @@ public class LibraryUtils extends Shutter {
 	
 	public static void checkGPUCapabilities(String file) {
 		
+		if (Utils.loadEncFile != null && Utils.loadEncFile.isAlive())
+			return;
+		
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
 		isGPUCompatible = false;
@@ -580,24 +583,18 @@ public class LibraryUtils extends Shutter {
 			{				
 				//Check for Nvidia/AMD or Intel GPU
 				if (comboGPUDecoding.getSelectedItem().toString().equals("auto"))
-				{
+				{					
 					if (System.getProperty("os.name").contains("Windows"))
 					{			
 						if (hasNvidiaGPU)
 						{
 							//Cuda
-							gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda" + selectedGPU + " -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-															
-							if (FFMPEG.error == false)
-								cudaAvailable = true;
+							cudaAvailable = gpuFilter(" -hwaccel cuda -hwaccel_output_format cuda" + selectedGPU + " -i " + '"' + file + '"' + " -vf scale_cuda=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						}
 						else if (hasAMDGPU)
 						{
 							//AMF
-							gpuFilter(" -hwaccel d3d11va -hwaccel_output_format d3d11 -i " + '"' + file + '"' + " -vf vpp_amf=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-															
-							if (FFMPEG.error == false)
-								amfAvailable = true;
+							amfAvailable = gpuFilter(" -hwaccel d3d11va -hwaccel_output_format d3d11 -i " + '"' + file + '"' + " -vf vpp_amf=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						}
 						
 						if (hasIntelGPU)
@@ -609,22 +606,16 @@ public class LibraryUtils extends Shutter {
 							}					
 														
 							//QSV
-							gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=" + child + " -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-							
-							if (FFMPEG.error == false)
-								qsvAvailable = true;
+							qsvAvailable = gpuFilter(" -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=" + child + " -i " + '"' + file + '"' + " -vf scale_qsv=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						}
 						
 						//Vulkan
 						if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
 						{
-							gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+							vulkanAvailable = gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						}
 						else
-							gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-							
-						if (FFMPEG.error == false)
-							vulkanAvailable = true;
+							vulkanAvailable = gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						
 						if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 						{								
@@ -649,10 +640,7 @@ public class LibraryUtils extends Shutter {
 					else //Mac
 					{
 						//videotoolbox
-						gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
-	
-						if (FFMPEG.error == false)
-							videotoolboxAvailable = true;
+						videotoolboxAvailable = gpuFilter(" -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -i " + '"' + file + '"' + " -vf scale_vt=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
 					}
 					
 					//Disable GPU if not available
@@ -698,14 +686,15 @@ public class LibraryUtils extends Shutter {
 						scaleFilter = "vpp_" ;
 					}
 					
+					boolean filterIsAvailable = false;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						gpuFilter(" -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString() + device + selectedGPU + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+						filterIsAvailable = gpuFilter(" -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString() + device + selectedGPU + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + comboGPUFilter.getSelectedItem().toString() + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 					}
 					else
-						gpuFilter(" -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace("videotoolbox", "videotoolbox_vld") + device + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + comboGPUFilter.getSelectedItem().toString().replace("videotoolbox", "vt") + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
+						filterIsAvailable = gpuFilter(" -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace("videotoolbox", "videotoolbox_vld") + device + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + comboGPUFilter.getSelectedItem().toString().replace("videotoolbox", "vt") + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
 	
-					if (FFMPEG.error)
+					if (filterIsAvailable)
 					{								
 						isGPUCompatible = false;
 						
@@ -753,10 +742,7 @@ public class LibraryUtils extends Shutter {
 							vulkanAvailable = true;
 						}
 					}
-				}									
-	
-				FFMPEG.error = false;
-				FFMPEG.errorLog.setLength(0);
+				}
 				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
 			}
@@ -774,18 +760,12 @@ public class LibraryUtils extends Shutter {
 					else
 						device = " -init_hw_device vulkan=gpu:0";
 					
-					gpuFilter(device + selectedGPU + " -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -" + '"');
-	
-					if (FFMPEG.error == false)
-						libplaceboAvailable = true;
+					libplaceboAvailable = gpuFilter(device + selectedGPU + " -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -" + '"');
 				}
 			}
 			else if (System.getProperty("os.name").contains("Mac") && arch.equals("arm64"))
 			{
-				gpuFilter(" -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -");
-	
-				if (FFMPEG.error == false)
-					libplaceboAvailable = true;
+				libplaceboAvailable = gpuFilter(" -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -");
 			}
 			
 			checkGPUFiltering();
@@ -1021,12 +1001,11 @@ public class LibraryUtils extends Shutter {
 		
 	}
 
-	public static void gpuFilter(final String cmd) {
+	public static boolean gpuFilter(final String cmd) {
 		
-		FFMPEG.error = false;
-		getOutputLog = new StringBuilder();
-		
-	    //Console.consoleFFMPEG.append(language.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
+		//getOutputLog = new StringBuilder();
+				
+	    //Console.consoleFFMPEG.append(System.lineSeparator() + language.getProperty("command") + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + cmd);
 	    
 		try {
 			
@@ -1046,32 +1025,34 @@ public class LibraryUtils extends Shutter {
 			processFFMPEG.redirectErrorStream(true);
 			
 			FFMPEG.process = processFFMPEG.start();
-				
+			/*
 			String line;
 			BufferedReader input = new BufferedReader(new InputStreamReader(FFMPEG.process.getInputStream()));		
 			
-			//Console.consoleFFMPEG.append(System.lineSeparator());
-	
+			Console.consoleFFMPEG.append(System.lineSeparator());
+			
 			while ((line = input.readLine()) != null)
 			{				
-				//Console.consoleFFMPEG.append(line + System.lineSeparator());		
+				Console.consoleFFMPEG.append(line + System.lineSeparator());		
 				
-				getOutputLog.append(line + System.lineSeparator());
-			}					
+				//getOutputLog.append(line + System.lineSeparator());
+			}*/
+							
 			int exitCode = FFMPEG.process.waitFor();
 			
 			if (exitCode != 0)
 			{
-				FFMPEG.error = true;
+				return false;
 			}	
-			
-			//Console.consoleFFMPEG.append(System.lineSeparator());
-				
+			else
+				return true;
+
 		} catch (IOException io) {//Bug Linux							
 		} catch (InterruptedException e) {
-			FFMPEG.error = true;
 			e.printStackTrace();
 		}
+		
+		return false;
 	}
 
 	public static void devices(final String cmd) {

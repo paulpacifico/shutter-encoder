@@ -92,6 +92,7 @@ import shutterencoder.library.DEOLDIFY;
 import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
+import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.XPDFREADER;
 import shutterencoder.library.PYTHON;
 import shutterencoder.library.TSMUXER;
@@ -2307,8 +2308,11 @@ public class Utils extends Shutter {
 
 				Thread wait = new Thread(() -> {
 					try {
-						loadEncFile.join();				
+						loadEncFile.join();
+						
 						VideoPlayerCore.playerProcess(0);
+						LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
+						
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					} catch (InterruptedException e) {}	
 				});

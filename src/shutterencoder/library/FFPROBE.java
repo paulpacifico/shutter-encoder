@@ -1165,11 +1165,11 @@ public static String colorprimaries = "";
 	
 	public static void setLength() {
 
-		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		
 		if (Utils.loadEncFile != null && Utils.loadEncFile.isAlive() || processSetLength != null && processSetLength.isAlive())
 			return;
 		
+		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
 		processSetLength = new Thread(new Runnable()  {
 			
 			@Override
