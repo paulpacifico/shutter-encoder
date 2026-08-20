@@ -1022,7 +1022,8 @@ public class LibraryUtils extends Shutter {
 				FFMPEG.setEnvironment(processFFMPEG);
 			}
 			
-			processFFMPEG.redirectErrorStream(true);
+			processFFMPEG.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+			processFFMPEG.redirectError(ProcessBuilder.Redirect.DISCARD);
 			
 			FFMPEG.process = processFFMPEG.start();
 			/*
