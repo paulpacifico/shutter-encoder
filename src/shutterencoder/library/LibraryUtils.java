@@ -693,9 +693,32 @@ public class LibraryUtils extends Shutter {
 					}
 					else
 						filterIsAvailable = gpuFilter(" -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace("videotoolbox", "videotoolbox_vld") + device + " -i " + '"' + file + '"' +  " -vf " + scaleFilter + comboGPUFilter.getSelectedItem().toString().replace("videotoolbox", "vt") + "=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -");
-	
+					
 					if (filterIsAvailable)
-					{								
+					{	
+						if (comboGPUDecoding.getSelectedItem().equals("cuda"))
+						{
+							cudaAvailable = true;
+						}
+						else if (comboGPUDecoding.getSelectedItem().equals("amf"))
+						{
+							amfAvailable = true;
+						}
+						else if (comboGPUDecoding.getSelectedItem().equals("qsv"))
+						{
+							qsvAvailable = true;
+						}
+						else if (comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
+						{
+							videotoolboxAvailable = true;
+						}
+						else if (comboGPUDecoding.getSelectedItem().equals("vulkan"))
+						{
+							vulkanAvailable = true;
+						}
+					}
+					else
+					{
 						isGPUCompatible = false;
 						
 						if (comboGPUDecoding.getSelectedItem().equals("cuda"))
@@ -717,29 +740,6 @@ public class LibraryUtils extends Shutter {
 						else if (comboGPUDecoding.getSelectedItem().equals("vulkan"))
 						{
 							vulkanAvailable = false;
-						}
-					}
-					else
-					{
-						if (comboGPUDecoding.getSelectedItem().equals("cuda"))
-						{
-							cudaAvailable = true;
-						}
-						else if (comboGPUDecoding.getSelectedItem().equals("amf"))
-						{
-							amfAvailable = true;
-						}
-						else if (comboGPUDecoding.getSelectedItem().equals("qsv"))
-						{
-							qsvAvailable = true;
-						}
-						else if (comboGPUDecoding.getSelectedItem().equals("videotoolbox"))
-						{
-							videotoolboxAvailable = true;
-						}
-						else if (comboGPUDecoding.getSelectedItem().equals("vulkan"))
-						{
-							vulkanAvailable = true;
 						}
 					}
 				}
