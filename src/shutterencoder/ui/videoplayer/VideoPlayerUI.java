@@ -119,6 +119,7 @@ public class VideoPlayerUI {
     public static double screenRefreshRate = 16.7; //Vsync in ms	
     public static boolean playerLoop = false;
     public static boolean frameIsComplete = false;
+    public static final Object frameCompleteLock = new Object();
     public static boolean playerPlayVideo = true;
     public static boolean audioSetTimeIsRunning = false;
 	public static boolean sliderChange = false;
@@ -1178,6 +1179,11 @@ public class VideoPlayerUI {
 				if (VideoPlayerCore.preview != null || Shutter.caseAddSubtitles.isSelected())
 				{												
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame + 1);
+					do {
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e1) {}
+					} while (VideoPlayerCore.setTime.isAlive());
 				}
 
 				frameControl = true;
@@ -1240,13 +1246,12 @@ public class VideoPlayerUI {
 
 				//Allows to wait for the last frame to load
 				if (VideoPlayerCore.setTime != null)
-				{
-					while (VideoPlayerCore.setTime.isAlive())
-					{
+				{			
+					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(1);
 						} catch (InterruptedException e1) {}						
-					}			
+					} while (VideoPlayerCore.setTime.isAlive());		
 				}
 				
 				if (btnPlay.getName().equals("pause"))
@@ -2545,13 +2550,12 @@ public class VideoPlayerUI {
 
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);	
 					
-					//Allows to wait for the last frame to load
-					while (VideoPlayerCore.setTime.isAlive())
-					{
+					//Allows to wait for the last frame to load					
+					do {
 						try {
-							Thread.sleep(10);
+							Thread.sleep(1);
 						} catch (InterruptedException e1) {}						
-					}
+					} while (VideoPlayerCore.setTime.isAlive());
 					
 					VideoPlayerUtils.setMarkers();
 					

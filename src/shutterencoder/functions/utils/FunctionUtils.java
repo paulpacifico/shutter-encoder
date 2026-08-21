@@ -172,8 +172,11 @@ public class FunctionUtils extends Shutter {
 				gpu.start();
 								
 			}
-			else
+			else if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) == false
+					&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")) == false)
+			{
 				LibraryUtils.checkGPUCapabilities(file.toString());
+			}
 					
 			//Check with MEDIAINFO
 			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)

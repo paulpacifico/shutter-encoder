@@ -184,6 +184,17 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							Shutter.fileList.repaint();							
 							fileDuration = FFPROBE.totalLength; //Avoid a bug when totalLength is loader somewhere else
 	
+							if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
+							{
+								String vcodec = FFPROBE.videoCodec.toLowerCase();				
+								if (vcodec.equals("hevc") || (vcodec.equals("vp9") && FFPROBE.hasAlpha == false) || vcodec.equals("av1"))
+								{
+									gpuDecodingIsFaster = true;
+								}
+								else
+									gpuDecodingIsFaster = false;
+							}
+							
 							if (isRaw)
 							{
 								Shutter.btnStart.setEnabled(true);

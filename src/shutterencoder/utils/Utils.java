@@ -2310,7 +2310,7 @@ public class Utils extends Shutter {
 					try {
 						loadEncFile.join();
 						
-						VideoPlayerCore.playerProcess(0);
+						VideoPlayerCore.playerProcess(0, null);
 						LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
 						
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
