@@ -155,7 +155,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 				{
 	        		newSegment = true;
 	        		
-	        		int index = cursorCurrentFrame.getX() < inputMark ? 1 : 0;
+	        		int index = time < inputMark ? 1 : 0;
 
 					cutSegments.add(new CutSegment(index, playerMarkIn, playerMarkOut,
 			        		Integer.parseInt(caseInH.getText()),
@@ -176,10 +176,10 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 					VideoPlayerUtils.updateGrpIn(playerCurrentFrame);
 
 	        	if (newSegment)
-	        	{
+	        	{	        		
 	        		int index;
 	        		int playerMarkOut;
-	        		if (cursorCurrentFrame.getX() < inputMark) //When the current segment is after the cursor
+	        		if (time < inputMark) //When the current segment is after the cursor
 	        		{
 	        			index = 0;
 	        			VideoPlayerUtils.updateGrpOut(inputMark);
@@ -327,7 +327,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 			}
 			else
 				activeSegmentIndex = -1;
-				
+			
 			//FileList
 			VideoPlayerUtils.setFileList();
 			
