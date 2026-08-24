@@ -435,13 +435,13 @@ public class Overlay extends Shutter {
 			|| comboSubsSource.getSelectedIndex() != 0)
 			{
 				FunctionUtils.addSubtitles(false);
-				if (VideoPlayerCore.runProcess != null)
+				if (VideoPlayerCore.loadImageProcess != null)
 				{
 					do {
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.runProcess.isAlive());
+					} while (VideoPlayerCore.loadImageProcess.isAlive());
 				}
 				FunctionUtils.addSubtitles(true);
 			}

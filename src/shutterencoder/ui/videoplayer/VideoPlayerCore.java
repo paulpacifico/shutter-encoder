@@ -119,7 +119,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
   		
 	//Preview
 	public static byte[] preview = null;
-	public static Thread runProcess = new Thread();
+	public static Thread loadImageProcess = new Thread();
 	
 	private static final ExecutorService videoProcessExecutor =
     Executors.newCachedThreadPool(r -> {
@@ -619,21 +619,44 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	                int chromaG = -100 * D - 208 * E + 128;
 	                int chromaB = 516 * D + 128;
 
-	                // Pixel 1
-	                int C1 = (yuvRef[yRowBase + x] & 0xFF) - 16;
-	                int base1 = 298 * C1;
-	                int R1 = Math.clamp((base1 + chromaR) >> 8, 0, 255);
-	                int G1 = Math.clamp((base1 + chromaG) >> 8, 0, 255);
-	                int B1 = Math.clamp((base1 + chromaB) >> 8, 0, 255);
-	                pixels[yRowBase + x] = (R1 << 16) | (G1 << 8) | B1;
+	                int Y1 = yuvRef[yRowBase + x] & 0xFF;
+	                int Y2 = yuvRef[yRowBase + x + 1] & 0xFF;
 
-	                // Pixel 2 (reuses same U/V chroma)
-	                int C2 = (yuvRef[yRowBase + x + 1] & 0xFF) - 16;
-	                int base2 = 298 * C2;
-	                int R2 = Math.clamp((base2 + chromaR) >> 8, 0, 255);
-	                int G2 = Math.clamp((base2 + chromaG) >> 8, 0, 255);
-	                int B2 = Math.clamp((base2 + chromaB) >> 8, 0, 255);
-	                pixels[yRowBase + x + 1] = (R2 << 16) | (G2 << 8) | B2;
+	                if ("0-255".equals(FFPROBE.lumaLevel) && Shutter.caseLevels.isSelected() == false
+                	|| (Shutter.caseLevels.isSelected() && Shutter.comboOutLevels.getSelectedIndex() == 1))
+	                {
+	                    // Full range
+	                    int R1 = Math.clamp(Y1 + ((chromaR) >> 8), 0, 255);
+	                    int G1 = Math.clamp(Y1 + ((chromaG) >> 8), 0, 255);
+	                    int B1 = Math.clamp(Y1 + ((chromaB) >> 8), 0, 255);
+
+	                    int R2 = Math.clamp(Y2 + ((chromaR) >> 8), 0, 255);
+	                    int G2 = Math.clamp(Y2 + ((chromaG) >> 8), 0, 255);
+	                    int B2 = Math.clamp(Y2 + ((chromaB) >> 8), 0, 255);
+
+	                    pixels[yRowBase + x]     = (R1 << 16) | (G1 << 8) | B1;
+	                    pixels[yRowBase + x + 1] = (R2 << 16) | (G2 << 8) | B2;
+	                }
+	                else
+	                {
+	                    // Limited range
+	                    int C1 = Y1 - 16;
+	                    int C2 = Y2 - 16;
+
+	                    int base1 = 298 * C1;
+	                    int base2 = 298 * C2;
+
+	                    int R1 = Math.clamp((base1 + chromaR) >> 8, 0, 255);
+	                    int G1 = Math.clamp((base1 + chromaG) >> 8, 0, 255);
+	                    int B1 = Math.clamp((base1 + chromaB) >> 8, 0, 255);
+
+	                    int R2 = Math.clamp((base2 + chromaR) >> 8, 0, 255);
+	                    int G2 = Math.clamp((base2 + chromaG) >> 8, 0, 255);
+	                    int B2 = Math.clamp((base2 + chromaB) >> 8, 0, 255);
+
+	                    pixels[yRowBase + x]     = (R1 << 16) | (G1 << 8) | B1;
+	                    pixels[yRowBase + x + 1] = (R2 << 16) | (G2 << 8) | B2;
+	                }
 	            }
 	        }
 	    }	
@@ -689,6 +712,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				try {
 					audioInputStream.close();
 				} catch (IOException e) {}
+				
+				playerAudio.destroyForcibly();
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -1597,27 +1622,19 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 	public static void loadImage(boolean forceRefresh) {
 
-		if (forceRefresh && videoPath != null)
+		if (forceRefresh && videoPath != null && loadImageProcess != null)
 		{
-			Thread waitProcess = new Thread (new Runnable() {
-				
-				@Override
-				public void run() {
-										
-					while (runProcess.isAlive())
-					{
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					}
-				}
-			});
-			waitProcess.start();
+		    try {
+		        loadImageProcess.join();
+		    } catch (InterruptedException e) {
+		        Thread.currentThread().interrupt();
+		        return;
+		    }
 		}
 		
-		if ((forceRefresh || runProcess.isAlive() == false) && videoPath != null && Shutter.list.getSize() >  0 && Shutter.doNotLoadImage == false)
+		if ((forceRefresh || loadImageProcess.isAlive() == false) && videoPath != null && Shutter.list.getSize() >  0 && Shutter.doNotLoadImage == false)
 		{				
-			runProcess = new Thread (new Runnable() {
+			loadImageProcess = new Thread (new Runnable() {
 
 			@Override
 			public void run() {
@@ -1691,6 +1708,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 						//Input point
 						String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
+						
 						if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 							inputPoint = "";
 				
@@ -1814,7 +1832,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			        }
 				}
 			});
-			runProcess.start();
+			loadImageProcess.start();
 		}
 	}
 
@@ -1872,7 +1890,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 	private static String setFilter(boolean noGPU, boolean noDeinterlacing) {
 				
-		if (Settings.btnPreviewOutput.isSelected() || (mouseIsPressed && gpuDecodingIsFaster == false) || previousFrame)
+		if (Settings.btnPreviewOutput.isSelected()
+		|| (mouseIsPressed && gpuDecodingIsFaster == false)
+		|| previousFrame)
 		{
 			noGPU = true;
 		}
@@ -1955,7 +1975,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false && Shutter.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Shutter.inputDeviceIsRunning == false)
 		{				
 			filter = shutterencoder.functions.settings.Image.setScale(filter, false, noGPU);
-			
+
 			if (filter.contains("scale"))
 			{
 				filter += shutterencoder.functions.settings.Image.setPad("", false, noGPU);
@@ -2142,19 +2162,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 		//Levels
 		filter = Colorimetry.setLevels(filter);
-		
-		if (Shutter.caseLevels.isSelected() == false && fileDuration > 40 && FFPROBE.lumaLevel.equals("0-255"))
-		{
-			if (filter != "") filter += ",";
-			
-			if (comboPlayerQuality.isVisible() && comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && preview == null && Settings.btnPreviewOutput.isSelected() == false)
-			{
-				filter += "scale=in_range=limited:out_range=full";
-			}
-			else
-				filter += "scale=in_range=full:out_range=limited";
-		}
-		
+
 		//Limiter
 		filter = Corrections.setLimiter(filter);
 

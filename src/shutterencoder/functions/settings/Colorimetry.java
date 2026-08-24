@@ -271,19 +271,28 @@ public class Colorimetry extends Shutter {
 		return "";	
 	}
 
-	public static String setGrain(String eq) {
+	public static String setSharpness(String eq) {
 	
 		if (Shutter.sliderGrain.getValue() != 0)
-		{		
-			if (eq != "")
-				eq += ",";
+		{
+		    if (!eq.isEmpty())
+		        eq += ",";
 
-			if (Shutter.sliderGrain.getValue() > 0)
-				eq += "unsharp=la=" + (float) Shutter.sliderGrain.getValue() / 50;
-			else
-				eq += "bm3d=sigma=" + (float) (0 - Shutter.sliderGrain.getValue()); 
+		    float slider = Shutter.sliderGrain.getValue() / 100.0f;
+		    float amount;
+
+		    if (Shutter.sliderGrain.getValue() > 0)
+		    {
+		        amount = 1.0f * slider * slider;
+		        eq += "unsharp=7:7:" + String.format("%.3f", amount) + ":5:5:0";
+		    }
+		    else
+		    {
+		        amount = -0.80f * slider * slider;
+		        eq += "unsharp=5:5:" + String.format("%.3f", amount) + ":5:5:0";
+		    }
 		}
-		
+
 		return eq;
 	}
 		
@@ -340,45 +349,81 @@ public class Colorimetry extends Shutter {
 	}
 	
 	public static String setVignette(String eq) {
-		
-		if (Shutter.sliderVignette.getValue() != 0)
-		{		
-			if (eq != "")
-				eq += ",";
 
-			if (Shutter.sliderVignette.getValue() > 0)
-				eq += "vignette=PI/" + (float) (100 - Shutter.sliderVignette.getValue()) / 5 + ":mode=backward"; 
-			else
-				eq += "vignette=PI/" + (float) (100 + Shutter.sliderVignette.getValue()) / 5;				
-		}
-		
-		return eq;
+	    if (Shutter.sliderVignette.getValue() != 0)
+	    {
+	        if (eq != "")
+	            eq += ",";
+
+	        float padFactor = 1.5f;
+	        String pre = "pad=trunc(iw*" + padFactor + "):trunc(ih*" + padFactor
+	                    + "):(ow-iw)/2:(oh-ih)/2:black,";
+	        String post = ",crop=iw/" + padFactor + ":ih/" + padFactor;
+
+	        int sliderVal = Shutter.sliderVignette.getValue(); // -100..100
+	        float maxAngle = (float) (Math.PI / 2);
+	        float angle = maxAngle * (Math.abs(sliderVal) / 100f);
+
+	        if (sliderVal > 0)
+	            eq += pre + "vignette=" + angle + ":mode=backward:aspect=" + FFPROBE.imageRatio + post;
+	        else
+	            eq += pre + "vignette=" + angle + ":aspect=" + FFPROBE.imageRatio + post;
+	    }
+
+	    return eq;
 	}
 
 	public static String setVibrance(String eq) {
-		
-		if (vibranceValue != 0)
-		{
-			if (eq != "")
-				eq += ",";			
 
-			eq += "vibrance=" + (float) (vibranceValue) / 50 + ":rbal=" + (float) (100 + vibranceR) / 100 + ":gbal=" + (float) (100 + vibranceG) / 100 + ":bbal=" + (float) (100 + vibranceB) / 100;
-		}
-		
-		return eq;
+	    if (vibranceValue != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float v = vibranceValue / 100.0f;
+
+	        float amount = (float) Math.copySign(
+	            Math.pow(Math.abs(v), 0.75),
+	            v
+	        ) * 0.75f;
+
+	        eq += "vibrance=" + amount
+	            + ":rbal=" + ((100.0f + vibranceR) / 100.0f)
+	            + ":gbal=" + ((100.0f + vibranceG) / 100.0f)
+	            + ":bbal=" + ((100.0f + vibranceB) / 100.0f);
+	    }
+
+	    return eq;
 	}
 	
 	public static String setSaturation(String eq) {
-		
-		if (Shutter.sliderSaturation.getValue() != 0)
-		{
-			if (eq != "")
-				eq += ",";			
-			
-			eq += "eq=saturation=" + ((float) (Shutter.sliderSaturation.getValue() + 100) / 100);
-		}
-		
-		return eq;
+
+	    int value = Shutter.sliderSaturation.getValue();
+
+	    if (value != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float v = value / 100.0f;
+	        float saturation;
+
+	        if (v >= 0.0f)
+	        {
+	            saturation = 1.0f + 0.65f * v;
+	        }
+	        else
+	        {
+	            saturation = 1.0f + 0.85f * v;
+
+	            if (v <= -1.0f)
+	                saturation = 0.0f;
+	        }
+
+	        eq += "eq=saturation=" + saturation;
+	    }
+
+	    return eq;
 	}
 
 	public static String setBalance(String eq) {		
@@ -440,7 +485,7 @@ public class Colorimetry extends Shutter {
 			if (eq != "")
 				eq += ",";
 
-			eq += "eq=contrast=" + (1 + (float) Shutter.sliderContrast.getValue() / 100); 
+			eq += "eq=contrast=" + (1 + (float) Shutter.sliderContrast.getValue() / 300); 
 		}
 		
 		return eq;
@@ -504,12 +549,12 @@ public class Colorimetry extends Shutter {
 				
 			if (Shutter.sliderBlack.getValue() > 0)
 			{
-				float value = (float) Shutter.sliderBlack.getValue() / 200;				
+				float value = (float) Shutter.sliderBlack.getValue() / 400;				
 				eq += "colorlevels=romin=" + value + ":gomin=" + value + ":bomin=" + value; 				 
 			}
 			else
 			{
-				float value = 0 - (float) Shutter.sliderBlack.getValue() / 200;
+				float value = 0 - (float) Shutter.sliderBlack.getValue() / 400;
 				eq += "colorlevels=rimin=" + value + ":gimin=" + value + ":bimin=" + value;
 			}
 				
@@ -520,50 +565,77 @@ public class Colorimetry extends Shutter {
 
 	public static String setShadows(String eq) {
 
-		if (Shutter.sliderShadows.getValue() != 0)
-		{
-			if (eq != "")
-				eq += ",";
-										
-			if (Shutter.sliderShadows.getValue() > 0)
-				eq += "curves=master=" + "'" + "0/0 0.25/" + (0.25f - (float) (0 - (float) Shutter.sliderShadows.getValue() / 500)) + " 0.5/0.5 0.75/0.75 0.875/0.875 1/1'"; 
-			else
-				eq += "curves=master=" + "'0/0 " + (0.25f - (float) Shutter.sliderShadows.getValue() / 500) + "/0.25 0.5/0.5 0.625/0.625 0.75/0.75 0.875/0.875 1/1" + "'"; 
-		}
-		
-		return eq;
+	    int value = Shutter.sliderShadows.getValue();
+
+	    if (value != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float amount = 0.15f * value / 100.0f;
+
+	        eq += "curves=master='"
+	            + "0/0 "
+	            + "0.0625/" + (0.0625f + amount * 0.45f) + " "
+	            + "0.125/"  + (0.125f  + amount * 0.85f) + " "
+	            + "0.20/"   + (0.20f   + amount) + " "
+	            + "0.30/"   + (0.30f   + amount * 0.55f) + " "
+	            + "0.40/0.40 "
+	            + "0.50/0.50 "
+	            + "0.75/0.75 "
+	            + "1/1'";
+	    }
+
+	    return eq;
 	}
-	
+
 	public static String setMediums(String eq) {
 
-		if (Shutter.sliderMediums.getValue() != 0)
-		{
-			if (eq != "")
-				eq += ",";
-					
-			if (Shutter.sliderMediums.getValue() > 0)
-				eq += "curves=master=" + "'" + "0/0 " + (0.5 - (float) Shutter.sliderMediums.getValue() / 400) + "/" + (0.5 + (float) Shutter.sliderMediums.getValue() / 400) + " 1/1" + "'"; 										
-			else
-				eq += "curves=master=" + "'" + "0/0 " + (0.5 + (float) (0 - (float) Shutter.sliderMediums.getValue() / 400)) + "/" + (0.5 - (float) (0 - (float) Shutter.sliderMediums.getValue() / 400)) + " 1/1" + "'"; 
-		}
-		
-		return eq;
+	    int value = Shutter.sliderMediums.getValue();
+
+	    if (value != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float amount = 0.16f * value / 100.0f;
+
+	        eq += "curves=master='"
+	            + "0/0 "
+	            + "0.25/" + (0.25f + amount * 0.35f) + " "
+	            + "0.40/" + (0.40f + amount * 0.75f) + " "
+	            + "0.50/" + (0.50f + amount) + " "
+	            + "0.60/" + (0.60f + amount * 0.75f) + " "
+	            + "0.75/" + (0.75f + amount * 0.35f) + " "
+	            + "1/1'";
+	    }
+
+	    return eq;
 	}
 
 	public static String setHighlights(String eq) {
 
-		if (Shutter.sliderHighlights.getValue() != 0)
-		{
-			if (eq != "")
-				eq += ",";
-			
-			if (Shutter.sliderHighlights.getValue() > 0)
-				eq += "curves=master=" + "'" + "0/0 0.125/0.125 0.25/0.25 0.375/0.375 0.5/0.5 " + (0.75f - (float) Shutter.sliderHighlights.getValue() / 500) + "/0.75 1/1" + "'"; 										
-			else
-				eq += "curves=master=" + "'" + "0/0 0.125/0.125 0.25/0.25 0.375/0.375 0.5/0.5 0.75/" + (0.75f - (float) (0 - (float) Shutter.sliderHighlights.getValue() / 500)) + " 1/1'"; 
-		}
-		
-		return eq;
+	    int value = Shutter.sliderHighlights.getValue();
+
+	    if (value != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float amount = 0.15f * value / 100.0f;
+
+	        eq += "curves=master='"
+	            + "0/0 "
+	            + "0.25/0.25 "
+	            + "0.50/0.50 "
+	            + "0.625/" + (0.625f + amount * 0.15f) + " "
+	            + "0.75/"  + (0.75f  + amount * 0.45f) + " "
+	            + "0.875/" + (0.875f + amount * 0.90f) + " "
+	            + "0.95/"  + (0.95f  + amount) + " "
+	            + "1/1'";
+	    }
+
+	    return eq;
 	}
 
 	public static String setExposure(String eq) {
@@ -636,7 +708,7 @@ public class Colorimetry extends Shutter {
 		eq = setVibrance(eq);
 				
 		//Grain
-		eq = setGrain(eq);
+		eq = setSharpness(eq);
 				
 		//Angle
 		eq = setAngle(eq);

@@ -81,7 +81,7 @@ public static int previousImageWidth;
 public static int previousImageHeight;
 public static int imageWidth;
 public static int imageHeight;
-public static float imageRatio = 1.777777f;
+public static float imageRatio = 1.777778f;
 public static int cropPixelsWidth;
 public static int cropPixelsHeight;
 public static String dropFrameTC = "";

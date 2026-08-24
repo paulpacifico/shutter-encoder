@@ -292,7 +292,7 @@ public class Shutter {
 	protected static JComboBox<Object> comboLUTs;
 	protected static JComboBox<Object> comboGamma;
 	protected static JComboBox<Object> comboInLevels;
-	protected static JComboBox<Object> comboOutLevels;
+	public static JComboBox<Object> comboOutLevels;
 	public static JComboBox<Object> comboInColormatrix;
 	protected static JComboBox<Object> comboOutColormatrix;
 	protected static JComboBox<Object> comboColorspace;
@@ -11800,13 +11800,13 @@ public class Shutter {
 				if (caseAddSubtitles.isSelected() && VideoPlayerCore.loadMedia.isAlive() == false) //LoadMedia already load the subs
 				{
 					FunctionUtils.addSubtitles(false);
-					if (VideoPlayerCore.runProcess != null)
+					if (VideoPlayerCore.loadImageProcess != null)
 					{
 						do {
 							try {
 								Thread.sleep(100);
 							} catch (InterruptedException e) {}
-						} while (VideoPlayerCore.runProcess.isAlive());
+						} while (VideoPlayerCore.loadImageProcess.isAlive());
 					}
 					FunctionUtils.addSubtitles(true);
 				}

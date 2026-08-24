@@ -184,10 +184,14 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							Shutter.fileList.repaint();							
 							fileDuration = FFPROBE.totalLength; //Avoid a bug when totalLength is loader somewhere else
 	
+							boolean isWindows = System.getProperty("os.name").contains("Windows");
+							
 							if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
 							{
 								String vcodec = FFPROBE.videoCodec.toLowerCase();				
-								if (vcodec.equals("hevc") || (vcodec.equals("vp9") && FFPROBE.hasAlpha == false) || vcodec.equals("av1"))
+								if (vcodec.equals("hevc")
+								|| (vcodec.equals("vp9") && FFPROBE.hasAlpha == false && isWindows)
+								|| (vcodec.equals("av1") && isWindows))
 								{
 									gpuDecodingIsFaster = true;
 								}
@@ -280,13 +284,13 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								|| Shutter.comboSubsSource.getSelectedIndex() != 0)
 								{
 									FunctionUtils.addSubtitles(false);
-									if (VideoPlayerCore.runProcess != null)
+									if (VideoPlayerCore.loadImageProcess != null)
 									{
 										do {
 											try {
 												Thread.sleep(100);
 											} catch (InterruptedException e) {}
-										} while (VideoPlayerCore.runProcess.isAlive());
+										} while (VideoPlayerCore.loadImageProcess.isAlive());
 									}
 									FunctionUtils.addSubtitles(true);
 								}
