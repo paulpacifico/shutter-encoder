@@ -87,7 +87,6 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
-import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.MEDIAINFO;
@@ -141,7 +140,6 @@ public class VideoPlayerUI {
 	public static double totalFrames;
 		
 	//Buttons & Checkboxes
-	public static JLabel btnPreview;
 	public static JTextField splitValue;
 	private static JLabel lblSplitSec;
 	public static JButton btnPrevious;
@@ -771,7 +769,6 @@ public class VideoPlayerUI {
 			sliderSpeed.setVisible(true);
 			lblMode.setVisible(false);
 			comboMode.setVisible(false);
-			btnPreview.setVisible(false);
 			splitValue.setVisible(false);
 			lblSplitSec.setVisible(false);
 			btnGoToIn.setVisible(false);
@@ -815,7 +812,6 @@ public class VideoPlayerUI {
 			sliderSpeed.setVisible(false);
 			lblMode.setVisible(false);
 			comboMode.setVisible(false);
-			btnPreview.setVisible(false);
 			splitValue.setVisible(false);
 			lblSplitSec.setVisible(false);
 			btnGoToIn.setVisible(false);
@@ -911,13 +907,11 @@ public class VideoPlayerUI {
 			
 			if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
 			{
-				btnPreview.setVisible(false);
 				splitValue.setVisible(true);
 				lblSplitSec.setVisible(true);
 			}
 			else
 			{
-				btnPreview.setVisible(true);
 				splitValue.setVisible(false);
 				lblSplitSec.setVisible(false);
 			}
@@ -1640,7 +1634,7 @@ public class VideoPlayerUI {
 		});
 				
 		btnReset = new JButton(new FlatSVGIcon("resources/reset.svg", 15, 15));
-		btnReset.setToolTipText("R");
+		btnReset.setToolTipText(Shutter.language.getProperty("btnReset") + Shutter.language.getProperty("colon") + " R");
 		btnReset.setMargin(new Insets(0,0,0,0));		
 		btnReset.setBackground(new Color(30,30,35, 0));
 		btnReset.setBorder(null);
@@ -3610,46 +3604,6 @@ public class VideoPlayerUI {
 		caseInternalTc.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		Shutter.frame.getContentPane().add(caseInternalTc);	
 		
-
-		btnPreview = new JLabel(new FlatSVGIcon("resources/preview.svg", 16, 16));
-		btnPreview.setHorizontalAlignment(SwingConstants.CENTER);
-		btnPreview.setToolTipText(Shutter.language.getProperty("preview"));
-		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")) == false)
-			Shutter.frame.getContentPane().add(btnPreview);
-		
-		btnPreview.addMouseListener(new MouseListener(){
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {	
-				
-				FFMPEG.toSDL(true);
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnPreview.setIcon(new FlatSVGIcon("resources/preview.svg", 16, 16).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
-				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
-				    float newBrightness = Math.min(1.0f, hsb[2] * 1.1f); 				    
-				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
-				})));
-				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
-				btnPreview.setIcon(new FlatSVGIcon("resources/preview.svg", 16, 16));
-				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-			}        			
-		});
-		
 		splitValue = new JTextField();
 		splitValue.setName("splitValue");
 		splitValue.setText("10");
@@ -3705,13 +3659,11 @@ public class VideoPlayerUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				btnPreview.setBounds(waveformScrollPane.getX() + waveformScrollPane.getWidth() - 16, caseInternalTc.getY() + 2, 16, 16);
-				lblSplitSec.setBounds(btnPreview.getX() + 10, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
+				lblSplitSec.setBounds(waveformScrollPane.getX() + waveformScrollPane.getWidth() - 6, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
 				splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);
 				
 				if (comboMode.getSelectedItem().equals(Shutter.language.getProperty("splitMode")))
 				{
-					btnPreview.setVisible(false);
 					splitValue.setVisible(true);
 					lblSplitSec.setVisible(true);
 					comboMode.setLocation(splitValue.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);
@@ -3720,10 +3672,9 @@ public class VideoPlayerUI {
 				}
 				else
 				{
-					btnPreview.setVisible(true);
 					splitValue.setVisible(false);
 					lblSplitSec.setVisible(false);
-					comboMode.setLocation(btnPreview.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);	
+					comboMode.setLocation(waveformScrollPane.getX() + waveformScrollPane.getWidth() - comboMode.getWidth(), caseInternalTc.getY() - 1);	
 					
 					caseApplyCutToAll.setEnabled(true);
 				}			
@@ -3732,7 +3683,7 @@ public class VideoPlayerUI {
 				caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY(), caseVuMeter.getPreferredSize().width, 23);	
 				caseShowWaveform.setBounds(caseVuMeter.getX() - caseShowWaveform.getPreferredSize().width - 5, caseVuMeter.getY(), caseShowWaveform.getPreferredSize().width, 23);
 				
-				waveformContainer.repaint();
+				resizeAll();
 			}
 	
 		});
@@ -4097,8 +4048,7 @@ public class VideoPlayerUI {
 			else
 				casePlaySound.setBounds(caseInternalTc.getX(), caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
 			
-			btnPreview.setBounds(waveformScrollPane.getX() + waveformScrollPane.getWidth() - 16, caseInternalTc.getY() + 2, 16, 16);
-			lblSplitSec.setBounds(btnPreview.getX() + 10, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
+			lblSplitSec.setBounds(waveformScrollPane.getX() + waveformScrollPane.getWidth() - 6, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
 			splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);		
 			
 			if (splitValue.isVisible())
@@ -4106,7 +4056,7 @@ public class VideoPlayerUI {
 				comboMode.setLocation(splitValue.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);
 			}
 			else
-				comboMode.setLocation(btnPreview.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);		
+				comboMode.setLocation(waveformScrollPane.getX() + waveformScrollPane.getWidth() - comboMode.getWidth(), caseInternalTc.getY() - 1);		
 			
 			lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);			
 

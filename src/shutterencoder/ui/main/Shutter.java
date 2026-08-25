@@ -2016,7 +2016,7 @@ public class Shutter {
 					} while (FFPROBE.isRunning);
 				}
 
-				FFMPEG.toSDL(false);
+				FFMPEG.toSDL();
 			}
 		});
 
@@ -3011,6 +3011,7 @@ public class Shutter {
 		});
 
 		iconList = new JLabel(new FlatSVGIcon("resources/list.svg", 15, 15));
+		iconList.setToolTipText(language.getProperty("frameFileDeRendus"));
 		iconList.setHorizontalAlignment(SwingConstants.CENTER);
 		iconList.setVisible(false);
 		iconList.setBounds(180, 46, 21, 21);
@@ -3072,6 +3073,7 @@ public class Shutter {
 		});
 
 		iconPresets = new JLabel(new FlatSVGIcon("resources/presets.svg", 15, 15));
+		iconPresets.setToolTipText(language.getProperty("frameFonctions"));
 		iconPresets.setHorizontalAlignment(SwingConstants.CENTER);
 		iconPresets.setVisible(true);
 		iconPresets.setBounds(180, 45, 21, 21);
@@ -3152,7 +3154,7 @@ public class Shutter {
 
 		});
 
-		btnStart = new JButton(language.getProperty("btnStartFunction"));
+		btnStart = new JButton(language.getProperty("frameFonctions"));
 		btnStart.setFont(new Font(boldFont, Font.PLAIN, 12));
 		btnStart.setMargin(new Insets(0, 0, 0, 0));
 		btnStart.setBounds(8, 46, 168, 21);

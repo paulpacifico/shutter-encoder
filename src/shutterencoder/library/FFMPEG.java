@@ -528,9 +528,9 @@ public static StringBuilder errorLog = new StringBuilder();
 		}
 	}
 
-	public static void toSDL(boolean isVideoPlayer) {
+	public static void toSDL() {
 		
-		if (fileList.getSelectedIndices().length > 1 && isVideoPlayer == false)
+		if (fileList.getSelectedIndices().length > 1)
 		{
 			String input = "";
 			String filter = "";
@@ -557,12 +557,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			//File
 			File inputFile = null;
 			
-			if (isVideoPlayer)
-			{
-				inputFile = new File(VideoPlayerCore.videoPath);
-				InputAndOutput.getInputAndOutput(true);
-			}
-			else if (inputDeviceIsRunning == false) //Already analyzed
+			if (inputDeviceIsRunning == false) //Already analyzed
 			{
 				inputFile = new File(fileList.getSelectedValue());
 				FFPROBE.Data(fileList.getSelectedValue());					
@@ -682,11 +677,7 @@ public static StringBuilder errorLog = new StringBuilder();
 			//Loop image					
 			String loop = FunctionUtils.setLoop(extension);
 			
-			if (isVideoPlayer)
-			{
-				FFMPEG.toFFPLAY(loop + InputAndOutput.inPoint + " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i " + '"' + inputFile + '"' + InputAndOutput.outPoint + cmd);
-			}
-			else if (inputDeviceIsRunning)
+			if (inputDeviceIsRunning)
 			{
 				if (list.getElementAt(0).equals("Capture.current.screen") && RecordInputDevice.audioDeviceIndex > 0 || System.getProperty("os.name").contains("Mac") && list.getElementAt(0).equals("Capture.input.device") && RecordInputDevice.audioDeviceIndex > 0)
 					cmd = cmd.replace("0:v", "1:v");	

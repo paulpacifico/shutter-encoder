@@ -119,7 +119,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
   		
 	//Preview
 	public static byte[] preview = null;
+	private static volatile boolean loadImageRunning = false;
+	private static volatile boolean loadImagePending = false;
 	public static Thread loadImageProcess = new Thread();
+	private static final Object loadImageLock = new Object();
 	
 	private static final ExecutorService videoProcessExecutor =
     Executors.newCachedThreadPool(r -> {
@@ -1619,221 +1622,234 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			addWaveform.start();
 		}
 	}
-		
+	
 	public static void loadImage(boolean forceRefresh) {
 
-		if (forceRefresh && videoPath != null && loadImageProcess != null)
-		{
-		    try {
-		        loadImageProcess.join();
-		    } catch (InterruptedException e) {
-		        Thread.currentThread().interrupt();
-		        return;
-		    }
-		}
+	    if (videoPath == null || Shutter.list.getSize() <= 0 || Shutter.doNotLoadImage)
+	    {
+	        return;
+	    }
+
+	    synchronized (loadImageLock) {
+
+	        if (loadImageRunning)
+	        {
+	            loadImagePending = true;
+	            return;
+	        }
+
+	        loadImageRunning = true;
+	    }
+
+	    loadImageProcess = new Thread(() -> {
+
+	    	//Clear the buffer
+			if (bufferedFrames.size() > 0)
+			{				
+				bufferedFrames.clear();
+				waveformContainer.repaint();
+			}
+						
+			//Stop player
+			if (playerIsPlaying())
+			{
+				btnPlay.doClick();
+			}
 		
-		if ((forceRefresh || loadImageProcess.isAlive() == false) && videoPath != null && Shutter.list.getSize() >  0 && Shutter.doNotLoadImage == false)
-		{				
-			loadImageProcess = new Thread (new Runnable() {
-
-			@Override
-			public void run() {
-												
-					//Clear the buffer
-					if (bufferedFrames.size() > 0)
-					{				
-						bufferedFrames.clear();
-						waveformContainer.repaint();
-					}
-								
-					//Stop player
-					if (playerIsPlaying())
-					{
-						btnPlay.doClick();
-					}
+	        try
+	        {	
+	        	do {
+	        		Thread.sleep(10);
+	        	} while (videoPath == null);
+	        		
+	        	File file = new File(videoPath);
+	        			        						
+				String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
+				boolean isRaw = false;
 				
-			        try
-			        {	
-			        	do {
-			        		Thread.sleep(10);
-			        	} while (videoPath == null);
-			        		
-			        	File file = new File(videoPath);
-			        			        						
-						String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
-						boolean isRaw = false;
-						
-						//FFprobe with RAW files
-						switch (extension.toLowerCase()) { 
-							case ".3fr":
-							case ".arw":
-							case ".crw":
-							case ".cr2":
-							case ".cr3":
-							case ".dng":
-							case ".kdc":
-							case ".mrw":
-							case ".nef":
-							case ".nrw":
-							case ".orf":
-							case ".ptx":
-							case ".pef":
-							case ".raf":
-							case ".r3d":
-							case ".rw2":
-							case ".srw":
-							case ".x3f":
-								isRaw = true;
-						}
-						
-						if (Shutter.caseShowTimecode.isSelected() && FFPROBE.timecode1.equals(""))
-						{
-							Shutter.caseShowTimecode.setSelected(false);
-							Shutter.caseShowTimecode.setEnabled(false);
-							Shutter.caseAddTimecode.setSelected(true);
-							Shutter.TC1.setEnabled(true);
-							Shutter.TC2.setEnabled(true);
-							Shutter.TC3.setEnabled(true);
-							Shutter.TC4.setEnabled(true);	
-						}			
-								
-						//Deinterlace
-						String deinterlace = "";
-						
-						//Format
-						String colorFormat = FFPROBE.hasAlpha ? "bgra64le" : "bgr48le";
-						
-						if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
-							deinterlace = " -vf bwdif=0:" + FFPROBE.fieldOrder + ":0";		
-	
-						//Input point
-						String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
-						
-						if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
-							inputPoint = "";
-				
-						//Creating preview file													
-						String cmd = deinterlace + " -frames:v 1 -an -sn -s " + player.getWidth() + "x" + player.getHeight() + " -scaler bicubic -y ";	
-						
-						if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
-						{
-							if (extension.toLowerCase().equals(".pdf"))
-							{
-								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								XPDFREADER.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
-							
-								do {
-					            	Thread.sleep(10);  					            	
-					            } while (XPDFREADER.isRunning && XPDFREADER.error == false);	
-							}
-							else if (isRaw)
-							{									
-								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								DCRAW.run(" -v -w -q 0 -o 1 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
-								
-					            do {
-					            	Thread.sleep(10);  					            	
-					            } while (DCRAW.isRunning && DCRAW.error == false);	
-							}
-							else if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))							
-							{													
-								Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-								
-								File preview = new File(Shutter.dirTemp + "preview.png");
-								
-								FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + deinterlace + " -frames:v 1 -an -sn -y " + '"' + preview + '"');		
-								
-								do {
-					            	Thread.sleep(10);  
-					            } while (FFMPEG.isRunning && FFMPEG.error == false);
-								
-								String model = "realesr-general-wdn-x4v3";							
-								if (Shutter.comboResolution.getSelectedItem().toString().contains("animation"))
-								{
-									model = "realesrgan-x4plus-anime";
-								}
-								else if (Shutter.comboResolution.getSelectedItem().toString().contains("photo"))
-								{
-									model = "4x_NMKD-Siax_200k";
-								}
-
-								Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-								Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
-																								
-								NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"', true);
-
-								do {									
-									Thread.sleep(10);
-								} while (NCNN.isRunning);
-															
-								Shutter.progressBar.setValue(0);
-								Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
-																
-								if (preview.exists())
-								{									
-									generatePreview(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -"); 
-
-									if (mouseIsPressed == false)
-									{
-										previewUpscale = true;
-									}
-								}
-								else
-								{
-									generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
-								}
-									
-								if (preview.exists())
-									preview.delete();
-							}		
-							else									
-							{	
-								generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -");
-							}		
-
-				            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
-						}	
-												
-						if (preview != null || Shutter.caseAddSubtitles.isSelected())
-						{		
-							//Format
-							String outputFormat = FFPROBE.hasAlpha ? "abgr" : "bgr24";
-							
-							//Subtitles are visible only from a video file
-							if (Shutter.caseAddSubtitles.isSelected())
-							{				
-								generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -an -sn -f rawvideo -"); 
-							}
-							else
-							{															
-								generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + colorFormat + " -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -f rawvideo -");
-							}							
-						}
-			        }
-				    catch (Exception e)
-				    {				
-				    	e.printStackTrace();
-			 	       	//JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
-				    }
-			        finally 
-			        {	
-			        	while (FFMPEG.isRunning)
-			        	{
-			        		try {
-								Thread.sleep(10);
-							} catch (InterruptedException e) {}
-			        	} 
-						
-	          			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
-	        				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
-	        			else
-	        				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
-						
-			        }
+				//FFprobe with RAW files
+				switch (extension.toLowerCase()) { 
+					case ".3fr":
+					case ".arw":
+					case ".crw":
+					case ".cr2":
+					case ".cr3":
+					case ".dng":
+					case ".kdc":
+					case ".mrw":
+					case ".nef":
+					case ".nrw":
+					case ".orf":
+					case ".ptx":
+					case ".pef":
+					case ".raf":
+					case ".r3d":
+					case ".rw2":
+					case ".srw":
+					case ".x3f":
+						isRaw = true;
 				}
-			});
-			loadImageProcess.start();
-		}
+				
+				if (Shutter.caseShowTimecode.isSelected() && FFPROBE.timecode1.equals(""))
+				{
+					Shutter.caseShowTimecode.setSelected(false);
+					Shutter.caseShowTimecode.setEnabled(false);
+					Shutter.caseAddTimecode.setSelected(true);
+					Shutter.TC1.setEnabled(true);
+					Shutter.TC2.setEnabled(true);
+					Shutter.TC3.setEnabled(true);
+					Shutter.TC4.setEnabled(true);	
+				}			
+						
+				//Deinterlace
+				String deinterlace = "";
+				
+				//Format
+				String colorFormat = FFPROBE.hasAlpha ? "bgra64le" : "bgr48le";
+				
+				if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
+					deinterlace = " -vf bwdif=0:" + FFPROBE.fieldOrder + ":0";		
+
+				//Input point
+				String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
+				
+				if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
+					inputPoint = "";
+		
+				//Creating preview file													
+				String cmd = deinterlace + " -frames:v 1 -an -sn -s " + player.getWidth() + "x" + player.getHeight() + " -scaler bicubic -y ";	
+				
+				if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
+				{
+					if (extension.toLowerCase().equals(".pdf"))
+					{
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						XPDFREADER.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+					
+						do {
+			            	Thread.sleep(10);  					            	
+			            } while (XPDFREADER.isRunning && XPDFREADER.error == false);	
+					}
+					else if (isRaw)
+					{									
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						DCRAW.run(" -v -w -q 0 -o 1 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+						
+			            do {
+			            	Thread.sleep(10);  					            	
+			            } while (DCRAW.isRunning && DCRAW.error == false);	
+					}
+					else if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))							
+					{													
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						
+						File preview = new File(Shutter.dirTemp + "preview.png");
+						
+						FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + deinterlace + " -frames:v 1 -an -sn -y " + '"' + preview + '"');		
+						
+						do {
+			            	Thread.sleep(10);  
+			            } while (FFMPEG.isRunning && FFMPEG.error == false);
+						
+						String model = "realesr-general-wdn-x4v3";							
+						if (Shutter.comboResolution.getSelectedItem().toString().contains("animation"))
+						{
+							model = "realesrgan-x4plus-anime";
+						}
+						else if (Shutter.comboResolution.getSelectedItem().toString().contains("photo"))
+						{
+							model = "4x_NMKD-Siax_200k";
+						}
+
+						Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+						Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
+																						
+						NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"', true);
+
+						do {									
+							Thread.sleep(10);
+						} while (NCNN.isRunning);
+													
+						Shutter.progressBar.setValue(0);
+						Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
+														
+						if (preview.exists())
+						{									
+							generatePreview(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -"); 
+
+							if (mouseIsPressed == false)
+							{
+								previewUpscale = true;
+							}
+						}
+						else
+						{
+							generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+						}
+							
+						if (preview.exists())
+							preview.delete();
+					}		
+					else									
+					{	
+						generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -");
+					}		
+
+		            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
+				}	
+										
+				if (preview != null || Shutter.caseAddSubtitles.isSelected())
+				{		
+					//Format
+					String outputFormat = FFPROBE.hasAlpha ? "abgr" : "bgr24";
+					
+					//Subtitles are visible only from a video file
+					if (Shutter.caseAddSubtitles.isSelected())
+					{				
+						generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -an -sn -f rawvideo -"); 
+					}
+					else
+					{															
+						generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + colorFormat + " -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -f rawvideo -");
+					}							
+				}
+	        }
+		    catch (Exception e)
+		    {				
+		    	e.printStackTrace();
+	 	       	//JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+		    }
+	        finally {
+
+	        	while (FFMPEG.isRunning)
+	        	{
+	        		try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {}
+	        	} 
+				
+      			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+    				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+    			else
+    				Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+	        	
+      			boolean reload;
+
+      			synchronized (loadImageLock)
+      			{
+      			    loadImageRunning = false;
+      			    reload = loadImagePending;
+      			    loadImagePending = false;
+      			}
+
+      			if (reload) {
+      			    loadImage(false);
+      			}
+	        }
+
+	    });
+
+	    loadImageProcess.start();
 	}
 
 	private static void generatePreview(String cmd) {
