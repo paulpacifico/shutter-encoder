@@ -629,13 +629,13 @@ public class VideoPlayerCore extends VideoPlayerUI {
                 	|| (Shutter.caseLevels.isSelected() && Shutter.comboOutLevels.getSelectedIndex() == 1))
 	                {
 	                    // Full range
-	                    int R1 = Math.clamp(Y1 + ((chromaR) >> 8), 0, 255);
-	                    int G1 = Math.clamp(Y1 + ((chromaG) >> 8), 0, 255);
-	                    int B1 = Math.clamp(Y1 + ((chromaB) >> 8), 0, 255);
+	                	int R1 = clamp(Y1 + ((chromaR) >> 8), 0, 255);
+	                	int G1 = clamp(Y1 + ((chromaG) >> 8), 0, 255);
+	                	int B1 = clamp(Y1 + ((chromaB) >> 8), 0, 255);
 
-	                    int R2 = Math.clamp(Y2 + ((chromaR) >> 8), 0, 255);
-	                    int G2 = Math.clamp(Y2 + ((chromaG) >> 8), 0, 255);
-	                    int B2 = Math.clamp(Y2 + ((chromaB) >> 8), 0, 255);
+	                	int R2 = clamp(Y2 + ((chromaR) >> 8), 0, 255);
+	                	int G2 = clamp(Y2 + ((chromaG) >> 8), 0, 255);
+	                	int B2 = clamp(Y2 + ((chromaB) >> 8), 0, 255);
 
 	                    pixels[yRowBase + x]     = (R1 << 16) | (G1 << 8) | B1;
 	                    pixels[yRowBase + x + 1] = (R2 << 16) | (G2 << 8) | B2;
@@ -649,13 +649,13 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	                    int base1 = 298 * C1;
 	                    int base2 = 298 * C2;
 
-	                    int R1 = Math.clamp((base1 + chromaR) >> 8, 0, 255);
-	                    int G1 = Math.clamp((base1 + chromaG) >> 8, 0, 255);
-	                    int B1 = Math.clamp((base1 + chromaB) >> 8, 0, 255);
+	                    int R1 = clamp((base1 + chromaR) >> 8, 0, 255);
+	                    int G1 = clamp((base1 + chromaG) >> 8, 0, 255);
+	                    int B1 = clamp((base1 + chromaB) >> 8, 0, 255);
 
-	                    int R2 = Math.clamp((base2 + chromaR) >> 8, 0, 255);
-	                    int G2 = Math.clamp((base2 + chromaG) >> 8, 0, 255);
-	                    int B2 = Math.clamp((base2 + chromaB) >> 8, 0, 255);
+	                    int R2 = clamp((base2 + chromaR) >> 8, 0, 255);
+	                    int G2 = clamp((base2 + chromaG) >> 8, 0, 255);
+	                    int B2 = clamp((base2 + chromaB) >> 8, 0, 255);
 
 	                    pixels[yRowBase + x]     = (R1 << 16) | (G1 << 8) | B1;
 	                    pixels[yRowBase + x + 1] = (R2 << 16) | (G2 << 8) | B2;
@@ -663,6 +663,16 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	            }
 	        }
 	    }	
+	}
+	
+	private static int clamp(long value, int min, int max) {
+	    if (value < min) {
+	        return min;
+	    }
+	    if (value > max) {
+	        return max;
+	    }
+	    return (int) value;
 	}
 
 	public static BufferedImage cloneBufferedImage(BufferedImage source) throws IOException {

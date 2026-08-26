@@ -204,7 +204,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "20.2";
+	public static String actualVersion = "20.3";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -3154,7 +3154,7 @@ public class Shutter {
 
 		});
 
-		btnStart = new JButton(language.getProperty("frameFonctions"));
+		btnStart = new JButton(language.getProperty("btnStartFunction"));
 		btnStart.setFont(new Font(boldFont, Font.PLAIN, 12));
 		btnStart.setMargin(new Insets(0, 0, 0, 0));
 		btnStart.setBounds(8, 46, 168, 21);
