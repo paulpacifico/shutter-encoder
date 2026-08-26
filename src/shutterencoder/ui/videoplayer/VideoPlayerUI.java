@@ -2629,17 +2629,21 @@ public class VideoPlayerUI {
 						
 						VideoPlayerCore.playerSetTime(totalFrames);
 					}
+					
+					//Wait setTime thread to finish before changing markers
+					try {
+						VideoPlayerCore.setTime.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
 
 					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 					{
 						if (cursorWaveform.getX() < playerMarkOut)
 						{
-							if (VideoPlayerCore.bufferCurrentFrame > 0)
-							{
-								VideoPlayerUtils.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
-							}
-							else
-								VideoPlayerUtils.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
+							VideoPlayerUtils.updateGrpIn(time);
 							
 							VideoPlayerUtils.setMarkers();
 						}
@@ -2650,12 +2654,7 @@ public class VideoPlayerUI {
 					{
 						if (cursorWaveform.getX() > playerMarkIn)
 						{
-							if (VideoPlayerCore.bufferCurrentFrame > 0)
-							{
-								VideoPlayerUtils.updateGrpOut(VideoPlayerCore.bufferCurrentFrame + 1);		
-							}
-							else
-								VideoPlayerUtils.updateGrpOut(VideoPlayerCore.playerCurrentFrame + 1);
+							VideoPlayerUtils.updateGrpOut(time + 1);
 							
 							VideoPlayerUtils.setMarkers();
 						}
