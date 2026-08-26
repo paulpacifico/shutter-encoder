@@ -1,6 +1,6 @@
 # 🎬 Shutter Encoder
 
-![Downloads](https://img.shields.io/endpoint?url=https%3A%2F%2Fwww.shutterencoder.com%2Fdownloads-badge.php&style=flat-square&v=1)
+![Downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fwww.shutterencoder.com%2Fdownloads-badge.php&query=$.downloads&label=downloads&style=flat-square&color=1f6feb&labelColor=555)
 [![GitHub stars](https://img.shields.io/github/stars/paulpacifico/shutter-encoder?style=flat-square&color=f1c40f&labelColor=555)](https://github.com/paulpacifico/shutter-encoder/stargazers)
 [![GitHub license](https://img.shields.io/github/license/paulpacifico/shutter-encoder?style=flat-square)](LICENSE)
 [![GitHub last commit](https://img.shields.io/github/last-commit/paulpacifico/shutter-encoder?style=flat-square&color=2ea44f&labelColor=555)](https://github.com/paulpacifico/shutter-encoder/commits)
