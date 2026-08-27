@@ -443,6 +443,16 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
                 if (time >= inputMark && time < outputMark)
                 {
                 	VideoPlayerCore.activeSegmentIndex = seg.index;
+                	break;
+                }
+                else if (time < inputMark && seg.index < VideoPlayerCore.activeSegmentIndex) //Allows to always get the next segment when jumping hover more than 1 segment
+                {
+                	VideoPlayerCore.activeSegmentIndex = seg.index;
+                	break;
+                }
+                else if (time > outputMark && seg.index > VideoPlayerCore.activeSegmentIndex) //Allows to always get the previous segment when jumping hover more than 1 segment
+                {
+                	VideoPlayerCore.activeSegmentIndex = seg.index;
                 }
             }
    		}

@@ -487,7 +487,8 @@ public class Utils extends Shutter {
 				Shutter.boldFont = "";
 				Shutter.mainFont = "";
 			}
-			else if (getLanguage.contains(Locale.of("vi").getDisplayLanguage())
+			else if (getLanguage.contains(Locale.of("bg").getDisplayLanguage())
+			|| getLanguage.contains(Locale.of("vi").getDisplayLanguage())
 			|| getLanguage.contains(Locale.of("pl").getDisplayLanguage())
 			|| getLanguage.contains(Locale.of("ro").getDisplayLanguage())) //use system default font
 			{

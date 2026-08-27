@@ -2517,7 +2517,36 @@ public class VideoPlayerUI {
 										} catch (InterruptedException e1) {}						
 									} while (VideoPlayerCore.setTime.isAlive());
 									
+									if (VideoPlayerCore.dragSegmentIndex != -1
+									&& VideoPlayerCore.dragSegmentIndex != VideoPlayerCore.activeSegmentIndex)
+									{
+										//Allows to stop dragging when changing activeSegmentIndex value
+										waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+									}
+									
 									VideoPlayerCore.dragSegmentIndex = VideoPlayerCore.activeSegmentIndex;
+									
+									double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+									
+									//Set markers
+									if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)))
+									{
+										if (cursorWaveform.getX() < playerMarkOut)
+										{
+											VideoPlayerUtils.updateGrpIn(time);
+											
+											VideoPlayerUtils.setMarkers();
+										}
+									}
+									else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
+									{
+										if (cursorWaveform.getX() > playerMarkIn)
+										{
+											VideoPlayerUtils.updateGrpOut(time + 1);
+											
+											VideoPlayerUtils.setMarkers();
+										}
+									}
 								}
 							}
 						}				
@@ -2604,64 +2633,20 @@ public class VideoPlayerUI {
 						sliderChange = true;					
 						cursorWaveform.setLocation(e.getX(), cursorWaveform.getLocation().y);
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
-
-						double value = (double) totalFrames * cursorWaveform.getLocation().x / waveformContainer.getSize().width;
-
-						//NTSC framerate
-						value = Timecode.getNTSCtimecode(value);
-						
-						if (value < totalFrames)
-							VideoPlayerCore.playerSetTime(value);
 					}
 					else if (e.getX() <= 0)
 					{					
 						sliderChange = true;					
 						cursorWaveform.setLocation(0, cursorWaveform.getLocation().y);	
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
-						
-						VideoPlayerCore.playerSetTime(0);
 					}
 					else if (e.getX() > waveformContainer.getWidth())
 					{
 						sliderChange = true;		
 						cursorWaveform.setLocation(waveformContainer.getWidth(), cursorWaveform.getLocation().y);
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
-						
-						VideoPlayerCore.playerSetTime(totalFrames);
 					}
 					
-					//Wait setTime thread to finish before changing markers
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException er) {
-					    Thread.currentThread().interrupt();
-					}
-					
-					double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
-
-					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
-					{
-						if (cursorWaveform.getX() < playerMarkOut)
-						{
-							VideoPlayerUtils.updateGrpIn(time);
-							
-							VideoPlayerUtils.setMarkers();
-						}
-						else //Allows to stop dragging when the size is too small
-							waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					}
-					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && mouseIsPressed)
-					{
-						if (cursorWaveform.getX() > playerMarkIn)
-						{
-							VideoPlayerUtils.updateGrpOut(time + 1);
-							
-							VideoPlayerUtils.setMarkers();
-						}
-						else //Allows to stop dragging when the size is too small
-							waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					}
-
 					if (cursorWaveform.getX() > waveformScrollPane.getWidth() + waveformScrollPane.getHorizontalScrollBar().getValue())
 					{
 						waveformScrollPane.getHorizontalScrollBar().setValue(cursorWaveform.getX() - (waveformContainer.getWidth() / waveformZoom) + 1);
@@ -2671,7 +2656,7 @@ public class VideoPlayerUI {
 						waveformScrollPane.getHorizontalScrollBar().setValue(cursorWaveform.getX());
 					}
 					
-					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
+					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());										
                 }
 			}
 
