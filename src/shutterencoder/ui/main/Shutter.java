@@ -4646,7 +4646,7 @@ public class Shutter {
 		caseLoop.setEnabled(false);
 		caseLoop.setSelected(false);
 		caseLoop.setFont(new Font(mainFont, Font.PLAIN, 12));
-		caseLoop.setBounds(caseStream.getX() + caseStream.getWidth() + 7, -2, caseLoop.getPreferredSize().width, 23);
+		caseLoop.setBounds(caseStream.getX() + caseStream.getWidth() + 7, caseStream.getY(), caseLoop.getPreferredSize().width, 23);
 		destinationStream.add(caseLoop);
 
 		caseStream.addActionListener(new ActionListener() {
@@ -8491,7 +8491,8 @@ public class Shutter {
 		&& getLanguage.equals(Locale.of("uk").getDisplayLanguage()) == false
 		&& getLanguage.equals(Locale.of("id").getDisplayLanguage()) == false
 		&& getLanguage.equals(Locale.of("ro").getDisplayLanguage()) == false
-		&& getLanguage.equals(Locale.of("fi").getDisplayLanguage()) == false)
+		&& getLanguage.equals(Locale.of("fi").getDisplayLanguage()) == false
+		&& getLanguage.equals(Locale.of("bg").getDisplayLanguage()) == false)
 		{
 			grpAudio.add(lblAudioIs);
 		}
@@ -11790,7 +11791,13 @@ public class Shutter {
 		else
 			comboSubsSource.setLocation(caseAddSubtitles.getX() + caseAddSubtitles.getWidth(), caseAddSubtitles.getY() + 1);
 		
-		comboSubsSource.setSize(comboSubsSource.getPreferredSize().width + 8, 20);
+		if (getLanguage.equals(Locale.of("bg").getDisplayLanguage()))
+		{
+			comboSubsSource.setSize(comboSubsSource.getPreferredSize().width - 10, 20);
+		}
+		else
+			comboSubsSource.setSize(comboSubsSource.getPreferredSize().width + 8, 20);
+		
 		comboSubsSource.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		grpSubtitles.add(comboSubsSource);
 		
@@ -15517,9 +15524,16 @@ public class Shutter {
 		spinnerVideoFadeIn.setName("spinnerVideoFadeIn");
 		spinnerVideoFadeIn.setEnabled(false);
 		spinnerVideoFadeIn.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
-		if (Shutter.getLanguage.equals(Locale.of("en").getDisplayLanguage()))
+		if (getLanguage.equals(Locale.of("en").getDisplayLanguage()))
+		{
 			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 12,
 					caseVideoFadeIn.getLocation().y + 3, 41, 16);
+		}
+		else if (getLanguage.equals(Locale.of("bg").getDisplayLanguage()))
+		{
+			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 26,
+					caseVideoFadeIn.getLocation().y + 3, 41, 16);
+		}
 		else
 			spinnerVideoFadeIn.setBounds(caseVideoFadeIn.getLocation().x + caseVideoFadeIn.getWidth() + 6,
 					caseVideoFadeIn.getLocation().y + 3, 41, 16);
