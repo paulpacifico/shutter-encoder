@@ -1238,14 +1238,14 @@ public class VideoPlayerUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				//Allows to wait for the last frame to load
+				//Wait setTime thread to finish
 				if (VideoPlayerCore.setTime != null)
-				{			
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {}						
-					} while (VideoPlayerCore.setTime.isAlive());		
+				{
+					try {
+						VideoPlayerCore.setTime.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}	
 				}
 				
 				if (btnPlay.getName().equals("pause"))
@@ -2489,8 +2489,8 @@ public class VideoPlayerUI {
 					cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 					
 					//Allows to setTime to the last mousePosition
-					Thread t = new Thread(new Runnable()
-					{
+					Thread t = new Thread(new Runnable() {
+						
 						@Override
 						public void run() {
 							
@@ -2509,13 +2509,13 @@ public class VideoPlayerUI {
 									value = Timecode.getNTSCtimecode(value);
 									
 									VideoPlayerCore.playerSetTime(value);
-									
-									//Allows to wait for the last frame to load					
-									do {
-										try {
-											Thread.sleep(1);
-										} catch (InterruptedException e1) {}						
-									} while (VideoPlayerCore.setTime.isAlive());
+																								
+									//Wait setTime thread to finish	
+									try {
+										VideoPlayerCore.setTime.join();
+									} catch (InterruptedException e) {
+									    Thread.currentThread().interrupt();
+									}
 									
 									if (VideoPlayerCore.dragSegmentIndex != -1
 									&& VideoPlayerCore.dragSegmentIndex != VideoPlayerCore.activeSegmentIndex)
@@ -2557,65 +2557,74 @@ public class VideoPlayerUI {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {	
-				
-				mouseIsPressed = false;
 
 				if (Shutter.list.getSize() > 0)
                 {						
-					sliderChange = false;								
-
-					//Reload the frame to apply bicubic filter					
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {}
-					} while (VideoPlayerCore.setTime.isAlive());
-
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);	
+					sliderChange = false;		
 					
-					//Allows to wait for the last frame to load					
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {}						
-					} while (VideoPlayerCore.setTime.isAlive());
-					
-					VideoPlayerUtils.setMarkers();
-					
-					if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerMarkOut && mouseIsPressed)
-					{							
-						cursorWaveform.setLocation(playerMarkIn, 0);
-						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
+					Thread t = new Thread(new Runnable() {
 						
-						if (VideoPlayerCore.bufferCurrentFrame > 0)
-						{
-							VideoPlayerUtils.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
-						}
-						else
-							VideoPlayerUtils.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
-					}
-					else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerMarkIn && mouseIsPressed)
-					{			
-						cursorWaveform.setLocation(playerMarkOut, 0);
-						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
-						
-						if (VideoPlayerCore.bufferCurrentFrame > 0)
-						{
-							VideoPlayerUtils.updateGrpOut(VideoPlayerCore.bufferCurrentFrame);		
-						}
-						else
-							VideoPlayerUtils.updateGrpOut(VideoPlayerCore.playerCurrentFrame);
-					}	
-										
-					waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					
-					double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
-					setBtnEdit(time);
-					
-					//FileList
-					VideoPlayerUtils.setFileList();
-					
-					VideoPlayerCore.dragSegmentIndex = -1;
+						@Override
+						public void run() {
+
+							//Wait setTime thread to finish	
+							try {
+								VideoPlayerCore.setTime.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
+							
+							mouseIsPressed = false;
+							
+							//Reload the frame to apply bicubic filter			
+							VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);	
+							
+							//Wait setTime thread to finish	
+							try {
+								VideoPlayerCore.setTime.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
+							
+							VideoPlayerUtils.setMarkers();
+							
+							if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerMarkOut && mouseIsPressed)
+							{							
+								cursorWaveform.setLocation(playerMarkIn, 0);
+								cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
+								
+								if (VideoPlayerCore.bufferCurrentFrame > 0)
+								{
+									VideoPlayerUtils.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
+								}
+								else
+									VideoPlayerUtils.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
+							}
+							else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerMarkIn && mouseIsPressed)
+							{			
+								cursorWaveform.setLocation(playerMarkOut, 0);
+								cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
+								
+								if (VideoPlayerCore.bufferCurrentFrame > 0)
+								{
+									VideoPlayerUtils.updateGrpOut(VideoPlayerCore.bufferCurrentFrame);		
+								}
+								else
+									VideoPlayerUtils.updateGrpOut(VideoPlayerCore.playerCurrentFrame);
+							}	
+												
+							waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+							
+							double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+							setBtnEdit(time);
+							
+							//FileList
+							VideoPlayerUtils.setFileList();
+							
+							VideoPlayerCore.dragSegmentIndex = -1;
+						}				
+					});
+					t.start();
                 }								
 			}
 			

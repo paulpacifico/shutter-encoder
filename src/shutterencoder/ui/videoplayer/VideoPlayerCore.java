@@ -1032,7 +1032,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						}
 						else
 							playerLoop = false;
-						
+											
 						VideoPlayerUtils.getTimePoint(requestedFrame); 
 						Shutter.timecode.repaint();
 						
