@@ -512,7 +512,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			width = dim.width;
 			height = dim.height;
 		}
-
+		
 		//MJPEG compression
 		if (comboPlayerQuality.isVisible() && comboPlayerQuality.getSelectedItem().equals("auto") && FFPROBE.hasAlpha == false && RGB == false && Settings.btnPreviewOutput.isSelected() == false)
 		{
@@ -603,6 +603,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	        final int w = width;
 	        final int h = height;
 	        final byte[] yuvRef = yuv;
+	        
+			final boolean fullRange = ("0-255".equals(FFPROBE.lumaLevel) && !Shutter.caseLevels.isSelected()) || (Shutter.caseLevels.isSelected() && Shutter.comboOutLevels.getSelectedIndex() == 1);
 
 	        for (int y = 0; y < h; y++)
 	        {
@@ -625,8 +627,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	                int Y1 = yuvRef[yRowBase + x] & 0xFF;
 	                int Y2 = yuvRef[yRowBase + x + 1] & 0xFF;
 
-	                if ("0-255".equals(FFPROBE.lumaLevel) && Shutter.caseLevels.isSelected() == false
-                	|| (Shutter.caseLevels.isSelected() && Shutter.comboOutLevels.getSelectedIndex() == 1))
+	                if (fullRange)
 	                {
 	                    // Full range
 	                	int R1 = clamp(Y1 + ((chromaR) >> 8), 0, 255);
@@ -662,7 +663,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	                }
 	            }
 	        }
-	    }	
+	    }
 	}
 	
 	private static int clamp(long value, int min, int max) {

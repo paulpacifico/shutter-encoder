@@ -591,23 +591,19 @@ public static String colorprimaries = "";
 
 			        	 	//Timecode
 				            if (line.contains("timecode") && line.contains("timecode is invalid") == false && line.contains("Input") == false) //Avoid "timecode" in the filename
-				            {		
-				            	//Drop frame / non drop frame
-				            	if (line.contains(";"))
-				            	{
-				            		dropFrameTC = ";";
-				            	}
-				            	else
-				            		dropFrameTC = ":";
+				            {						            	
+				            	Matcher matcher = Pattern
+				                        .compile("\\b(\\d{2}):(\\d{2}):(\\d{2})([:;])(\\d{2})\\b")
+				                        .matcher(line);
 
-				            	if (FFPROBE.timecode1 == "")
-				                {			            					            			
-			            			String str[] = line.replace(" ", "").replace(";" , ":").split(":");
-			            			
-				                	timecode1 = str[1];
-				                	timecode2 = str[2];
-				                	timecode3 = str[3];
-				                	timecode4 = str[4];					                	
+				                if (matcher.find() && FFPROBE.timecode1.isEmpty())
+				                {
+				                    timecode1 = matcher.group(1);
+				                    timecode2 = matcher.group(2);
+				                    timecode3 = matcher.group(3);
+				                    timecode4 = matcher.group(5);
+
+				                    dropFrameTC = matcher.group(4); //Drop frame / non drop frame
 				                }
 				            }
 				            
@@ -615,7 +611,7 @@ public static String colorprimaries = "";
 			                if (line.contains("creation_time") && creationTime.equals(""))
 			                {
 			                	//Example   : 2021-05-20T09:55:22.000000Z
-			                	String s[] =  line.substring(line.indexOf(":") + 1).replace(" ", "").replace("T", " ").split("\\.");
+			                	String s[] = line.substring(line.indexOf(":") + 1).replace(" ", "").replace("T", " ").split("\\.");
 			                	
 			                	creationTime = s[0];
 			                }
