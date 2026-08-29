@@ -25,6 +25,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
@@ -107,15 +109,20 @@ public static Thread runProcess;
 						   
 						   line = br.readLine();
 						   infoData.append(line);
-						   			    		   
-						   String s[] = line.split(">");
-						   String s2[] = s[1].split("<");			    		   
-						   String str[]= s2[0].replace(";" , ":").split(":");
-							    		   			    		   
-			    		   FFPROBE.timecode1 = str[0];
-			    		   FFPROBE.timecode2 = str[1];
-			    		   FFPROBE.timecode3 = str[2];
-			    		   FFPROBE.timecode4 = str[3];
+
+						   Matcher matcher = Pattern
+			                        .compile("\\b(\\d{2}):(\\d{2}):(\\d{2})([:;])(\\d{2})\\b")
+			                        .matcher(line);
+
+			                if (matcher.find() && FFPROBE.timecode1.isEmpty())
+			                {
+			                    FFPROBE.timecode1 = matcher.group(1);
+			                    FFPROBE.timecode2 = matcher.group(2);
+			                    FFPROBE.timecode3 = matcher.group(3);
+			                    FFPROBE.timecode4 = matcher.group(5);
+
+			                    FFPROBE.dropFrameTC = matcher.group(4); //Drop frame / non drop frame
+			                }
 			    	   }
 			    	  
 					   //Interlaced
