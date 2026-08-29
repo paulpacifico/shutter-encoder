@@ -9949,33 +9949,38 @@ public class Shutter {
 
 					String str = "00:00:00" + dropFrame + "00";
 
-					if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected()) {
-						float tcH = 0;
-						float tcM = 0;
-						float tcS = 0;
-						float tcF = 0;
+					if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
+					{
+						double tcH = 0;
+						double tcM = 0;
+						double tcS = 0;
+						double tcF = 0;
 
-						if (caseAddTimecode.isSelected() && TC1.getText().isEmpty() == false
-								&& TC2.getText().isEmpty() == false && TC3.getText().isEmpty() == false
-								&& TC4.getText().isEmpty() == false) {
+						if (caseAddTimecode.isSelected()
+						&& TC1.getText().isEmpty() == false
+						&& TC2.getText().isEmpty() == false && TC3.getText().isEmpty() == false
+						&& TC4.getText().isEmpty() == false)
+						{
 							tcH = Integer.valueOf(TC1.getText());
 							tcM = Integer.valueOf(TC2.getText());
 							tcS = Integer.valueOf(TC3.getText());
 							tcF = Integer.valueOf(TC4.getText());
-						} else if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "" == false) {
+						}
+						else if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "" == false)
+						{
 							tcH = Integer.valueOf(FFPROBE.timecode1);
 							tcM = Integer.valueOf(FFPROBE.timecode2);
 							tcS = Integer.valueOf(FFPROBE.timecode3);
-							tcF = Integer.valueOf(FFPROBE.timecode4);
+							tcF = Integer.valueOf(FFPROBE.timecode4);			
 						}
 
-						tcH = (float) (tcH * 3600 * FFPROBE.accurateFPS);
-						tcM = (float) (tcM * 60 * FFPROBE.accurateFPS);
-						tcS = (float) (tcS * FFPROBE.accurateFPS);
+						tcH = (double) (tcH * 3600 * FFPROBE.accurateFPS);
+						tcM = (double) (tcM * 60 * FFPROBE.accurateFPS);
+						tcS = (double) (tcS * FFPROBE.accurateFPS);
 
-						float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600
+						double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600
 								+ Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60
-								+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS
+								+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * VideoPlayerUtils.getFPS()
 								+ Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
 						if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
@@ -9984,17 +9989,20 @@ public class Shutter {
 							timeIn = (seg.inH * 3600 + seg.inM * 60 + seg.inS) * FFPROBE.currentFPS + seg.inF;
 						}
 						
-						if (caseShowTimecode.isSelected()) {
+						if (caseShowTimecode.isSelected())
 							timeIn = 0;
-						}
-
-						double currentTime = Timecode.setNTSCtimecode(VideoPlayerCore.bufferedFrames.size() > 0 ?  VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame);
+						
+						double currentTime = VideoPlayerCore.bufferedFrames.size() > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+						
+						//NTSC framerate
+						currentTime = Timecode.setNTSCtimecode(currentTime);
+						
 						double offset = (currentTime - timeIn) + tcH + tcM + tcS + tcF;
 
 						if (offset < 0)
 							offset = 0;
 
-						double fps = FFPROBE.accurateFPS;
+						double fps = VideoPlayerUtils.getFPS();
 						if (Timecode.isDropFrame())
 						{
 							offset = Timecode.setDropFrameTimecode(offset);

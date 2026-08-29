@@ -1061,10 +1061,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			VideoPlayerCore.playerSetTime(totalFrames);
 			sliderChange = false;    		
 		}
-		
-		if (caseInternalTc.isSelected())
-			inputTime += offset;
-		
+				
 		if (VideoPlayerCore.playerVideo != null && inputTime - offset < totalFrames)
 		{    	    		
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
@@ -1079,6 +1076,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			
 			//NTSC framerate
 			double time = Timecode.setNTSCtimecode(inputTime);
+			
+			if (caseInternalTc.isSelected())
+				time += offset;
 			
 			int newValue = (int) Math.floor((double) (waveformContainer.getSize().width * (time - offset)) / totalFrames);
 			 		
