@@ -116,7 +116,7 @@ public class VideoPlayerUI {
     public static int playerMarkIn = 0;
     public static int playerMarkOut = 0;    
     public static double screenRefreshRate = 16.7; //Vsync in ms	
-    public static boolean playerLoop = false;
+    public static volatile boolean playerLoop = false;
     public static boolean frameIsComplete = false;
     public static final Object frameCompleteLock = new Object();
     public static boolean playerPlayVideo = true;
