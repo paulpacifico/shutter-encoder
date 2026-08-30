@@ -18158,7 +18158,7 @@ public class Shutter {
 							UIController.extendSections(grpSetAudio, 115);
 					} else if ("MPEG-1".equals(comboFonctions.getSelectedItem().toString())
 							|| "MPEG-2".equals(comboFonctions.getSelectedItem().toString())) {
-						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP2",
+						comboAudioCodec.setModel(new DefaultComboBoxModel<String>(new String[] { "MP2", "AC3",
 								language.getProperty("codecCopy"), language.getProperty("noAudio"), language.getProperty("custom") }));
 						comboAudioCodec.setSelectedIndex(0);
 						debitAudio.setModel(comboAudioBitrate.getModel());
