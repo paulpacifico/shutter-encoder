@@ -2581,7 +2581,8 @@ public class VideoPlayerUI {
 
 				if (Shutter.list.getSize() > 0)
                 {						
-					sliderChange = false;		
+					sliderChange = false;	
+					waveformContainer.repaint();
 					
 					Thread t = new Thread(new Runnable() {
 						
