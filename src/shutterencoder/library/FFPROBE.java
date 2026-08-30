@@ -908,6 +908,7 @@ public static String colorprimaries = "";
 		gopSpace = 124;
 				
 		processGOP = new Thread(new Runnable()  {
+			
 			@Override
 			public void run() {
 				try {		
@@ -951,13 +952,13 @@ public static String colorprimaries = "";
 						
 						line = br.readLine();
 						
-						Console.consoleFFPROBE.append(line + System.lineSeparator());
+						//Console.consoleFFPROBE.append(line + System.lineSeparator());
 					
-						 if (line == null || intra == 2 || i > 10000 || gopCount > 500)
+						 if (line == null || intra == 2 || i > 20000 || gopCount > 500)
 						 {
 							isRunning = false;
 				            process.destroy();
-				            if ((i > 10000 || gopCount > 500) && isGOPWindow)
+				            if ((i > 20000 || gopCount > 500) && isGOPWindow)
 				            {
 				            	GOP.frame.dispose();
 				            	JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantAnalyzeGop"), Shutter.language.getProperty("analyzeError"), JOptionPane.ERROR_MESSAGE);			
@@ -995,8 +996,9 @@ public static String colorprimaries = "";
 							    gopSpace += 112;
 							    gopCount += 1;
 							 }						   				    
-							 i ++;  
+							 i++;  
 						 }
+						 
 					} while(line != null);	
 					
 					process.wait();

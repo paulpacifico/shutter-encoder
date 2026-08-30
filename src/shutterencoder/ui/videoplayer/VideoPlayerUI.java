@@ -1130,11 +1130,11 @@ public class VideoPlayerUI {
 								{									
 									VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame - 1);	
 									
-									while (VideoPlayerCore.setTime.isAlive())
-									{
-										try {
-											Thread.sleep(1);
-										} catch (InterruptedException e) {}
+									//Wait setTime thread to finish	
+									try {
+										VideoPlayerCore.setTime.join();
+									} catch (InterruptedException e) {
+									    Thread.currentThread().interrupt();
 									}
 								}
 								
@@ -1173,11 +1173,13 @@ public class VideoPlayerUI {
 				if (VideoPlayerCore.preview != null || Shutter.caseAddSubtitles.isSelected())
 				{												
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame + 1);
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e1) {}
-					} while (VideoPlayerCore.setTime.isAlive());
+					
+					//Wait setTime thread to finish	
+					try {
+						VideoPlayerCore.setTime.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
 				}
 
 				frameControl = true;
@@ -2085,14 +2087,14 @@ public class VideoPlayerUI {
 									
 									sliderChange = false;								
 									
-									//Reload the frame to apply bicubic filter			
-									if (VideoPlayerCore.setTime != null)
-									{
-										do {
-											Thread.sleep(1);
-										} while (VideoPlayerCore.setTime.isAlive());
+									//Wait setTime thread to finish	
+									try {
+										VideoPlayerCore.setTime.join();
+									} catch (InterruptedException e) {
+									    Thread.currentThread().interrupt();
 									}
-										
+									
+									//Reload the frame to apply bicubic filter									
 									VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 									
 								} catch (InterruptedException e) {}
@@ -2504,7 +2506,26 @@ public class VideoPlayerUI {
 								double value = (double) totalFrames * cursorWaveform.getLocation().x / waveformContainer.getSize().width;
 	
 								if (VideoPlayerCore.playerCurrentFrame != Math.floor(value))
-								{								
+								{						
+									if (VideoPlayerCore.bufferIsReadingFrames)
+									{
+										VideoPlayerCore.bufferIsReadingFrames = false;
+										
+										VideoPlayerCore.playerStop();
+										try {
+											VideoPlayerCore.playerThread.join();
+										} catch (InterruptedException e) {
+										    Thread.currentThread().interrupt();
+										}
+										
+										//Wait setTime thread to finish	
+										try {
+											VideoPlayerCore.setTime.join();
+										} catch (InterruptedException e) {
+										    Thread.currentThread().interrupt();
+										}
+									}
+									
 									//NTSC framerate
 									value = Timecode.getNTSCtimecode(value);
 									
@@ -3706,13 +3727,12 @@ public class VideoPlayerUI {
 	    			{
 	    				MEDIAINFO.run(VideoPlayerCore.videoPath, false);
 	    				
-	    				do
-	    				{
-	    					try {
-		        				Thread.sleep(100);
-		        			} catch (InterruptedException e1) {}
-	    				}
-	    				while (MEDIAINFO.isRunning);		    				
+	    				do {
+	    					//Slow down the loop
+							try {
+								Thread.sleep(1);
+							} catch (InterruptedException e) {}
+	    				} while (MEDIAINFO.runProcess.isAlive());		    				
 	    			}
 					
 					if (FFPROBE.timecode1.equals(""))

@@ -1147,13 +1147,18 @@ public class UIController extends Shutter {
 										VideoPlayerUtils.setMedia();										
 									}
 									
-								} else
+								}
+								else if (FFPROBE.gopCount > 2)
+								{
 									VideoPlayerUI.seekOnKeyFrames = true;
+								}
 
 							} else if (language.getProperty("functionRewrap").equals(function)
 							|| language.getProperty("functionCut").equals(function)
 							|| language.getProperty("functionMerge").equals(function)) {
-								VideoPlayerUI.seekOnKeyFrames = true;
+								
+								if (FFPROBE.gopCount > 2)
+									VideoPlayerUI.seekOnKeyFrames = true;
 
 								if (language.getProperty("functionCut").equals(function)
 										|| language.getProperty("functionMerge").equals(function)) {

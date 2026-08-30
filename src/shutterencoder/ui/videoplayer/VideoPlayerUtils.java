@@ -229,33 +229,36 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								player.add(Shutter.selection);
 								player.add(Shutter.overImage);
 							}
-							
+														
+							//Get GOP size
 							seekOnKeyFrames = false;
+							if (FFPROBE.audioOnly == false)
+							{							
+								FFPROBE.AnalyzeGOP(VideoPlayerCore.videoPath, false);
+								do {
+									//Slow down the loop
+									try {
+										Thread.sleep(1);
+									} catch (InterruptedException e) {}
+									
+									if (FFPROBE.gopCount > 2)
+									{										
+										FFPROBE.process.destroyForcibly();
+										break;
+									}
+								} while (FFPROBE.processGOP.isAlive());								
+							}
 							
+							//Jump on key frames only
 							if (FFPROBE.audioOnly == false
 							&& (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut"))
 							|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))
 							|| Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionConform"))))
 							{
-								FFPROBE.AnalyzeGOP(VideoPlayerCore.videoPath, false);
-								do {
-									try {
-										Thread.sleep(10);
-									} catch (InterruptedException e) {}
-									
-									if (FFPROBE.gopCount > 2)
-									{
-										seekOnKeyFrames = true;
-										FFPROBE.process.destroy();
-										break;
-									}
-								} while (FFPROBE.isRunning);	
-							}
-							else
-							{
-								Shutter.caseEnableCrop.setEnabled(true);
-								Shutter.caseAddWatermark.setEnabled(true);
-								Shutter.caseSafeArea.setEnabled(true);
+								if (FFPROBE.gopCount > 2)
+								{
+									seekOnKeyFrames = true;
+								}
 							}
 							
 							//Autocrop

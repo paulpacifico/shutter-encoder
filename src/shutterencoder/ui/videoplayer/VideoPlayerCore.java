@@ -99,6 +99,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
     public static Thread playerThread;
     private static Thread playerAudiothread;
     private static boolean closeAudioStream = false;
+    public static boolean bufferIsReadingFrames = false;
     public static ArrayList<Image> bufferedFrames = new ArrayList<Image>();
     public static int maxBufferedFrames = 500;
 	private static int maximumSeek = 60;
@@ -885,7 +886,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						}					
 						else if (framesToSkip < maximumSeek && framesToSkip >= 0 && useBuffer) //Read forward is faster until maximumSeek than recreating the process
 						{
-							try {
+							try {								
 								
 								//IMPORTANT avoid to display the last read frame when then buffer is filled again
 								if (frameVideo != null)
@@ -894,9 +895,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 								//Add the current frame displayed to the buffer					
 								if (bufferedFrames.size() == 0)
 									bufferedFrames.add(cloneBufferedImage(frameVideo));
-														
-								int i = 0;
-								do {
+
+								bufferIsReadingFrames = true;
+								int i = 0;		
+								do {										
 									
 									i ++;
 									
@@ -919,7 +921,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									//Add the frame to the buffer
 									bufferedFrames.add(cloneBufferedImage(frameVideo));
 									
-								} while (i < framesToSkip);
+								} while (i < framesToSkip && bufferIsReadingFrames);
+								
+								bufferIsReadingFrames = false;
 								
 								bufferCurrentFrame = playerCurrentFrame;
 												
@@ -1265,7 +1269,14 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				if (FFPROBE.videoFormat != null)
 					format = " -f " + FFPROBE.videoFormat;
 					
-				decodingOptions = format + " -nostdin -flags2 +fast -fflags +nobuffer+flush_packets -err_detect ignore_err";
+				String keyFrames = "";
+				
+				if (framesToSkip > maximumSeek || 0 - framesToSkip > maximumSeek)
+				{
+					keyFrames = " -skip_frame nokey";
+				}
+				
+				decodingOptions = format + keyFrames + " -nostdin -flags2 +fast -fflags +nobuffer+flush_packets -err_detect ignore_err";
 				freezeFrame = " -analyzeduration 0 -probesize 32 -frames:v 1";	
 			}
 			else
