@@ -1745,45 +1745,39 @@ public class VideoPlayerUI {
 		});		
 	}
 	
-	private void setBtnEdit(double time) {
+	private synchronized void setBtnEdit(double time) {
+
+		if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) || waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
+			return;
 		
-		try {
-			
-			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) || waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
-				return;
-			
-			double inputMark = 0;
-			double outputMark = 0;
-			
-	        if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && VideoPlayerCore.activeSegmentIndex != -1)
-	        {
-		        CutSegment seg = VideoPlayerMultiCuts.cutSegments.get(VideoPlayerCore.activeSegmentIndex);
-		        
-		        inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-		        outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
-	        }
-	        else
-	        {
-	    		inputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseInH.getText()), Integer.parseInt(caseInM.getText()), Integer.parseInt(caseInS.getText()), Integer.parseInt(caseInF.getText()));
-	            outputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseOutH.getText()), Integer.parseInt(caseOutM.getText()), Integer.parseInt(caseOutS.getText()), Integer.parseInt(caseOutF.getText()));         
-	        }
+		double inputMark = 0;
+		double outputMark = 0;
+		
+        if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && VideoPlayerCore.activeSegmentIndex != -1)
+        {
+	        CutSegment seg = VideoPlayerMultiCuts.cutSegments.get(VideoPlayerCore.activeSegmentIndex);
 	        
-	        if (time >= inputMark && time < outputMark)
-	        {
-	        	btnEdit.setIcon(new FlatSVGIcon("resources/cut.svg", 15, 15));
-	        	btnEdit.setName("cut");
-	    		btnEdit.setToolTipText("C");
-	        }
-	        else
-	        {	                    	
-	    		btnEdit.setIcon(new FlatSVGIcon("resources/add.svg", 15, 15));
-	    		btnEdit.setName("add");
-	    		btnEdit.setToolTipText("A");
-	        }
+	        inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+	        outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+        }
+        else
+        {
+    		inputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseInH.getText()), Integer.parseInt(caseInM.getText()), Integer.parseInt(caseInS.getText()), Integer.parseInt(caseInF.getText()));
+            outputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseOutH.getText()), Integer.parseInt(caseOutM.getText()), Integer.parseInt(caseOutS.getText()), Integer.parseInt(caseOutF.getText()));         
+        }
         
-		} catch (Exception e) {
-			//Can be called twice at once and crash the method
-		}
+        if (time >= inputMark && time < outputMark)
+        {
+        	btnEdit.setIcon(new FlatSVGIcon("resources/cut.svg", 15, 15));
+        	btnEdit.setName("cut");
+    		btnEdit.setToolTipText("C");
+        }
+        else
+        {	                    	
+    		btnEdit.setIcon(new FlatSVGIcon("resources/add.svg", 15, 15));
+    		btnEdit.setName("add");
+    		btnEdit.setToolTipText("A");
+        }
 	}
 	
 	private void player() {		
@@ -2503,10 +2497,11 @@ public class VideoPlayerUI {
 									Thread.sleep(1);
 								} catch (InterruptedException e) {}
 								
+								double inputTime = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame - 1: VideoPlayerCore.playerCurrentFrame;
 								double value = (double) totalFrames * cursorWaveform.getLocation().x / waveformContainer.getSize().width;
 	
-								if (VideoPlayerCore.playerCurrentFrame != Math.floor(value))
-								{						
+								if (inputTime != Math.floor(value))
+								{
 									if (VideoPlayerCore.bufferIsReadingFrames)
 									{
 										VideoPlayerCore.bufferIsReadingFrames = false;
@@ -2581,8 +2576,7 @@ public class VideoPlayerUI {
 
 				if (Shutter.list.getSize() > 0)
                 {						
-					sliderChange = false;	
-					waveformContainer.repaint();
+					sliderChange = false;
 					
 					Thread t = new Thread(new Runnable() {
 						
