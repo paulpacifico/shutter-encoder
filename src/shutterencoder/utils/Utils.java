@@ -22,6 +22,7 @@ package shutterencoder.utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.MouseInfo;
@@ -2806,5 +2807,27 @@ public class Utils extends Shutter {
 		}
 		else
 			System.exit(0);	
+	}
+
+	/**
+	 * Opens a file or folder with the default application. On Linux the opener is
+	 * spawned detached: {@code java.awt.Desktop.open()} can block forever on
+	 * Wayland/X11 (it holds the AWT lock waiting for the launched file manager),
+	 * which freezes the whole UI.
+	 */
+	public static void open(File file) {
+		try {
+			if (System.getProperty("os.name").contains("Linux"))
+			{
+				// Detached spawn: returns immediately, touches no AWT/X11 lock
+				new ProcessBuilder("gio", "open", file.getAbsolutePath())
+						.redirectOutput(ProcessBuilder.Redirect.DISCARD)
+						.redirectError(ProcessBuilder.Redirect.DISCARD).start();
+			}
+			else
+				Desktop.getDesktop().open(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }

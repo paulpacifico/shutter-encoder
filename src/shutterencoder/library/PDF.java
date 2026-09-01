@@ -21,6 +21,7 @@ package shutterencoder.library;
 
 import java.awt.Cursor;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.File;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -28,7 +29,8 @@ import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 
 import shutterencoder.ui.main.Shutter;
-import shutterencoder.ui.videoplayer.VideoPlayer;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
 public class PDF extends Shutter {
 	
@@ -58,17 +60,17 @@ public static int pagesCount = 1;
 					
 					pagesCount = document.getNumberOfPages();
 					
-					BufferedImage converted = new BufferedImage(VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
-					converted.getGraphics().drawImage(pdfRenderer.renderImageWithDPI(pageNumber, 300), 0, 0, VideoPlayer.player.getWidth(), VideoPlayer.player.getHeight(), null);
+					BufferedImage converted = new BufferedImage(VideoPlayerCore.player.getWidth(), VideoPlayerCore.player.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+					converted.getGraphics().drawImage(pdfRenderer.renderImageWithDPI(pageNumber, 300), 0, 0, VideoPlayerCore.player.getWidth(), VideoPlayerCore.player.getHeight(), null);
 					
-					VideoPlayer.preview = converted;								
+					VideoPlayerCore.preview = ((DataBufferByte) converted.getRaster().getDataBuffer()).getData();
 					
 					document.close();
 					
 					FFPROBE.interlaced = null;						
-					FFPROBE.analyzedMedia = VideoPlayer.videoPath;	
+					FFPROBE.analyzedMedia = VideoPlayerCore.videoPath;	
 					
-					VideoPlayer.setInfo();
+					VideoPlayerUtils.setInfo();
 				
 				} catch (Exception e) {
 					error = true;					

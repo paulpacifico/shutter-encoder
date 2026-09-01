@@ -22,7 +22,6 @@ package shutterencoder.functions.utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -1467,10 +1466,7 @@ public class FunctionUtils extends Shutter {
 										} catch (Exception e2) {
 										}
 									} else if (System.getProperty("os.name").contains("Linux")) {
-										try {
-											Desktop.getDesktop().open(fileOut);
-										} catch (Exception e2) {
-										}
+										Utils.open(fileOut);
 									} else // Windows
 									{
 										try {
@@ -2058,11 +2054,7 @@ public class FunctionUtils extends Shutter {
 		//Open the folder
 		if (caseOpenFolderAtEnd1.isSelected() && comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false && cancelled == false && FFMPEG.error == false)
 		{
-			try {
-				Desktop.getDesktop().open(new File(output));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			Utils.open(new File(output));
 		}		
 		
 		//Delete file
