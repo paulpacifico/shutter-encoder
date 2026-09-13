@@ -1691,7 +1691,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	            ffmpeg = ffmpeg.replace("\\", "");
 	        }
 	        final String ffmpegCmd = ffmpeg;
-
+	        
 	        List<Future<?>> futures = new ArrayList<>();
 
 	        for (int i = 0; i < numberOfThumbnails; i++)
@@ -1707,41 +1707,41 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	                String formattedSeek = String.format("%.3f", seekTime);
 	                String crop = FFPROBE.imageRatio >= 1.7 ? ",crop=34:in_h" : "";
 
-	        	    //Get gpu scaling
-	        	    String scaling = "";
+	        	    //Get GPU decoding and scaling
+	                String gpuDecoding = "-hwaccel none";
+	        	    String scaling = "scale=-1:20";;
 	        		if (LibraryUtils.cudaAvailable)
 	        		{		
+	        			gpuDecoding = "-hwaccel cuda -init_hw_device cuda -hwaccel_output_format cuda";	    				
 	        			scaling = "scale_cuda=-1:20,hwdownload,format=" + bitDepth;
 	        		}
 	        		else if (LibraryUtils.amfAvailable)
 	        		{
+	        			gpuDecoding = "-hwaccel d3d11va -hwaccel_output_format d3d11";	    				
 	        			scaling = "vpp_amf=-1:20,hwdownload,format=" + bitDepth;
 	        		}
 	        		else if (LibraryUtils.qsvAvailable)
 	        		{		
+	        			String child = "dxva2";
+	    				if (LibraryUtils.detectIntelGen() >= 9 || LibraryUtils.isIntelArc)
+	    				{
+	    					child = "d3d11va";
+	    				}					
+	    	
+	    				gpuDecoding = "-hwaccel qsv -init_hw_device qsv:hw,child_device_type=" + child + " -hwaccel_output_format qsv";	    				
 	        			scaling = "scale_qsv=-1:20,hwdownload,format=" + bitDepth;
 	        		}	
 	        		else if (LibraryUtils.videotoolboxAvailable)
 	        		{
+	        			gpuDecoding = "-hwaccel videotoolbox -init_hw_device videotoolbox -hwaccel_output_format videotoolbox_vld";
 	        			scaling = "scale_vt=-1:20,hwdownload,format=" + bitDepth;
 	        		}
-
-	        		String gpuDevice = LibraryUtils.setGPUDevice(scaling).trim();
 
 	        		List<String> command = new ArrayList<>();
 	        		command.add(ffmpegCmd);
 
-	        		if (!gpuDevice.isEmpty() && !gpuDevice.equalsIgnoreCase("-hwaccel auto -hwaccel_output_format auto"))
-	        		{
-	        		    Collections.addAll(command, gpuDevice.split("\\s+"));
-	        		}
-	        		else
-	        		{
-	        			command.add("-hwaccel");
-	        			command.add("auto");
-	        		    scaling = "scale=-1:20";
-	        		}
-
+	        		Collections.addAll(command, gpuDecoding.trim().split("\\s+"));
+	        		
 	        		command.add("-nostdin");
 	        		command.add("-flags2");
 	        		command.add("+fast");
@@ -1768,7 +1768,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	        		Process process = null;
 	        		try {
 	        		    ProcessBuilder pb = new ProcessBuilder(command);
-
+	        		    pb.redirectError(ProcessBuilder.Redirect.DISCARD);
 	        		    process = pb.start();
 	        		    activeFFmpegProcesses.add(process);
 
@@ -1776,7 +1776,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	                    try (InputStream in = process.getInputStream()) {
 	                        img = ImageIO.read(in);
 	                    }
-
+	                    	                    
 	                    int exitCode = process.waitFor();
 	                    if (exitCode == 0 && img != null) {
 	                        images[index] = img;
