@@ -72,7 +72,7 @@ public class Merge extends Shutter {
 						
 						//Timecode
 						String timecode = "";
-							
+						
 						for (int i = 0 ; i < list.getSize() ; i++)
 						{
 							//Wait for file to be ready
@@ -84,19 +84,15 @@ public class Merge extends Shutter {
 									break;
 				            }
 							
-							FFPROBE.Data(list.getElementAt(i));
-							do {
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e1) {}
-							} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+							//IMPORTANT RESET MEDIA
+							FFPROBE.analyzedMedia = null;
 							
-							// IMPORTANT
-							do {
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e1) {}
-							} while (FFPROBE.isRunning);							
+							FFPROBE.Data(list.getElementAt(i));
+							try {
+								FFPROBE.processData.join();
+							} catch (InterruptedException er) {
+							    Thread.currentThread().interrupt();
+							}							
 
 							if (i == 0)
 							{

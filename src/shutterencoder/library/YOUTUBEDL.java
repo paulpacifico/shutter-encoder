@@ -255,7 +255,7 @@ public static String format = "";
 		                        
 		                        String[] splitETA = lineOutput.split("ETA");
 		                        String[] time = splitETA[1].split(":");
-		                        tempsRestant.setVisible(true);
+		                        lblRemainingTime.setVisible(true);
 		                        String min;
 		                        if (time[0].contains("00"))
 		                            min = "";
@@ -263,10 +263,10 @@ public static String format = "";
 		                            min = time[0].replace("TA", "") + "min ";
 		                        
 		                        lblBy.setVisible(false);
-		                        tempsRestant.setText(language.getProperty("tempsRestant") + " " + min + time[1].replace(" ","") + "s");
-		                        tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
+		                        lblRemainingTime.setText(language.getProperty("tempsRestant") + " " + min + time[1].replace(" ","") + "s");
+		                        lblRemainingTime.setSize(lblRemainingTime.getPreferredSize().width, 15);
 		                        
-		                        if (tempsRestant.getX() + tempsRestant.getSize().width > lblArrows.getX())
+		                        if (lblRemainingTime.getX() + lblRemainingTime.getSize().width > lblArrows.getX())
 			       				{
 			       					lblArrows.setVisible(false);
 			       				}

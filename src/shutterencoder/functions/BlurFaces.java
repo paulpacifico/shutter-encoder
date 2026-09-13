@@ -107,7 +107,7 @@ public class BlurFaces extends Shutter {
 							}
 						}
 
-						tempsEcoule.setVisible(false);
+						lblElapsedTime.setVisible(false);
 						
 						//Command		
 						ANONYMIZER.run(file.toString(), fileOut);		

@@ -58,6 +58,7 @@ import shutterencoder.ui.others.Functions;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class LibraryUtils extends Shutter {
@@ -170,7 +171,7 @@ public class LibraryUtils extends Shutter {
 	                        } else { // Mac
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                    + "_videotoolbox -b:v 5000k -s 640x360 -f null -");
-	                            if (!FFMPEG.error) graphicsAccel.add("OSX VideoToolbox");  
+	                            if (!FFMPEG.error) graphicsAccel.add("OSX VideoToolbox");
 	                        }
 	                        break;
 	                    }
@@ -566,12 +567,7 @@ public class LibraryUtils extends Shutter {
 						vcodec = vcodec.toUpperCase();
 				}
 			}
-			
-			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || (vcodec.equals("VP9") && FFPROBE.hasAlpha == false) || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2") || vcodec.equals("MPEG-4") || (vcodec.equals("PRORES_RAW") && System.getProperty("os.name").contains("Mac")))
-			{
-				isGPUCompatible = true;
-			}
-				
+
 			String selectedGPU = "";
 			if (multiGPU > 0)
 				selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
@@ -579,7 +575,7 @@ public class LibraryUtils extends Shutter {
 			//Scaling
 			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
 			
-			if (isGPUCompatible)
+			if (vcodec.equals("H.264") || vcodec.equals("HEVC") || (vcodec.equals("VP9") && FFPROBE.hasAlpha == false) || vcodec.equals("AV1") || vcodec.equals("MPEG-1") || vcodec.equals("MPEG-2") || vcodec.equals("MPEG-4") || (vcodec.equals("PRORES_RAW") && System.getProperty("os.name").contains("Mac")))
 			{				
 				//Check for Nvidia/AMD or Intel GPU
 				if (comboGPUDecoding.getSelectedItem().toString().equals("auto"))
@@ -645,7 +641,11 @@ public class LibraryUtils extends Shutter {
 					
 					//Disable GPU if not available
 					if (cudaAvailable == false && amfAvailable == false && qsvAvailable == false && videotoolboxAvailable == false && vulkanAvailable == false)
+					{
 						isGPUCompatible = false;
+					}
+					else
+						isGPUCompatible = true;
 				}
 				else //Check the current selection
 				{		
@@ -696,6 +696,8 @@ public class LibraryUtils extends Shutter {
 					
 					if (filterIsAvailable)
 					{	
+						isGPUCompatible = true;
+						
 						if (comboGPUDecoding.getSelectedItem().equals("cuda"))
 						{
 							cudaAvailable = true;
@@ -889,18 +891,31 @@ public class LibraryUtils extends Shutter {
 		String selectedGPU = "";
 		if (multiGPU > 0)
 			selectedGPU = " -hwaccel_device " + comboSelectedGPU.getSelectedIndex();
-				
+
+		//Add output format only if filterComplex contains a GPU filter
+		boolean addOutputFormat = (filterComplex.contains("_cuda") || filterComplex.contains("_amf") || filterComplex.contains("_qsv") || filterComplex.contains("_vt") || filterComplex.contains("_vulkan"));
+
 		//GPU decoding
 		String gpuDecoding = "";						
 		if (isGPUCompatible)
 		{
 			if ((autoCUDA || (cudaAvailable && comboGPUFilter.getSelectedItem().toString().equals("cuda"))) && filterComplex.contains("_cuda"))
 			{			
-				gpuDecoding = " -hwaccel cuda -hwaccel_output_format cuda -init_hw_device cuda" + selectedGPU;
+				gpuDecoding = " -hwaccel cuda -init_hw_device cuda" + selectedGPU;	
+				
+				if (addOutputFormat)
+				{
+					gpuDecoding += " -hwaccel_output_format cuda";
+				}
 			}
 			else if ((autoAMF || (amfAvailable && comboGPUFilter.getSelectedItem().toString().equals("amf"))) && filterComplex.contains("_amf"))
 			{
-				gpuDecoding = " -hwaccel d3d11va -hwaccel_output_format d3d11"; //Works differently
+				gpuDecoding = " -hwaccel d3d11va"; //Works differently
+				
+				if (addOutputFormat)
+				{
+					gpuDecoding += " -hwaccel_output_format d3d11";
+				}
 			}
 			else if ((autoQSV || (qsvAvailable && comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("_qsv"))
 			{
@@ -910,25 +925,51 @@ public class LibraryUtils extends Shutter {
 					child = "d3d11va";
 				}					
 	
-				gpuDecoding = " -hwaccel qsv -hwaccel_output_format qsv -init_hw_device qsv:hw,child_device_type=" + child;
+				gpuDecoding = " -hwaccel qsv -init_hw_device qsv:hw,child_device_type=" + child;
+				
+				if (addOutputFormat)
+				{
+					gpuDecoding += " -hwaccel_output_format qsv";
+				}
 			}
 			else if ((autoVIDEOTOOLBOX || (videotoolboxAvailable && comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && filterComplex.contains("_vt"))
 			{
-				gpuDecoding = " -hwaccel videotoolbox -hwaccel_output_format videotoolbox_vld -init_hw_device videotoolbox";
+				gpuDecoding = " -hwaccel videotoolbox -init_hw_device videotoolbox";
 				
+				if (addOutputFormat)
+				{
+					gpuDecoding += " -hwaccel_output_format videotoolbox_vld";
+				}				
 			}
 			else if ((autoVULKAN || (vulkanAvailable && comboGPUFilter.getSelectedItem().toString().equals("vulkan"))) && filterComplex.contains("_vulkan"))
 			{
-				gpuDecoding = " -hwaccel vulkan -hwaccel_output_format vulkan";
+				gpuDecoding = " -hwaccel vulkan";
+				
+				if (addOutputFormat)
+				{
+					gpuDecoding += " -hwaccel_output_format vulkan";
+				}	
 			}
 			else
-				gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + selectedGPU;
+			{
+				gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + selectedGPU;
+			
+				if (addOutputFormat)
+				{
+					gpuDecoding += " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
+				}
+			}
 		}
-		else
+		else if (comboGPUDecoding.getSelectedItem().toString().equals("auto") == false)
 		{
 			gpuDecoding = " -hwaccel " + comboGPUDecoding.getSelectedItem().toString().replace(language.getProperty("aucun"), "none") + selectedGPU;
-		}	
-	
+		
+			if (addOutputFormat)
+			{
+				gpuDecoding += " -hwaccel_output_format " + comboGPUFilter.getSelectedItem().toString().replace(language.getProperty("aucun"), "none");
+			}
+		}
+		
 		if (comboAccel.getSelectedItem().equals("Vulkan Video")
 		|| comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
 		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")
@@ -1208,7 +1249,7 @@ public class LibraryUtils extends Shutter {
 			InputStream is = waveformProcess.getInputStream();				
 			BufferedInputStream inputStream = new BufferedInputStream(is);
 	
-			VideoPlayerCore.waveform = ImageIO.read(inputStream);
+			VideoPlayerUtils.waveform = ImageIO.read(inputStream);
 			
 			inputStream.close();
 			

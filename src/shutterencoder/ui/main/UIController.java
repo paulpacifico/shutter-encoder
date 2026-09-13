@@ -656,9 +656,9 @@ public class UIController extends Shutter {
 			VideoPlayerUI.playerLoop = false;
 		
 		// IMPORTANT
-		if (FFPROBE.totalLength <= 40 && VideoPlayerCore.preview != null)
+		if (FFPROBE.totalLength <= 40 && VideoPlayerUtils.preview != null)
 		{
-			VideoPlayerCore.preview = null;
+			VideoPlayerUtils.preview = null;
 		}
 
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
@@ -1002,14 +1002,14 @@ public class UIController extends Shutter {
 		}
 		
 		if (frame.getWidth() > 332 //Other functions are for addToList text
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionExtract"))		
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlurFaces"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranslate"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionColorize"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBackgroundRemover"))
-		|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")))
+		|| function.equals(Shutter.language.getProperty("functionSubtitles"))
+		|| function.equals(Shutter.language.getProperty("functionExtract"))		
+		|| function.equals(Shutter.language.getProperty("functionTranscribe"))
+		|| function.equals(Shutter.language.getProperty("functionBlurFaces"))
+		|| function.equals(Shutter.language.getProperty("functionTranslate"))
+		|| function.equals(Shutter.language.getProperty("functionColorize"))
+		|| function.equals(Shutter.language.getProperty("functionBackgroundRemover"))
+		|| function.equals(Shutter.language.getProperty("functionSceneDetection")))
 		{		
 			Thread changeSize = new Thread(new Runnable() {
 
@@ -1411,7 +1411,7 @@ public class UIController extends Shutter {
 								if (caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 								{
 									grpSetAudio.setSize(312, 241);
-									if (language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()))
+									if (language.getProperty("functionNormalization").equals(function))
 									{
 										grpSetAudio.setSize(312, 218);					
 									}
@@ -1541,15 +1541,15 @@ public class UIController extends Shutter {
 									|| "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function)) {
 
 								if (anim) {
-									if (comboFonctions.getSelectedItem().toString().equals("MP3")
-											|| comboFonctions.getSelectedItem().toString().equals("AAC")
-											|| comboFonctions.getSelectedItem().toString().equals("Vorbis")) {
+									if (function.equals("MP3")
+											|| function.equals("AAC")
+											|| function.equals("Vorbis")) {
 										comboFilter.setSelectedIndex(9);
-									} else if (comboFonctions.getSelectedItem().toString().equals("AC3")
-											|| comboFonctions.getSelectedItem().toString()
+									} else if (function.equals("AC3")
+											|| function
 													.equals("Dolby Digital Plus")) {
 										comboFilter.setSelectedIndex(7);
-									} else if (comboFonctions.getSelectedItem().toString().equals("Opus")) {
+									} else if (function.equals("Opus")) {
 										comboFilter.setSelectedIndex(11);
 									}
 								}
@@ -1658,7 +1658,7 @@ public class UIController extends Shutter {
 							|| "AVC-Intra 100".equals(function) || "XAVC".equals(function) || "XAVC Long GOP".equals(function)
 							|| "HAP".equals(function) || "FFV1".equals(function)) {
 
-								if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
+								if (function.contains("XDCAM")
 										&& caseAS10.isSelected()) {
 									final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(
 											new String[] { ".mxf" });
@@ -1832,8 +1832,8 @@ public class UIController extends Shutter {
 
 								grpResolution.add(comboResolution);
 
-								if (comboFonctions.getSelectedItem().toString().contains("XDCAM")
-										|| comboFonctions.getSelectedItem().toString().equals("AVC-Intra 100")) {
+								if (function.contains("XDCAM")
+										|| function.equals("AVC-Intra 100")) {
 									if (comboResolution.getItemCount() > 3) {
 										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] {
 												language.getProperty("source"), "1920x1080", "1280x720" }));
@@ -2069,8 +2069,8 @@ public class UIController extends Shutter {
 								} else
 									caseDisplay.setEnabled(true);
 
-								if (comboFonctions.getSelectedItem().toString().equals("DNxHD")
-										|| comboFonctions.getSelectedItem().toString().equals("DNxHR")) {
+								if (function.equals("DNxHD")
+										|| function.equals("DNxHR")) {
 									caseCreateOPATOM.setEnabled(true);
 									lblCreateOPATOM.setEnabled(true);
 									if ((caseCreateOPATOM.isSelected() || caseCreateTree.isSelected())
@@ -2126,7 +2126,7 @@ public class UIController extends Shutter {
 
 								grpResolution.add(comboResolution);
 
-								if (comboFonctions.getSelectedItem().toString().equals("DNxHD")) {
+								if (function.equals("DNxHD")) {
 									if (comboResolution.getItemCount() > 3) {
 										comboResolution.setModel(new DefaultComboBoxModel<String>(new String[] {
 												language.getProperty("source"), "1920x1080", "1280x720" }));
@@ -2354,7 +2354,8 @@ public class UIController extends Shutter {
 										lblTFF.getLocation().y - 1);
 								grpAdvanced.add(comboForcerDesentrelacement);
 
-								if (comboFonctions.getSelectedItem().toString().equals("DNxHR") == false) {
+								if (function.equals("DNxHR") == false)
+								{
 									caseForcerEntrelacement.setLocation(7,
 											caseForcerDesentrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseForcerEntrelacement);
@@ -2370,7 +2371,7 @@ public class UIController extends Shutter {
 									grpAdvanced.add(comboAlpha);
 									caseCreateTree.setLocation(7, caseAlpha.getLocation().y + 17);
 								} else {
-									if (comboFonctions.getSelectedItem().toString().equals("DNxHR"))
+									if (function.equals("DNxHR"))
 										caseCreateTree.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 									else
 										caseCreateTree.setLocation(7, caseForcerInversion.getLocation().y + 17);
@@ -2869,6 +2870,9 @@ public class UIController extends Shutter {
 								grpAdvanced.add(comboForcerDesentrelacement);
 
 								if ("H.266".equals(function)) {
+									caseAlpha.setSelected(false);
+									comboAlpha.setEnabled(false);
+									
 									caseForcePreset.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseForcePreset);
 									comboForcePreset.setLocation(caseForcePreset.getLocation().x + caseForcePreset.getWidth() + 4, caseForcePreset.getLocation().y + 4);
@@ -2917,7 +2921,8 @@ public class UIController extends Shutter {
 											caseForceTune.getLocation().y + 4);
 									grpAdvanced.add(comboForceTune);
 
-									if (comboFonctions.getSelectedItem().equals("H.265")) {
+									if (comboFonctions.getSelectedItem().equals("H.265"))
+									{
 										caseAlpha.setLocation(7, caseForceTune.getY() + 17);
 										grpAdvanced.add(caseAlpha);
 										comboAlpha.setLocation(caseAlpha.getX() + caseAlpha.getWidth() + 4, caseAlpha.getLocation().y + 4);
@@ -2935,8 +2940,13 @@ public class UIController extends Shutter {
 										}
 
 										caseFastStart.setLocation(7, caseAlpha.getY() + 17);
-									} else
+									}
+									else
+									{
+										caseAlpha.setSelected(false);
+										comboAlpha.setEnabled(false);
 										caseFastStart.setLocation(7, caseForceTune.getY() + 17);
+									}
 
 									grpAdvanced.add(caseFastStart);
 
@@ -3490,6 +3500,9 @@ public class UIController extends Shutter {
 								}
 								else if ("AV1".equals(function))
 								{
+									caseAlpha.setSelected(false);
+									comboAlpha.setEnabled(false);
+									
 									if (caseQMax.isSelected() == false)
 										caseForceLevel.setEnabled(true);
 
@@ -3597,6 +3610,9 @@ public class UIController extends Shutter {
 								}
 								else if ("MPEG-1".equals(function) || "MPEG-2".equals(function) || "Theora".equals(function))
 								{
+									caseAlpha.setSelected(false);
+									comboAlpha.setEnabled(false);																		
+									
 									caseGOP.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseGOP);
 									gopSize.setLocation(caseGOP.getX() + caseGOP.getWidth(), caseGOP.getY() + 3);
@@ -3608,6 +3624,9 @@ public class UIController extends Shutter {
 								}
 								else
 								{
+									caseAlpha.setSelected(false);
+									comboAlpha.setEnabled(false);
+									
 									caseDecimate.setLocation(7, caseForcerDesentrelacement.getLocation().y + 17);
 									grpAdvanced.add(caseDecimate);
 									caseConform.setLocation(7, caseDecimate.getY() + 17);
@@ -3978,10 +3997,10 @@ public class UIController extends Shutter {
 								changeComboOptions();
 
 								if (comboResolution.getSelectedItem().toString().contains("AI")) {
-									if (VideoPlayerCore.preview != null)
-										VideoPlayerCore.preview = null;
+									if (VideoPlayerUtils.preview != null)
+										VideoPlayerUtils.preview = null;
 
-									VideoPlayerCore.loadImage(true);
+									VideoPlayerUtils.loadImage(true);
 								}
 
 								grpResolution.repaint();
@@ -4188,6 +4207,26 @@ public class UIController extends Shutter {
 				}
 			});
 			changeSize.start();
+		}
+		else
+		{
+			grpResolution.setVisible(false);
+			grpBitrate.setVisible(false);
+			grpSetTimecode.setVisible(false);
+			grpSetAudio.setVisible(false);
+			grpAudio.setVisible(false);
+			grpCrop.setVisible(false);
+			grpOverlay.setVisible(false);
+			grpSubtitles.setVisible(false);
+			grpWatermark.setVisible(false);
+			grpColorimetry.setVisible(false);
+			grpImageAdjustement.setVisible(false);
+			grpCorrections.setVisible(false);
+			grpTransitions.setVisible(false);
+			grpImageSequence.setVisible(false);
+			grpImageFilter.setVisible(false);
+			grpAdvanced.setVisible(false);
+			btnReset.setVisible(false);
 		}
 	}
 
@@ -5329,6 +5368,8 @@ public class UIController extends Shutter {
 
 		if (FFMPEG.isRunning)
 		{
+			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			
 			if (comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) == false
 			&& comboFonctions.getSelectedItem().toString().contains("JPEG") == false)
 			{
@@ -5762,7 +5803,7 @@ public class UIController extends Shutter {
 		// Dans tous les cas
 		caseRunInBackground.setEnabled(false);
 		caseRunInBackground.setSelected(false);
-		tempsRestant.setVisible(false);
+		lblRemainingTime.setVisible(false);
 		comboFonctions.setEnabled(true);
 		comboFilter.setEnabled(true);
 		btnReset.setEnabled(true);
@@ -5913,14 +5954,22 @@ public class UIController extends Shutter {
 			VideoPlayerCore.frameVideo = null;			
 			VideoPlayerUI.player.repaint();
 
-			// Lecteur
-			if (VideoPlayerCore.waveform != null) {
-				VideoPlayerCore.waveform = null;
-				VideoPlayerCore.waveformIcon.setIcon(null);
-				VideoPlayerCore.waveformIcon.repaint();
+			// Player
+			if (VideoPlayerUtils.waveform != null) {
+				VideoPlayerUtils.waveform = null;
+				VideoPlayerUtils.waveformIcon.setIcon(null);
+				VideoPlayerUtils.waveformIcon.repaint();
 			}
+			
+			// Thumbnails
+			if (VideoPlayerCore.thumbnails != null)
+			{			
+				VideoPlayerUtils.allThumbnails = null;
+				VideoPlayerUtils.stopThumbnailsCreation();
+			}
+			
 		} else if (screenshotIsRunning) {
-			VideoPlayerCore.addWaveform(false);
+			VideoPlayerUtils.addWaveform(false);
 		}
 
 		if (scanIsRunning == false) {

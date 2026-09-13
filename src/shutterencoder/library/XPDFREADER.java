@@ -37,6 +37,7 @@ import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class XPDFREADER extends Shutter {
@@ -102,11 +103,11 @@ public static int pagesCount = 1;
 							BufferedInputStream inputStream = new BufferedInputStream(is);
 							
 							int frameSize = VideoPlayerCore.player.getWidth() * VideoPlayerCore.player.getHeight() * 6;
-							VideoPlayerCore.preview = inputStream.readNBytes(frameSize);
+							VideoPlayerUtils.preview = inputStream.readNBytes(frameSize);
 							
 							inputStream.close();
 							
-							VideoPlayerCore.readFrame(inputStream, VideoPlayerUI.player.getWidth(), VideoPlayerUI.player.getHeight(), true, false);
+							VideoPlayerCore.readFrame(inputStream, VideoPlayerUI.player.getWidth(), VideoPlayerUI.player.getHeight(), false);
 
 							if (VideoPlayerCore.frameVideo != null)
 							{

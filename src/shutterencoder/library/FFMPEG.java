@@ -35,6 +35,7 @@ import java.awt.event.AWTEventListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -76,6 +77,7 @@ import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class FFMPEG extends Shutter {
@@ -229,7 +231,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						//Display output
 						if (cmd.contains("pipe:1"))
 						{
-							args += " | " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb24 -f image2pipe -";
+							args += " | " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb565be -f image2pipe -";
 						}
 						
 						//Splitting pipe char
@@ -299,30 +301,33 @@ public static StringBuilder errorLog = new StringBuilder();
 						{				  				        	
 				        	VideoPlayerCore.playerStop();
 					     
-				        	Thread playerThread = new Thread(new Runnable() {
-	
-								@Override
-								public void run() {
+				        	Thread playerThread = new Thread(() -> {
+				        		
+				        	    try {
+				        	    	
+				        	        BufferedImage frame;
 
-						            try {
-						            	
-										do {
-											
-											if (btnStart.getText().equals(language.getProperty("btnPauseFunction"))
-											|| btnStart.getText().equals(language.getProperty("btnStopRecording"))
-											|| cancelled) //Empty the buffer
-											{	
-												VideoPlayerCore.frameVideo = ImageIO.read(videoInputStream);	
-												VideoPlayerUI.player.repaint();
-											}
-											
-										} while (VideoPlayerCore.frameVideo != null);
-										
-									} catch (Exception e) {}
-								}
-					    		
-					    	});
-					        playerThread.start();
+				        	        while ((frame = ImageIO.read(videoInputStream)) != null)
+				        	        {
+				        	        	while (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
+	        	        				{
+			        	        			VideoPlayerCore.frameVideo = null;
+			        	        			VideoPlayerUI.player.repaint();
+			        	        			lblRemainingTime.setText(Shutter.language.getProperty("timePause"));
+			        	        			Thread.sleep(50);				        	        			
+	        	        				}
+				        	        	
+			        	        		VideoPlayerCore.frameVideo = frame;				        	        	
+			        	        		VideoPlayerUI.player.repaint();
+				        	        }
+
+				        	    } catch (Exception e) {
+				        	        // FFmpeg/process ended or pipe was closed.
+				        	    }
+				        	});
+
+				        	playerThread.setDaemon(true);
+				        	playerThread.start();
 						}
 
 				        Console.consoleFFMPEG.append(System.lineSeparator());
@@ -1097,12 +1102,10 @@ public static StringBuilder errorLog = new StringBuilder();
 				
 		//Get the duration
 	    if (line.contains("Duration") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false && line.contains("Segment-Durations-Ms") == false && firstInput)
-		{	    	    	
-			String str = line.substring(line.indexOf(":") + 2);
-			String[] split = str.split(",");	 
-	
-			String ffmpegTime = split[0].replace(".", ":");	  
-							
+		{	
+	    	String duration = line.substring(line.indexOf("Duration:") + "Duration:".length(), line.indexOf(",", line.indexOf("Duration:"))).trim();
+	    	String ffmpegTime = duration.replace('.', ':');
+	    	
 			if (caseEnableSequence.isSelected())
 			{
 				fileLength = (int) (list.getSize() / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", ".")) );
@@ -1121,7 +1124,7 @@ public static StringBuilder errorLog = new StringBuilder();
 					fileLength += totalOut - totalIn;
 				}
 			}
-			else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+			else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 			{
 				fileLength = VideoPlayerUI.durationH * 3600 + VideoPlayerUI.durationM * 60 + VideoPlayerUI.durationS;
 			}
@@ -1189,10 +1192,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		  	//Il arrive que FFmpeg puisse encoder le fichier alors qu'il a detecté une erreur auparavant, dans ce cas on le laisse continuer donc : error = false;
 		  	error = false;
 
-	  		String str = line.substring(line.indexOf(":") - 2);
-    		String[] split = str.split("b");	 
-    	    
-    		String ffmpegTime = split[0].replace(".", ":").replace(" ", "");	    	
+		  	int timeStart = line.indexOf("time=");
+		  	String ffmpegTime = line.substring(timeStart + "time=".length(),line.indexOf(" ", timeStart)).replace('.', ':');    	
 
     		if (progressBar.getString().equals("NaN") || inputDeviceIsRunning)
     			progressBar.setStringPainted(false);
@@ -1233,8 +1234,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		else
 			secondes = "0sec";
 		
-		tempsEcoule.setText(language.getProperty("tempsEcoule") + " " + heures + minutes + secondes);
-		tempsEcoule.setSize(tempsEcoule.getPreferredSize().width, 15);
+		lblElapsedTime.setText(language.getProperty("tempsEcoule") + " " + heures + minutes + secondes);
+		lblElapsedTime.setSize(lblElapsedTime.getPreferredSize().width, 15);
 		         
 		  //Remaining time
 		  if ((line.contains("frame=") || line.contains("time=")) && line.contains("time=N/A") == false && comboFonctions.getSelectedItem().equals(language.getProperty("functionPicture")) == false)
@@ -1348,22 +1349,22 @@ public static StringBuilder errorLog = new StringBuilder();
 						secondes = "";
 
 					lblBy.setVisible(false);
-					tempsRestant.setText(language.getProperty("tempsRestant") + " " + heures + minutes + secondes + pass + " - " + fps + " " + language.getProperty("fps"));
-					tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
+					lblRemainingTime.setText(language.getProperty("tempsRestant") + " " + heures + minutes + secondes + pass + " - " + fps + " " + language.getProperty("fps"));
+					lblRemainingTime.setSize(lblRemainingTime.getPreferredSize().width, 15);
 					 
 					if (heures != "" || minutes != "" || secondes != "")
 					{
-						tempsEcoule.setVisible(false);
-						tempsRestant.setVisible(true);
+						lblElapsedTime.setVisible(false);
+						lblRemainingTime.setVisible(true);
 						
-						if (tempsRestant.getX() + tempsRestant.getSize().width > lblArrows.getX())
+						if (lblRemainingTime.getX() + lblRemainingTime.getSize().width > lblArrows.getX())
 	       				{
 	       					lblArrows.setVisible(false);
 	       				}
 					}
 					else
 					{
-						tempsRestant.setVisible(false);	
+						lblRemainingTime.setVisible(false);	
 						lblBy.setVisible(true);
 					}
 				 }

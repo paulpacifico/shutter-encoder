@@ -64,7 +64,7 @@ public class BackgroundRemover extends Shutter {
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
 						
 						lblCurrentEncoding.setText(fileName);
-						tempsEcoule.setVisible(false);
+						lblElapsedTime.setVisible(false);
 						
 						//File output name
 						String prefix = "";	

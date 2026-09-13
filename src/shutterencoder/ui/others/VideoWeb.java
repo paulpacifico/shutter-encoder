@@ -41,7 +41,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Area;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Locale;
 
@@ -1011,7 +1010,7 @@ public class VideoWeb {
 				       }
 				       else //Audio conversion
 				       {
-				    	   Shutter.tempsRestant.setVisible(false);
+				    	   Shutter.lblRemainingTime.setVisible(false);
 				    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
 				    	   if (caseWAV.isSelected())
 				    	   {		
@@ -1057,11 +1056,7 @@ public class VideoWeb {
 							//Ouverture du dossier
 							if (Shutter.caseOpenFolderAtEnd1.isSelected())
 							{
-								try {
-									Desktop.getDesktop().open(new File(Shutter.lblDestination1.getText()));
-								} catch (IOException e) {
-									e.printStackTrace();
-								}
+								Utils.openFile(new File(Shutter.lblDestination1.getText()));
 							}
 				       }
 				       UIController.enableAll();

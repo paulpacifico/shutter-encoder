@@ -83,7 +83,7 @@ public class Colorize extends Shutter {
 							String labelOutput = FunctionUtils.setOutputDestination("", file);
 							
 							lblCurrentEncoding.setText(fileName);
-							tempsEcoule.setVisible(false);
+							lblElapsedTime.setVisible(false);
 							
 							String model = comboFilter.getSelectedItem().toString();
 							

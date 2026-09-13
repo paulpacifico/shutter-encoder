@@ -22,7 +22,6 @@ package shutterencoder.functions.utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -231,7 +230,7 @@ public class FunctionUtils extends Shutter {
 		progressBar.setIndeterminate(true);
 		lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 		lblCurrentEncoding.setText(file.getName());
-		tempsRestant.setVisible(false);
+		lblRemainingTime.setVisible(false);
 		btnStart.setEnabled(false);
 		btnCancel.setEnabled(true);
 		comboFonctions.setEnabled(false);
@@ -299,7 +298,7 @@ public class FunctionUtils extends Shutter {
 			
 		progressBar.setIndeterminate(true);
 		lblCurrentEncoding.setText(language.getProperty("waitingFiles"));
-		tempsRestant.setVisible(false);
+		lblRemainingTime.setVisible(false);
 
 		UIController.disableAll();
 
@@ -584,19 +583,15 @@ public class FunctionUtils extends Shutter {
 				
 				if (Settings.btnSetBab.isSelected())
 				{
-					FFPROBE.Data(list.getElementAt(i));
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {}
-					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+					//IMPORTANT RESET MEDIA
+					FFPROBE.analyzedMedia = null;
 					
-					// IMPORTANT
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {}
-					} while (FFPROBE.isRunning);
+					FFPROBE.Data(list.getElementAt(i));
+					try {
+						FFPROBE.processData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
 					
 					mergeDuration += FFPROBE.totalLength;
 					FFPROBE.totalLength = 0;
@@ -1449,29 +1444,28 @@ public class FunctionUtils extends Shutter {
 									fileOut.delete();
 								}
 
-								// Annulation
+								// Delete file output on cancel
 								if (Shutter.cancelled)
 									fileOut.delete();
 
-								// Fichiers terminés
+								// Update lblFilesEnded
 								if (Shutter.cancelled == false && FFMPEG.error == false)
 									Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(1));
 
-								// Ouverture du dossier
-								if (Shutter.caseOpenFolderAtEnd1.isSelected() && Shutter.cancelled == false
-										&& FFMPEG.error == false) {
-									if (System.getProperty("os.name").contains("Mac")) {
+								// Open the destination folder
+								if (Shutter.caseOpenFolderAtEnd1.isSelected() && Shutter.cancelled == false && FFMPEG.error == false)
+								{
+									if (System.getProperty("os.name").contains("Mac"))
+									{
 										try {
-											Runtime.getRuntime().exec(
-													new String[] { "/usr/bin/open", "-R", fileOut.toString() });
-										} catch (Exception e2) {
-										}
-									} else if (System.getProperty("os.name").contains("Linux")) {
-										try {
-											Desktop.getDesktop().open(fileOut);
-										} catch (Exception e2) {
-										}
-									} else // Windows
+											Runtime.getRuntime().exec(new String[] { "/usr/bin/open", "-R", fileOut.toString() });
+										} catch (Exception e2) {}
+									}
+									else if (System.getProperty("os.name").contains("Linux"))
+									{
+										Utils.openFile(fileOut);
+									}
+									else // Windows
 									{
 										try {
 											Runtime.getRuntime().exec("explorer.exe /select," + fileOut.toString());
@@ -2043,7 +2037,7 @@ public class FunctionUtils extends Shutter {
 			long timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
 			long millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
 			
-			if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+			if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 				millisecondsToTc = timecodeToMs + VideoPlayerUI.durationH * 3600000 + VideoPlayerUI.durationM * 60000 + VideoPlayerUI.durationS * 1000 + VideoPlayerUI.durationF * (int) (1000 / FFPROBE.currentFPS);
 			
 			if (caseEnableSequence.isSelected())
@@ -2058,11 +2052,7 @@ public class FunctionUtils extends Shutter {
 		//Open the folder
 		if (caseOpenFolderAtEnd1.isSelected() && comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false && cancelled == false && FFMPEG.error == false)
 		{
-			try {
-				Desktop.getDesktop().open(new File(output));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			Utils.openFile(new File(output));
 		}		
 		
 		//Delete file

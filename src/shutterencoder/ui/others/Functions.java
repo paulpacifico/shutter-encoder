@@ -64,7 +64,6 @@ import shutterencoder.utils.Utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
@@ -267,24 +266,21 @@ public class Functions {
 		openFolder.addActionListener(new ActionListener(){
 
 			@Override
-			public void actionPerformed(ActionEvent e) {							        	
-				try {
-					Desktop.getDesktop().open(functionsFolder);
-					Utils.changeFrameVisibility(frame, true);
-					
-					Shutter.iconPresets.setVisible(true);
-					if (Shutter.iconList.isVisible())
-					{
-						Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
-						Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
-					}
-					else
-					{
-						Shutter.iconPresets.setBounds(180, 45, 21, 21);
-						Shutter.btnCancel.setBounds(207, 46, 97, 21);
-					}
-					
-				} catch (IOException e1) {}
+			public void actionPerformed(ActionEvent e) {	
+				Utils.openFile(functionsFolder);
+				Utils.changeFrameVisibility(frame, true);
+				
+				Shutter.iconPresets.setVisible(true);
+				if (Shutter.iconList.isVisible())
+				{
+					Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
+					Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
+				}
+				else
+				{
+					Shutter.iconPresets.setBounds(180, 45, 21, 21);
+					Shutter.btnCancel.setBounds(207, 46, 97, 21);
+				}
 			}
 	
 		});

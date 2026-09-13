@@ -24,7 +24,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.ComponentOrientation;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GradientPaint;
@@ -243,9 +242,7 @@ public class SubtitlesTimeline {
 								}
 								else if (System.getProperty("os.name").contains("Linux"))
 								{
-									try {
-										Desktop.getDesktop().open(srt.getParentFile());
-									} catch (Exception e2){}
+									Utils.openFile(srt.getParentFile());
 								}
 								else //Windows
 								{
@@ -274,8 +271,8 @@ public class SubtitlesTimeline {
 					} catch (IOException e) {}
 				}
 				
-				if (VideoPlayerCore.waveform != null)
-					VideoPlayerCore.waveform = null;
+				if (VideoPlayerUtils.waveform != null)
+					VideoPlayerUtils.waveform = null;
 				
 				timeline.removeAll();
 			}
@@ -323,7 +320,7 @@ public class SubtitlesTimeline {
 				frame.setBounds(0, GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height - frame.getHeight(),Toolkit.getDefaultToolkit().getScreenSize().width, 270);		
 
 				//Waveform
-				VideoPlayerCore.addWaveform(true);
+				VideoPlayerUtils.addWaveform(true);
 			}    		
     	});
     	    	
@@ -335,7 +332,7 @@ public class SubtitlesTimeline {
             	frame.setSize(Math.round(frame.getWidth() / 100) * 100, frame.getHeight());
             	
             	//Waveform
-        		VideoPlayerCore.addWaveform(true);
+        		VideoPlayerUtils.addWaveform(true);
             }
         });
     	
@@ -1210,7 +1207,7 @@ public class SubtitlesTimeline {
 						
 						if (caseShowWaveform.isEnabled() && caseShowWaveform.isSelected())
 						{
-							VideoPlayerCore.addWaveform(true);
+							VideoPlayerUtils.addWaveform(true);
 							waveform.setVisible(true);
 						}
 					}
@@ -1272,7 +1269,7 @@ public class SubtitlesTimeline {
 									} while (System.currentTimeMillis() - mouseScrollTime < 300);
 									
 									//Waveform
-									VideoPlayerCore.addWaveform(true);
+									VideoPlayerUtils.addWaveform(true);
 								}							
 								
 							});						
@@ -1411,7 +1408,7 @@ public class SubtitlesTimeline {
 				{				
 					cursor.setLocation(e.getX(), cursor.getLocation().y);		
 					VideoPlayerCore.playerSetTime((int) ((e.getX()-2)/zoom/VideoPlayerUI.inputFramerateMS));
-					VideoPlayerCore.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayerCore.waveformContainer.getSize().width * VideoPlayerCore.playerCurrentFrame) / VideoPlayerCore.totalFrames), VideoPlayerCore.cursorWaveform.getLocation().y);		
+					VideoPlayerCore.cursorWaveform.setLocation((int) ((long) ((long) VideoPlayerUtils.waveformContainer.getSize().width * VideoPlayerCore.playerCurrentFrame) / VideoPlayerCore.totalFrames), VideoPlayerCore.cursorWaveform.getLocation().y);		
 					VideoPlayerUI.cursorHead.setLocation(VideoPlayerCore.cursorWaveform.getX() - 5, VideoPlayerCore.cursorWaveform.getY());	
 				}
 				else if (e.getX() < 0)
@@ -1474,7 +1471,7 @@ public class SubtitlesTimeline {
 				enableAutoScroll = true;
 				
 				//Waveform
-				VideoPlayerCore.addWaveform(true);
+				VideoPlayerUtils.addWaveform(true);
 			}
 			
 		});
@@ -1649,10 +1646,10 @@ public class SubtitlesTimeline {
 									try {
 										Thread.sleep(100);
 									} catch (InterruptedException e) {}
-								} while (VideoPlayerCore.addWaveformIsRunning);
+								} while (VideoPlayerUtils.addWaveformIsRunning);
 								
 								//Waveform
-								VideoPlayerCore.addWaveform(true);
+								VideoPlayerUtils.addWaveform(true);
 							}
 							
 						});
@@ -1801,7 +1798,7 @@ public class SubtitlesTimeline {
 					
 					if (caseShowWaveform.isEnabled() && caseShowWaveform.isSelected())
 					{
-						VideoPlayerCore.addWaveform(true);
+						VideoPlayerUtils.addWaveform(true);
 						waveform.setVisible(true);
 					}
 				}
@@ -2131,9 +2128,9 @@ public class SubtitlesTimeline {
 						Thread addWaveform = new Thread(new Runnable() {
 							public void run() {	
 								
-								if (VideoPlayerCore.waveform != null == false)
+								if (VideoPlayerUtils.waveform != null == false)
 								{
-									while (VideoPlayerCore.waveform != null == false)
+									while (VideoPlayerUtils.waveform != null == false)
 									{										
 										try {
 											Thread.sleep(100);
@@ -2156,7 +2153,7 @@ public class SubtitlesTimeline {
 		}
 		else //Mise à jour du placement des subs
 		{
-			if (VideoPlayerCore.waveform != null && caseShowWaveform.isSelected() && waveform != null)
+			if (VideoPlayerUtils.waveform != null && caseShowWaveform.isSelected() && waveform != null)
 				timeline.remove(waveform);
 						
 			for (int index = number; index > 1 ; index--)
@@ -2185,7 +2182,7 @@ public class SubtitlesTimeline {
 			}
 			
 			//On décale aussi la waveform
-			if (VideoPlayerCore.waveform != null && caseShowWaveform.isSelected() && waveform != null)
+			if (VideoPlayerUtils.waveform != null && caseShowWaveform.isSelected() && waveform != null)
 			{
 				timeline.add(waveform);
 			}

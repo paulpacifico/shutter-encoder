@@ -1655,6 +1655,12 @@ public class Settings {
 							VideoPlayerUI.caseShowWaveform.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
 						}	
 						
+						//caseShowThumbnails video player
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseShowThumbnails"))
+						{
+							VideoPlayerUI.caseShowThumbnails.setSelected(Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()));
+						}
+						
 						//comboPlayerQuality video player
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("comboPlayerQuality"))
 						{
@@ -2320,6 +2326,27 @@ public class Settings {
 			//Value
 			cValue = document.createElement("Value");
 			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayerUI.caseShowWaveform.isSelected())));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);
+			
+			//caseShowThumbnails video player
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("caseShowThumbnails"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			cValue.appendChild(document.createTextNode(String.valueOf(VideoPlayerUI.caseShowThumbnails.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);

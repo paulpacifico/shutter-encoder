@@ -432,7 +432,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 		//Set activeSegmentIndex
         if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
    		{	           
-        	double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+        	double time = bufferCurrentFrame > 0 ? bufferCurrentFrame : playerCurrentFrame;
         	
             for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
             {
@@ -442,24 +442,24 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
                 //Current segment
                 if (time >= inputMark && time < outputMark)
                 {
-                	VideoPlayerCore.activeSegmentIndex = seg.index;
+                	activeSegmentIndex = seg.index;
                 	break;
                 }
-                else if (time < inputMark && seg.index < VideoPlayerCore.activeSegmentIndex) //Allows to always get the next segment when jumping hover more than 1 segment
+                else if (time < inputMark && seg.index < activeSegmentIndex) //Allows to always get the next segment when jumping hover more than 1 segment
                 {
-                	VideoPlayerCore.activeSegmentIndex = seg.index;
+                	activeSegmentIndex = seg.index;
                 	break;
                 }
-                else if (time > outputMark && seg.index > VideoPlayerCore.activeSegmentIndex) //Allows to always get the previous segment when jumping hover more than 1 segment
+                else if (time > outputMark && seg.index > activeSegmentIndex) //Allows to always get the previous segment when jumping hover more than 1 segment
                 {
-                	VideoPlayerCore.activeSegmentIndex = seg.index;
+                	activeSegmentIndex = seg.index;
                 }
             }
    		}
         
-	    if (VideoPlayerCore.activeSegmentIndex >= VideoPlayerMultiCuts.cutSegments.size())
+	    if (activeSegmentIndex >= VideoPlayerMultiCuts.cutSegments.size())
         {
-    		VideoPlayerCore.activeSegmentIndex = VideoPlayerMultiCuts.cutSegments.size() - 1;
+    		activeSegmentIndex = VideoPlayerMultiCuts.cutSegments.size() - 1;
         }
 
 	    if (cutSegments.isEmpty() == false)

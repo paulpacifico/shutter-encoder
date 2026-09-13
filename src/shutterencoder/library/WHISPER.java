@@ -268,9 +268,7 @@ public class WHISPER {
 			else
 			{
 				Shutter.comboFonctions.setSelectedItem("");
-				try {
-					Desktop.getDesktop().open(transcriberApp);
-				} catch (IOException e) {}
+				Utils.openFile(transcriberApp);
 			}	
 		}
 		else
@@ -318,7 +316,7 @@ public class WHISPER {
 						        pb.start();
 						        
 						        //Open the installer
-								Desktop.getDesktop().open(fileToUnlock);
+						        Utils.openFile(fileToUnlock);
 								 
 							} catch (Exception e) {}	
 						}				

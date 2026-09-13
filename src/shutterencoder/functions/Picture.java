@@ -231,7 +231,7 @@ public class Picture extends Shutter {
 							//InOut	
 							InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
 							
-							if (videoPlayerCapture && VideoPlayerCore.waveformContainer.isVisible())
+							if (videoPlayerCapture && VideoPlayerUtils.waveformContainer.isVisible())
 							{
 								InputAndOutput.inPoint = " -ss " + (long) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS) + "ms";
 							}

@@ -36,6 +36,7 @@ import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class HardwareListener extends Shutter {
@@ -292,7 +293,7 @@ public class HardwareListener extends Shutter {
 				}
 				
 				if (me.getX() < top.getX()
-				|| VideoPlayerCore.waveformContainerHasMouse 
+				|| VideoPlayerUtils.waveformContainerHasMouse 
 				|| UIController.extendSectionsIsRunning)
 				{
 					return;

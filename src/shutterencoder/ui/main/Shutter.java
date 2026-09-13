@@ -108,6 +108,7 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.ChangeEvent;
@@ -525,8 +526,8 @@ public class Shutter {
 	protected static JLabel lblGpuFiltering;
 	public static JComboBox<String> comboGPUDecoding;
 	public static JComboBox<String> comboGPUFilter;
-	public static JLabel tempsRestant;
-	public static JLabel tempsEcoule;
+	public static JLabel lblRemainingTime;
+	public static JLabel lblElapsedTime;
 	protected static JComboBox<String> debitVideo;
 	protected static JComboBox<String> maximumBitrate;
 	protected static JComboBox<String> debitAudio;
@@ -1882,11 +1883,18 @@ public class Shutter {
 					}
 
 					// Player
-					if (VideoPlayerCore.waveform != null)
+					if (VideoPlayerUtils.waveform != null)
 					{
-						VideoPlayerCore.waveform = null;
-						VideoPlayerCore.waveformIcon.setIcon(null);
-						VideoPlayerCore.waveformIcon.repaint();
+						VideoPlayerUtils.waveform = null;
+						VideoPlayerUtils.waveformIcon.setIcon(null);
+						VideoPlayerUtils.waveformIcon.repaint();
+					}
+					
+					// Thumbnails
+					if (VideoPlayerCore.thumbnails != null)
+					{			
+						VideoPlayerUtils.allThumbnails = null;
+						VideoPlayerUtils.stopThumbnailsCreation();
 					}
 					
 					if (VideoPlayerCore.playerIsPlaying())
@@ -2024,17 +2032,16 @@ public class Shutter {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (System.getProperty("os.name").contains("Mac")) {
+				if (System.getProperty("os.name").contains("Mac"))
+				{
 					try {
 						Runtime.getRuntime().exec(new String[] { "/usr/bin/open", "-R", fileList.getSelectedValue() });
-					} catch (Exception e2) {
-					}
-				} else if (System.getProperty("os.name").contains("Linux")) {
-					try {
-						Desktop.getDesktop().open(new File(fileList.getSelectedValue()).getParentFile());
-					} catch (Exception e2) {
-					}
-				} else // Windows
+					} catch (Exception e2) {}
+				} else if (System.getProperty("os.name").contains("Linux"))
+				{
+					Utils.openFile(new File(fileList.getSelectedValue()).getParentFile());
+				}
+				else // Windows
 				{
 					try {
 						Runtime.getRuntime().exec("explorer.exe /select," + fileList.getSelectedValue());
@@ -2055,46 +2062,36 @@ public class Shutter {
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-				for (String file : fileList.getSelectedValuesList()) {
+				for (String file : fileList.getSelectedValuesList())
+				{					
+					//IMPORTANT RESET MEDIA
+					FFPROBE.analyzedMedia = null;
 					
-					FFPROBE.Data(file);
-					
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {}
-					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
-
-					// IMPORTANT
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {
-						}
-					} while (FFPROBE.isRunning);
+					FFPROBE.Data(file);					
+					try {
+						FFPROBE.processData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
 
 					totalLength += Math.round((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS);					
 					FFPROBE.totalLength = 0;
+					
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				}
 				
-				// IMPORTANT
+				// IMPORTANT get the current length of the displayed file
 				if (VideoPlayerCore.videoPath != null)
 				{
+					//IMPORTANT RESET MEDIA
+					FFPROBE.analyzedMedia = null;
+					
 					FFPROBE.Data(VideoPlayerCore.videoPath);
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {
-						}
-					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
-
-					// IMPORTANT
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {
-						}
-					} while (FFPROBE.isRunning);
+					try {
+						FFPROBE.processData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
 				}
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -2133,27 +2130,26 @@ public class Shutter {
 				FFPROBE.totalLength = 0;
 				FFPROBE.analyzedMedia = null;
 
-				for (String file : fileList.getSelectedValuesList()) {
-					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					FFPROBE.Data(file);
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {
-						}
-					} while (FFPROBE.totalLength == 0 && FFPROBE.isRunning);
+				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-					// IMPORTANT
-					do {
-						try {
-							Thread.sleep(1);
-						} catch (InterruptedException e1) {
-						}
-					} while (FFPROBE.isRunning);
+				for (String file : fileList.getSelectedValuesList())
+				{					
+					//IMPORTANT RESET MEDIA
+					FFPROBE.analyzedMedia = null;
+					
+					FFPROBE.Data(file);					
+					try {
+						FFPROBE.processData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
 
-					totalLength += FFPROBE.totalLength;
+					totalLength += Math.round((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS);					
 					FFPROBE.totalLength = 0;
+					
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				}
+				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 				int finalSize = 0;
@@ -2286,6 +2282,20 @@ public class Shutter {
 					fileSize = String.valueOf(Math.round((float) finalSize / 1024)) + " Go";
 				else
 					fileSize = finalSize + " Mo";
+				
+				// IMPORTANT get the current length of the displayed file
+				if (VideoPlayerCore.videoPath != null)
+				{
+					//IMPORTANT RESET MEDIA
+					FFPROBE.analyzedMedia = null;
+					
+					FFPROBE.Data(VideoPlayerCore.videoPath);
+					try {
+						FFPROBE.processData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+				}
 
 				JOptionPane.showMessageDialog(frame,
 						fileList.getSelectedIndices().length + " " + language.getProperty("selectedFiles")
@@ -2322,13 +2332,20 @@ public class Shutter {
 					VideoPlayerCore.frameVideo = null;
 					VideoPlayerCore.playerRepaint();
 
-					// Lecteur
-					if (VideoPlayerCore.waveform != null) {
-						VideoPlayerCore.waveform = null;
-						VideoPlayerCore.waveformIcon.setIcon(null);
-						VideoPlayerCore.waveformIcon.repaint();
+					// Player
+					if (VideoPlayerUtils.waveform != null) {
+						VideoPlayerUtils.waveform = null;
+						VideoPlayerUtils.waveformIcon.setIcon(null);
+						VideoPlayerUtils.waveformIcon.repaint();
 					}
 
+					// Thumbnails
+					if (VideoPlayerCore.thumbnails != null)
+					{			
+						VideoPlayerUtils.allThumbnails = null;
+						VideoPlayerUtils.stopThumbnailsCreation();
+					}
+					
 					VideoPlayerCore.playerStop();
 				}
 
@@ -2881,7 +2898,7 @@ public class Shutter {
 				
 					if (InputAndOutput.segments != "")
 					{
-						FFMPEG.process.destroy();
+						FFMPEG.process.destroyForcibly();
 						
 						try {
 							FFMPEG.runProcess.interrupt();
@@ -2896,35 +2913,31 @@ public class Shutter {
 						} catch (IOException er) {}	
 					}
 
-					Thread wait = new Thread(new Runnable() {
+					Thread wait = new Thread(() -> {
 
-						@Override
-						public void run() {
+						do {
+							try {
+								frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+								btnStart.setEnabled(false);
+								Thread.sleep(10);
+							} catch (InterruptedException e1) {
+							}
+						} while (FFMPEG.runProcess.isAlive());
 
-							do {
-								try {
-									frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-									btnStart.setEnabled(false);
-									Thread.sleep(10);
-								} catch (InterruptedException e1) {
-								}
-							} while (FFMPEG.runProcess.isAlive());
-
-							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-						}
+						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));					
 					});
 					wait.start();
 				}
 
 				if (DCRAW.runProcess != null) {
 					if (DCRAW.runProcess.isAlive()) {
-						DCRAW.process.destroy();
+						DCRAW.process.destroyForcibly();
 					}
 				}
 				
 				if (XPDFREADER.runProcess != null) {
 					if (XPDFREADER.runProcess.isAlive()) {
-						XPDFREADER.process.destroy();
+						XPDFREADER.process.destroyForcibly();
 					}
 				}
 
@@ -2938,56 +2951,56 @@ public class Shutter {
 							} catch (Exception e1) {
 							}
 						} else {
-							YOUTUBEDL.process.destroy();
+							YOUTUBEDL.process.destroyForcibly();
 						}
 					}
 				}
 
 				if (BMXTRANSWRAP.runProcess != null) {
 					if (BMXTRANSWRAP.runProcess.isAlive()) {
-						BMXTRANSWRAP.process.destroy();
+						BMXTRANSWRAP.process.destroyForcibly();
 					}
 				}
 
 				if (NCNN.runProcess != null) {
 					if (NCNN.runProcess.isAlive()) {
-						NCNN.process.destroy();
+						NCNN.process.destroyForcibly();
 					}
 				}
 				
 				if (WHISPER.runProcess != null) {
 					if (WHISPER.runProcess.isAlive()) {
-						WHISPER.process.destroy();
+						WHISPER.process.destroyForcibly();
 					}
 				}
 				
 				if (PYTHON.runProcess != null) {
 					if (PYTHON.runProcess.isAlive()) {
-						PYTHON.process.destroy();
+						PYTHON.process.destroyForcibly();
 					}
 				}
 				
 				if (DEMUCS.runProcess != null) {
 					if (DEMUCS.runProcess.isAlive()) {
-						DEMUCS.process.destroy();
+						DEMUCS.process.destroyForcibly();
 					}
 				}
 				
 				if (DEOLDIFY.runProcess != null) {
 					if (DEOLDIFY.runProcess.isAlive()) {
-						DEOLDIFY.process.destroy();
+						DEOLDIFY.process.destroyForcibly();
 					}
 				}
 				
 				if (ANONYMIZER.runProcess != null) {
 					if (ANONYMIZER.runProcess.isAlive()) {
-						ANONYMIZER.process.destroy();
+						ANONYMIZER.process.destroyForcibly();
 					}
 				}
 				
 				if (BACKGROUNDREMOVER.runProcess != null) {
 					if (BACKGROUNDREMOVER.runProcess.isAlive()) {
-						BACKGROUNDREMOVER.process.destroy();
+						BACKGROUNDREMOVER.process.destroyForcibly();
 					}
 				}
 				
@@ -3172,22 +3185,22 @@ public class Shutter {
 					VideoPlayerCore.frameVideo = null;
 				}
 
-				if (VideoPlayerCore.addWaveformIsRunning) {
+				if (VideoPlayerUtils.addWaveformIsRunning)
+				{		
+					VideoPlayerUtils.stopWaveformCreation();
+					
 					try {
-						LibraryUtils.waveformWriter.write('q');
-						LibraryUtils.waveformWriter.flush();
-						LibraryUtils.waveformWriter.close();
-					} catch (IOException er) {
+						VideoPlayerUtils.addWaveform.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
 					}
-
-					LibraryUtils.waveformProcess.destroy();
-
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e1) {
-						}
-					} while (VideoPlayerCore.addWaveformIsRunning);
+				}
+				
+				// Thumbnails
+				if (VideoPlayerCore.thumbnails != null)
+				{			
+					VideoPlayerUtils.allThumbnails = null;
+					VideoPlayerUtils.stopThumbnailsCreation();
 				}
 
 				FunctionUtils.yesToAll = false;
@@ -3207,7 +3220,7 @@ public class Shutter {
 					errorList.setLength(0);
 					
 					// Temps écoulé
-					tempsEcoule.setVisible(false);
+					lblElapsedTime.setVisible(false);
 					FFMPEG.elapsedTime = 0;
 					FFMPEG.previousElapsedTime = 0;
 
@@ -3553,8 +3566,8 @@ public class Shutter {
 						FFMPEG.suspendProcess();
 
 						btnStart.setText(language.getProperty("btnResumeFunction"));
-						tempsRestant.setText(language.getProperty("timePause"));
-						tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
+						lblRemainingTime.setText(language.getProperty("timePause"));
+						lblRemainingTime.setSize(lblRemainingTime.getPreferredSize().width, 15);
 					} else if (btnStart.getText().equals(language.getProperty("btnResumeFunction"))) {
 						caseRunInBackground.setEnabled(true);
 
@@ -3678,7 +3691,7 @@ public class Shutter {
 					newList.clear();
 				}
 
-				if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb"))) 
+				if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) && Settings.modelIsSaving == false) 
 				{
 					if (scanIsRunning == false) {
 						try {
@@ -3710,10 +3723,18 @@ public class Shutter {
 		comboFonctions.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
 
 			String text = "";
+			
+			private Timer debounceTimer;
+		    private final int DEBOUNCE_DELAY = 500;
 
 			@Override
 			public void keyReleased(KeyEvent e) {
 
+				// Stop the running timer on every keystroke
+		        if (debounceTimer != null && debounceTimer.isRunning()) {
+		            debounceTimer.stop();
+		        }
+				
 				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")
 				|| comboFonctions.getEditor().getItem().toString().contains("exiftool"))
 				{
@@ -3811,13 +3832,18 @@ public class Shutter {
 						// Pour éviter d'afficher le premier item
 						comboFonctions.getEditor().setItem(text);
 
-						if (newList.isEmpty() == false) {
+						if (newList.isEmpty() == false)
+						{
 							comboFonctions.setModel(new DefaultComboBoxModel(newList.toArray()));
 							comboFonctions.showPopup();
-							UIController.changeFilters();
-							UIController.changeFunction(true);
+							
+							debounceTimer = new Timer(DEBOUNCE_DELAY, event -> {
+		                        UIController.changeFilters();
+		                        UIController.changeFunction(true);
+		                    });
+		                    debounceTimer.setRepeats(false);
+		                    debounceTimer.start();
 						}
-
 					}
 					else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE)
 					{
@@ -4967,19 +4993,18 @@ public class Shutter {
 		openFolder.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					switch (grpDestination.getSelectedIndex()) {
+				
+				switch (grpDestination.getSelectedIndex())
+				{
 					case 0:
-						Desktop.getDesktop().open(new File(lblDestination1.getText()));
+						Utils.openFile(new File(lblDestination1.getText()));
 						break;
 					case 1:
-						Desktop.getDesktop().open(new File(lblDestination2.getText()));
+						Utils.openFile(new File(lblDestination2.getText()));
 						break;
 					case 2:
-						Desktop.getDesktop().open(new File(lblDestination3.getText()));
+						Utils.openFile(new File(lblDestination3.getText()));
 						break;
-					}
-				} catch (IOException e1) {
 				}
 			}
 		});
@@ -5126,8 +5151,8 @@ public class Shutter {
 									running = true;
 								} else {
 
-									tempsRestant.setText(Shutter.language.getProperty("timePause"));
-									tempsRestant.setSize(tempsRestant.getPreferredSize().width, 15);
+									lblRemainingTime.setText(Shutter.language.getProperty("timePause"));
+									lblRemainingTime.setSize(lblRemainingTime.getPreferredSize().width, 15);
 
 									if (running == true)
 										FFMPEG.suspendProcess();
@@ -5273,7 +5298,7 @@ public class Shutter {
 				LibraryUtils.checkGPUDeinterlacing();
 
 				if (NCNN.isRunning && NCNN.process != null) {
-					NCNN.process.destroy();
+					NCNN.process.destroyForcibly();
 
 					do {
 						try {
@@ -5282,16 +5307,16 @@ public class Shutter {
 						}
 					} while (NCNN.isRunning);
 
-					if (VideoPlayerCore.preview != null)
-						VideoPlayerCore.preview = null;
+					if (VideoPlayerUtils.preview != null)
+						VideoPlayerUtils.preview = null;
 				}
 
 				if (FFPROBE.totalLength <= 40 || comboResolution.getSelectedItem().toString().contains("AI"))
 				{
-					if (VideoPlayerCore.preview != null)
-						VideoPlayerCore.preview = null;
+					if (VideoPlayerUtils.preview != null)
+						VideoPlayerUtils.preview = null;
 
-					VideoPlayerCore.loadImage(true);
+					VideoPlayerUtils.loadImage(true);
 				}
 				else
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
@@ -5392,7 +5417,7 @@ public class Shutter {
 				else
 					comboRotate.setEnabled(false);
 
-				VideoPlayerCore.preview = null; //Reload the preview image before rotation
+				VideoPlayerUtils.preview = null; //Reload the preview image before rotation
 				
 				VideoPlayerUI.btnStop.doClick(); //Use VideoPlayer.resizeAll and reload the frame
 			}
@@ -5416,7 +5441,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				VideoPlayerCore.preview = null; //Reload the preview image before rotation
+				VideoPlayerUtils.preview = null; //Reload the preview image before rotation
 				
 				VideoPlayerUI.btnStop.doClick(); //Use VideoPlayer.resizeAll and reload the frame
 			}
@@ -11817,13 +11842,13 @@ public class Shutter {
 				if (caseAddSubtitles.isSelected() && VideoPlayerCore.loadMedia.isAlive() == false) //LoadMedia already load the subs
 				{
 					FunctionUtils.addSubtitles(false);
-					if (VideoPlayerCore.loadImageProcess != null)
+					if (VideoPlayerUtils.loadImageProcess != null)
 					{
 						do {
 							try {
 								Thread.sleep(100);
 							} catch (InterruptedException e) {}
-						} while (VideoPlayerCore.loadImageProcess.isAlive());
+						} while (VideoPlayerUtils.loadImageProcess.isAlive());
 					}
 					FunctionUtils.addSubtitles(true);
 				}
@@ -11901,7 +11926,7 @@ public class Shutter {
 			public void itemStateChanged(ItemEvent arg0) {
 
 				comboSubsFont.setFont(new Font(comboSubsFont.getSelectedItem().toString(), Font.PLAIN, 11));
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -11922,7 +11947,7 @@ public class Shutter {
 				else
 					btnG.setForeground(Color.BLACK);
 
-				VideoPlayerCore.loadImage(true);
+				VideoPlayerUtils.loadImage(true);
 			}
 
 		});
@@ -11943,7 +11968,7 @@ public class Shutter {
 				else
 					btnI.setForeground(Color.BLACK);
 
-				VideoPlayerCore.loadImage(true);
+				VideoPlayerUtils.loadImage(true);
 			}
 
 		});
@@ -12122,7 +12147,7 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				VideoPlayerCore.loadImage(true);
+				VideoPlayerUtils.loadImage(true);
 			}
 
 		});
@@ -12191,7 +12216,7 @@ public class Shutter {
 
 				if (fontSubsColor != null) {
 					panelSubsColor.setBackground(fontSubsColor);
-					VideoPlayerCore.loadImage(true);
+					VideoPlayerUtils.loadImage(true);
 				}
 			}
 
@@ -12266,7 +12291,7 @@ public class Shutter {
 			@Override
 			public void keyReleased(KeyEvent e) {
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 			@Override
@@ -12297,7 +12322,7 @@ public class Shutter {
 					} else
 						textSubsSize.setText(String.valueOf(value));
 
-					VideoPlayerCore.loadImage(false);
+					VideoPlayerUtils.loadImage(false);
 				}
 
 			}
@@ -12344,7 +12369,7 @@ public class Shutter {
 				}
 
 				VideoPlayerOverlay.writeCurrentSubs(VideoPlayerCore.playerCurrentFrame, false);
-				VideoPlayerCore.loadImage(true);
+				VideoPlayerUtils.loadImage(true);
 			}
 
 			@Override
@@ -12392,7 +12417,7 @@ public class Shutter {
 
 				if (backgroundSubsColor != null) {
 					panelSubsColor2.setBackground(backgroundSubsColor);
-					VideoPlayerCore.loadImage(true);
+					VideoPlayerUtils.loadImage(true);
 				}
 			}
 
@@ -12475,7 +12500,7 @@ public class Shutter {
 			@Override
 			public void keyReleased(KeyEvent e) {
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 			@Override
@@ -12507,7 +12532,7 @@ public class Shutter {
 					} else
 						textSubsOutline.setText(String.valueOf(value));
 
-					VideoPlayerCore.loadImage(false);
+					VideoPlayerUtils.loadImage(false);
 				}
 
 			}
@@ -13957,10 +13982,8 @@ public class Shutter {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Desktop.getDesktop().open(lutsFolder);
-				} catch (IOException e1) {
-				}
+				
+				Utils.openFile(lutsFolder);
 
 				if (caseLUTs.isSelected())
 					caseLUTs.doClick();
@@ -14073,7 +14096,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerCore.loadImage(true);
+				VideoPlayerUtils.loadImage(true);
 			}
 
 		});
@@ -14114,7 +14137,7 @@ public class Shutter {
 					lblExposure.setText(Shutter.language.getProperty("lblExposure") + " " + sliderExposure.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14160,7 +14183,7 @@ public class Shutter {
 					lblGamma.setText(Shutter.language.getProperty("lblGamma") + " " + sliderGamma.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14206,7 +14229,7 @@ public class Shutter {
 					lblContrast.setText(Shutter.language.getProperty("lblContrast") + " " + sliderContrast.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14252,7 +14275,7 @@ public class Shutter {
 					lblWhite.setText(Shutter.language.getProperty("lblWhite") + " " + sliderWhite.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14298,7 +14321,7 @@ public class Shutter {
 					lblBlack.setText(Shutter.language.getProperty("lblBlack") + " " + sliderBlack.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14345,7 +14368,7 @@ public class Shutter {
 							.setText(Shutter.language.getProperty("lblHighlights") + " " + sliderHighlights.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14391,7 +14414,7 @@ public class Shutter {
 					lblMediums.setText(Shutter.language.getProperty("lblMediums") + " " + sliderMediums.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14437,7 +14460,7 @@ public class Shutter {
 					lblShadows.setText(Shutter.language.getProperty("lblShadows") + " " + sliderShadows.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14484,7 +14507,7 @@ public class Shutter {
 							.setText(Shutter.language.getProperty("lblBalance") + " " + sliderBalance.getValue() + "k");
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14530,7 +14553,7 @@ public class Shutter {
 					lblHUE.setText(Shutter.language.getProperty("lblHUE") + " " + sliderHUE.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14650,7 +14673,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highR = sliderRED.getValue();
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14724,7 +14747,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highG = sliderGREEN.getValue();
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14799,7 +14822,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highB = sliderBLUE.getValue();
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14846,7 +14869,7 @@ public class Shutter {
 							.setText(Shutter.language.getProperty("lblSaturation") + " " + sliderSaturation.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14954,7 +14977,7 @@ public class Shutter {
 				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("blue")))
 					Colorimetry.vibranceB = sliderVibrance.getValue();
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -14998,7 +15021,7 @@ public class Shutter {
 					lblGrain.setText(Shutter.language.getProperty("lblGrain") + " " + sliderGrain.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15043,7 +15066,7 @@ public class Shutter {
 					lblVignette.setText(Shutter.language.getProperty("lblVignette") + " " + sliderVignette.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15087,7 +15110,7 @@ public class Shutter {
 					lblAngle.setText(Shutter.language.getProperty("caseAngle") + " " + sliderAngle.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15131,7 +15154,7 @@ public class Shutter {
 					lblZoom.setText(Shutter.language.getProperty("lblZoom") + " " + sliderZoom.getValue());
 				}
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15248,7 +15271,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15263,7 +15286,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15278,7 +15301,7 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15296,7 +15319,7 @@ public class Shutter {
 
 				if (caseDetails.isSelected() == false) {
 					sliderDetails.setValue(0);
-					VideoPlayerCore.loadImage(false);
+					VideoPlayerUtils.loadImage(false);
 				}
 			}
 
@@ -15324,7 +15347,7 @@ public class Shutter {
 
 				caseDetails.setText(Shutter.language.getProperty("details") + " " + value);
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15351,7 +15374,7 @@ public class Shutter {
 
 				if (caseDenoise.isSelected() == false) {
 					sliderDenoise.setValue(0);
-					VideoPlayerCore.loadImage(false);
+					VideoPlayerUtils.loadImage(false);
 				}
 			}
 
@@ -15379,7 +15402,7 @@ public class Shutter {
 
 				caseDenoise.setText(Shutter.language.getProperty("noiseSuppression") + " " + value);
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -15406,7 +15429,7 @@ public class Shutter {
 
 				if (caseSmoothExposure.isSelected() == false) {
 					sliderSmoothExposure.setValue(0);
-					VideoPlayerCore.loadImage(false);
+					VideoPlayerUtils.loadImage(false);
 				}
 			}
 
@@ -15434,7 +15457,7 @@ public class Shutter {
 
 				caseSmoothExposure.setText(Shutter.language.getProperty("smoothExposure") + " " + value);
 
-				VideoPlayerCore.loadImage(false);
+				VideoPlayerUtils.loadImage(false);
 			}
 
 		});
@@ -18612,9 +18635,9 @@ public class Shutter {
 				windowDrag = false;
 
 				// IMPORTANT
-				if (FFPROBE.totalLength <= 40 && VideoPlayerCore.preview != null)
+				if (FFPROBE.totalLength <= 40 && VideoPlayerUtils.preview != null)
 				{
-					VideoPlayerCore.preview = null;
+					VideoPlayerUtils.preview = null;
 				}
 
 				UIController.resizeAll(frame.getWidth(), 0);
@@ -18716,13 +18739,13 @@ public class Shutter {
 
 		lblBy.addComponentListener(new ComponentAdapter() {
 			public void componentShown(ComponentEvent e) {
-				tempsEcoule.setLocation(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY());
-				tempsRestant.setLocation(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY());
+				lblElapsedTime.setLocation(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY());
+				lblRemainingTime.setLocation(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY());
 			}
 
 			public void componentHidden(ComponentEvent e) {
-				tempsEcoule.setLocation(lblBy.getLocation());
-				tempsRestant.setLocation(lblBy.getLocation());
+				lblElapsedTime.setLocation(lblBy.getLocation());
+				lblRemainingTime.setLocation(lblBy.getLocation());
 			}
 		});
 
@@ -19090,38 +19113,38 @@ public class Shutter {
 
 		});
 
-		tempsRestant = new JLabel(language.getProperty("tempsRestant"));
-		tempsRestant.setVisible(false);
-		tempsRestant.setFont(new Font(mainFont, Font.PLAIN, 12));
-		tempsRestant.setForeground(Color.WHITE);
-		tempsRestant.setBounds(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY(),
-				tempsRestant.getPreferredSize().width, 15);
-		statusBar.add(tempsRestant);
+		lblRemainingTime = new JLabel(language.getProperty("tempsRestant"));
+		lblRemainingTime.setVisible(false);
+		lblRemainingTime.setFont(new Font(mainFont, Font.PLAIN, 12));
+		lblRemainingTime.setForeground(Color.WHITE);
+		lblRemainingTime.setBounds(lblBy.getX() + lblBy.getWidth() + 10, lblBy.getY(),
+				lblRemainingTime.getPreferredSize().width, 15);
+		statusBar.add(lblRemainingTime);
 
-		tempsRestant.addComponentListener(new ComponentAdapter() {
+		lblRemainingTime.addComponentListener(new ComponentAdapter() {
 			public void componentShown(ComponentEvent e) {
-				tempsEcoule.setVisible(false);
+				lblElapsedTime.setVisible(false);
 			}
 
 			public void componentHidden(ComponentEvent e) {
-				if (tempsEcoule != null && tempsEcoule.getText().equals(language.getProperty("tempsEcoule")) == false) {
+				if (lblElapsedTime != null && lblElapsedTime.getText().equals(language.getProperty("tempsEcoule")) == false) {
 					if (FFMPEG.isRunning == false && YOUTUBEDL.isRunning == false) {
 						lblBy.setVisible(true);
 					}
-					tempsEcoule.setVisible(true);
+					lblElapsedTime.setVisible(true);
 				}
 			}
 		});
 
-		tempsRestant.addMouseListener(new MouseListener() {
+		lblRemainingTime.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 
-				tempsRestant.setVisible(false);
+				lblRemainingTime.setVisible(false);
 
-				if (tempsEcoule != null && tempsEcoule.getText().equals(language.getProperty("tempsEcoule")) == false) {
-					tempsEcoule.setVisible(true);
+				if (lblElapsedTime != null && lblElapsedTime.getText().equals(language.getProperty("tempsEcoule")) == false) {
+					lblElapsedTime.setVisible(true);
 				}
 			}
 
@@ -19148,20 +19171,20 @@ public class Shutter {
 
 		});
 
-		tempsEcoule = new JLabel(language.getProperty("tempsEcoule"));
-		tempsEcoule.setVisible(false);
-		tempsEcoule.setForeground(Color.WHITE);
-		tempsEcoule.setFont(new Font(mainFont, Font.PLAIN, 12));
-		tempsEcoule.setBounds(tempsRestant.getX(), lblBy.getY(), tempsEcoule.getPreferredSize().width, 15);
-		statusBar.add(tempsEcoule);
+		lblElapsedTime = new JLabel(language.getProperty("tempsEcoule"));
+		lblElapsedTime.setVisible(false);
+		lblElapsedTime.setForeground(Color.WHITE);
+		lblElapsedTime.setFont(new Font(mainFont, Font.PLAIN, 12));
+		lblElapsedTime.setBounds(lblRemainingTime.getX(), lblBy.getY(), lblElapsedTime.getPreferredSize().width, 15);
+		statusBar.add(lblElapsedTime);
 
-		tempsEcoule.addMouseListener(new MouseListener() {
+		lblElapsedTime.addMouseListener(new MouseListener() {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				if (FFMPEG.isRunning || BMXTRANSWRAP.isRunning) {
-					tempsEcoule.setVisible(false);
-					tempsRestant.setVisible(true);
+					lblElapsedTime.setVisible(false);
+					lblRemainingTime.setVisible(true);
 				}
 			}
 

@@ -19,7 +19,6 @@
 
 package shutterencoder.library;
 
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -97,9 +96,7 @@ public class SEVENZIP extends Shutter {
 					 {
 						 if (error == false)
 						 {
-					       	try {
-					       		Desktop.getDesktop().open(new File(lblDestination1.getText()));
-					        } catch (IOException e1) {}
+					       	Utils.openFile(new File(lblDestination1.getText()));
 						 }
 						 else
 							 FFMPEG.cancelled = true;

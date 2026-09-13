@@ -22,6 +22,7 @@ package shutterencoder.utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.MouseInfo;
@@ -106,6 +107,7 @@ import shutterencoder.ui.others.Functions;
 import shutterencoder.ui.others.SceneDetection;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 
@@ -762,6 +764,28 @@ public class Utils extends Shutter {
 		}	
 		
 		lblFiles.setText(filesNumber());
+	}	
+	
+	public static void openFile(File file) {
+		try {
+			/**
+			 * Opens a file or folder with the default application. On Linux the opener is
+			 * spawned detached: {@code java.awt.Desktop.open()} can block forever on
+			 * Wayland/X11 (it holds the AWT lock waiting for the launched file manager),
+			 * which freezes the whole UI.
+			 */
+			if (System.getProperty("os.name").contains("Linux"))
+			{
+				// Detached spawn: returns immediately, touches no AWT/X11 lock
+				new ProcessBuilder("gio", "open", file.getAbsolutePath())
+						.redirectOutput(ProcessBuilder.Redirect.DISCARD)
+						.redirectError(ProcessBuilder.Redirect.DISCARD).start();
+			}
+			else
+				Desktop.getDesktop().open(file);			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@SuppressWarnings({"rawtypes"})
@@ -2611,25 +2635,29 @@ public class Utils extends Shutter {
 			if (btnStart.getText().equals(Shutter.language.getProperty("btnResumeFunction")))
 				FFMPEG.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le
 										// détruire
-			FFMPEG.process.destroy();
+			FFMPEG.process.destroyForcibly();
+			
+			VideoPlayerUtils.stopWaveformCreation();
+			
+			VideoPlayerUtils.stopThumbnailsCreation();
 			
 			if (FFPROBE.isRunning)
-				FFPROBE.process.destroy();
+				FFPROBE.process.destroyForcibly();
 			
 			if (BMXTRANSWRAP.isRunning)
-				BMXTRANSWRAP.process.destroy();
+				BMXTRANSWRAP.process.destroyForcibly();
 
 			if (DCRAW.isRunning)
-				DCRAW.process.destroy();
+				DCRAW.process.destroyForcibly();
 			
 			if (XPDFREADER.isRunning)
-				XPDFREADER.process.destroy();
+				XPDFREADER.process.destroyForcibly();
 
 			if (DVDAUTHOR.isRunning)
-				DVDAUTHOR.process.destroy();
+				DVDAUTHOR.process.destroyForcibly();
 			
 			if (TSMUXER.isRunning)
-				TSMUXER.process.destroy();
+				TSMUXER.process.destroyForcibly();
 			
 			if (YOUTUBEDL.isRunning)
 			{
@@ -2642,15 +2670,15 @@ public class Utils extends Shutter {
 				}
 				else
 				{
-					YOUTUBEDL.process.destroy();
+					YOUTUBEDL.process.destroyForcibly();
 				}
 			}
 			
 			if (PYTHON.runProcess != null && PYTHON.runProcess.isAlive())
-				PYTHON.process.destroy();
+				PYTHON.process.destroyForcibly();
 			
 			if (WHISPER.runProcess != null && WHISPER.runProcess.isAlive())
-				WHISPER.process.destroy();
+				WHISPER.process.destroyForcibly();
 			
 		} catch (Exception er) {}
 
@@ -2789,9 +2817,9 @@ public class Utils extends Shutter {
 			subtitlesFilePath.delete();
 		}
 							
-		if (VideoPlayerCore.waveform != null)
+		if (VideoPlayerUtils.waveform != null)
 		{
-			VideoPlayerCore.waveform = null;
+			VideoPlayerUtils.waveform = null;
 		}
 		
 		//Check donate account

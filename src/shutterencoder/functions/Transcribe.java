@@ -170,7 +170,7 @@ public class Transcribe extends Shutter {
 						if (cancelled == false)
 						{
 							lblCurrentEncoding.setText(fileName);
-							tempsEcoule.setVisible(false);
+							lblElapsedTime.setVisible(false);
 							
 							//Set command
 							boolean format = false;

@@ -296,10 +296,8 @@ public static String colorprimaries = "";
 			                // Durée
 				            if (line.contains("Duration:") && line.contains("Duration: N/A") == false && line.contains("<Duration>") == false)
 				            {			
-					    		String str = line.substring(line.indexOf(":") + 2);
-					    		String s[] = str.split(",");	 
-					    		
-					    		String ffmpegTime = s[0].replace(".", ":");	  
+				            	String duration = line.substring(line.indexOf("Duration:") + "Duration:".length(), line.indexOf(",", line.indexOf("Duration:"))).trim();
+				    	    	String ffmpegTime = duration.replace('.', ':');
 					    					    							    		
 					    		getVideoLengthTC = ffmpegTime;
 					    		totalLength = getTimeToMS(ffmpegTime);

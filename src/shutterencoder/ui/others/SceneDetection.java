@@ -21,7 +21,6 @@ package shutterencoder.ui.others;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Desktop;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.MouseInfo;
@@ -30,7 +29,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.awt.geom.Area;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -689,18 +687,14 @@ import javax.swing.JScrollPane;
 		visualiser.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	            try {
-					Desktop.getDesktop().open(new File(outputFolder + "/" + table.getSelectedRow() + ".png"));
-				} catch (IOException e1) {}			
+	            Utils.openFile(new File(outputFolder + "/" + table.getSelectedRow() + ".png"));		
 			}		
 		});
 
 		ouvrirDossier.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent e) {
-	            try {
-					Desktop.getDesktop().open(outputFolder);
-				} catch (IOException e1) {}
+				Utils.openFile(outputFolder);
 			}		
 		});
 		
@@ -724,9 +718,7 @@ import javax.swing.JScrollPane;
 		    	//Double clic
 		        if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && table.getSelectedRowCount() == 1)
 		        {
-		            try {
-						Desktop.getDesktop().open(new File(outputFolder + "/" + table.getSelectedRow() + ".png"));
-					} catch (IOException e1) {}
+		            Utils.openFile(new File(outputFolder + "/" + table.getSelectedRow() + ".png"));
 		        }
 		        
 		        //Clic droit

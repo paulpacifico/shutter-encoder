@@ -46,7 +46,7 @@ public static String modelsPath;
 				
 		error = false;
 	    progressBar.setValue(0);
-	    tempsEcoule.setVisible(false);
+	    lblElapsedTime.setVisible(false);
 	    				    
 	    Console.consoleNCNN.append(language.getProperty("command") + " " + cmd);
 		

@@ -26,6 +26,7 @@ import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
 public class Transitions extends Shutter {
 
@@ -115,7 +116,7 @@ public class Transitions extends Shutter {
 								totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFPROBE.currentFPS));
 							}
 			    		}
-			    		else if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+			    		else if (VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 				        {
 							totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
 				        }
@@ -225,7 +226,7 @@ public class Transitions extends Shutter {
 							totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFPROBE.currentFPS));
 						}
 		    		}
-		    		else if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+		    		else if (VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 			        {
 						totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
 			        }

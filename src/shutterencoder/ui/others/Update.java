@@ -20,7 +20,6 @@
 package shutterencoder.ui.others;
 
 import java.awt.Color;
-import java.awt.Desktop;
 import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -422,7 +421,7 @@ public class Update {
 					            pb.start();
 							}
 							else
-								Desktop.getDesktop().open(appPath);
+								Utils.openFile(appPath);
 							
 						} catch (Exception e) {}
 											

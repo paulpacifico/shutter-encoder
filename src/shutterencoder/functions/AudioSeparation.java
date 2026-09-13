@@ -122,7 +122,7 @@ public class AudioSeparation extends Shutter {
 						if (cancelled == false)
 						{
 							lblCurrentEncoding.setText(fileName);
-							tempsEcoule.setVisible(false);
+							lblElapsedTime.setVisible(false);
 														
 							//Run demucs
 							DEMUCS.run(model, separationFolder.toString(), waveFile.toString(), comboFilter.getSelectedItem().toString());

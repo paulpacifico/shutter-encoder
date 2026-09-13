@@ -23,6 +23,8 @@ import java.awt.Color;
 import java.awt.Component;
 import java.io.File;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JTextField;
 
@@ -34,6 +36,7 @@ import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.subtitling.SubtitlesEmbed;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 
@@ -154,160 +157,12 @@ public class Overlay extends Shutter {
 				rate = String.valueOf(FFPROBE.currentFPS * 2);
 			}
 			
-			String overlayFont = "";
-			if (System.getProperty("os.name").contains("Mac"))
-			{	
-				 //Library
-				 File[] fontFolder =  new File("/Library/Fonts").listFiles();
-		
-				 for (int i = 0; i < fontFolder.length; i++)
-				 {				 
-					if (fontFolder[i].isFile())
-					{
-						File fontPath = new File(fontFolder[i].toString());
-						String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
-						
-						if (fontName[0].equals(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
-						{
-							overlayFont = fontFolder[i].getAbsolutePath();	
-							break;
-						}
-				 	}
-				 }
-				 		
-				 //System Library
-				 if (overlayFont == "")
-				 {
-					 fontFolder = new File("/System/Library/Fonts").listFiles();
-					 
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-						 if (fontFolder[i].isFile())
-						 {
-							File fontPath = new File(fontFolder[i].toString());
-							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
-							
-							if (fontName[0].equals(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
-							{
-								overlayFont = fontFolder[i].getAbsolutePath();	
-								break;
-							}
-				 		 }	   
-					 }
-				 }
-				 
-				//Supplemental Library
-				if (overlayFont == "" && new File("/System/Library/Fonts/Supplemental").exists())
-				{
-					 fontFolder = new File("/System/Library/Fonts/Supplemental").listFiles();
-					 
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-						 if (fontFolder[i].isFile())
-						 {
-							File fontPath = new File(fontFolder[i].toString());
-							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
-							
-							if (fontName[0].equals(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
-							{
-								overlayFont = fontFolder[i].getAbsolutePath();	
-								break;
-							}
-				 		 }	   
-					 }
-				 }
-				 
-				 //User Library					 
-				 if (overlayFont == "")
-				 {
-					 fontFolder = new File(System.getProperty("user.home") + "/Library/Fonts").listFiles();
-					 
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-					 	if (fontFolder[i].isFile())
-						{
-					 		File fontPath = new File(fontFolder[i].toString());
-							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
-							
-							if (fontName[0].equals(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
-							{
-								overlayFont = fontFolder[i].getAbsolutePath();	
-								break;
-							}
-					 	}   
-					 }
-				 }	
-				 
-				 
-				 //Library with contains				 
-				 if (overlayFont == "")
-				 {
-					 fontFolder =  new File("/Library/Fonts").listFiles();
-					 
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {				 
-						if (fontFolder[i].isFile())
-						{
-							File fontPath = new File(fontFolder[i].toString());
-							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
-							
-							if (fontName[0].contains(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
-							{
-								overlayFont = fontFolder[i].getAbsolutePath();	
-								break;
-							}
-					 	}
-					 }
-				 }
-				 		
-				 //System Library with contains
-				 if (overlayFont == "")
-				 {
-					 fontFolder = new File("/System/Library/Fonts").listFiles();
-					 
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-						 if (fontFolder[i].isFile())
-						 {
-							File fontPath = new File(fontFolder[i].toString());
-							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
-							
-							if (fontName[0].contains(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
-							{
-								overlayFont = fontFolder[i].getAbsolutePath();	
-								break;
-							}
-				 		 }	   
-					 }
-				 }
-				 
-				 //User Library	 with contains				 
-				 if (overlayFont == "")
-				 {
-					 fontFolder = new File(System.getProperty("user.home") + "/Library/Fonts").listFiles();
-					 
-					 for (int i = 0; i < fontFolder.length; i++)
-					 {						 
-					 	if (fontFolder[i].isFile())
-						{
-					 		File fontPath = new File(fontFolder[i].toString());
-							String fontName[] = fontPath.getName().toLowerCase().replace(" ",  "").replace("_", "").split("\\.");
-							
-							if (fontName[0].contains(Shutter.comboOverlayFont.getSelectedItem().toString().toLowerCase().replace(" ",  "").replace("_", "")))
-							{
-								overlayFont = fontFolder[i].getAbsolutePath();	
-								break;
-							}
-					 	}   
-					 }
-				 }
-				 
-				 if (overlayFont == "")
-					 overlayFont = "/Library/Fonts/Arial";
-			}
-			else
-				overlayFont = "font=" + Shutter.comboOverlayFont.getSelectedItem().toString();
+			String overlayFont = "fontfile='" + findFont(comboOverlayFont.getSelectedItem().toString()) + "'";
 	      
+			if (System.getProperty("os.name").toLowerCase().contains("win")) {
+			    overlayFont = overlayFont.replace('\\', '/').replace(":", "\\:");
+			}
+			
 			float imageRatio = 1.0f;
 			
 			int ow = FFPROBE.imageWidth;  
@@ -435,13 +290,13 @@ public class Overlay extends Shutter {
 			|| comboSubsSource.getSelectedIndex() != 0)
 			{
 				FunctionUtils.addSubtitles(false);
-				if (VideoPlayerCore.loadImageProcess != null)
+				if (VideoPlayerUtils.loadImageProcess != null)
 				{
 					do {
 						try {
 							Thread.sleep(100);
 						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadImageProcess.isAlive());
+					} while (VideoPlayerUtils.loadImageProcess.isAlive());
 				}
 				FunctionUtils.addSubtitles(true);
 			}
@@ -789,4 +644,135 @@ public class Overlay extends Shutter {
     	
     	return filterComplex;
 	}	
+	
+	private static String findFont(String fontName) {
+
+	    if (fontName == null || fontName.isBlank()) {
+	        return "";
+	    }
+
+	    // Normalize the font name used for comparison
+	    String wanted = fontName
+	            .toLowerCase()
+	            .replace(" ", "")
+	            .replace("_", "");
+
+	    String os = System.getProperty("os.name").toLowerCase();
+
+	    List<String> fontFolders = new ArrayList<>();
+	    	    
+	    if (os.contains("mac"))
+	    {
+	        fontFolders.add("/Library/Fonts");
+	        fontFolders.add("/System/Library/Fonts");
+
+	        File supplemental = new File("/System/Library/Fonts/Supplemental");
+	        if (supplemental.exists()) {
+	            fontFolders.add(supplemental.getAbsolutePath());
+	        }
+
+	        fontFolders.add(System.getProperty("user.home") + "/Library/Fonts");
+	    }
+	    else if (os.contains("win"))
+	    {
+	        // System fonts
+	        fontFolders.add(System.getenv("WINDIR") + "\\Fonts");
+
+	        // User fonts (Windows 10/11)
+	        String localAppData = System.getenv("LOCALAPPDATA");
+
+	        if (localAppData != null) {
+	            fontFolders.add(
+	                localAppData + "\\Microsoft\\Windows\\Fonts"
+	            );
+	        }
+	    }    
+	    else // Linux
+	    {
+	        // System fonts
+	        fontFolders.add("/usr/share/fonts");
+	        fontFolders.add("/usr/local/share/fonts");
+
+	        // User fonts
+	        String home = System.getProperty("user.home");
+
+	        fontFolders.add(home + "/.fonts");
+	        fontFolders.add(home + "/.local/share/fonts");
+	    }
+
+	    
+	    // First pass: exact filename match
+	    String result = findFontInFolders(fontFolders, wanted, false);
+
+	    if (!result.isEmpty()) {
+	        return result;
+	    }
+
+	    
+	    // Second pass: filename contains font name  
+	    result = findFontInFolders(fontFolders, wanted, true);
+
+	    return result;
+	}
+	
+	private static String findFontInFolders(List<String> folders, String wanted, boolean contains) {
+
+	    for (String folderPath : folders)
+	    {
+	        File folder = new File(folderPath);
+
+	        if (!folder.exists() || !folder.isDirectory()) {
+	            continue;
+	        }
+
+	        File[] files = folder.listFiles();
+
+	        if (files == null) {
+	            continue;
+	        }
+
+	        for (File file : files) {
+
+	            if (!file.isFile()) {
+	                continue;
+	            }
+
+	            String fileName = file.getName().toLowerCase();
+
+	            // Only actual font files
+	            if (!fileName.endsWith(".ttf") &&
+	                !fileName.endsWith(".otf") &&
+	                !fileName.endsWith(".ttc"))
+	            {
+	                continue;
+	            }
+
+	            // Remove extension
+	            int dot = fileName.lastIndexOf('.');
+
+	            if (dot > 0) {
+	                fileName = fileName.substring(0, dot);
+	            }
+
+	            // Normalize
+	            String normalized = fileName
+	                    .replace(" ", "")
+	                    .replace("_", "");
+
+	            boolean match;
+
+	            if (contains) {
+	                match = normalized.contains(wanted);
+	            } else {
+	                match = normalized.equals(wanted);
+	            }
+
+	            if (match) {
+	                return file.getAbsolutePath();
+	            }
+	        }
+	    }
+
+	    return "";
+	}
 }

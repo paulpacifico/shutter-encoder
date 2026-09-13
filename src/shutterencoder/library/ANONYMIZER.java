@@ -123,9 +123,7 @@ public class ANONYMIZER {
 			else
 			{
 				Shutter.comboFonctions.setSelectedItem("");
-				try {
-					Desktop.getDesktop().open(anonymizerApp);
-				} catch (IOException e) {}
+				Utils.openFile(anonymizerApp);
 			}
 		}
 		else
@@ -173,7 +171,7 @@ public class ANONYMIZER {
 						        pb.start();
 						        
 						        //Open the installer
-								Desktop.getDesktop().open(fileToUnlock);
+						        Utils.openFile(fileToUnlock);
 								 
 							} catch (Exception e) {}	
 						}				

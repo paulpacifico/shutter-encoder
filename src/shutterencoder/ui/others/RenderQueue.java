@@ -769,7 +769,7 @@ import shutterencoder.utils.Utils;
 			public void actionPerformed(ActionEvent arg0) {
 				
 				//Temps écoulé
-				FFMPEG.tempsEcoule.setVisible(false);
+				FFMPEG.lblElapsedTime.setVisible(false);
 				FFMPEG.elapsedTime = 0;
 				FFMPEG.previousElapsedTime = 0;
 				

@@ -96,11 +96,11 @@ public static Process process;
 							BufferedInputStream inputStream = new BufferedInputStream(is);
 	
 							int frameSize = VideoPlayerCore.player.getWidth() * VideoPlayerCore.player.getHeight() * 6;
-							VideoPlayerCore.preview = inputStream.readNBytes(frameSize);
+							VideoPlayerUtils.preview = inputStream.readNBytes(frameSize);
 							
 							inputStream.close();
 							
-							VideoPlayerCore.readFrame(inputStream, VideoPlayerUI.player.getWidth(), VideoPlayerUI.player.getHeight(), true, false);
+							VideoPlayerCore.readFrame(inputStream, VideoPlayerUI.player.getWidth(), VideoPlayerUI.player.getHeight(), false);
 
 							if (VideoPlayerCore.frameVideo != null)
 							{

@@ -1847,7 +1847,7 @@ public class VideoEncoders extends Shutter {
 			case "DVD":
 				
 				float bitrate = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
-				if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+				if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 				{
 					double totalIn =  Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * VideoPlayerUI.inputFramerateMS;
 					double totalOut = Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * VideoPlayerUI.inputFramerateMS;

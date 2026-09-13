@@ -356,7 +356,7 @@ public class ReplaceAudio extends Shutter {
 				{
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';
 				}
-				else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth())
+				else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 				{
 					offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';

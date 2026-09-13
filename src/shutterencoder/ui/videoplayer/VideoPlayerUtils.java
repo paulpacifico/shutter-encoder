@@ -19,21 +19,46 @@
 
 package shutterencoder.ui.videoplayer;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.SwingUtilities;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
+import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
+import shutterencoder.library.DCRAW;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
+import shutterencoder.library.NCNN;
+import shutterencoder.library.XPDFREADER;
 import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesTimeline;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts.CutSegment;
@@ -42,6 +67,24 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 
 	//FileList
 	public static StringBuilder fileList = new StringBuilder();
+	
+    //Waveform
+    public static Thread addWaveform = new Thread();
+  	public static boolean addWaveformIsRunning = false;
+  	public static BufferedImage waveform = null;  	
+  	
+  	//Thumbnails
+  	private static Thread thumbnailThread;
+  	private static ExecutorService thumbnailExecutor;
+  	private static final Set<Process> activeFFmpegProcesses = Collections.newSetFromMap(new ConcurrentHashMap<>());
+  	public static BufferedImage[] allThumbnails;
+  		
+	//Preview
+	public static byte[] preview = null;
+	protected static volatile boolean loadImageRunning = false;
+	protected static volatile boolean loadImagePending = false;
+	public static Thread loadImageProcess = new Thread();
+	protected static final Object loadImageLock = new Object();
 	
 	public static void setMedia() {
 		
@@ -123,27 +166,21 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							if (VideoPlayerCore.frameVideo != null)
 								VideoPlayerCore.frameVideo = null;
 							
-							if (VideoPlayerCore.preview != null)
-								VideoPlayerCore.preview = null;
+							if (preview != null)
+								preview = null;
 							
-							if (VideoPlayerCore.waveform != null)
+							if (waveform != null)
 							{
-								VideoPlayerCore.waveform = null;
+								waveform = null;
 								waveformIcon.setIcon(null);
 								waveformIcon.repaint();
 							}
 							
 							waveformZoom = 1;
 												
-							if (VideoPlayerCore.addWaveformIsRunning && LibraryUtils.waveformWriter != null)
+							if (addWaveformIsRunning && LibraryUtils.waveformWriter != null)
 							{
-								try {
-									LibraryUtils.waveformWriter.write('q');
-									LibraryUtils.waveformWriter.flush();
-									LibraryUtils.waveformWriter.close();
-								} catch (IOException er) {}
-								
-								LibraryUtils.waveformProcess.destroy();
+								VideoPlayerUtils.stopWaveformCreation();
 							}
 													
 							String extension = VideoPlayerCore.videoPath.substring(VideoPlayerCore.videoPath.lastIndexOf("."));	
@@ -183,22 +220,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							btnStop.doClick();							
 							Shutter.fileList.repaint();							
 							fileDuration = FFPROBE.totalLength; //Avoid a bug when totalLength is loader somewhere else
-	
-							boolean isWindows = System.getProperty("os.name").contains("Windows");
-							
-							if (FFPROBE.videoCodec != null && FFPROBE.totalLength > 40)
-							{
-								String vcodec = FFPROBE.videoCodec.toLowerCase();				
-								if (vcodec.equals("hevc")
-								|| (vcodec.equals("vp9") && FFPROBE.hasAlpha == false && isWindows)
-								|| (vcodec.equals("av1") && isWindows))
-								{
-									gpuDecodingIsFaster = true;
-								}
-								else
-									gpuDecodingIsFaster = false;
-							}
-							
+
 							if (isRaw)
 							{
 								Shutter.btnStart.setEnabled(true);
@@ -206,6 +228,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 																					
 							cursorCurrentFrame.setBounds(0, 0, 1, waveformContainer.getHeight() - 1);
 							setPlayerButtons(true);	
+
+							//Generate filmstrip							
+							if (caseShowThumbnails.isSelected())
+								generateThumbnails();
 							
 							//Add layers
 							if (Shutter.caseAddWatermark.isSelected()) {
@@ -287,13 +313,13 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								|| Shutter.comboSubsSource.getSelectedIndex() != 0)
 								{
 									FunctionUtils.addSubtitles(false);
-									if (VideoPlayerCore.loadImageProcess != null)
+									if (loadImageProcess != null)
 									{
 										do {
 											try {
 												Thread.sleep(100);
 											} catch (InterruptedException e) {}
-										} while (VideoPlayerCore.loadImageProcess.isAlive());
+										} while (loadImageProcess.isAlive());
 									}
 									FunctionUtils.addSubtitles(true);
 								}
@@ -477,11 +503,18 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						lblPosition.setVisible(false);
 						lblDuration.setVisible(false);	
 						
-						if (VideoPlayerCore.waveform != null)
+						if (waveform != null)
 						{
-							VideoPlayerCore.waveform = null;
+							waveform = null;
 							waveformIcon.setIcon(null);
 							waveformIcon.repaint();
+						}
+						
+						// Thumbnails
+						if (VideoPlayerCore.thumbnails != null)
+						{			
+							allThumbnails = null;
+							stopThumbnailsCreation();
 						}
 					}
 					
@@ -533,14 +566,14 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
 						
 						SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");		
-						SubtitlesTimeline.timelineScrollBar.setMaximum((int) (((totalFrames - 2) * VideoPlayerUI.inputFramerateMS) * SubtitlesTimeline.zoom));
+						SubtitlesTimeline.timelineScrollBar.setMaximum((int) (((totalFrames - 2) * inputFramerateMS) * SubtitlesTimeline.zoom));
 									
 						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			    		Shutter.frame.setLocation(Shutter.frame.getLocation().x , dim.height/3 - Shutter.frame.getHeight()/2);
 			
 			    		if (Shutter.caseAddSubtitles.isSelected())
 			    		{
-			    			VideoPlayerUI.player.remove(Shutter.subsCanvas);
+			    			player.remove(Shutter.subsCanvas);
 							Shutter.caseAddSubtitles.setSelected(false);	    	
 			    		}
 							    		    	
@@ -596,7 +629,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				tff = " BFF";
 		}
 	
-		if (FFPROBE.videoCodec != null && VideoPlayerUI.fileDuration > 40 && Shutter.inputDeviceIsRunning == false)
+		if (FFPROBE.videoCodec != null && fileDuration > 40 && Shutter.inputDeviceIsRunning == false)
 		{
 			String vcodec = FFPROBE.videoCodec.replace("video", "");
 			for (String s : Shutter.functionsList)
@@ -611,13 +644,13 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					vcodec = vcodec.toUpperCase();
 			}
 	
-			VideoPlayerUI.showScale.setText(FFPROBE.imageResolution + " " + vcodec + tff + " " + FFPROBE.imageDepth + "-bit");
+			showScale.setText(FFPROBE.imageResolution + " " + vcodec + tff + " " + FFPROBE.imageDepth + "-bit");
 		}
 		else
-			VideoPlayerUI.showScale.setText(FFPROBE.imageResolution + tff);
+			showScale.setText(FFPROBE.imageResolution + tff);
 		
-		VideoPlayerUI.showScale.repaint();
-		VideoPlayerUI.showFPS.repaint();
+		showScale.repaint();
+		showFPS.repaint();
 	}
 
 	public static double getFPS() {
@@ -835,10 +868,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		
 		if (Shutter.caseSetTimecode.isSelected() && Shutter.caseIncrementTimecode.isSelected() == false && Shutter.setTimecodeEdited == false)
 		{
-			Shutter.TCset1.setText(VideoPlayerUI.caseInH.getText());
-			Shutter.TCset2.setText(VideoPlayerUI.caseInM.getText());
-			Shutter.TCset3.setText(VideoPlayerUI.caseInS.getText());
-			Shutter.TCset4.setText(VideoPlayerUI.caseInF.getText());
+			Shutter.TCset1.setText(caseInH.getText());
+			Shutter.TCset2.setText(caseInM.getText());
+			Shutter.TCset3.setText(caseInS.getText());
+			Shutter.TCset4.setText(caseInF.getText());
 		}
 		
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionReplaceAudio")))
@@ -1204,4 +1237,601 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		} catch (Exception e){}
 	}
 
+	public static void addWaveform(boolean newWaveform) {
+		
+		if (caseShowWaveform.isSelected() && FFPROBE.hasAudio && addWaveformIsRunning == false && Shutter.frame.getSize().width > 654 && Settings.btnDisableVideoPlayer.isSelected() == false)
+		{			
+			addWaveformIsRunning = true;
+			
+			if (newWaveform || waveform == null)
+			{
+				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				waveformIcon.setVisible(false);
+				
+				if (newWaveform)
+				{					
+					waveform = null;
+				}
+			}
+						
+			addWaveform = new Thread(new Runnable()
+			{
+				@Override
+				public void run() {
+					
+					if (newWaveform || waveform == null)
+					{							
+						long size = 2000;
+	
+						String start = "";
+						String duration = "";
+						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+						{	
+							do {
+								try {
+									Thread.sleep(100);
+								} catch (InterruptedException e) {}
+							} while (SubtitlesTimeline.frame == null);
+							
+							if (SubtitlesTimeline.waveform == null)
+								SubtitlesTimeline.waveform = new JLabel();	
+							
+							long time = (long) (SubtitlesTimeline.timelineScrollBar.getValue() / SubtitlesTimeline.zoom);
+	
+							String h = Shutter.formatter.format(Math.floor(time / 1000) / 3600);
+							String m = Shutter.formatter.format((Math.floor(time / 1000) / 60) % 60);
+							String s = Shutter.formatter.format(Math.floor(time / 1000) % 60);    		
+							String f = Shutter.formatterToMs.format(time % 1000);
+							
+							start = " -ss " + h + ":" + m + ":" + s + "." + f;
+							duration = "atrim=duration=" + (SubtitlesTimeline.frame.getWidth() / 100) + ",";								
+							size = (long) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom);
+						}
+						
+						//IMPORTANT
+						if (size > 549944)
+							size = 549944;
+						
+						if (FFPROBE.channels > 1 && comboAudioTrack.isVisible())
+						{		
+							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
+							{
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + VideoPlayerCore.videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+							}
+							else
+							{
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + VideoPlayerCore.videoPath + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+							}
+						}
+						else
+						{
+							LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + VideoPlayerCore.videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x360:colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
+						}
+						
+						if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+						{
+							Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+						}
+						else
+							Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+					}
+					
+					//add Waveform		
+					try {
+						
+						if (Shutter.list.getSize() > 0 && isPiping == false && waveform != null)
+						{
+							if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) //Ne charge plus l'image si la fenêtre est fermée entre temps
+							{
+								ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));						
+								
+								waveformIcon.setIcon(null);
+								waveformContainer.repaint();
+								
+								SubtitlesTimeline.waveform.setIcon(resizedWaveform);							
+								SubtitlesTimeline.waveform.setBounds(SubtitlesTimeline.timelineScrollBar.getValue(), SubtitlesTimeline.waveform.getY(), (int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight());
+								SubtitlesTimeline.waveform.repaint();
+							}
+							else
+							{	    		
+								waveformIcon.setSize(waveformContainer.getSize());
+								ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
+								
+								waveformIcon.setIcon(resizedWaveform);
+								waveformContainer.repaint();
+	
+								if ((RenderQueue.frame != null && RenderQueue.frame.isVisible() && FFMPEG.isRunning) || isPiping || VideoPlayerCore.videoPath == null)
+								{
+									waveformIcon.setVisible(false);
+								}
+								else
+									waveformIcon.setVisible(true);
+							} 	
+						}
+					}
+					catch (Exception e) {}
+					finally
+					{					
+						addWaveformIsRunning = false;
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					}	
+				}				
+			});
+			addWaveform.start();
+		}
+	}
+	
+	public static void stopWaveformCreation() {
+		
+		if (addWaveform != null && addWaveform.isAlive())
+	    {
+			addWaveform.interrupt();
+			
+			try {
+				LibraryUtils.waveformWriter.write('q');
+				LibraryUtils.waveformWriter.flush();
+				LibraryUtils.waveformWriter.close();
+			} catch (IOException er) {}
+	        
+	        if (LibraryUtils.waveformProcess != null && LibraryUtils.waveformProcess.isAlive())
+	        {
+	        	LibraryUtils.waveformProcess.destroyForcibly();
+	        }
+	    }
+	}
+
+	public static void loadImage(boolean forceRefresh) {
+		
+	    if (VideoPlayerCore.videoPath == null || Shutter.list.getSize() <= 0 || Shutter.doNotLoadImage)
+	    {
+	        return;
+	    }
+	
+	    synchronized (loadImageLock) {
+	
+	        if (loadImageRunning)
+	        {
+	            loadImagePending = true;
+	            return;
+	        }
+	
+	        loadImageRunning = true;
+	    }
+	
+	    loadImageProcess = new Thread(() -> {
+	
+	    	//Clear the buffer
+			if (VideoPlayerCore.bufferedFrames.size() > 0)
+			{				
+				VideoPlayerCore.bufferedFrames.clear();
+				waveformContainer.repaint();
+			}
+						
+			//Stop player
+			if (VideoPlayerCore.playerIsPlaying())
+			{
+				btnPlay.doClick();
+			}
+		
+	        try
+	        {	
+	        	do {
+	        		Thread.sleep(10);
+	        	} while (VideoPlayerCore.videoPath == null);
+	        		
+	        	File file = new File(VideoPlayerCore.videoPath);
+	        			        						
+				String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
+				boolean isRaw = false;
+				
+				//FFprobe with RAW files
+				switch (extension.toLowerCase()) { 
+					case ".3fr":
+					case ".arw":
+					case ".crw":
+					case ".cr2":
+					case ".cr3":
+					case ".dng":
+					case ".kdc":
+					case ".mrw":
+					case ".nef":
+					case ".nrw":
+					case ".orf":
+					case ".ptx":
+					case ".pef":
+					case ".raf":
+					case ".r3d":
+					case ".rw2":
+					case ".srw":
+					case ".x3f":
+						isRaw = true;
+				}
+				
+				if (Shutter.caseShowTimecode.isSelected() && FFPROBE.timecode1.equals(""))
+				{
+					Shutter.caseShowTimecode.setSelected(false);
+					Shutter.caseShowTimecode.setEnabled(false);
+					Shutter.caseAddTimecode.setSelected(true);
+					Shutter.TC1.setEnabled(true);
+					Shutter.TC2.setEnabled(true);
+					Shutter.TC3.setEnabled(true);
+					Shutter.TC4.setEnabled(true);	
+				}			
+						
+				//Deinterlace
+				String deinterlace = "";
+				
+				//Format
+				String colorFormat = FFPROBE.hasAlpha ? "bgra64le" : "bgr48le";
+				
+				if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
+					deinterlace = " -vf bwdif=0:" + FFPROBE.fieldOrder + ":0";		
+	
+				//Input point
+				String inputPoint = " -ss " + (long) ((double) VideoPlayerCore.playerCurrentFrame * inputFramerateMS) + "ms";
+				
+				if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
+					inputPoint = "";
+		
+				//Creating preview file													
+				String cmd = deinterlace + " -frames:v 1 -an -sn -s " + player.getWidth() + "x" + player.getHeight() + " -scaler bicubic -y ";	
+				
+				if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
+				{
+					if (extension.toLowerCase().equals(".pdf"))
+					{
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						XPDFREADER.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+					
+						do {
+			            	Thread.sleep(10);  					            	
+			            } while (XPDFREADER.isRunning && XPDFREADER.error == false);	
+					}
+					else if (isRaw)
+					{									
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						DCRAW.run(" -v -w -q 0 -o 1 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+						
+			            do {
+			            	Thread.sleep(10);  					            	
+			            } while (DCRAW.isRunning && DCRAW.error == false);	
+					}
+					else if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))							
+					{													
+						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						
+						File preview = new File(Shutter.dirTemp + "preview.png");
+						
+						FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + deinterlace + " -frames:v 1 -an -sn -y " + '"' + preview + '"');		
+						
+						do {
+			            	Thread.sleep(10);  
+			            } while (FFMPEG.isRunning && FFMPEG.error == false);
+						
+						String model = "realesr-general-wdn-x4v3";							
+						if (Shutter.comboResolution.getSelectedItem().toString().contains("animation"))
+						{
+							model = "realesrgan-x4plus-anime";
+						}
+						else if (Shutter.comboResolution.getSelectedItem().toString().contains("photo"))
+						{
+							model = "4x_NMKD-Siax_200k";
+						}
+	
+						Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+						Shutter.lblCurrentEncoding.setText(new File(VideoPlayerCore.videoPath).getName());
+																						
+						NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"', true);
+	
+						do {									
+							Thread.sleep(10);
+						} while (NCNN.isRunning);
+													
+						Shutter.progressBar.setValue(0);
+						Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
+														
+						if (preview.exists())
+						{									
+							generatePreview(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -"); 
+	
+							if (mouseIsPressed == false)
+							{
+								previewUpscale = true;
+							}
+						}
+						else
+						{
+							generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+						}
+							
+						if (preview.exists())
+							preview.delete();
+					}		
+					else									
+					{	
+						generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -");
+					}		
+	
+		            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
+				}	
+										
+				if (preview != null || Shutter.caseAddSubtitles.isSelected())
+				{		
+					//Format
+					String outputFormat = FFPROBE.hasAlpha ? "abgr" : "rgb565be";
+					
+					//Subtitles are visible only from a video file
+					if (Shutter.caseAddSubtitles.isSelected())
+					{				
+						generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + VideoPlayerCore.videoPath + '"' + VideoPlayerCore.setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -an -sn -f rawvideo -"); 
+					}
+					else
+					{															
+						generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + colorFormat + " -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + VideoPlayerCore.setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -f rawvideo -");
+					}							
+				}
+	        }
+		    catch (Exception e)
+		    {				
+		    	e.printStackTrace();
+	 	       	//JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+		    }
+	        finally {
+	
+	        	while (FFMPEG.isRunning)
+	        	{
+	        		try {
+						Thread.sleep(10);
+					} catch (InterruptedException e) {}
+	        	} 
+				
+	  			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+					Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+				else
+					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+	        	
+	  			boolean reload;
+	
+	  			synchronized (loadImageLock)
+	  			{
+	  			    loadImageRunning = false;
+	  			    reload = loadImagePending;
+	  			    loadImagePending = false;
+	  			}
+	
+	  			if (reload) {
+	  			    loadImage(false);
+	  			}
+	        }
+	
+	    });
+	
+	    loadImageProcess.start();
+	}
+
+	private static void generatePreview(String cmd) {
+		
+		try {		
+						
+			ProcessBuilder pbv = new ProcessBuilder(VideoPlayerCore.formatCommand(cmd));
+			Process process = pbv.start();
+						
+			//Console.consoleFFMPEG.append(cmd + System.lineSeparator());
+	
+			//Write preview frame to ffmpeg input
+			if (preview != null)
+			{
+		        OutputStream outputStream = process.getOutputStream();
+		        process.getOutputStream().write(preview);
+		        outputStream.close();
+			}				     	
+			/*
+			String line;
+			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));	
+			
+			while ((line = input.readLine()) != null)
+			{
+				System.out.println(line);
+			}*/
+	        
+	        InputStream is = process.getInputStream();				
+			BufferedInputStream inputStream = new BufferedInputStream(is);
+	
+			if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
+			{	
+				int bpp = FFPROBE.hasAlpha ? 8 : 6;
+				int frameSize = player.getWidth() * player.getHeight() * bpp;
+				preview = inputStream.readNBytes(frameSize);
+			}
+			else
+			{
+				VideoPlayerCore.readFrame(inputStream, player.getWidth(), player.getHeight(), false);
+			}
+	
+			inputStream.close();
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		if (VideoPlayerCore.frameVideo != null)
+		{
+			player.repaint();
+		}
+		
+	}
+	
+	public static void generateThumbnails() {
+		
+	    allThumbnails = null;
+	    thumbnails.repaint();
+	    
+	    if (fileDuration <= 40)
+	        return;
+
+	    // Stop any previously running generation task/processes
+	    stopThumbnailsCreation();
+	    
+	    int numberOfThumbnails = 20;
+	    int numThreads = 4;
+	    
+	    //Format gpu
+  		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+
+	    thumbnailExecutor = Executors.newFixedThreadPool(numThreads);
+
+	    thumbnailThread = new Thread(() -> {
+	        double totalSeconds = fileDuration / 1000.0;
+	        double intervalSeconds = totalSeconds / numberOfThumbnails;
+
+	        BufferedImage[] images = new BufferedImage[numberOfThumbnails];
+
+	        String ffmpeg = FFMPEG.PathToFFMPEG;
+	        if (!System.getProperty("os.name").contains("Windows")) {
+	            ffmpeg = ffmpeg.replace("\\", "");
+	        }
+	        final String ffmpegCmd = ffmpeg;
+
+	        List<Future<?>> futures = new ArrayList<>();
+
+	        for (int i = 0; i < numberOfThumbnails; i++)
+	        {
+	            final int index = i;
+	            
+	            Future<?> future = thumbnailExecutor.submit(() -> {
+	            	
+	                if (Thread.currentThread().isInterrupted())
+	                    return;
+
+	                double seekTime = index * intervalSeconds;
+	                String formattedSeek = String.format("%.3f", seekTime);
+	                String crop = FFPROBE.imageRatio >= 1.7 ? ",crop=34:in_h" : "";
+
+	        	    //Get gpu scaling
+	        	    String scaling = "";
+	        		if (LibraryUtils.cudaAvailable)
+	        		{		
+	        			scaling = "scale_cuda=-1:20,hwdownload,format=" + bitDepth;
+	        		}
+	        		else if (LibraryUtils.amfAvailable)
+	        		{
+	        			scaling = "vpp_amf=-1:20,hwdownload,format=" + bitDepth;
+	        		}
+	        		else if (LibraryUtils.qsvAvailable)
+	        		{		
+	        			scaling = "scale_qsv=-1:20,hwdownload,format=" + bitDepth;
+	        		}	
+	        		else if (LibraryUtils.videotoolboxAvailable)
+	        		{
+	        			scaling = "scale_vt=-1:20,hwdownload,format=" + bitDepth;
+	        		}
+
+	        		String gpuDevice = LibraryUtils.setGPUDevice(scaling).trim();
+
+	        		List<String> command = new ArrayList<>();
+	        		command.add(ffmpegCmd);
+
+	        		if (!gpuDevice.isEmpty() && !gpuDevice.equalsIgnoreCase("-hwaccel auto -hwaccel_output_format auto"))
+	        		{
+	        		    Collections.addAll(command, gpuDevice.split("\\s+"));
+	        		}
+	        		else
+	        		{
+	        			command.add("-hwaccel");
+	        			command.add("auto");
+	        		    scaling = "scale=-1:20";
+	        		}
+
+	        		command.add("-nostdin");
+	        		command.add("-flags2");
+	        		command.add("+fast");
+	        		command.add("-err_detect");
+	        		command.add("ignore_err");
+	        		command.add("-ss");
+	        		command.add(formattedSeek);
+	        		command.add("-i");
+	        		command.add(VideoPlayerCore.videoPath);
+	        		command.add("-vf");
+	        		command.add(scaling + crop);
+	        		command.add("-analyzeduration");
+	        		command.add("0");
+	        		command.add("-probesize");
+	        		command.add("32");
+	        		command.add("-frames:v");
+	        		command.add("1");
+	        		command.add("-f");
+	        		command.add("image2pipe");
+	        		command.add("-c:v");
+	        		command.add("png");
+	        		command.add("pipe:1");
+	        		
+	        		Process process = null;
+	        		try {
+	        		    ProcessBuilder pb = new ProcessBuilder(command);
+
+	        		    process = pb.start();
+	        		    activeFFmpegProcesses.add(process);
+
+	                    BufferedImage img;
+	                    try (InputStream in = process.getInputStream()) {
+	                        img = ImageIO.read(in);
+	                    }
+
+	                    int exitCode = process.waitFor();
+	                    if (exitCode == 0 && img != null) {
+	                        images[index] = img;
+	                        allThumbnails = images;
+	                        
+	                        // Thread-safe Swing UI update
+	                        SwingUtilities.invokeLater(thumbnails::repaint);
+	                    }
+
+	                } catch (InterruptedException e) {
+	                    Thread.currentThread().interrupt();
+	                } catch (Exception ignored) {
+	                } finally {
+	                    if (process != null) {
+	                        activeFFmpegProcesses.remove(process);
+	                    }
+	                }
+	            });
+
+	            futures.add(future);
+	        }
+
+	        // Wait for all worker tasks to complete or handle interruption
+	        for (Future<?> f : futures) {
+	            try {
+	                f.get();
+	            } catch (InterruptedException e) {
+	                Thread.currentThread().interrupt();
+	                break;
+	            } catch (ExecutionException ignored) {
+	            }
+	        }
+	        
+	        thumbnailExecutor.shutdownNow();
+	    });
+
+	    thumbnailThread.start();
+	}
+	
+	public static void stopThumbnailsCreation() {
+		
+	    if (thumbnailExecutor != null && !thumbnailExecutor.isShutdown()) {
+	        thumbnailExecutor.shutdownNow();
+	    }
+	    
+	    if (thumbnailThread != null && thumbnailThread.isAlive()) {
+	        thumbnailThread.interrupt();
+	    }
+
+	    // Kill all active concurrent FFmpeg processes forcibly
+	    for (Process p : activeFFmpegProcesses) {
+	        if (p != null && p.isAlive()) {
+	            p.destroyForcibly();
+	        }
+	    }
+	    activeFFmpegProcesses.clear();
+	}
 }

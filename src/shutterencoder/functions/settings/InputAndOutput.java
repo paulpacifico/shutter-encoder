@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 
 import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
-import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts.CutSegment;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
@@ -64,7 +63,7 @@ public class InputAndOutput extends Shutter {
 					inPoint = " -ss " + (long) ((double) timeIn * VideoPlayerUI.inputFramerateMS) + "ms";
 			    }
 				
-				if (VideoPlayerUI.playerMarkOut < VideoPlayerCore.waveformContainer.getWidth() && caseEnableSequence.isSelected() == false)
+				if (VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth() && caseEnableSequence.isSelected() == false)
 		        {				
 					String framesText[] = VideoPlayerUI.lblDuration.getText().split(" ");
 					Integer frames =  Integer.parseInt(framesText[framesText.length - 2]);
@@ -74,6 +73,12 @@ public class InputAndOutput extends Shutter {
 		        		double outputFPS = FFPROBE.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 			    		
 			    		outPoint = " -frames:v " + (int) Math.ceil((double) frames / outputFPS);
+		        	}
+		        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))	        
+		        	{
+		        		double outputFPS = Float.parseFloat(comboFPS.getSelectedItem().toString().replace(",", ".")) / FFPROBE.accurateFPS;  
+			    		
+			    		outPoint = " -frames:v " + (int) Math.ceil((double) frames * outputFPS);
 		        	}
 		        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))	        
 		        	{

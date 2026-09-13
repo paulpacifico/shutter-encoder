@@ -202,12 +202,12 @@ public class ReducedWindow extends JDialog {
 				lblEnCours.setForeground(Shutter.lblCurrentEncoding.getForeground());
 											
 				//TempsRestant
-				if (Shutter.tempsRestant.isVisible())
+				if (Shutter.lblRemainingTime.isVisible())
 					lblTempsRestant.setVisible(true);		
 				else
 					lblTempsRestant.setVisible(false);	
 				
-				lblTempsRestant.setText(Shutter.tempsRestant.getText());				
+				lblTempsRestant.setText(Shutter.lblRemainingTime.getText());				
 				
 				//ProgressBar
 				if (Shutter.progressBar.isIndeterminate())
