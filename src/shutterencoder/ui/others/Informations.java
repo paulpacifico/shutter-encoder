@@ -79,7 +79,7 @@ import shutterencoder.utils.Utils;
 		frame.setTitle(Shutter.language.getProperty("frameInformations"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(600, 670);
+		frame.setSize(450, 670);
 		frame.setResizable(false);
 		frame.setUndecorated(true);
 		Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));
@@ -249,7 +249,7 @@ import shutterencoder.utils.Utils;
 		tabPanel.setLayout(null);
 		tabPanel.setBounds(0, topPanel.getSize().height, frame.getSize().width, frame.getSize().height - topPanel.getSize().height - 20);				
 		
-		infoTabbedPane.setBounds(tabPanel.getBounds());	
+		infoTabbedPane.setBounds(tabPanel.getBounds());		
 		infoTabbedPane.setForeground(Color.WHITE);
 		
 		frame.getContentPane().add(infoTabbedPane);			

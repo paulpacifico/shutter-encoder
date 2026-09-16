@@ -104,9 +104,11 @@ public class FunctionUtils extends Shutter {
 		if (isRaw || caseGenerateFromDate.isSelected())
 		{
 			EXIFTOOL.run('"' + file.toString() + '"');	
-			do {
-				Thread.sleep(100);
-			} while (EXIFTOOL.isRunning);
+			try {
+				EXIFTOOL.runProcess.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
 			
 			if (caseGenerateFromDate.isSelected())
 				FFPROBE.analyzedMedia = null; //Allow to load data with FFPROBE
@@ -116,9 +118,11 @@ public class FunctionUtils extends Shutter {
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
 			FFPROBE.FrameData(file.toString());	
-			do {
-				Thread.sleep(100);
-			} while (FFPROBE.isRunning);
+			try {
+				FFPROBE.processFrameData.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
 			 			 					
 			if (analyzeError(file.toString()))
 				return false;
@@ -130,17 +134,21 @@ public class FunctionUtils extends Shutter {
 			FFPROBE.analyzedMedia = file.toString();
 			
 			XPDFREADER.getPagesCount(file.toString());	
-			do {
-				Thread.sleep(100);						 
-			} while (XPDFREADER.isRunning);
+			try {
+				XPDFREADER.runProcess.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
 			 
 			if (analyzeError(file.toString()))
 				return false;
 			 
 			XPDFREADER.toFFPROBE(file.toString());	
-			do {
-				Thread.sleep(100);						 
-			} while (XPDFREADER.isRunning);
+			try {
+				XPDFREADER.runProcess.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
 			 
 			if (analyzeError(file.toString()))
 			 return false;
@@ -149,10 +157,11 @@ public class FunctionUtils extends Shutter {
 		if (isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
 			FFPROBE.Data(file.toString());
-			
-			do {
-				Thread.sleep(100);
-			} while (FFPROBE.isRunning);
+			try {
+				FFPROBE.processData.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
 			
 			if (analyzeError(file.toString()))
 				return false;
@@ -172,44 +181,36 @@ public class FunctionUtils extends Shutter {
 								
 			}
 			else if (Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap")) == false
-					&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")) == false)
+			&& Shutter.comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionCut")) == false)
 			{
 				LibraryUtils.checkGPUCapabilities(file.toString());
 			}
 					
 			//Check with MEDIAINFO
-			if (FFPROBE.timecode1 == "" || FFPROBE.interlaced == null)
-			{
-				MEDIAINFO.run(file.toString(), false);
-				
-				do {
-					Thread.sleep(100);
-				} while (MEDIAINFO.isRunning);
-				
-				if (FFPROBE.interlaced == null)
-				{
-					FFPROBE.interlaced = "0";
-					FFPROBE.fieldOrder = "0";
-				}
-			}
+			MEDIAINFO.run(file.toString(), false);			
+			try {
+				MEDIAINFO.runProcess.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}			
 			
 			//Get timecode from audio
 			if (caseReadAudioTimecode.isSelected())
 			{
 				LTCDUMP.run(file.toString());
-				do {
-					Thread.sleep(100);
-				} while (LTCDUMP.isRunning);
+				try {
+					LTCDUMP.runProcess.join();
+				} catch (InterruptedException e) {
+				    Thread.currentThread().interrupt();
+				}
 			}
 		}
-		else
+		
+		//IMPORTANT
+		if (FFPROBE.interlaced == null)
 		{
-			
-			if (FFPROBE.interlaced == null)
-			{
-				FFPROBE.interlaced = "0";
-				FFPROBE.fieldOrder = "0";
-			}
+			FFPROBE.interlaced = "0";
+			FFPROBE.fieldOrder = "0";
 		}
 		
 		return true;

@@ -753,9 +753,11 @@ import javax.swing.JScrollPane;
 					try {
 						// Analyse des données					 
 						 FFPROBE.Data(file.toString());						 
-						 do
-							Thread.sleep(100);	
-						 while (FFPROBE.isRunning);
+						 try {
+							FFPROBE.processData.join();
+						 } catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						 }
 							 																	
 						String filename = file.getName();
 						Shutter.lblCurrentEncoding.setText(filename);

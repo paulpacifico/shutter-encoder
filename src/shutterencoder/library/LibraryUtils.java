@@ -1008,12 +1008,11 @@ public class LibraryUtils extends Shutter {
 		screenshotIsRunning = true; //Workaround to not change the frame size
 		
 		FFMPEG.run(inputPoint + " -i " + '"' + file + '"' + cmd);	
-		
 		try {
-			do {
-				Thread.sleep(100);
-			} while(FFMPEG.isRunning);
-		} catch (Exception er) {}	
+			FFMPEG.runProcess.join();
+		} catch (InterruptedException e) {
+		    Thread.currentThread().interrupt();
+		}
 		
 		screenshotIsRunning = false;
 		
@@ -1229,18 +1228,9 @@ public class LibraryUtils extends Shutter {
 	public static void playerWaveform(final String cmd) {
 						
 		try {
-			
-			ProcessBuilder processFFMPEG;
-			if (System.getProperty("os.name").contains("Windows"))
-			{							
-				processFFMPEG = new ProcessBuilder('"' + FFMPEG.PathToFFMPEG + '"' + cmd + '"');
-				waveformProcess = processFFMPEG.start();
-			}
-			else
-			{
-				processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , FFMPEG.PathToFFMPEG + cmd);									
-				waveformProcess = processFFMPEG.start();
-			}	
+						
+			ProcessBuilder processFFMPEG = new ProcessBuilder(VideoPlayerCore.formatCommand(cmd));
+			waveformProcess = processFFMPEG.start();
 		
 			//Allows to write into the stream
 			OutputStream stdin = waveformProcess.getOutputStream();
@@ -1254,9 +1244,11 @@ public class LibraryUtils extends Shutter {
 			inputStream.close();
 			
 			waveformProcess.waitFor();
+			
+			VideoPlayerUtils.waveformContainer.repaint();
 		   					     																		
 		} catch (IOException io) {//Bug Linux							
-		} catch (Exception e) {}
+		} catch (Exception ignored) {}
 	}
 
 	public static void saveToXML(String cmd) {	  
@@ -1265,53 +1257,53 @@ public class LibraryUtils extends Shutter {
 								
 		if (savedFilePath != null)
 		{
-				try {
-					DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
-					DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
-					Document document = documentBuilder.newDocument();
-					
-					Element root = document.createElement("Shutter");
-					document.appendChild(root);
-	
-					Element settings = document.createElement("settings");
-					root.appendChild(settings);
-	
-					Attr attr = document.createAttribute("id");
-					attr.setValue("10");
-					settings.setAttributeNode(attr);
-	
-					String split[] = cmd.split("\"");
-					String entree = split[1];	
-					int i = 0;
-					do
-					{
-						i ++;	
-					} while (i < split.length);
-					String sortie = split[i - 1];	
-	
-					Element firstName = document.createElement("command");
-					firstName.appendChild(document.createTextNode("ffmpeg" + cmd.replace(InputAndOutput.inPoint, "").replace(" -i ", "").replace('"' + entree + '"', "").replace('"' + sortie + '"', "").replace(" -y ","").replace(" -n ", "")));
-					settings.appendChild(firstName);
-	
-					// point d'entrée
-					Element lastname = document.createElement("pointIn");
-					lastname.appendChild(document.createTextNode(InputAndOutput.inPoint));
-					settings.appendChild(lastname);
-	
-					// extension
-					String ext = cmd.substring(cmd.lastIndexOf("."));
-					Element email = document.createElement("extension");
-					email.appendChild(document.createTextNode(ext.replace("\"", "")));
-					settings.appendChild(email);
-					
-					// creation du fichier XML
-					TransformerFactory transformerFactory = TransformerFactory.newInstance();
-					Transformer transformer = transformerFactory.newTransformer();
-					DOMSource domSource = new DOMSource(document);
-					StreamResult streamResult = new StreamResult(new File(savedFilePath.toString().replace(".enc", "")) + ".enc");
-	
-					transformer.transform(domSource, streamResult);
-				} catch (ParserConfigurationException | TransformerException e) {}
+			try {
+				DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+				Document document = documentBuilder.newDocument();
+				
+				Element root = document.createElement("Shutter");
+				document.appendChild(root);
+
+				Element settings = document.createElement("settings");
+				root.appendChild(settings);
+
+				Attr attr = document.createAttribute("id");
+				attr.setValue("10");
+				settings.setAttributeNode(attr);
+
+				String split[] = cmd.split("\"");
+				String entree = split[1];	
+				int i = 0;
+				do
+				{
+					i ++;	
+				} while (i < split.length);
+				String sortie = split[i - 1];	
+
+				Element firstName = document.createElement("command");
+				firstName.appendChild(document.createTextNode("ffmpeg" + cmd.replace(InputAndOutput.inPoint, "").replace(" -i ", "").replace('"' + entree + '"', "").replace('"' + sortie + '"', "").replace(" -y ","").replace(" -n ", "")));
+				settings.appendChild(firstName);
+
+				// point d'entrée
+				Element lastname = document.createElement("pointIn");
+				lastname.appendChild(document.createTextNode(InputAndOutput.inPoint));
+				settings.appendChild(lastname);
+
+				// extension
+				String ext = cmd.substring(cmd.lastIndexOf("."));
+				Element email = document.createElement("extension");
+				email.appendChild(document.createTextNode(ext.replace("\"", "")));
+				settings.appendChild(email);
+				
+				// creation du fichier XML
+				TransformerFactory transformerFactory = TransformerFactory.newInstance();
+				Transformer transformer = transformerFactory.newTransformer();
+				DOMSource domSource = new DOMSource(document);
+				StreamResult streamResult = new StreamResult(new File(savedFilePath.toString().replace(".enc", "")) + ".enc");
+
+				transformer.transform(domSource, streamResult);
+			} catch (ParserConfigurationException | TransformerException e) {}
 		 }				
 	}
 

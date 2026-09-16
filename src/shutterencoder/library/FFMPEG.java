@@ -231,7 +231,7 @@ public static StringBuilder errorLog = new StringBuilder();
 						//Display output
 						if (cmd.contains("pipe:1"))
 						{
-							args += " | " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt rgb565be -f image2pipe -";
+							args += " | " + PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -i pipe:0 -an -c:v bmp -pix_fmt yuv420p -f image2pipe -";
 						}
 						
 						//Splitting pipe char
@@ -566,14 +566,13 @@ public static StringBuilder errorLog = new StringBuilder();
 			{
 				inputFile = new File(fileList.getSelectedValue());
 				FFPROBE.Data(fileList.getSelectedValue());					
-			}
-				
+			}	
 			
-			do {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e1) {}
-			} while (FFPROBE.isRunning);
+			try {
+				FFPROBE.processData.join();
+			} catch (InterruptedException er) {
+			    Thread.currentThread().interrupt();
+			}
 
 			String channels = "";
 			String videoOutput = "";
@@ -1356,11 +1355,6 @@ public static StringBuilder errorLog = new StringBuilder();
 					{
 						lblElapsedTime.setVisible(false);
 						lblRemainingTime.setVisible(true);
-						
-						if (lblRemainingTime.getX() + lblRemainingTime.getSize().width > lblArrows.getX())
-	       				{
-	       					lblArrows.setVisible(false);
-	       				}
 					}
 					else
 					{

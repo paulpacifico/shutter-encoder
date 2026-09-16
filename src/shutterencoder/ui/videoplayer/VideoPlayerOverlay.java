@@ -337,11 +337,11 @@ public class VideoPlayerOverlay extends Shutter {
 					//IMPORTANT
 					if (FFPROBE.isRunning)
 					{
-						do {								
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e) {}	
-						} while (FFPROBE.isRunning);
+						try {
+							FFPROBE.processData.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
 					}
 					
 					//Keep media size
@@ -354,11 +354,11 @@ public class VideoPlayerOverlay extends Shutter {
 					else 
 					{
 						FFPROBE.Data(Shutter.logoFile);					
-						do {
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException e) {}
-						} while (FFPROBE.isRunning);
+						try {
+							FFPROBE.processData.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
 					}
 					
 					Shutter.logoWidth = FFPROBE.imageWidth;

@@ -481,17 +481,13 @@ public class RecordInputDevice {
 				if (comboInputVideo.getSelectedIndex() > 0 || comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen") == false)
 				{	
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
-					
+										
+					FFPROBE.Data("Capture.input.device");	
 					try {
-					 
-						FFPROBE.Data("Capture.input.device");	
-						do
-						{
-							Thread.sleep(100);
-						}
-						while (FFPROBE.isRunning);
-					
-					} catch (InterruptedException er) {}
+						FFPROBE.processData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
 					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}

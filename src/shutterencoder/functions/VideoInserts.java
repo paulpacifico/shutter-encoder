@@ -77,12 +77,11 @@ public class VideoInserts extends Shutter {
 			            }
 						
 						FFPROBE.Data(list.getElementAt(i));
-						
-						do
-						{
-							Thread.sleep(100);
+						try {
+							FFPROBE.processData.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
 						}
-						while(FFPROBE.isRunning);
 						
 						listeFichiers[i] = tcInMs() + "=" + '"' + list.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.totalLength);
 					}
@@ -94,10 +93,11 @@ public class VideoInserts extends Shutter {
 					{
 						String fichier[] = listeFichiers[i].split("=");
 						FFPROBE.Data(fichier[1].replace("\"", ""));
-						
-						do {
-							Thread.sleep(100);
-						} while (FFPROBE.isRunning);	
+						try {
+							FFPROBE.processData.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
 						
 						if (FFPROBE.totalLength > temps)
 						{
@@ -120,9 +120,11 @@ public class VideoInserts extends Shutter {
 					
 					//On analyse le fichier Master pour obtenir le timescale
 					FFPROBE.FrameData(master[1].replace("\"", ""));					
-					do {
-						Thread.sleep(100);
-					} while (FFPROBE.isRunning);	
+					try {
+						FFPROBE.processFrameData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
 					
 					//File output name
 					String prefix = "";	
@@ -184,9 +186,11 @@ public class VideoInserts extends Shutter {
 																
 									//On intègre le timescale à chaque plan
 									FFMPEG.run(" -i " + s[1] + " -video_track_timescale " + FFPROBE.timeBase + " -c copy -map v:0? -map a? -map s? -y "  + withTempFolder);	
-									do {
-										Thread.sleep(100);
-									} while (FFMPEG.isRunning);
+									try {
+										FFMPEG.runProcess.join();
+									} catch (InterruptedException e) {
+									    Thread.currentThread().interrupt();
+									}
 								}
 								
 								listeFichiersSorted[f] = listeFichiers[i2].replace(s[1], withTempFolder);

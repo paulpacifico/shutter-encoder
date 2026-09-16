@@ -1018,9 +1018,9 @@ public class VideoWeb {
 								String cmd = " -vn -y ";
 								FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".wav") + '"');	
 							
-							       do { 
-										Thread.sleep(100);		
-						       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+								do { 
+									Thread.sleep(100);		
+								} while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 								
 						       //Suppression du fichier audio si processus annulé
 						       if (Shutter.cancelled)
@@ -1036,8 +1036,8 @@ public class VideoWeb {
 				    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".mp3") + '"');	
 							
 						       do { 
-										Thread.sleep(100);		
-						       }while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+						    	   Thread.sleep(100);		
+						       } while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 						       
 						       //Suppression du fichier audio si processus annulé
 						       if (Shutter.cancelled)

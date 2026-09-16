@@ -160,10 +160,11 @@ public class ReplaceAudio extends Shutter {
 								{
 									//Allows to get the shortest file duration
 									FFPROBE.Data(list.getElementAt(i));
-									
-									do {
-										Thread.sleep(100);
-									} while (FFPROBE.isRunning);
+									try {
+										FFPROBE.processData.join();
+									} catch (InterruptedException er) {
+									    Thread.currentThread().interrupt();
+									}
 									
 									if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
 									{
@@ -198,10 +199,11 @@ public class ReplaceAudio extends Shutter {
 								
 									//Allows to get the shortest file duration
 									FFPROBE.Data(list.getElementAt(i+1));
-
-									do {
-										Thread.sleep(100);
-									} while (FFPROBE.isRunning);
+									try {
+										FFPROBE.processData.join();
+									} catch (InterruptedException er) {
+									    Thread.currentThread().interrupt();
+									}
 									
 									if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
 									{
@@ -265,10 +267,11 @@ public class ReplaceAudio extends Shutter {
 							if (caseAudioOffset.isSelected())
 							{
 								FFPROBE.Data(videoFile.toString());
-								
-								do {
-									Thread.sleep(100);
-								} while (FFPROBE.isRunning);
+								try {
+									FFPROBE.processData.join();
+								} catch (InterruptedException er) {
+								    Thread.currentThread().interrupt();
+								}
 								
 								if (caseAudioOffset.isSelected())
 								{
@@ -302,10 +305,11 @@ public class ReplaceAudio extends Shutter {
 							if (caseAudioOffset.isSelected())
 							{
 								FFPROBE.Data(videoFile.toString());
-								
-								do {
-									Thread.sleep(100);
-								} while (FFPROBE.isRunning);
+								try {
+									FFPROBE.processData.join();
+								} catch (InterruptedException er) {
+								    Thread.currentThread().interrupt();
+								}
 								
 								if (caseAudioOffset.isSelected())
 								{

@@ -557,10 +557,10 @@ public class Rewrap extends Shutter {
 			caseAddSubtitles.setEnabled(false);
 		
 			try {
-				do {
-					Thread.sleep(100);
-				} while (FFMPEG.isRunning);
-			} catch (InterruptedException e) {}		
+				FFMPEG.runProcess.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}		
 		}
 		
 		if (Shutter.caseAddSubtitles.isSelected())

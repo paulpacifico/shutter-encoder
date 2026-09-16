@@ -265,11 +265,6 @@ public static String format = "";
 		                        lblBy.setVisible(false);
 		                        lblRemainingTime.setText(language.getProperty("tempsRestant") + " " + min + time[1].replace(" ","") + "s");
 		                        lblRemainingTime.setSize(lblRemainingTime.getPreferredSize().width, 15);
-		                        
-		                        if (lblRemainingTime.getX() + lblRemainingTime.getSize().width > lblArrows.getX())
-			       				{
-			       					lblArrows.setVisible(false);
-			       				}
 						    }
 						    
 						    if (lineOutput.contains("Sleeping"))

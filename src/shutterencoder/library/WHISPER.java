@@ -257,7 +257,7 @@ public class WHISPER {
 	        	if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
 					Shutter.comboFonctions.setSelectedItem("");
 	        	
-	        	UIController.changeWidth(false);
+	        	UIController.changeWidth();
 	        }
 	        else if (checkAccount())
 			{

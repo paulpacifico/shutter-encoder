@@ -413,32 +413,27 @@ public class Settings {
 					Shutter.caseDisplay.setVisible(false);
 					Shutter.caseDisplay.setSelected(false);
 					
-					if (Shutter.comboFonctions.getSelectedItem() != "")
-					{					
-						UIController.changeFunction(true);
-					}
+					Shutter.frame.setBounds(Shutter.frame.getX() + (Shutter.frame.getWidth() - 664) / 2, Shutter.frame.getY(), 664, Shutter.frame.getHeight());
 				}
 				else
 				{
 					Shutter.caseDisplay.setVisible(true);
 					
-					if (Shutter.comboFonctions.getSelectedItem() != "")
+					Shutter.frame.setBounds(Shutter.frame.getX() - 332, Shutter.frame.getY(), 1350, Shutter.frame.getHeight());
+					
+					if (VideoPlayerCore.setTime != null && VideoPlayerCore.setTime.isAlive())
 					{
-						UIController.changeFunction(true);
-						
-						if (VideoPlayerCore.setTime != null && VideoPlayerCore.setTime.isAlive())
-						{
-							while (VideoPlayerCore.setTime.isAlive())
-							{
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e) {}
-							}
+						try {
+							VideoPlayerCore.setTime.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
 						}
-						
-						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
 					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame		
 				}
+				
+				UIController.changeWidth();
 			}
 			
 		});
@@ -1749,7 +1744,7 @@ public class Settings {
 						        {
 						            if (Shutter.minHeight == 731)
 						            {
-						                int frameWidth = 332;
+						                int frameWidth = Shutter.extendedWidth;
 						                int frameHeight = 731;
 
 						                int centeredX = bounds.x + (bounds.width - frameWidth) / 2;

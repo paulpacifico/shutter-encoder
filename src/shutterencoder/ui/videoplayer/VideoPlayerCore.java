@@ -1001,7 +1001,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 
 		synchronized (setTimeLock)
 		{
-			if ((setTime == null || setTime.isAlive() == false) && Shutter.doNotLoadImage == false && (playerVideo == null || playerVideo.isAlive() == false))
+			if (FFMPEG.isRunning == false && (setTime == null || setTime.isAlive() == false) && Shutter.doNotLoadImage == false && (playerVideo == null || playerVideo.isAlive() == false))
 			{
 				setTime = new Thread(new Runnable() {
 
@@ -1327,7 +1327,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 	}
 		
-	protected static List<String> formatCommand(String args) {
+	public static List<String> formatCommand(String args) {
 	    List<String> command = new ArrayList<>();
 	    command.add(System.getProperty("os.name").contains("Windows") ? FFMPEG.PathToFFMPEG : FFMPEG.PathToFFMPEG.replace("\\", ""));
 	    command.addAll(tokenize(args));
@@ -1399,7 +1399,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 		//Subtitles
 		String background = "" ;
-		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
+		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFile != null && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
 		{			
 			//Color	
 			if (Shutter.fontSubsColor != null)

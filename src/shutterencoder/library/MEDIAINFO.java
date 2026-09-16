@@ -19,6 +19,7 @@
 
 package shutterencoder.library;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.io.BufferedReader;
@@ -28,6 +29,7 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 
@@ -38,10 +40,10 @@ import shutterencoder.utils.Utils;
 
 public class MEDIAINFO extends Shutter {
 	
-static int dureeTotale = 0; 
-public static boolean error = false;
-public static boolean isRunning = false;
-public static Thread runProcess;
+	public static int totalDuration = 0; 
+	public static boolean error = false;
+	public static boolean isRunning = false;
+	public static Thread runProcess;
 
 	public static void run(final String file, boolean showInformationsFrame) {
 				
@@ -50,6 +52,7 @@ public static Thread runProcess;
 	    Console.consoleMEDIAINFO.append(Shutter.language.getProperty("command") + " --Output=HTML " + '"' + file.toString() + '"');
 		
 		runProcess = new Thread(new Runnable()  {
+			
 			@Override
 			public void run() {
 				
@@ -84,23 +87,6 @@ public static Thread runProcess;
 					while ((line = br.readLine()) != null)
 					{		
 					   infoData.append(line);
-					   /*	
-					   //Variable Frame Rate
-					   if (line.contains("Frame rate mode :"))
-					   {						   
-						   infoData.append(System.lineSeparator());
-						   
-						   line = br.readLine();
-						   infoData.append(line);
-						   
-						   String s[] = line.split(">");
-						   String s2[] = s[1].split("<");
-						   
-						   if (s2[0].equals("Variable"))
-						   {
-							   FFPROBE.currentFPS = FFPROBE.timebaseFPS;
-						   }
-					   }*/
 					   
 					   //Timecode
 					   if (line.contains("Time code of first frame") && FFPROBE.timecode1 == "")
@@ -110,9 +96,7 @@ public static Thread runProcess;
 						   line = br.readLine();
 						   infoData.append(line);
 
-						   Matcher matcher = Pattern
-			                        .compile("\\b(\\d{2}):(\\d{2}):(\\d{2})([:;])(\\d{2})\\b")
-			                        .matcher(line);
+						   Matcher matcher = Pattern .compile("\\b(\\d{2}):(\\d{2}):(\\d{2})([:;])(\\d{2})\\b").matcher(line);
 
 			                if (matcher.find() && FFPROBE.timecode1.isEmpty())
 			                {
@@ -169,42 +153,72 @@ public static Thread runProcess;
 					process.waitFor();
 					
 					Console.consoleMEDIAINFO.append(System.lineSeparator());
-
-					Console.consoleMEDIAINFO.append("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + formatHTMLOutput(infoData));	
+					Console.consoleMEDIAINFO.append("<html>" + System.lineSeparator() + "<head>" + System.lineSeparator() + formatHTMLOutput(infoData, showInformationsFrame));	
 					
 					if (showInformationsFrame)
 					{
 						//Adding tab	           	
 						Informations.addTabControl();			   
-					   
+					}
+										
+					//Add to the component
+					if (showInformationsFrame)
+					{
 						// Strip any leftover head/body wrapper tags from StrTotal
-						String cleanContent = formatHTMLOutput(infoData)
+						String cleanContent = formatHTMLOutput(infoData, true)
 						    .replaceAll("(?s)^.*?<body[^>]*>", "")  // remove everything up to and including <body>
 						    .replaceAll("(?s)</body>.*?$", "")        // remove </body> and everything after
 						    .replaceAll("(?s)</html>", "")
 						    .trim();
-
-						String labelHtml = "<html><body style=\"background-color:rgb(" + Utils.c30.getRed() + "," + Utils.c30.getGreen() + "," + Utils.c30.getBlue() + "); color:rgb(235,235,240);\">"
-						    + cleanContent
-						        .replace("border:1px solid Navy", "border-top:1px solid rgb(55,55,55)")
-						    + "</body></html>";
-
-						JLabel content = new JLabel(labelHtml);
-					   	
-						content.setBackground(Utils.c30);
+							
+						String labelHtml = "<html><body style=\"background-color:rgb(" + Utils.c25.getRed() + "," + Utils.c25.getGreen() + "," + Utils.c25.getBlue() + "); color:rgb(235,235,240);\">"
+							    + cleanContent.replace("border:1px solid Navy", "border-top:1px solid rgb(55,55,55)")
+							    + "</body></html>";
+						
+						JLabel content = new JLabel(labelHtml);					   	
+						content.setBackground(Utils.c25);
 				       	content.setForeground(new Color(235,235,240));
 				       	content.setOpaque(true);
-				       		
-				       	JScrollPane scrollPane = new JScrollPane();
-						scrollPane.setViewportView(content);
-						scrollPane.setBounds(Informations.tabPanel.getBounds());	
+				       	
+						JScrollPane scrollPane = new JScrollPane();
+				       	scrollPane.setBorder(null);
+						scrollPane.setViewportView(content);							
 						scrollPane.getVerticalScrollBar().setUnitIncrement(16);
 						
+						scrollPane.setBounds(Informations.tabPanel.getBounds());
+	
 						Informations.lblWait.setVisible(false);
-						Informations.lblArrows.setVisible(true);
-							
-						Informations.infoTabbedPane.addTab(new File(file).getName(), scrollPane);	    			
+						Informations.lblArrows.setVisible(true);							
+						Informations.infoTabbedPane.addTab(new File(file).getName(), scrollPane);	
 					}
+					
+					// Strip any leftover head/body wrapper tags from StrTotal
+					String cleanContent = formatHTMLOutput(infoData, false)
+					    .replaceAll("(?s)^.*?<body[^>]*>", "")  // remove everything up to and including <body>
+					    .replaceAll("(?s)</body>.*?$", "")        // remove </body> and everything after
+					    .replaceAll("(?s)</html>", "")
+					    .trim();
+						
+					String labelHtml = "<html><body style=\"background-color:rgb(" + Utils.c25.getRed() + "," + Utils.c25.getGreen() + "," + Utils.c25.getBlue() + "); color:rgb(235,235,240);\">"
+						    + cleanContent.replace("border:1px solid Navy", "border-top:1px solid rgb(55,55,55)")
+						    + "</body></html>";
+					
+					JLabel content = new JLabel(labelHtml);					   	
+					content.setBackground(Utils.c25);
+			       	content.setForeground(new Color(235,235,240));
+			       	content.setOpaque(true);
+					
+					JScrollPane scrollPane = new JScrollPane();
+			       	scrollPane.setBorder(null);
+					scrollPane.setViewportView(content);							
+					scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+					
+				    grpFileInformation.removeAll();
+				    grpFileInformation.setLayout(new BorderLayout());
+				    grpFileInformation.setBorder(BorderFactory.createEmptyBorder(14, 7, 4, 2));
+				    grpFileInformation.add(scrollPane, BorderLayout.CENTER);	
+				    grpFileInformation.revalidate();
+				    grpFileInformation.repaint();			
 			       
 				} catch (IOException | InterruptedException e) {
 					error = true;
@@ -219,55 +233,83 @@ public static Thread runProcess;
 		runProcess.start();
 	}
 
-	protected static String formatHTMLOutput(StringBuilder infoData) {
-		
-		String htmlOutput = infoData.toString();
+	protected static String formatHTMLOutput(StringBuilder infoData, boolean showInformationsFrame) {
+	    
+	    String htmlOutput = infoData.toString();
 
-		// Convert new MediaInfo HTML format to legacy format
-		StringBuilder legacyHtml = new StringBuilder();
-		legacyHtml.append("<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />\n</head>\n<body>\n");
+	    // Convert new MediaInfo HTML format to legacy format
+	    StringBuilder legacyHtml = new StringBuilder();
+	    
+	    legacyHtml.append("<html>\n<head>\n");
+	    legacyHtml.append("<body style=\"font-family: FreeSans, sans-serif;\">\n");
 
-		// Parse each <table> block from the new format
-		java.util.regex.Pattern tablePattern = java.util.regex.Pattern.compile(
-		    "<table>(.*?)</table>", 
-		    java.util.regex.Pattern.DOTALL
-		);
-		java.util.regex.Matcher tableMatcher = tablePattern.matcher(htmlOutput);
+	    // Parse each <table> block from the new format
+	    Pattern tablePattern = Pattern.compile(
+	        "<table>(.*?)</table>", 
+	        Pattern.DOTALL
+	    );
+	    Matcher tableMatcher = tablePattern.matcher(htmlOutput);
 
-		while (tableMatcher.find()) {
-		    String tableContent = tableMatcher.group(1);
-		    
-		    legacyHtml.append("<table width=\"100%\" border=\"0\" cellpadding=\"1\" cellspacing=\"2\" style=\"border:1px solid Navy\">\n");
-		    
-		    // Extract section header (h2)
-		    java.util.regex.Pattern h2Pattern = java.util.regex.Pattern.compile("<h2>(.*?)</h2>");
-		    java.util.regex.Matcher h2Matcher = h2Pattern.matcher(tableContent);
-		    if (h2Matcher.find()) {
-		        legacyHtml.append("<tr>\n  <td width=\"150\"><h2>").append(h2Matcher.group(1)).append("</h2></td>\n</tr>\n");
-		    }
-		    
-		    // Extract data rows: <td class="Prefix">label</td><td>value</td>
-		    java.util.regex.Pattern rowPattern = java.util.regex.Pattern.compile(
-		        "<td class=\"Prefix\">(.*?)</td>\\s*<td>(.*?)</td>",
-		        java.util.regex.Pattern.DOTALL
-		    );
-		    java.util.regex.Matcher rowMatcher = rowPattern.matcher(tableContent);
-		    while (rowMatcher.find()) {
-		        String label = rowMatcher.group(1).trim();
-		        String value = rowMatcher.group(2).trim();
-		        legacyHtml.append("<tr>\n  <td><i>").append(label).append("</i></td>\n  <td colspan=\"3\">").append(value).append("</td>\n</tr>\n");
-		    }
-		    
-		    legacyHtml.append("</table>\n<br />\n");
-		}
+	    boolean isFirstTable = true;
+	    while (tableMatcher.find()) {
+	        String tableContent = tableMatcher.group(1);
+	        
+	        String tableBase = "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-family: FreeSans, sans-serif; color: rgb(225,225,225); font-size: 10px; margin-left: 4px; ";
+	        if (showInformationsFrame)
+	        {
+	        	tableBase = "<table width=\"100%\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\" style=\"font-family: FreeSans, sans-serif; color: rgb(225,225,225); font-size: 10px; margin-left: 7px; ";
+	        }
+	        
+	        if (isFirstTable)
+	        {
+	            legacyHtml.append(tableBase + "border-top:0px solid rgb(" + Utils.c42.getRed() + "," + Utils.c42.getGreen() + "," + Utils.c42.getBlue() + ")\">\n");
+	            isFirstTable = false;
+	        }
+	        else
+	            legacyHtml.append(tableBase + "border-top:1px solid rgb(" + Utils.c42.getRed() + "," + Utils.c42.getGreen() + "," + Utils.c42.getBlue() + ")\">\n");
+	        	        
+	        // Extract section header (h2) - Inline Montserrat
+	        Pattern h2Pattern = Pattern.compile("<h2>(.*?)</h2>");
+	        Matcher h2Matcher = h2Pattern.matcher(tableContent);
+	        if (h2Matcher.find()) {
+	            legacyHtml.append("<tr>\n  <td width=\"150\"><h2 style=\"font-family: Montserrat, sans-serif; font-weight: bold;\">")
+	                      .append(h2Matcher.group(1))
+	                      .append("</h2></td>\n</tr>\n");
+	        }
+	        
+	        // Extract data rows: <td class="Prefix">label</td><td>value</td> - Inline FreeSans
+	        Pattern rowPattern = Pattern.compile(
+	        	    "<td class=\"Prefix\">(.*?)</td>\\s*<td>(.*?)</td>",
+	        	    Pattern.DOTALL
+	        	);
+	        	Matcher rowMatcher = rowPattern.matcher(tableContent);
+	        	while (rowMatcher.find()) {
+	        	    String label = rowMatcher.group(1).trim();
+	        	    String value = rowMatcher.group(2).trim();
+	        	    
+	        	    // Skip "Complete name" row	        	    
+	        	    if (label.contains("Complete name"))
+	        	    {
+	        	        continue;
+	        	    }
+	        	    
+	        	    // Removed <i> and </i> tags around label
+	        	    legacyHtml.append("<tr>\n  <td style=\"font-family: FreeSans, sans-serif; font-style: normal;\">")
+	        	              .append(label)
+	        	              .append("</td>\n  <td colspan=\"3\" style=\"font-family: FreeSans, sans-serif;\">")
+	        	              .append(value)
+	        	              .append("</td>\n</tr>\n");
+	        	}
+	        
+	        legacyHtml.append("</table>\n<br />\n");
+	    }
 
-		legacyHtml.append("</body>\n</html>");
+	    legacyHtml.append("</body>\n</html>");
 
-		String StrTotal = legacyHtml.toString();
-		
-		// Remove the "<html>\n<head>\n" prefix since it gets prepended later
-		return StrTotal.substring("<html>\n<head>\n".length());
-		
+	    String StrTotal = legacyHtml.toString();
+	    
+	    // Remove the exact "<html>\n<head>\n" prefix without eating the content
+	    return StrTotal.substring("<html>\n<head>\n".length());
 	}
 
 }

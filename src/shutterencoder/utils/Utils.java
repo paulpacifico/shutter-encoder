@@ -1900,9 +1900,11 @@ public class Utils extends Shutter {
 															((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 															
 															try {
-																do {
-																	Thread.sleep(100);
-																} while (changeGroupes);
+																try {
+																	UIController.setSections.join();
+																} catch (InterruptedException er) {
+																    Thread.currentThread().interrupt();
+																}
 																
 																if (hwaccel != "")
 																{
@@ -2589,7 +2591,20 @@ public class Utils extends Shutter {
 		//Relaunch the app
 		try {		
 			String launcher = System.getProperty("jpackage.app-path");
-			new ProcessBuilder(launcher).start();
+			if (System.getProperty("os.name").contains("Mac"))
+			{
+				Path path = Paths.get(launcher);
+
+				while (path != null && !path.toString().endsWith(".app"))
+				{
+				    path = path.getParent();
+				}
+				
+				new ProcessBuilder("open", "-n", path.toString()).start();				
+			}
+			else
+				new ProcessBuilder(launcher).start();			
+			
 		} catch (Exception error) {}
 		
 		if (kill)
@@ -2597,8 +2612,7 @@ public class Utils extends Shutter {
 			Utils.killProcesses();
 			
 			System.exit(0);
-		}
-		
+		}		
 	}
 
 	public static void disableSleepMode() {

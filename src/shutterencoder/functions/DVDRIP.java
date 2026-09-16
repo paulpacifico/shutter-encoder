@@ -120,11 +120,11 @@ public class DVDRIP extends Shutter {
 								writer.println("file '" + VOB + "'");	
 								
 								FFPROBE.Data(VOB);
-								do {
-									try {
-										Thread.sleep(100);
-									} catch (InterruptedException e1) {}
-								} while (FFPROBE.isRunning == true);
+								try {
+									FFPROBE.processData.join();
+								} catch (InterruptedException er) {
+								    Thread.currentThread().interrupt();
+								}
 								dureeTotale += FFPROBE.totalLength;
 								
 								Console.consoleFFMPEG.append(VOB + System.lineSeparator());					

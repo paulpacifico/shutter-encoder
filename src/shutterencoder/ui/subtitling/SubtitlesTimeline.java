@@ -199,9 +199,6 @@ public class SubtitlesTimeline {
 			@Override
 			public void windowClosed(WindowEvent arg0) {				
 
-				if (VideoPlayerCore.playerVideo != null)
-					VideoPlayerCore.playerStop();
-				
 				Utils.changeFrameVisibility(Shutter.frame, false);						
 				Utils.changeFrameVisibility(frame, true);
 				
@@ -232,25 +229,25 @@ public class SubtitlesTimeline {
 					 }
 					 else
 					 {
-							if (Shutter.caseOpenFolderAtEnd1.isSelected())
-							{						
-								if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux")) 
-								{
-									try {
-										Runtime.getRuntime().exec(new String[]{"/usr/bin/open", "-R", srt.toString()});
-									} catch (Exception e2){}
-								}
-								else if (System.getProperty("os.name").contains("Linux"))
-								{
-									Utils.openFile(srt.getParentFile());
-								}
-								else //Windows
-								{
-									try {
-										Runtime.getRuntime().exec("explorer.exe /select," + srt.toString());
-									} catch (IOException e1) {}
-								}
+						if (Shutter.caseOpenFolderAtEnd1.isSelected())
+						{						
+							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux")) 
+							{
+								try {
+									Runtime.getRuntime().exec(new String[]{"/usr/bin/open", "-R", srt.toString()});
+								} catch (Exception e2){}
 							}
+							else if (System.getProperty("os.name").contains("Linux"))
+							{
+								Utils.openFile(srt.getParentFile());
+							}
+							else //Windows
+							{
+								try {
+									Runtime.getRuntime().exec("explorer.exe /select," + srt.toString());
+								} catch (IOException e1) {}
+							}
+						}							
 					 }
 				}
 				
@@ -258,7 +255,7 @@ public class SubtitlesTimeline {
     			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
     			{
     				Shutter.comboFonctions.setSelectedItem("");
-    				UIController.changeWidth(false);
+    				UIController.changeWidth();
     			}
     			Shutter.btnStart.setEnabled(true);
     			
@@ -271,10 +268,13 @@ public class SubtitlesTimeline {
 					} catch (IOException e) {}
 				}
 				
-				if (VideoPlayerUtils.waveform != null)
-					VideoPlayerUtils.waveform = null;
-				
 				timeline.removeAll();
+												
+				VideoPlayerUI.setPlayerButtons(true);
+				
+				VideoPlayerUtils.waveform = null;
+				
+				VideoPlayerUtils.addWaveform(true);
 			}
 
 			@Override
@@ -1375,12 +1375,12 @@ public class SubtitlesTimeline {
 				
 				VideoPlayerUI.sliderChange = false;	
 				
-				//Reload the frame to apply bicubic filter					
-				do {					
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e1) {}
-				} while (VideoPlayerCore.setTime.isAlive());
+				//Wait setTime thread to finish	
+				try {
+					VideoPlayerCore.setTime.join();
+				} catch (InterruptedException er) {
+				    Thread.currentThread().interrupt();
+				}
 
 				if (Timecode.isNonDropFrame())
 				{
@@ -1640,13 +1640,12 @@ public class SubtitlesTimeline {
 						waveformReload = new Thread(new Runnable() {
 	
 							@Override
-							public void run() {
-								do
-								{
-									try {
-										Thread.sleep(100);
-									} catch (InterruptedException e) {}
-								} while (VideoPlayerUtils.addWaveformIsRunning);
+							public void run() {								
+								try {
+									VideoPlayerUtils.addWaveform.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}
 								
 								//Waveform
 								VideoPlayerUtils.addWaveform(true);
@@ -2126,19 +2125,7 @@ public class SubtitlesTimeline {
 					if (caseShowWaveform.isSelected())
 					{
 						Thread addWaveform = new Thread(new Runnable() {
-							public void run() {	
-								
-								if (VideoPlayerUtils.waveform != null == false)
-								{
-									while (VideoPlayerUtils.waveform != null == false)
-									{										
-										try {
-											Thread.sleep(100);
-										} catch (InterruptedException e) {}
-									}
-									caseShowWaveform.setEnabled(true);
-								}
-								
+							public void run() {																	
 								try { 	
 					        		timeline.add(waveform);
 					        		repaintTimeline();

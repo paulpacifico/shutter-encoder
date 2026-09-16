@@ -129,7 +129,7 @@ public class SplashRenderer extends JWindow {
 	}
       
 	public static void increment() {		
-		progress = Math.min(1.0f, progress + 0.037f);
+		progress = Math.min(1.0f, progress + 0.036f);
 		instance.repaint();
 	}
 }

@@ -94,12 +94,11 @@ public class GOP {
 		File fichier = new File(Shutter.fileList.getSelectedValue());
 		
 		FFPROBE.AnalyzeGOP(fichier.toString(), true);
-		
-		do {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {}
-		} while (FFPROBE.isRunning);
+		try {
+			FFPROBE.processGOP.join();
+		} catch (InterruptedException er) {
+		    Thread.currentThread().interrupt();
+		}
 		
 		frame.setTitle(Shutter.language.getProperty("analyzeOf") + " " + fichier.getName() + " | GOP " + Shutter.language.getProperty("of") + " " + FFPROBE.gopCount);
 		

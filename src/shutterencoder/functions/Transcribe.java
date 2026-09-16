@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -201,7 +202,7 @@ public class Transcribe extends Shutter {
 										formatSubtitles(transcribedFile.toPath(), fileOut.toPath());
 								}	
 								else
-									Files.move(transcribedFile.toPath(), fileOut.toPath());
+									Files.move(transcribedFile.toPath(), fileOut.toPath(), StandardCopyOption.REPLACE_EXISTING);
 							}
 						}
 														

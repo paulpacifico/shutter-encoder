@@ -61,7 +61,7 @@ public class HardwareListener extends Shutter {
 
 			public void eventDispatched(AWTEvent event) {
 
-				if (comboFonctions.getSelectedItem() != "" && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false) {
+				if (comboFonctions.hasFocus() == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false) {
 					
 					KeyEvent ke = (KeyEvent) event;
 
@@ -214,8 +214,7 @@ public class HardwareListener extends Shutter {
 								VideoPlayerUI.btnGoToIn.doClick();
 
 							// Volume up
-							if (ke.getKeyCode() == 107
-									&& VideoPlayerUI.sliderVolume.getValue() < VideoPlayerUI.sliderVolume.getMaximum()) {
+							if (ke.getKeyCode() == 107 && VideoPlayerUI.sliderVolume.getValue() < VideoPlayerUI.sliderVolume.getMaximum()) {
 								VideoPlayerUI.sliderVolume.setValue(VideoPlayerUI.sliderVolume.getValue() + 10);
 							}
 
@@ -230,31 +229,25 @@ public class HardwareListener extends Shutter {
 						}
 
 						// Save settings
-						if ((ke.getKeyCode() == KeyEvent.VK_S) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)
-								|| (ke.getKeyCode() == KeyEvent.VK_S)
-										&& ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
+						if ((ke.getKeyCode() == KeyEvent.VK_S) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (ke.getKeyCode() == KeyEvent.VK_S) && ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0))
+						{
 							if ((btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction"))
-									|| btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
-									&& comboFonctions.getSelectedItem() != "") {
-								if (Renamer.frame == null
-										|| Renamer.frame != null && Renamer.frame.isVisible() == false) {
+							|| btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+							&& comboFonctions.getSelectedItem() != "")
+							{
+								if (Renamer.frame == null || Renamer.frame != null && Renamer.frame.isVisible() == false) {
 									Utils.saveSettings(false);
 								}
 							}
 						}
 
 						// btnStart
-						if ((ke.getKeyCode() == KeyEvent.VK_ENTER)
-								&& ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)
-								|| (ke.getKeyCode() == KeyEvent.VK_ENTER)
-										&& ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
+						if ((ke.getKeyCode() == KeyEvent.VK_ENTER) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (ke.getKeyCode() == KeyEvent.VK_ENTER) && ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
 							btnStart.doClick();
 						}
 
 						// Informations
-						if ((ke.getKeyCode() == KeyEvent.VK_I) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0)
-								|| (ke.getKeyCode() == KeyEvent.VK_I)
-										&& ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
+						if ((ke.getKeyCode() == KeyEvent.VK_I) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (ke.getKeyCode() == KeyEvent.VK_I) && ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0)) {
 							if (fileList.getSelectedIndices().length > 0) {
 								informations.doClick();
 							}
@@ -300,10 +293,8 @@ public class HardwareListener extends Shutter {
 				}
 				
 				if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
-				&& frame.getWidth() > 332
 				&& frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) <= 31
 				|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
-				&& frame.getWidth() > 332
 				&& Settings.btnDisableAnimations.isSelected() && top.getY() < 30)
 				{	
 					int i = (0 - me.getWheelRotation()) * 20;

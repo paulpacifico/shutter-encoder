@@ -45,59 +45,65 @@ public static Process process;
 		FFPROBE.timecode2 = "";
 		FFPROBE.timecode3 = "";
 		FFPROBE.timecode4 = "";
+		
+		runProcess = new Thread(new Runnable()  {
+			@Override
+			public void run() {
 	    				    		
-	    try {
-			
-	    	String PathToLTCDUMP;
-			ProcessBuilder processLTCDUMP;										
-			if (System.getProperty("os.name").contains("Windows"))
-			{			
-				process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " -nostats -loglevel 0 -i " + '"' + file + '"' + " -map a:" + comboReadAudioTimecode.getSelectedIndex() + "? -c:a pcm_s16le -vn -sn -f wav -t 1 - | " + '"' + FFMPEG.PathToFFMPEG.replace("ffmpeg", "ltcdump") + '"' + " -"});
+			    try {
+					
+			    	String PathToLTCDUMP;
+					ProcessBuilder processLTCDUMP;										
+					if (System.getProperty("os.name").contains("Windows"))
+					{			
+						process = Runtime.getRuntime().exec(new String[]{"cmd.exe" , "/c", '"' + FFMPEG.PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " -nostats -loglevel 0 -i " + '"' + file + '"' + " -map a:" + comboReadAudioTimecode.getSelectedIndex() + "? -c:a pcm_s16le -vn -sn -f wav -t 1 - | " + '"' + FFMPEG.PathToFFMPEG.replace("ffmpeg", "ltcdump") + '"' + " -"});
+					}
+					else
+					{				
+						PathToLTCDUMP = Utils.getLibraryPath() + "/ltcdump";				
+						processLTCDUMP = new ProcessBuilder("/bin/bash", "-c" , FFMPEG.PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " -nostats -loglevel 0 -i " + '"' + file + '"' + " -map a:" + comboReadAudioTimecode.getSelectedIndex() + "? -c:a pcm_s16le -vn -sn -f wav -t 1 - | " + PathToLTCDUMP + " -");								
+					
+						process = processLTCDUMP.start();
+					}		
+					
+					isRunning = true;
+								         				        
+			        String line;
+					BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));				
+		
+					Console.consoleFFPROBE.append(System.lineSeparator());	
+											
+					while ((line = input.readLine()) != null)
+					{		
+						Console.consoleFFPROBE.append(line + System.lineSeparator());		
+		
+						Pattern pattern = Pattern.compile("(\\d{2}:\\d{2}:\\d{2}[.:]\\d{2})");
+				        Matcher matcher = pattern.matcher(line);
+				        
+				        if (matcher.find())
+				        {	      
+				            String str[] = matcher.group(1).replace("." , ":").split(":");
+				            
+				            FFPROBE.timecode1 = str[0];
+		                	FFPROBE.timecode2 = str[1];
+		                	FFPROBE.timecode3 = str[2];
+		                	FFPROBE.timecode4 = str[3];
+		                	
+		                	process.destroy();
+		                	break;
+				        }
+					}													
+					process.waitFor();	
+										
+					Console.consoleFFPROBE.append(System.lineSeparator());
+																					
+					} catch (IOException | InterruptedException e) {							
+						error = true;
+					} finally {	
+						isRunning = false;
+					}
 			}
-			else
-			{				
-				PathToLTCDUMP = Utils.getLibraryPath() + "/ltcdump";				
-				processLTCDUMP = new ProcessBuilder("/bin/bash", "-c" , FFMPEG.PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner -threads " + Settings.txtThreads.getText() + " -nostats -loglevel 0 -i " + '"' + file + '"' + " -map a:" + comboReadAudioTimecode.getSelectedIndex() + "? -c:a pcm_s16le -vn -sn -f wav -t 1 - | " + PathToLTCDUMP + " -");								
-			
-				process = processLTCDUMP.start();
-			}		
-			
-			isRunning = true;
-						         				        
-	        String line;
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));				
-
-			Console.consoleFFPROBE.append(System.lineSeparator());	
-									
-			while ((line = input.readLine()) != null)
-			{		
-				Console.consoleFFPROBE.append(line + System.lineSeparator());		
-
-				Pattern pattern = Pattern.compile("(\\d{2}:\\d{2}:\\d{2}[.:]\\d{2})");
-		        Matcher matcher = pattern.matcher(line);
-		        
-		        if (matcher.find())
-		        {	      
-		            String str[] = matcher.group(1).replace("." , ":").split(":");
-		            
-		            FFPROBE.timecode1 = str[0];
-                	FFPROBE.timecode2 = str[1];
-                	FFPROBE.timecode3 = str[2];
-                	FFPROBE.timecode4 = str[3];
-                	
-                	process.destroy();
-                	break;
-		        }
-			}													
-			process.waitFor();	
-			
-			Console.consoleFFPROBE.append(System.lineSeparator());
-																			
-			} catch (IOException | InterruptedException e) {							
-				error = true;
-			} finally {	
-				isRunning = false;
-			}
+		});
+		runProcess.start();
 	}
-
 }

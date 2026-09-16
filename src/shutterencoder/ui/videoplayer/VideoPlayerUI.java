@@ -34,7 +34,6 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MouseInfo;
 import java.awt.Point;
@@ -66,7 +65,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -160,7 +158,6 @@ public class VideoPlayerUI {
 	public static JCheckBox caseInternalTc;
 		
 	//Waveform
-  	public static JLabel waveformIcon;
   	public static JLabel waveformContainer;
   	public static boolean waveformContainerHasMouse = false;
   	public static JScrollPane waveformScrollPane;
@@ -746,7 +743,6 @@ public class VideoPlayerUI {
 		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 		{
 			waveformScrollPane.setVisible(true);
-			waveformIcon.setVisible(true);
 			cursorHead.setVisible(true);
 			caseInH.setVisible(false);
 			caseInM.setVisible(false);
@@ -797,7 +793,6 @@ public class VideoPlayerUI {
 		else if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected() || enable == false) //Image or disableAll()
 		{			
 			waveformScrollPane.setVisible(false);
-			waveformIcon.setVisible(false);
 			cursorHead.setVisible(false);
 			caseInH.setVisible(false);
 			caseInM.setVisible(false);
@@ -953,10 +948,7 @@ public class VideoPlayerUI {
 			{
 				caseShowWaveform.setVisible(true);
 				caseVuMeter.setVisible(true);												
-				casePlaySound.setVisible(true);
-				
-				if (caseShowWaveform.isSelected())
-					waveformIcon.setVisible(true);				
+				casePlaySound.setVisible(true);		
 				
 				//Add Audio tracks
 				comboAudioTrack.removeAllItems();
@@ -977,7 +969,6 @@ public class VideoPlayerUI {
 				caseShowWaveform.setVisible(false);
 				caseVuMeter.setVisible(false);												
 				casePlaySound.setVisible(false);
-				waveformIcon.setVisible(false);
 				comboAudioTrack.setVisible(false);
 			}
 			
@@ -1110,12 +1101,11 @@ public class VideoPlayerUI {
 									}
 									
 									FFPROBE.Keyframes(VideoPlayerCore.videoPath, (VideoPlayerCore.playerCurrentFrame - 2) * inputFramerateMS, false);
-									
-									do {
-										try {
-											Thread.sleep(10);
-										} catch (InterruptedException e) {}
-									} while (FFPROBE.isRunning);
+									try {
+										FFPROBE.processFrameData.join();
+									} catch (InterruptedException er) {
+									    Thread.currentThread().interrupt();
+									}
 									
 									if (FFPROBE.keyFrame > 0)
 									{
@@ -1202,12 +1192,11 @@ public class VideoPlayerUI {
 						}
 						
 						FFPROBE.Keyframes(VideoPlayerCore.videoPath, (VideoPlayerCore.playerCurrentFrame + 1) * inputFramerateMS, true);
-						
-						do {
-							try {
-								Thread.sleep(10);
-							} catch (InterruptedException er) {}
-						} while (FFPROBE.isRunning);
+						try {
+							FFPROBE.processFrameData.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
 		
 						if (FFPROBE.keyFrame > 0)
 						{	
@@ -1740,37 +1729,40 @@ public class VideoPlayerUI {
 	
 	private synchronized void setBtnEdit(double time) {
 
-		if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) || waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
-			return;
-		
-		double inputMark = 0;
-		double outputMark = 0;
-		
-        if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && VideoPlayerCore.activeSegmentIndex != -1)
-        {
-	        CutSegment seg = VideoPlayerMultiCuts.cutSegments.get(VideoPlayerCore.activeSegmentIndex);
+		try {
+			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) || waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
+				return;
+			
+			double inputMark = 0;
+			double outputMark = 0;
+			
+	        if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && VideoPlayerCore.activeSegmentIndex != -1)
+	        {
+		        CutSegment seg = VideoPlayerMultiCuts.cutSegments.get(VideoPlayerCore.activeSegmentIndex);
+		        
+		        inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
+		        outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+	        }
+	        else
+	        {
+	    		inputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseInH.getText()), Integer.parseInt(caseInM.getText()), Integer.parseInt(caseInS.getText()), Integer.parseInt(caseInF.getText()));
+	            outputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseOutH.getText()), Integer.parseInt(caseOutM.getText()), Integer.parseInt(caseOutS.getText()), Integer.parseInt(caseOutF.getText()));         
+	        }
 	        
-	        inputMark = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-	        outputMark = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
-        }
-        else
-        {
-    		inputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseInH.getText()), Integer.parseInt(caseInM.getText()), Integer.parseInt(caseInS.getText()), Integer.parseInt(caseInF.getText()));
-            outputMark = VideoPlayerMultiCuts.getSegmentTime(Integer.parseInt(caseOutH.getText()), Integer.parseInt(caseOutM.getText()), Integer.parseInt(caseOutS.getText()), Integer.parseInt(caseOutF.getText()));         
-        }
-        
-        if (time >= inputMark && time < outputMark)
-        {
-        	btnEdit.setIcon(new FlatSVGIcon("resources/cut.svg", 15, 15));
-        	btnEdit.setName("cut");
-    		btnEdit.setToolTipText("C");
-        }
-        else
-        {	                    	
-    		btnEdit.setIcon(new FlatSVGIcon("resources/add.svg", 15, 15));
-    		btnEdit.setName("add");
-    		btnEdit.setToolTipText("A");
-        }
+	        if (time >= inputMark && time < outputMark)
+	        {
+	        	btnEdit.setIcon(new FlatSVGIcon("resources/cut.svg", 15, 15));
+	        	btnEdit.setName("cut");
+	    		btnEdit.setToolTipText("C");
+	        }
+	        else
+	        {	                    	
+	    		btnEdit.setIcon(new FlatSVGIcon("resources/add.svg", 15, 15));
+	    		btnEdit.setName("add");
+	    		btnEdit.setToolTipText("A");
+	        }
+		}
+        catch (Exception ignored) {}
 	}
 	
 	private void player() {		
@@ -1852,7 +1844,7 @@ public class VideoPlayerUI {
 		        }
 		        
 		        // Mask display
-		        if (!fullscreenPlayer) {
+		        if (fullscreenPlayer == false) {
 		            g2.drawImage(mask, 0, 0, null);
 		        }
 
@@ -1897,7 +1889,8 @@ public class VideoPlayerUI {
 		        }
 
 		        // Preview upscale label
-		        if (previewUpscale && VideoPlayerCore.frameVideo != null && VideoPlayerUtils.preview != null && fileDuration > 40) {
+		        if (previewUpscale && VideoPlayerCore.frameVideo != null && VideoPlayerUtils.preview != null && fileDuration > 40)
+		        {
 		            Font f = getCachedFont(Font.ITALIC, h);
 		            g2.setFont(f);
 		            FontMetrics metrics = g2.getFontMetrics(f);
@@ -1909,7 +1902,7 @@ public class VideoPlayerUI {
 		        }
 
 		        // Subtitles
-		        if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+		        if (SubtitlesTimeline.frame != null && SubtitlesTimeline.frame.isVisible() && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 		        {
 		            SubtitlesTimeline.refreshData();		            
 		            String rawSub = SubtitlesTimeline.txtSubtitles.getText();
@@ -2265,7 +2258,13 @@ public class VideoPlayerUI {
                		{
 	                    setBtnEdit(time);
                 		
-               			g2.fillRoundRect(playerMarkIn, 0, playerMarkOut - playerMarkIn, getHeight() - 1, 5, 5);	
+	                    //Set fillRoundRect full size while the media is currently analyzed
+	                    if (VideoPlayerCore.loadMedia != null && VideoPlayerCore.loadMedia.isAlive())
+	                    {
+	                    	g2.fillRoundRect(0, 0, waveformContainer.getWidth(), getHeight() - 1, 5, 5);	
+	                    }
+	                    else
+	                    	g2.fillRoundRect(playerMarkIn, 0, playerMarkOut - playerMarkIn, getHeight() - 1, 5, 5);	
                		}
 	                
 	                //Splitters
@@ -2289,14 +2288,24 @@ public class VideoPlayerUI {
            	
 		                } while (splitTime < playerMarkOut);
 	                }
-	                	
+
 	                //Waveform
-	                if (waveformIcon.getIcon() != null && waveformIcon.isVisible()) {
-	                    waveformIcon.getIcon().paintIcon(this, g2, 0, 0);
-	                }
+	                if (VideoPlayerCore.videoPath != null
+	                && VideoPlayerUtils.waveform != null
+	                && caseShowWaveform.isVisible() && caseShowWaveform.isSelected()
+	                && FFPROBE.hasAudio)
+	                {
+	                    g2.drawImage(VideoPlayerUtils.waveform, 0, 0, getWidth(), getHeight(), null);
+	                }	                
 	                
 	                //Masking
 	                Color maskColor = new Color(26, 27, 31, 200);
+	                
+	                //Do not display masks while the media is currently analyzed
+	                if (VideoPlayerCore.loadMedia != null && VideoPlayerCore.loadMedia.isAlive())
+	                {
+	                	maskColor = new Color(26, 27, 31, 0);
+	                }
 
 	                if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 	                {
@@ -2354,13 +2363,8 @@ public class VideoPlayerUI {
                 }			
 		    }
 		};
-		
-		if (Shutter.noSettings)
-		{
-			waveformContainer.setSize((Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth()) * waveformZoom, 40);
-		}
-		else
-			waveformContainer.setSize((Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2) * waveformZoom, 40);
+
+		waveformContainer.setSize((Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2) * waveformZoom, 40);
 				
 		waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));		
 		waveformContainer.setLayout(null);
@@ -2404,12 +2408,7 @@ public class VideoPlayerUI {
 
 		cursorWaveform.setBounds(0, 0, 1, waveformContainer.getSize().height - 1);		
 		waveformContainer.add(cursorWaveform);	
-			   
-		waveformIcon = new JLabel();
-		waveformIcon.setOpaque(false);
-		waveformIcon.setLayout(null);
-		waveformIcon.setSize(waveformContainer.getSize());
-
+		
 		//Important
 		playerMarkOut = waveformContainer.getWidth();
 				
@@ -2793,16 +2792,7 @@ public class VideoPlayerUI {
 				cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
 				
 				cursorCurrentFrame.setLocation(cursorWaveform.getX(), 0);
-			
-				if (waveformIcon.isVisible() && waveformIcon.getIcon() != null)
-				{
-					waveformIcon.setSize(waveformContainer.getSize());
-					
-					ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(VideoPlayerUtils.waveform).getImage().getScaledInstance(waveformContainer.getWidth(), waveformContainer.getHeight(), Image.SCALE_AREA_AVERAGING));
-					waveformIcon.setIcon(resizedWaveform);
-					waveformIcon.repaint();
-				}
-				
+							
 				//Center cursor
 				int viewportWidth = waveformScrollPane.getViewport().getWidth();
 				int newViewPosX = cursorWaveform.getX() - (viewportWidth / 2);
@@ -3767,11 +3757,10 @@ public class VideoPlayerUI {
 					if (VideoPlayerUtils.addWaveformIsRunning)
 					{									
 						VideoPlayerUtils.stopWaveformCreation();
-					}
-					
-					waveformIcon.setVisible(false);
-					waveformContainer.repaint();
+					}					
 				}
+				
+				waveformContainer.repaint();
 			}
 		});
 				
@@ -3917,12 +3906,11 @@ public class VideoPlayerUI {
 				if (caseInternalTc.isSelected())
 				{
 					FFPROBE.Data(VideoPlayerCore.videoPath);
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (FFPROBE.isRunning);
-							
+					try {
+						FFPROBE.processData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}							
 					
 					if (FFPROBE.timecode1.equals(""))
 	    			{
@@ -3964,8 +3952,8 @@ public class VideoPlayerUI {
 	}
 
 	public static void resizeAll() {
-								
-		if (Shutter.frame.getWidth() > 332 && Shutter.doNotLoadImage == false)	
+							
+		if (Shutter.doNotLoadImage == false)	
 		{						
 			//Clear the buffer
 			if (VideoPlayerCore.bufferedFrames.size() > 0)
@@ -4015,10 +4003,6 @@ public class VideoPlayerUI {
 			}
 			
 			int maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2;
-			if (Shutter.noSettings)
-			{
-				maxWidth = Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth();
-			}	
 			
 			if (fullscreenPlayer)
 			{
@@ -4044,7 +4028,7 @@ public class VideoPlayerUI {
 				player.setSize(width, maxHeight);
 			}
 			else							
-				player.setSize(maxWidth, height);			
+				player.setSize(maxWidth, height);
 			
 			if (fullscreenPlayer == false && Shutter.frame.getHeight() - player.getHeight() < 230 && (fileDuration > 40 || Shutter.caseEnableSequence.isSelected()))
 			{
@@ -4059,11 +4043,7 @@ public class VideoPlayerUI {
 				y = Shutter.frame.getHeight() / 2 - player.getHeight() / 2;
 			}
 			
-			if (Shutter.noSettings)
-			{
-				player.setLocation((1350 - player.getSize().width) / 2, y);
-			}
-			else if (fullscreenPlayer)
+			if (fullscreenPlayer)
 			{
 				player.setLocation(graphicsDevice.getFullScreenWindow().getWidth() / 2 - player.getWidth() / 2, graphicsDevice.getFullScreenWindow().getHeight() / 2 - player.getHeight() / 2);
 			}
@@ -4086,17 +4066,11 @@ public class VideoPlayerUI {
 			int thumbsHeight = caseShowThumbnails.isSelected() && caseShowThumbnails.isVisible() ? 28 : 0;
 			
 			//Sliders
-			if (Shutter.noSettings)
-			{
-				waveformScrollPane.setBounds(Shutter.grpChooseFiles.getWidth() + 20, player.getY() + player.getHeight() + 26 + thumbsHeight, Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth(), 40 + waveformScrollPane.getHorizontalScrollBar().getHeight());
-			}
-			else
-				waveformScrollPane.setBounds(Shutter.grpChooseFiles.getWidth() + 20, player.getY() + player.getHeight() + 26 + thumbsHeight, Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2, 40 + waveformScrollPane.getHorizontalScrollBar().getHeight());
+			waveformScrollPane.setBounds(Shutter.grpChooseFiles.getWidth() + 20, player.getY() + player.getHeight() + 26 + thumbsHeight, Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2, 40 + waveformScrollPane.getHorizontalScrollBar().getHeight());
 						
 			waveformContainer.setSize(waveformScrollPane.getWidth() * waveformZoom, waveformScrollPane.getHeight() - waveformScrollPane.getHorizontalScrollBar().getHeight());
 			waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));
-			waveformIcon.setSize(waveformContainer.getSize());
-						
+
 			//Waveforms
 			if (fullscreenPlayer == false && isPiping == false && Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false && Shutter.list.getSize() > 0 && VideoPlayerUtils.addWaveform.isAlive() == false)
 			{	
@@ -4287,7 +4261,7 @@ public class VideoPlayerUI {
 			lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);			
 			lblVolume.setLocation(btnEdit.getX() + btnEdit.getWidth() + 16, lblSpeed.getY());	
 			
-			if (Shutter.frame.getWidth() < 1320 && Shutter.noSettings == false)
+			if (Shutter.frame.getWidth() < 1320)
 			{						
 				sliderVolume.setBounds(lblVolume.getX() + lblVolume.getWidth() - lblVolume.getWidth(), sliderSpeed.getY(), sliderSpeed.getWidth(), 22);				
 				caseApplyCutToAll.setLocation(lblPosition.getX() + waveformScrollPane.getWidth() / 2 - caseApplyCutToAll.getWidth(), lblPosition.getY() - 3);
@@ -4328,7 +4302,6 @@ public class VideoPlayerUI {
 				else if (fileDuration <= 40)
 				{
 					VideoPlayerUtils.loadImage(false);
-					waveformIcon.setVisible(false);
 				}
 				else if (btnPlay.isEnabled())
 				{			
@@ -4339,8 +4312,7 @@ public class VideoPlayerUI {
 			if (Shutter.list.getSize() == 0 || VideoPlayerCore.videoPath == null)
 			{
 				setPlayerButtons(false);
-			}
-			
+			}		
 		}
 		
 		if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected() || Shutter.caseAddText.isSelected() || Shutter.caseShowFileName.isSelected())
@@ -4348,20 +4320,7 @@ public class VideoPlayerUI {
 			VideoPlayerOverlay.refreshTimecodeAndText();
 		}
 				
-		Shutter.statusBar.setBounds(0, Shutter.frame.getHeight() - 23, Shutter.frame.getWidth(), 22);
-		
-		if (Shutter.frame.getWidth() >= 1100)
-		{
-			Shutter.lblArrows.setLocation(Shutter.statusBar.getWidth() / 2 - Shutter.lblArrows.getWidth() / 2, Shutter.lblArrows.getY());			
-			Shutter.lblYears.setVisible(true);
-		}
-		else
-		{
-			Shutter.lblArrows.setLocation(Shutter.frame.getWidth() - Shutter.lblArrows.getWidth() - 7, Shutter.lblArrows.getY());
-			Shutter.lblYears.setVisible(false);
-		}
-		
-		Shutter.lblYears.setLocation(Shutter.frame.getWidth() - Shutter.lblYears.getWidth() - 8, Shutter.lblBy.getY());
-		
+		Shutter.statusBar.setBounds(0, Shutter.frame.getHeight() - 23, Shutter.frame.getWidth(), 22);		
+		Shutter.lblYears.setBounds(Shutter.frame.getWidth() - Shutter.lblYears.getPreferredSize().width - 10, Shutter.lblBy.getY(), Shutter.lblYears.getPreferredSize().width + 4, 15);
 	}
 }
