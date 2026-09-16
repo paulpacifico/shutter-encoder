@@ -134,7 +134,7 @@ public class Extract extends Shutter {
 							{
 								container = ".m4a";						
 							}
-							else if (FFPROBE.audioCodec.contains("ac3"))
+							else if (FFPROBE.audioCodec.contains("eac3"))
 							{
 								container = ".eac3";	
 							}

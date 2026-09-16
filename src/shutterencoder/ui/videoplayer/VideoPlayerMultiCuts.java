@@ -29,7 +29,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 
 	//History stacks for Undo / Redo
 	private static final java.util.ArrayDeque<List<CutSegment>> undoStack = new java.util.ArrayDeque<>();
-	private static final java.util.ArrayDeque<List<CutSegment>> redoStack = new java.util.ArrayDeque<>();
+	public static final java.util.ArrayDeque<List<CutSegment>> redoStack = new java.util.ArrayDeque<>();
 	private static final int MAX_UNDO_STEPS = 20;
 	
 	//List of cuts
@@ -403,9 +403,10 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 		
 	    if (undoStack.isEmpty())	    
 	    	return;
-
+	    
 	    // Save current state to redo stack
-	    redoStack.push(cloneCutSegments(cutSegments));
+	    if (cutSegments.isEmpty() == false)
+	    	redoStack.push(cloneCutSegments(cutSegments));
 
 	    // Restore state from undo stack
 	    cutSegments = undoStack.pop();
@@ -414,7 +415,7 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 	}
 
 	public static void redoCut() {
-		
+						
 	    if (redoStack.isEmpty())
 	        return;
 

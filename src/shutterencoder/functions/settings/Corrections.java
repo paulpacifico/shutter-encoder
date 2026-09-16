@@ -138,6 +138,22 @@ public class Corrections extends Shutter {
 		return filterComplex;
 	}
 	
+	public static String setGrain(String filterComplex) {
+
+	    if (Shutter.caseAddGrain.isSelected())
+	    {
+	        int value = Shutter.sliderAddGrain.getValue();
+
+	        if (filterComplex != "") filterComplex += ",";
+
+	        int grainAmount = (int)(value * 0.2);
+	        
+	        filterComplex += "noise=c0s=" + grainAmount + ":c1s=0:c2s=0:c3s=0:c0f=t+u";
+	    }
+
+	    return filterComplex;
+	}
+	
 	public static String setDenoiser(String filterComplex, boolean noGPU) {
 		
 		//Checking if last filter is GPU accelerated

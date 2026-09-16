@@ -1632,7 +1632,10 @@ public class VideoPlayerUI {
 				if (caseApplyCutToAll.isSelected() == false)
 				{
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
-						VideoPlayerMultiCuts.saveCutState();
+					{
+						VideoPlayerMultiCuts.saveCutState();						
+						VideoPlayerMultiCuts.redoStack.clear();
+					}
 					
 					VideoPlayerUtils.updateGrpIn(0);
 					VideoPlayerUtils.updateGrpOut(totalFrames);
@@ -2212,6 +2215,13 @@ public class VideoPlayerUI {
 	            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 	            g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 	            
+	            if (waveformZoom == 1)
+	            {
+	            	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+	            }
+	            else
+	            	g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+	            
 	            //Borders
                 g2.setColor(Utils.c25);
                 g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 5, 5);	
@@ -2491,7 +2501,7 @@ public class VideoPlayerUI {
 								
 								double inputTime = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame - 1: VideoPlayerCore.playerCurrentFrame;
 								double value = (double) totalFrames * cursorWaveform.getLocation().x / waveformContainer.getSize().width;
-	
+									
 								if (inputTime != Math.floor(value))
 								{
 									if (VideoPlayerCore.bufferIsReadingFrames)
@@ -2577,8 +2587,8 @@ public class VideoPlayerUI {
 									
 									double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
 									
-									//Set markers
-									if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)))
+									//Set markers, sliderChange check is to make sure to not change in/out if mouse has been released
+									if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && sliderChange)
 									{
 										if (cursorWaveform.getX() < playerMarkOut)
 										{
@@ -2587,7 +2597,7 @@ public class VideoPlayerUI {
 											VideoPlayerUtils.setMarkers();
 										}
 									}
-									else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)))
+									else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && sliderChange)
 									{
 										if (cursorWaveform.getX() > playerMarkIn)
 										{
@@ -2641,33 +2651,6 @@ public class VideoPlayerUI {
 							}
 							else
 								VideoPlayerCore.playerLoop = false;
-							
-							VideoPlayerUtils.setMarkers();
-							
-							if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && cursorWaveform.getX() < playerMarkOut && mouseIsPressed)
-							{							
-								cursorWaveform.setLocation(playerMarkIn, 0);
-								cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
-								
-								if (VideoPlayerCore.bufferCurrentFrame > 0)
-								{
-									VideoPlayerUtils.updateGrpIn(VideoPlayerCore.bufferCurrentFrame);		
-								}
-								else
-									VideoPlayerUtils.updateGrpIn(VideoPlayerCore.playerCurrentFrame);
-							}
-							else if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR)) && cursorWaveform.getX() > playerMarkIn && mouseIsPressed)
-							{			
-								cursorWaveform.setLocation(playerMarkOut, 0);
-								cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
-								
-								if (VideoPlayerCore.bufferCurrentFrame > 0)
-								{
-									VideoPlayerUtils.updateGrpOut(VideoPlayerCore.bufferCurrentFrame);		
-								}
-								else
-									VideoPlayerUtils.updateGrpOut(VideoPlayerCore.playerCurrentFrame);
-							}	
 												
 							waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 							
@@ -2692,7 +2675,7 @@ public class VideoPlayerUI {
 			public void mouseDragged(MouseEvent e) {
 									
 				if (Shutter.list.getSize() > 0)
-                {							
+                {
 					if (e.getX() > 0 && e.getX() <= waveformContainer.getWidth())
 					{
 						sliderChange = true;					
@@ -3689,8 +3672,9 @@ public class VideoPlayerUI {
 		}));
 
 		FlatSVGIcon selectedIcon = new FlatSVGIcon("resources/thumbnails.svg", 20, 20);
-
+		
 		caseShowThumbnails.setIcon(normalIcon);
+		caseShowThumbnails.setToolTipText(Shutter.language.getProperty("caseShowThumbnails"));
 		caseShowThumbnails.setSelectedIcon(selectedIcon);	
 		caseShowThumbnails.setName("caseShowThumbnails");	
 		caseShowThumbnails.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
@@ -4288,6 +4272,15 @@ public class VideoPlayerUI {
 				caseShowThumbnails.setBounds(caseInternalTc.getX(), caseInternalTc.getY() + caseInternalTc.getHeight() + 2, caseShowThumbnails.getPreferredSize().width, 23);
 				caseShowWaveform.setBounds(caseShowThumbnails.getX() + caseShowThumbnails.getWidth(), caseShowThumbnails.getY() - 2, caseShowWaveform.getPreferredSize().width, 23);
 				caseVuMeter.setBounds(caseShowWaveform.getX() + caseShowWaveform.getWidth() + 4, caseShowWaveform.getY(), caseVuMeter.getPreferredSize().width, 23);
+			}
+			
+			if (casePlaySound.getX() + casePlaySound.getWidth() >= lblMode.getX())
+			{
+				lblMode.setBounds(caseVuMeter.getX() + caseVuMeter.getWidth() + 4, caseInternalTc.getY() + caseInternalTc.getHeight() + 4, lblMode.getPreferredSize().width, 16);
+				comboMode.setLocation(lblMode.getX() + lblMode.getWidth() + 4, lblMode.getY() - 3);	
+				
+				splitValue.setBounds(comboMode.getX() + comboMode.getWidth() + 2, comboMode.getY() + 3, 34, 16);
+				lblSplitSec.setBounds(splitValue.getX() + splitValue.getWidth() + 2, lblMode.getY(), lblSplitSec.getPreferredSize().width, 16);
 			}
 			
 			if (Shutter.windowDrag == false && VideoPlayerCore.videoPath != null && isPiping == false)

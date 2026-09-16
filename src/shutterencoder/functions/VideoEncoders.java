@@ -603,7 +603,10 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Corrections.setDeflicker(filterComplex);
 						
 						//Details
-		            	filterComplex = Corrections.setDetails(filterComplex);				
+		            	filterComplex = Corrections.setDetails(filterComplex);	
+		            	
+		            	//Details
+		            	filterComplex = Corrections.setGrain(filterComplex);
 														            	
 						//Denoise
 			    		filterComplex = Corrections.setDenoiser(filterComplex, false);	

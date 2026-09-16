@@ -614,6 +614,8 @@ public class Shutter {
 	public static JCheckBox caseLimiter;
 	public static JCheckBox caseDetails;
 	public static JSlider sliderDetails;
+	public static JCheckBox caseAddGrain;
+	public static JSlider sliderAddGrain;
 	public static JCheckBox caseDenoise;
 	public static JSlider sliderDenoise;
 	public static JCheckBox caseSmoothExposure;
@@ -3246,7 +3248,8 @@ public class Shutter {
 						VideoPlayerUI.btnPlay.doClick();
 					
 					VideoPlayerCore.playerStop();
-					VideoPlayerUI.player.removeAll();
+					VideoPlayerUI.player.removeAll();					
+					VideoPlayerCore.frameVideo = null;					
 					VideoPlayerUI.resizeAll();
 				}
 
@@ -15344,7 +15347,7 @@ public class Shutter {
 		caseDetails.setName("caseDetails");
 		caseDetails.setToolTipText(Shutter.language.getProperty("tooltipDetails"));
 		caseDetails.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		caseDetails.setSize(caseDetails.getPreferredSize().width + 14, 23);
+		caseDetails.setSize(170, 23);
 
 		caseDetails.addActionListener(new ActionListener() {
 
@@ -15396,10 +15399,65 @@ public class Shutter {
 
 		});
 
+		caseAddGrain = new JCheckBox(Shutter.language.getProperty("caseAddGrain") + " 0");
+		caseAddGrain.setName("caseAddGrain");
+		caseAddGrain.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseAddGrain.setSize(caseDetails.getWidth(), 23);
+
+		caseAddGrain.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (caseAddGrain.isSelected() == false) {
+					sliderAddGrain.setValue(0);
+					VideoPlayerUtils.loadImage(false);
+				}
+			}
+
+		});
+
+		sliderAddGrain = new JSlider();
+		sliderAddGrain.setName("sliderAddGrain");
+		sliderAddGrain.setMinorTickSpacing(1);
+		sliderAddGrain.setMaximum(100);
+		sliderAddGrain.setMinimum(0);
+		sliderAddGrain.setValue(0);
+		sliderAddGrain.setSize(sliderDetails.getWidth(), 22);
+
+		sliderAddGrain.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+
+				int value = sliderAddGrain.getValue();
+
+				if (value != 0)
+					caseAddGrain.setSelected(true);
+				else
+					caseAddGrain.setSelected(false);
+
+				caseAddGrain.setText(Shutter.language.getProperty("caseAddGrain") + " " + value);
+
+				VideoPlayerUtils.loadImage(false);
+			}
+
+		});
+
+		sliderAddGrain.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				caseAddGrain.setSelected(true);
+				sliderAddGrain.setEnabled(true);
+			}
+
+		});
+		
 		caseDenoise = new JCheckBox(Shutter.language.getProperty("caseBruit"));
 		caseDenoise.setName("caseDenoise");
 		caseDenoise.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		caseDenoise.setSize(caseDenoise.getPreferredSize().width + 14, 23);
+		caseDenoise.setSize(caseDetails.getWidth(), 23);
 
 		caseDenoise.addActionListener(new ActionListener() {
 
@@ -15454,7 +15512,7 @@ public class Shutter {
 		caseSmoothExposure = new JCheckBox(Shutter.language.getProperty("caseExposure"));
 		caseSmoothExposure.setName("caseSmoothExposure");
 		caseSmoothExposure.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
-		caseSmoothExposure.setSize(caseSmoothExposure.getPreferredSize().width + 20, 23);
+		caseSmoothExposure.setSize(caseDetails.getWidth(), 23);
 
 		caseSmoothExposure.addActionListener(new ActionListener() {
 
@@ -15516,10 +15574,13 @@ public class Shutter {
 		grpCorrections.add(caseLimiter);
 		caseDetails.setLocation(7, caseLimiter.getLocation().y + 17);
 		grpCorrections.add(caseDetails);
-		sliderDetails.setLocation(grpCorrections.getWidth() - sliderDetails.getWidth() - 14,
-				caseDetails.getLocation().y);
-		grpCorrections.add(sliderDetails);
-		caseDenoise.setLocation(7, caseDetails.getLocation().y + 17);
+		sliderDetails.setLocation(grpCorrections.getWidth() - sliderDetails.getWidth() - 14, caseDetails.getLocation().y);
+		grpCorrections.add(sliderDetails);		
+		caseAddGrain.setLocation(7, caseDetails.getLocation().y + 17);
+		grpCorrections.add(caseAddGrain);
+		sliderAddGrain.setLocation(sliderDetails.getX(), caseAddGrain.getLocation().y);
+		grpCorrections.add(sliderAddGrain);		
+		caseDenoise.setLocation(7, caseAddGrain.getLocation().y + 17);
 		grpCorrections.add(caseDenoise);
 		sliderDenoise.setLocation(sliderDetails.getX(), caseDenoise.getLocation().y);
 		grpCorrections.add(sliderDenoise);
@@ -17930,7 +17991,7 @@ public class Shutter {
 		labelFileInfo = new JLabel(language.getProperty("noFileInList"));
 		labelFileInfo.setHorizontalAlignment(SwingConstants.CENTER);
 		labelFileInfo.setForeground(Color.DARK_GRAY);
-		labelFileInfo.setFont(new Font("SansSerif", Font.BOLD, 18));
+		labelFileInfo.setFont(new Font("SansSerif", Font.BOLD, 17));
 		labelFileInfo.setVisible(true);
 		labelFileInfo.setBounds((grpFileInformation.getWidth() - labelFileInfo.getPreferredSize().width) / 2, (grpFileInformation.getHeight() - labelFileInfo.getPreferredSize().height) / 2, labelFileInfo.getPreferredSize().width, labelFileInfo.getPreferredSize().height);
 		

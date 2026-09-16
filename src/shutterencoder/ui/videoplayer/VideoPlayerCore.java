@@ -696,7 +696,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		        return;
 			
 			if ((frameVideo != null || playerCurrentFrame > 0)
-			&& playerThread != null && Shutter.doNotLoadImage == false && inputTime < totalFrames && videoPath != null)
+			&& playerThread != null && Shutter.doNotLoadImage == false && videoPath != null)
 			{			
 				setTime = new Thread(new Runnable() {
 	
@@ -706,7 +706,11 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						previewUpscale = false;
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	
-						double requestedFrame = Math.floor(inputTime);
+						double requestedFrame = Math.floor(inputTime);						
+						if (inputTime >= totalFrames)
+						{
+							requestedFrame = totalFrames - 1;
+						}
 						
 						boolean useBuffer = false;
 						if (VideoPlayerUtils.preview != null || Shutter.caseAddSubtitles.isSelected())
@@ -1651,7 +1655,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		filter = Corrections.setDeflicker(filter);
 				 
 		//Details			
-		filter = Corrections.setDetails(filter);				
+		filter = Corrections.setDetails(filter);	
+		
+		//Details			
+		filter = Corrections.setGrain(filter);			
 											            	
 		//Denoise			
 		filter = Corrections.setDenoiser(filter, noGPU);
@@ -1699,8 +1706,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 		//Add filters
 		filter = " -vf " + '"' + filter;
-		
-		//System.out.println(filter);
 		
 		if (caseVuMeter.isSelected() && FFPROBE.hasAudio && Shutter.caseAddSubtitles.isSelected() == false && VideoPlayerUtils.preview == null)
 		{
