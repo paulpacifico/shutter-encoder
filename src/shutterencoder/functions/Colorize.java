@@ -166,9 +166,11 @@ public class Colorize extends Shutter {
 							}		
 							else
 							{
-								do {								
-									Thread.sleep(100);	
-								} while (DEOLDIFY.runProcess.isAlive());	
+								try {
+									DEOLDIFY.runProcess.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}	
 							}
 
 							if (comboFilter.getSelectedItem().equals("video"))		

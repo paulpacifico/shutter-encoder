@@ -180,9 +180,11 @@ public class PYTHON extends Shutter {
 						modulePath.mkdirs();
 						SEVENZIP.run("x " + '"' + PYTHON_DIR + '"' + " -o" + '"' + modulePath + '"', false);	
 						
-						do {
-							Thread.sleep(10);
-						} while (SEVENZIP.runProcess.isAlive());
+						try {
+							SEVENZIP.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
 					}
 					
 					File tempFolder = new File("C:\\temp");

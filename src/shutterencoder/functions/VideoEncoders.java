@@ -1049,9 +1049,11 @@ public class VideoEncoders extends Shutter {
 								else
 									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + output);
 								
-								do {
-									Thread.sleep(10);
-								} while(FFMPEG.runProcess.isAlive());	
+								try {
+									FFMPEG.runProcess.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}
 								
 								if (grpBitrate.isVisible() && case2pass.isSelected())
 								{
@@ -1062,9 +1064,11 @@ public class VideoEncoders extends Shutter {
 									else
 										FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);		
 									
-									do {
-										Thread.sleep(10);
-									} while(FFMPEG.runProcess.isAlive());	
+									try {
+										FFMPEG.runProcess.join();
+									} catch (InterruptedException e) {
+									    Thread.currentThread().interrupt();
+									}	
 								}
 							}
 							
@@ -1088,9 +1092,11 @@ public class VideoEncoders extends Shutter {
 							FFMPEG.run(InputAndOutput.setInputString(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + cmd + output);		
 						}
 
-						do {
-							Thread.sleep(100);
-						} while (FFMPEG.runProcess.isAlive());
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
 						
 						if (grpBitrate.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
@@ -1098,9 +1104,11 @@ public class VideoEncoders extends Shutter {
 							{
 								FFMPEG.run(InputAndOutput.setInputString(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);	
 														
-								do {
-									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive());	
+								try {
+									FFMPEG.runProcess.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}
 							}
 						}
 																			
@@ -1227,11 +1235,13 @@ public class VideoEncoders extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else

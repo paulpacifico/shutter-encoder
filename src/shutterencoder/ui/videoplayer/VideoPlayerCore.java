@@ -1005,13 +1005,16 @@ public class VideoPlayerCore extends VideoPlayerUI {
 
 		synchronized (setTimeLock)
 		{
-			if (FFMPEG.isRunning == false && (setTime == null || setTime.isAlive() == false) && Shutter.doNotLoadImage == false && (playerVideo == null || playerVideo.isAlive() == false))
+			if (FFMPEG.isRunning == false
+			&& (setTime == null || setTime.isAlive() == false)
+			&& Shutter.doNotLoadImage == false
+			&& (playerVideo == null || playerVideo.isAlive() == false))
 			{
 				setTime = new Thread(new Runnable() {
 
 					@Override
 					public void run() {
-
+						
 						frameVideo = null;
 
 						playerPlayVideo = false;

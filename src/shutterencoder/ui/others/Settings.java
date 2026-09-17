@@ -93,11 +93,13 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
 import shutterencoder.library.FFMPEG;
+import shutterencoder.library.FFPROBE;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class Settings {
@@ -414,13 +416,35 @@ public class Settings {
 					Shutter.caseDisplay.setSelected(false);
 					
 					Shutter.frame.setBounds(Shutter.frame.getX() + (Shutter.frame.getWidth() - 664) / 2, Shutter.frame.getY(), 664, Shutter.frame.getHeight());
+					
+					// Waveform
+					if (VideoPlayerUtils.addWaveformIsRunning)
+					{		
+						VideoPlayerUtils.stopWaveformCreation();
+						
+						try {
+							VideoPlayerUtils.addWaveform.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
+					}
 				}
 				else
 				{
 					Shutter.caseDisplay.setVisible(true);
 					
 					Shutter.frame.setBounds(Shutter.frame.getX() - 332, Shutter.frame.getY(), 1350, Shutter.frame.getHeight());
-					
+				}
+				
+				UIController.changeWidth();				
+				
+
+				if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected() || btnDisableVideoPlayer.isSelected())
+				{
+					VideoPlayerUI.setPlayerButtons(false);
+				}
+				else
+				{
 					if (VideoPlayerCore.setTime != null && VideoPlayerCore.setTime.isAlive())
 					{
 						try {
@@ -430,10 +454,10 @@ public class Settings {
 						}
 					}
 					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame		
+					VideoPlayerCore.playerStop();	
+					
+					VideoPlayerUI.setPlayerButtons(true);
 				}
-				
-				UIController.changeWidth();
 			}
 			
 		});

@@ -774,11 +774,11 @@ import javax.swing.JScrollPane;
 						cmd = " -f image2 -frames:v 1 ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/0.png" + '"');
 						
-						do
-						{
-							Thread.sleep(100);
-						}
-						while(FFMPEG.runProcess.isAlive());										
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}								
 						
 						//On créer le tableau ici après la première image
 						newTable();
@@ -788,15 +788,15 @@ import javax.swing.JScrollPane;
 						cmd = " -vf select=" + '"' + "gt(scene\\," + tol  + ")" + '"' + ",showinfo -fps_mode vfr -f image2 ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/%01d.png" + '"');		
 						
-						do
-						{
-							Thread.sleep(100);
-						}
-						while(FFMPEG.runProcess.isAlive());						
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}		
 					
 						lastAction();
 						
-					} catch (InterruptedException e) {
+					} catch (Exception e) {
 						FFMPEG.error  = true;
 					}
 				}

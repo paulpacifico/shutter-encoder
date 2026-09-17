@@ -209,11 +209,11 @@ public class Extract extends Shutter {
 						String cmd = mapping + metadatas + " -y ";
 						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
 						
-						do
-						{
-							Thread.sleep(100);
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
 						}
-						while(FFMPEG.runProcess.isAlive());
 																		
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
@@ -273,11 +273,13 @@ public class Extract extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else

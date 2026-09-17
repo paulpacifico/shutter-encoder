@@ -259,12 +259,12 @@ public class AudioSettings extends Shutter {
 			if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
 			{				
 	        	AudioNormalization.main(file);
-	        							
-	        	do {
-					try {
-						Thread.sleep(100);
-					} catch (InterruptedException e) {}
-				} while (AudioNormalization.thread.isAlive());
+	        			        	
+	        	try {
+	        		AudioNormalization.thread.join();
+				} catch (InterruptedException e) {
+				    Thread.currentThread().interrupt();
+				}
 	        	
 	        	lblCurrentEncoding.setText(file.getName());
 				

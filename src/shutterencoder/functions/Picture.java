@@ -51,6 +51,8 @@ import shutterencoder.utils.Utils;
 
 public class Picture extends Shutter {
 		
+	private static boolean isGPUCompatible = false;
+	
 	public static void main(boolean encode, boolean videoPlayerCapture) {
 
 		Thread thread = new Thread(new Runnable(){			
@@ -92,7 +94,7 @@ public class Picture extends Shutter {
 					{
 						FunctionUtils.yesToAll = false;
 						screenshotIsRunning = true;
-						file =  new File(VideoPlayerCore.videoPath);
+						file = new File(VideoPlayerCore.videoPath);
 					}
 					
 					try {
@@ -135,6 +137,9 @@ public class Picture extends Shutter {
 						if (Filter.dateFilter(file) == false)
 							continue;
 										
+						//Saving the GPU value
+						isGPUCompatible = LibraryUtils.isGPUCompatible;
+						
 						//No GPU acceleration when using this function
 						LibraryUtils.isGPUCompatible = false;
 						
@@ -306,10 +311,12 @@ public class Picture extends Shutter {
 								
 								if (cancelled == false)
 									XPDFREADER.run(" -r 300 -f " + p + " -l " + p + " " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
-								
-								do {
-									Thread.sleep(100);
-								} while (XPDFREADER.runProcess.isAlive());								
+
+								try {
+									XPDFREADER.runProcess.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}				
 							}						
 							
 							btnStart.setEnabled(true);
@@ -349,20 +356,21 @@ public class Picture extends Shutter {
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, ".png"));								
 
 							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + InputAndOutput.outPoint) + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
-							
-							do {
-								Thread.sleep(10);
-							} while(FFMPEG.runProcess.isAlive());
+							try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 							
 							if (NCNN.isRunning && NCNN.process != null)
 							{
 								NCNN.process.destroy();
 								
-								do {
-									try {
-										Thread.sleep(1000);
-									} catch (InterruptedException e) {}
-								} while (NCNN.isRunning);
+								try {
+									NCNN.runProcess.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}
 								
 								lblCurrentEncoding.setText(fileName);
 							}
@@ -376,17 +384,27 @@ public class Picture extends Shutter {
 	
 						if (isRaw)
 						{
-							do {
-								Thread.sleep(100);
-							} while (DCRAW.runProcess.isAlive());
+							try {
+								DCRAW.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 							
 							btnStart.setEnabled(true);	
 						}
 						else
 						{
-							do {
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
+							try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
+						}
+						
+						//Re-enable GPU decoding for screenshots
+						if (videoPlayerCapture)
+						{
+							LibraryUtils.isGPUCompatible = isGPUCompatible; 
 						}
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
@@ -405,15 +423,17 @@ public class Picture extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else
-				{
+				{					
 					UIController.endOfFunction();					
 				}
 			}
@@ -645,17 +665,21 @@ public class Picture extends Shutter {
 				
 				FFMPEG.run(" -i " + '"' + file + '"' + scale + compression + " -y " + '"' + fileOut + '"');
 			
-				do {
-					Thread.sleep(10);
-				} while(FFMPEG.runProcess.isAlive());
+				try {
+					FFMPEG.runProcess.join();
+				} catch (InterruptedException e) {
+				    Thread.currentThread().interrupt();
+				}
 			}
 			else if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
 			{
 				FFMPEG.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + flags + '"' + " -y " + '"' + fileOut + '"');
 				
-				do {
-					Thread.sleep(10);
-				} while(FFMPEG.runProcess.isAlive());				
+				try {
+					FFMPEG.runProcess.join();
+				} catch (InterruptedException e) {
+				    Thread.currentThread().interrupt();
+				}			
 			}
 			else
 			{

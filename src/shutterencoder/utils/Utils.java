@@ -1891,10 +1891,10 @@ public class Utils extends Shutter {
 															if (VideoPlayerCore.setTime != null)
 															{
 																try {
-																	do {
-																		Thread.sleep(100);
-																	} while (VideoPlayerCore.setTime.isAlive());
-																} catch (InterruptedException er) {}
+																	VideoPlayerCore.setTime.join();
+																} catch (InterruptedException e) {
+																    Thread.currentThread().interrupt();
+																}
 															}
 															
 															((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());

@@ -93,11 +93,11 @@ public class BlackDetection extends Shutter {
 						
 						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd);		
 						
-						do
-						{
-							Thread.sleep(100);
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
 						}
-						while(FFMPEG.runProcess.isAlive());
 						
 						//Show detection
 						if (cancelled == false)
@@ -119,11 +119,13 @@ public class BlackDetection extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else

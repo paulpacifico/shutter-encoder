@@ -1435,9 +1435,11 @@ public class FunctionUtils extends Shutter {
 								Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 								Shutter.lblCurrentEncoding.setText(fileIn.getName());
 
-								do {
-									Thread.sleep(10);
-								} while (FFMPEG.runProcess.isAlive());
+								try {
+									FFMPEG.runProcess.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}
 
 								if (FFMPEG.error || fileOut.length() == 0) {
 									FFMPEG.errorList.append(fileIn.getName());
@@ -1519,23 +1521,21 @@ public class FunctionUtils extends Shutter {
 				}
 				else
 				{	
-					try {
-						
-						File srt = new File(video.toString().replace(ext, ".srt"));
-						
-						//Command
-						FFMPEG.runSilently(" -i " + '"' + video.toString() + '"' + " -vn -an -map s:" + (comboSubsSource.getSelectedIndex() - 1) + "? -y " + '"'  + video.toString().replace(ext, ".srt") + '"');	
+					File srt = new File(video.toString().replace(ext, ".srt"));
+					
+					//Command
+					FFMPEG.runSilently(" -i " + '"' + video.toString() + '"' + " -vn -an -map s:" + (comboSubsSource.getSelectedIndex() - 1) + "? -y " + '"'  + video.toString().replace(ext, ".srt") + '"');	
 
-						do {
-							Thread.sleep(100);
-						} while (FFMPEG.process.isAlive() && FFMPEG.error == false);
-						
-						if (srt.exists())
-						{
-							deleteSRT = true;
-						}	
-																						
-					} catch (InterruptedException e) {}					
+					try {
+						FFMPEG.runProcess.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					if (srt.exists())
+					{
+						deleteSRT = true;
+					}					
 					
 					fc.setSelectedFile(new File(video.toString().replace(ext, ".srt")));
 				}						
@@ -1594,15 +1594,13 @@ public class FunctionUtils extends Shutter {
 								{
 									subtitlesFilePath = new File(Shutter.subtitlesFile.toString().replace(".vtt", ".srt"));
 
-									try {
-										
-										FFMPEG.runSilently(" -i " + '"' + fc.getSelectedFile().toString() + '"' + " -y " + '"' + subtitlesFilePath.toString().replace(".srt", "_vtt.srt") + '"');
+									FFMPEG.runSilently(" -i " + '"' + fc.getSelectedFile().toString() + '"' + " -y " + '"' + subtitlesFilePath.toString().replace(".srt", "_vtt.srt") + '"');
 
-										do {
-											Thread.sleep(100);													
-										} while (FFMPEG.process.isAlive() && FFMPEG.error == false);
-										
-									} catch (InterruptedException e) {}
+									try {
+										FFMPEG.runProcess.join();
+									} catch (InterruptedException e) {
+									    Thread.currentThread().interrupt();
+									}
 
 									Shutter.subtitlesFile = new File(subtitlesFilePath.toString().replace(".srt", "_vtt.srt"));
 								} else

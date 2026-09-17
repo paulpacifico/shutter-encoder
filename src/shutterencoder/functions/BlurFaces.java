@@ -111,10 +111,12 @@ public class BlurFaces extends Shutter {
 						
 						//Command		
 						ANONYMIZER.run(file.toString(), fileOut);		
-														
-						do {
-							Thread.sleep(100);
-						} while (ANONYMIZER.runProcess.isAlive());
+										
+						try {
+							ANONYMIZER.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
 														
 						if (FFMPEG.saveCode == false)
 						{

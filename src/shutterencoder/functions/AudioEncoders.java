@@ -348,9 +348,11 @@ public class AudioEncoders extends Shutter {
 							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + DRC, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');
 						}								
 						
-						do {
-							Thread.sleep(100);
-						} while(FFMPEG.runProcess.isAlive());
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
 							
 						//MixAudio
 						if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && caseMixAudio.isSelected() && FFPROBE.surround == false)
@@ -375,11 +377,13 @@ public class AudioEncoders extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+
 					RenderQueue.frame.toFront();					
 				}
 				else
@@ -430,11 +434,11 @@ public class AudioEncoders extends Shutter {
 		{				
         	AudioNormalization.main(file);
         							
-        	do {
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {}
-			} while (AudioNormalization.thread.isAlive());
+        	try {
+        		AudioNormalization.thread.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
         	
         	lblCurrentEncoding.setText(file.getName());
 						
@@ -658,9 +662,11 @@ public class AudioEncoders extends Shutter {
 				String cmd = " -filter_complex " + '"' + "[a:0]pan=1c|c0=c" + (i - 1) + audioFiltering + "[a" + (i - 1) + "]" + '"' + " -map " + '"'+ "[a" + (i - 1) + "]" + '"' + " -c:a " + codec + sampleRate + timecode + yesno;
 				FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + DRC, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOutput + '"');	
 				
-				do
-					Thread.sleep(100);
-				while(FFMPEG.runProcess.isAlive());	
+				try {
+					FFMPEG.runProcess.join();
+				} catch (InterruptedException e) {
+				    Thread.currentThread().interrupt();
+				}
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 				{
@@ -694,9 +700,11 @@ public class AudioEncoders extends Shutter {
 				String cmd = audioFiltering + " -map a:" + (i - 1) + " -c:a " + codec + sampleRate + timecode + yesno;
 				FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + DRC, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOutput + '"');	
 				
-				do
-					Thread.sleep(100);
-				while(FFMPEG.runProcess.isAlive());	
+				try {
+					FFMPEG.runProcess.join();
+				} catch (InterruptedException e) {
+				    Thread.currentThread().interrupt();
+				}
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 				{
@@ -724,9 +732,11 @@ public class AudioEncoders extends Shutter {
 				String cmd = " -filter_complex " + '"' + "[0:a:" + (i - 1) + "][0:a:" + i + "]amerge=inputs=2" + audioFiltering + "[a]" + '"' + " -map " + '"' + "[a]" + '"' + " -c:a " + codec + sampleRate + timecode + yesno;
 				FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + DRC, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOutput + '"');	
 				
-				do
-					Thread.sleep(100);
-				while(FFMPEG.runProcess.isAlive());	
+				try {
+					FFMPEG.runProcess.join();
+				} catch (InterruptedException e) {
+				    Thread.currentThread().interrupt();
+				}
 				
 				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 				{

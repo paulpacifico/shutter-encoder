@@ -163,11 +163,13 @@ public class DVDRIP extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else
@@ -221,11 +223,11 @@ public class DVDRIP extends Shutter {
 				String cmd = " -c:v copy -c:a copy -c:s copy -err_detect ignore_err -map v:0? -map a? -map s? -y ";
 				FFMPEG.run(" -safe 0 -f concat -i " + '"' + concatFile.toString() + '"' + cmd + '"'  + fileOut + '"');	
 				
-				do
-				{
-					Thread.sleep(100);
+				try {
+					FFMPEG.runProcess.join();
+				} catch (InterruptedException e) {
+				    Thread.currentThread().interrupt();
 				}
-				while(FFMPEG.runProcess.isAlive());
 			}
 			else
 				return true;
@@ -242,12 +244,13 @@ public class DVDRIP extends Shutter {
 				lastActions(VOB, fileOut, labelOutput);
 			}
 			
-			} catch (InterruptedException e) {
-				FFMPEG.error  = true;
-			}
-			finally { //Dans tous les cas on vide la liste de fichiers VOB
-				concatFile.delete();										
-			}
+		} catch (Exception e) {
+			FFMPEG.error  = true;
+		}
+		finally { //Dans tous les cas on vide la liste de fichiers VOB
+			concatFile.delete();										
+		}
+		
 		return false;
 	}
 	

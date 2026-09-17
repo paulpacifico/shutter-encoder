@@ -114,9 +114,11 @@ public class AudioSeparation extends Shutter {
 										
 						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"' + waveFile.toString() + '"');		
 						
-						do {
-							Thread.sleep(100);
-						} while (FFMPEG.runProcess.isAlive());
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
 						
 						String model = "htdemucs_6s";						
 						if (cancelled == false)
@@ -126,10 +128,12 @@ public class AudioSeparation extends Shutter {
 														
 							//Run demucs
 							DEMUCS.run(model, separationFolder.toString(), waveFile.toString(), comboFilter.getSelectedItem().toString());
-																			
-							do {		
-								Thread.sleep(100);								
-							} while (DEMUCS.runProcess.isAlive());
+										
+							try {
+								DEMUCS.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}							
 							
 							waveFile.delete();
 						}

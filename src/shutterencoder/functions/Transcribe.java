@@ -164,9 +164,11 @@ public class Transcribe extends Shutter {
 										
 						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"' + waveFile + '"');		
 						
-						do {
-							Thread.sleep(100);
-						} while (FFMPEG.runProcess.isAlive());
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
 						
 						if (cancelled == false)
 						{
@@ -179,10 +181,12 @@ public class Transcribe extends Shutter {
 								format = true;								
 														
 							WHISPER.run(waveFile, fileName);		
-															
-							do {
-								Thread.sleep(100);
-							} while (WHISPER.runProcess.isAlive());
+										
+							try {
+								WHISPER.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 							
 							File transcribedFile = new File(waveFile.toString().replace(".wav", container));
 							

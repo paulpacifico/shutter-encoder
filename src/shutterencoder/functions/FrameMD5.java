@@ -128,9 +128,11 @@ public class FrameMD5 extends Shutter {
 						//Command
 						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + " -f framemd5 -y " + '"'  + fileOut + '"');
 	
-						do {
-							Thread.sleep(100);
-						} while(FFMPEG.runProcess.isAlive());
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
 						
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
 						|| FFMPEG.saveCode == false && caseEnableSequence.isSelected())
@@ -149,11 +151,13 @@ public class FrameMD5 extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else

@@ -98,9 +98,11 @@ public class ReplaceAudio extends Shutter {
 			String cmd = shortest + " -c:v copy -c:s copy" + audio + " -map s? -y ";
 			FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.outPoint, " -i " + '"' + videoFile.toString() + '"', "") + audioFiles + cmd + '"'  + fileOut + '"');		
 					
-			do {
-				Thread.sleep(100);
-			} while(FFMPEG.runProcess.isAlive());
+			try {
+				FFMPEG.runProcess.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
 		
 			if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 			{
@@ -118,11 +120,13 @@ public class ReplaceAudio extends Shutter {
 			//Reset data for the current selected file
 			VideoPlayerCore.videoPath = null;
 			VideoPlayerUtils.setMedia();
-			do {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {}
-			} while (VideoPlayerCore.loadMedia.isAlive());
+			
+			try {
+				VideoPlayerCore.loadMedia.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
+			
 			RenderQueue.frame.toFront();
 		}
 		else

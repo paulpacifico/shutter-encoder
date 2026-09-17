@@ -143,11 +143,11 @@ public class Conform extends Shutter {
 						String cmd = " -c:v copy -c:s copy" + audio + " -map v:0 -map a? -map s? -y ";
 						FFMPEG.run(InputAndOutput.setInputString(" -itsscale " + value + InputAndOutput.inPoint, " -i " + '"' + file + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');						
 												
-						do
-						{
-							Thread.sleep(100);
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
 						}
-						while(FFMPEG.runProcess.isAlive());
 	
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						{
@@ -165,11 +165,13 @@ public class Conform extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else

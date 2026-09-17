@@ -129,20 +129,22 @@ public class Command extends Shutter {
 							
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
 							
-							do
-							{
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
+							try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 							
 					        if (cmd.contains("-pass"))
 		         			{
 					        	FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + '"'  + fileOut + '"');		
 		         			}
 		
-					        do
-							{
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
+					        try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 						}
 						else if (comboFonctions.getEditor().getItem().toString().contains("exiftool"))
 						{
@@ -178,11 +180,13 @@ public class Command extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else

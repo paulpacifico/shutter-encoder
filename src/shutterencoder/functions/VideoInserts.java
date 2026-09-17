@@ -20,9 +20,7 @@
 package shutterencoder.functions;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Arrays;
@@ -307,17 +305,17 @@ public class VideoInserts extends Shutter {
 						String cmd = " -i " + master[1] + timecode + " -c:v copy -c:a copy -c:s copy -map v:0? -map 1:a? -map s? -y ";
 						FFMPEG.run(" -safe 0 -f concat -i " + '"' + concatList.toString() + '"' + cmd + '"' + fileOut.toString() + '"');		
 						
-						do
-						{
-							Thread.sleep(100);
+						try {
+							FFMPEG.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
 						}
-						while(FFMPEG.runProcess.isAlive());
 					}
 			
 					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
 						lastActions(new File(masterFile), fileOut, concatList, labelOutput, temp);
 			
-				} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {					
+				} catch (Exception e) {					
 					FFMPEG.error  = true;
 				}
 							
@@ -326,11 +324,13 @@ public class VideoInserts extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else

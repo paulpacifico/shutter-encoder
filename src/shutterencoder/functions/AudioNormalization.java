@@ -130,9 +130,11 @@ public class AudioNormalization extends Shutter {
 							
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd);		
 							
-							do {
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
+							try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 						}
 						
 						//Audio normalization from a video codec
@@ -201,9 +203,11 @@ public class AudioNormalization extends Shutter {
 							
 							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + output);							
 							
-							do {
-								Thread.sleep(100);
-							} while (FFMPEG.runProcess.isAlive());
+							try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 							
 							if (cancelled == false && FFMPEG.error == false && twoPass)
 							{
@@ -214,9 +218,11 @@ public class AudioNormalization extends Shutter {
 								
 								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd.replace(normalization, secondPassNormalization) + '"' + fileOut + '"');
 								
-								do {
-									Thread.sleep(100);
-								} while (FFMPEG.runProcess.isAlive());
+								try {
+									FFMPEG.runProcess.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}
 							}
 							
 							if (FFMPEG.error)
@@ -249,9 +255,11 @@ public class AudioNormalization extends Shutter {
 								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');	
 							}
 							
-							do {
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
+							try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 						}
 	
 						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
@@ -270,11 +278,13 @@ public class AudioNormalization extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+
 					RenderQueue.frame.toFront();
 				}
 				else if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)

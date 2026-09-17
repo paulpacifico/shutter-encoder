@@ -101,9 +101,12 @@ public class BackgroundRemover extends Shutter {
 						
 						//Run BackgroundRemover
 						BACKGROUNDREMOVER.run(file.toString(), fileOut.toString());
-						do {
-							Thread.sleep(100);							
-						} while (BACKGROUNDREMOVER.runProcess.isAlive());
+						
+						try {
+							BACKGROUNDREMOVER.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}								
 						
 						if (FFMPEG.saveCode == false)
 						{

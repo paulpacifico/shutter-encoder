@@ -292,11 +292,11 @@ public class Overlay extends Shutter {
 				FunctionUtils.addSubtitles(false);
 				if (VideoPlayerUtils.loadImageProcess != null)
 				{
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerUtils.loadImageProcess.isAlive());
+					try {
+						VideoPlayerUtils.loadImageProcess.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
 				}
 				FunctionUtils.addSubtitles(true);
 			}

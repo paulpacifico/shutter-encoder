@@ -53,10 +53,11 @@ public class Corrections extends Shutter {
 				cmd =  " -an -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -";	
 			
 			FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
-			
-			do {
-				Thread.sleep(100);
-			} while(FFMPEG.runProcess.isAlive());						
+			try {
+				FFMPEG.runProcess.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}				
 			
 			if (filterComplex != "") filterComplex += ",";
 			

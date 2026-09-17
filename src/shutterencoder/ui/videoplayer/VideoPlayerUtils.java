@@ -58,6 +58,7 @@ import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.NCNN;
 import shutterencoder.library.XPDFREADER;
 import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesTimeline;
@@ -88,7 +89,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	
 	public static void setMedia() {
 
-		VideoPlayerCore.loadMedia = new Thread(new Runnable()
+		loadMedia = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
@@ -114,35 +115,35 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							File dir = new File(Shutter.list.firstElement());
 							for (File f : dir.listFiles()) {
 								if (f.isHidden() == false && f.isFile()) {
-									VideoPlayerCore.videoPath = f.toString();
+									videoPath = f.toString();
 									break;
 								}
 							}
 						} 
 						else if (Shutter.inputDeviceIsRunning)
 						{
-							VideoPlayerCore.videoPath = Shutter.list.firstElement();
+							videoPath = Shutter.list.firstElement();
 							setInfo();
 						}
 						
 						//Reset when changing file													
-						if (Shutter.fileList.getSelectedValue().equals(VideoPlayerCore.videoPath) == false && (new File(Shutter.fileList.getSelectedValue()).isFile() || Shutter.scanIsRunning) || Shutter.inputDeviceIsRunning)
+						if (Shutter.fileList.getSelectedValue().equals(videoPath) == false && (new File(Shutter.fileList.getSelectedValue()).isFile() || Shutter.scanIsRunning) || Shutter.inputDeviceIsRunning)
 						{				
 							//Stop player
-							if (VideoPlayerCore.playerIsPlaying())
+							if (playerIsPlaying())
 							{
 								btnPlay.doClick();
 							}
 							
 							//Clear the buffer
-							if (VideoPlayerCore.bufferedFrames.size() > 0)
+							if (bufferedFrames.size() > 0)
 							{											
-								VideoPlayerCore.bufferedFrames.clear();
+								bufferedFrames.clear();
 								waveformContainer.repaint();
 							}
 									
 							//Clear the segment list
-							VideoPlayerCore.activeSegmentIndex = -1;
+							activeSegmentIndex = -1;
 							if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 							{					
 								VideoPlayerMultiCuts.clearCutHistory();
@@ -160,10 +161,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							}
 							
 							if (Shutter.scanIsRunning == false)
-								VideoPlayerCore.videoPath = Shutter.fileList.getSelectedValue();
+								videoPath = Shutter.fileList.getSelectedValue();
 							
-							if (VideoPlayerCore.frameVideo != null)
-								VideoPlayerCore.frameVideo = null;
+							if (frameVideo != null)
+								frameVideo = null;
 							
 							if (preview != null)
 								preview = null;
@@ -180,13 +181,13 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							}
 							
 							// Thumbnails
-							if (VideoPlayerCore.thumbnails != null)
+							if (thumbnails != null)
 							{			
 								allThumbnails = null;
 								stopThumbnailsCreation();
 							}
 													
-							String extension = VideoPlayerCore.videoPath.substring(VideoPlayerCore.videoPath.lastIndexOf("."));	
+							String extension = videoPath.substring(videoPath.lastIndexOf("."));	
 								
 							boolean isRaw = false;
 				    		
@@ -216,7 +217,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							}
 				
 							try {
-								FunctionUtils.analyze(new File(VideoPlayerCore.videoPath), isRaw, true);
+								FunctionUtils.analyze(new File(videoPath), isRaw, true);
 							} catch (InterruptedException e) {}
 							
 							//IMPORTANT							
@@ -263,7 +264,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							seekOnKeyFrames = false;
 							if (FFPROBE.audioOnly == false)
 							{							
-								FFPROBE.AnalyzeGOP(VideoPlayerCore.videoPath, false);
+								FFPROBE.AnalyzeGOP(videoPath, false);
 								do {
 									//Slow down the loop
 									try {
@@ -293,7 +294,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							//Autocrop
 							if (Shutter.caseEnableCrop.isSelected() && Shutter.comboPreset.getSelectedIndex() == 1)
 				    		{
-				    			LibraryUtils.setCropDetect(new File(VideoPlayerCore.videoPath));	  
+				    			LibraryUtils.setCropDetect(new File(videoPath));	  
 				    		}
 							
 							//Burn subtitles
@@ -306,23 +307,23 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								else
 									Shutter.autoEmbed = true;
 								
-								String ext = VideoPlayerCore.videoPath.substring(VideoPlayerCore.videoPath.lastIndexOf("."));
+								String ext = videoPath.substring(videoPath.lastIndexOf("."));
 																
-								if (new File(VideoPlayerCore.videoPath.replace(ext, ".srt")).exists()
-								|| new File (VideoPlayerCore.videoPath.replace(ext, ".vtt")).exists()
-								|| new File (VideoPlayerCore.videoPath.replace(ext, ".ass")).exists()
-								|| new File (VideoPlayerCore.videoPath.replace(ext, ".ssa")).exists()
-								|| new File (VideoPlayerCore.videoPath.replace(ext, ".scc")).exists()
+								if (new File(videoPath.replace(ext, ".srt")).exists()
+								|| new File (videoPath.replace(ext, ".vtt")).exists()
+								|| new File (videoPath.replace(ext, ".ass")).exists()
+								|| new File (videoPath.replace(ext, ".ssa")).exists()
+								|| new File (videoPath.replace(ext, ".scc")).exists()
 								|| Shutter.comboSubsSource.getSelectedIndex() != 0)
 								{
 									FunctionUtils.addSubtitles(false);
 									if (loadImageProcess != null)
 									{
-										do {
-											try {
-												Thread.sleep(100);
-											} catch (InterruptedException e) {}
-										} while (loadImageProcess.isAlive());
+										try {
+											loadImageProcess.join();
+										} catch (InterruptedException e) {
+										    Thread.currentThread().interrupt();
+										}
 									}
 									FunctionUtils.addSubtitles(true);
 								}
@@ -373,8 +374,8 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							else					
 								inputFramerateMS = (double) (1000 / FFPROBE.accurateFPS);		
 									
-							VideoPlayerCore.bufferCurrentFrame = 0;
-							VideoPlayerCore.playerCurrentFrame = 0;
+							bufferCurrentFrame = 0;
+							playerCurrentFrame = 0;
 			
 							caseInternalTc.setEnabled(true);	
 							Shutter.caseShowTimecode.setEnabled(true);
@@ -392,7 +393,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							btnGoToIn.setEnabled(true);
 							btnGoToOut.setEnabled(true);	
 							
-							if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
+							if ((caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false) && UIController.noVideoPlayer == false)
 							{
 								caseInH.setEnabled(true);
 								caseInM.setEnabled(true);
@@ -430,9 +431,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							waveformContainer.repaint();
 							
 							//Setup fileList
-							if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
+							if ((caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false) && UIController.noVideoPlayer == false)
 							{
-								getFileList(VideoPlayerCore.videoPath, fileDuration);
+								getFileList(videoPath, fileDuration);
 							}
 								
 							setFileList();	
@@ -474,10 +475,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					{				
 						btnStop.doClick();
 						
-						VideoPlayerCore.videoPath = null;
+						videoPath = null;
 						showScale.setVisible(false);
-						VideoPlayerCore.playerStop();
-						VideoPlayerCore.playerSetTime(0);
+						playerStop();
+						playerSetTime(0);
 			
 						btnPlay.setIcon(new FlatSVGIcon("resources/play.svg", 15, 15));	
 						btnPlay.setName("play");
@@ -513,7 +514,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						}
 						
 						// Thumbnails
-						if (VideoPlayerCore.thumbnails != null)
+						if (thumbnails != null)
 						{			
 							allThumbnails = null;
 							stopThumbnailsCreation();
@@ -564,7 +565,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					
 					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
 					{						
-						File video = new File(VideoPlayerCore.videoPath);
+						File video = new File(videoPath);
 						String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
 						
 						SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");		
@@ -595,7 +596,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							SubtitlesTimeline.setSubtitles(SubtitlesTimeline.srt);	
 			    		}
 			    		
-			    		VideoPlayerCore.playerFreeze();	
+			    		playerFreeze();	
 			    		
 						Shutter.btnStart.setEnabled(false);						    		
 						Shutter.comboFonctions.setEnabled(false);	
@@ -615,7 +616,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			}    		
 			
 		});
-		VideoPlayerCore.loadMedia.start();
+		loadMedia.start();
 	}
 
 	public static void setInfo() {
@@ -751,7 +752,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								index ++;
 							}
 							
-							VideoPlayerCore.activeSegmentIndex = 0;							
+							activeSegmentIndex = 0;							
 							
 							waveformContainer.repaint();
 						}
@@ -797,11 +798,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			
 			String timeIn = String.format("%s:%s:%s:%s", caseInH.getText(), caseInM.getText(), caseInS.getText(), caseInF.getText());
 	        String timeOut = String.format("%s:%s:%s:%s", caseOutH.getText(), caseOutM.getText(), caseOutS.getText(), caseOutF.getText());
-	        String newEntry = VideoPlayerCore.videoPath;
+	        String newEntry = videoPath;
 	        
 	        if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 			{
-	        	newEntry = VideoPlayerCore.videoPath;
+	        	newEntry = videoPath;
 	        	
 	        	for (CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 	        	{
@@ -828,7 +829,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				for (String file : stb.toString().split(System.lineSeparator()))
 				{
 					String s[] = file.split("\\|");
-					if (s[0].equals(VideoPlayerCore.videoPath)) //Replace at the same line
+					if (s[0].equals(videoPath)) //Replace at the same line
 					{						
 						fileList.append(newEntry);
 						fileExists = true;
@@ -901,17 +902,17 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	
 		setMarkers();
 		
-		VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * getFPS() + Integer.parseInt(caseInF.getText());
+		playerCurrentFrame = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * getFPS() + Integer.parseInt(caseInF.getText());
 	
 		//NTSC framerate
-		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-		VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+		playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
+		playerCurrentFrame = Timecode.getDropFrameTimecode(playerCurrentFrame);
 		
-		if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && VideoPlayerCore.activeSegmentIndex != -1)
+		if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && activeSegmentIndex != -1)
 		{
 			for (CutSegment seg : VideoPlayerMultiCuts.cutSegments) 
 		    {
-				if (seg.index == VideoPlayerCore.activeSegmentIndex)
+				if (seg.index == activeSegmentIndex)
 				{
 					seg.inH = Integer.parseInt(caseInH.getText());
 					seg.inM = Integer.parseInt(caseInM.getText());
@@ -922,7 +923,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			}
 		}
 		
-		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+		playerSetTime(playerCurrentFrame);
 	
 		//FileList
 		setFileList();
@@ -956,17 +957,17 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			
 		setMarkers();		
 		
-		VideoPlayerCore.playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * getFPS() + Integer.parseInt(caseOutF.getText()) - 1;
+		playerCurrentFrame = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * getFPS() + Integer.parseInt(caseOutF.getText()) - 1;
 	
 		//NTSC framerate
-		VideoPlayerCore.playerCurrentFrame = Timecode.getNTSCtimecode(VideoPlayerCore.playerCurrentFrame);
-		VideoPlayerCore.playerCurrentFrame = Timecode.getDropFrameTimecode(VideoPlayerCore.playerCurrentFrame);
+		playerCurrentFrame = Timecode.getNTSCtimecode(playerCurrentFrame);
+		playerCurrentFrame = Timecode.getDropFrameTimecode(playerCurrentFrame);
 	
-		if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && VideoPlayerCore.activeSegmentIndex != -1)
+		if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && activeSegmentIndex != -1)
 		{
 			for (CutSegment seg : VideoPlayerMultiCuts.cutSegments) 
 		    {
-				if (seg.index == VideoPlayerCore.activeSegmentIndex)
+				if (seg.index == activeSegmentIndex)
 				{
 					seg.outH = Integer.parseInt(caseOutH.getText());
 					seg.outM = Integer.parseInt(caseOutM.getText());
@@ -977,7 +978,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			}
 		}
 	
-		VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+		playerSetTime(playerCurrentFrame);
 	
 		//FileList
 		setFileList();
@@ -1012,11 +1013,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			
 			if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 			{
-				double time = VideoPlayerCore.bufferCurrentFrame > 0 ? VideoPlayerCore.bufferCurrentFrame : VideoPlayerCore.playerCurrentFrame;
+				double time = bufferCurrentFrame > 0 ? bufferCurrentFrame : playerCurrentFrame;
 				
-				CutSegment previousSegment = VideoPlayerCore.activeSegmentIndex > 0 ? VideoPlayerMultiCuts.cutSegments.get(VideoPlayerCore.activeSegmentIndex - 1) : null;
-				CutSegment activeSegment = VideoPlayerMultiCuts.cutSegments.get(VideoPlayerCore.activeSegmentIndex);				
-				CutSegment nextSegment = VideoPlayerCore.activeSegmentIndex < VideoPlayerMultiCuts.cutSegments.size() - 1 ? VideoPlayerMultiCuts.cutSegments.get(VideoPlayerCore.activeSegmentIndex + 1) : null;
+				CutSegment previousSegment = activeSegmentIndex > 0 ? VideoPlayerMultiCuts.cutSegments.get(activeSegmentIndex - 1) : null;
+				CutSegment activeSegment = VideoPlayerMultiCuts.cutSegments.get(activeSegmentIndex);				
+				CutSegment nextSegment = activeSegmentIndex < VideoPlayerMultiCuts.cutSegments.size() - 1 ? VideoPlayerMultiCuts.cutSegments.get(activeSegmentIndex + 1) : null;
 				
 				double segmentIn = VideoPlayerMultiCuts.getSegmentTime(activeSegment.inH, activeSegment.inM, activeSegment.inS, activeSegment.inF);
 	            double segmentOut = VideoPlayerMultiCuts.getSegmentTime(activeSegment.outH, activeSegment.outM, activeSegment.outS, activeSegment.outF);
@@ -1034,7 +1035,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				        
 				        waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); //Stop the dragging process
 					}
-					else if (VideoPlayerCore.dragSegmentIndex == VideoPlayerCore.activeSegmentIndex) //Only change values of the current segment
+					else if (dragSegmentIndex == activeSegmentIndex) //Only change values of the current segment
 					{
 						activeSegment.inMark = playerMarkIn;
 						activeSegment.inH = Integer.parseInt(caseInH.getText());
@@ -1059,7 +1060,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				        
 				        waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)); //Stop the dragging process
 					}					
-					else if (VideoPlayerCore.dragSegmentIndex == VideoPlayerCore.activeSegmentIndex) //Only change values of the current segment
+					else if (dragSegmentIndex == activeSegmentIndex) //Only change values of the current segment
 					{
 						activeSegment.outMark = playerMarkOut;
 				        activeSegment.outH = Integer.parseInt(caseOutH.getText());
@@ -1096,11 +1097,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		if (inputTime >= totalFrames)
 		{
 			sliderChange = true;
-			VideoPlayerCore.playerSetTime(totalFrames);
+			playerSetTime(totalFrames);
 			sliderChange = false;    		
 		}
 				
-		if (VideoPlayerCore.playerVideo != null && inputTime - offset < totalFrames)
+		if (playerVideo != null && inputTime - offset < totalFrames)
 		{    	    		
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)
 			{
@@ -1138,7 +1139,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			{   		
 				if (cursorWaveform != null)
 				{
-					if (VideoPlayerCore.playerCurrentFrame <= 1)
+					if (playerCurrentFrame <= 1)
 					{
 						cursorWaveform.setLocation(0, 0);
 						cursorHead.setLocation(cursorWaveform.getX() - 5, cursorWaveform.getY());
@@ -1262,7 +1263,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					
 					if (newWaveform || waveform == null)
 					{							
-						long size = 2000;
+						long size = 6000;
 	
 						String start = "";
 						String duration = "";
@@ -1297,16 +1298,16 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						{		
 							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
 							{
-								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + VideoPlayerCore.videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=" + size +"," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 							else
 							{
-								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + VideoPlayerCore.videoPath + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=" + size + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 						}
 						else
 						{
-							LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + VideoPlayerCore.videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=1000," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
+							LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=" + size + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
 						}
 						
 						if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
@@ -1368,11 +1369,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 
 	public static void loadImage(boolean forceRefresh) {
 		
-	    if (VideoPlayerCore.videoPath == null || Shutter.list.getSize() <= 0 || Shutter.doNotLoadImage)
+	    if (videoPath == null || Shutter.list.getSize() <= 0 || Shutter.doNotLoadImage)
 	    {
 	        return;
 	    }
-	
+	    	
 	    synchronized (loadImageLock) {
 	
 	        if (loadImageRunning)
@@ -1387,14 +1388,14 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	    loadImageProcess = new Thread(() -> {
 	
 	    	//Clear the buffer
-			if (VideoPlayerCore.bufferedFrames.size() > 0)
+			if (bufferedFrames.size() > 0)
 			{				
-				VideoPlayerCore.bufferedFrames.clear();
+				bufferedFrames.clear();
 				waveformContainer.repaint();
 			}
 						
 			//Stop player
-			if (VideoPlayerCore.playerIsPlaying())
+			if (playerIsPlaying())
 			{
 				btnPlay.doClick();
 			}
@@ -1403,9 +1404,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	        {	
 	        	do {
 	        		Thread.sleep(10);
-	        	} while (VideoPlayerCore.videoPath == null);
+	        	} while (videoPath == null);
 	        		
-	        	File file = new File(VideoPlayerCore.videoPath);
+	        	File file = new File(videoPath);
 	        			        						
 				String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
 				boolean isRaw = false;
@@ -1454,7 +1455,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					deinterlace = " -vf bwdif=0:" + FFPROBE.fieldOrder + ":0";		
 	
 				//Input point
-				String inputPoint = " -ss " + (long) ((double) VideoPlayerCore.playerCurrentFrame * inputFramerateMS) + "ms";
+				String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
 				
 				if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected()) //Image
 					inputPoint = "";
@@ -1506,7 +1507,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						}
 	
 						Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-						Shutter.lblCurrentEncoding.setText(new File(VideoPlayerCore.videoPath).getName());
+						Shutter.lblCurrentEncoding.setText(new File(videoPath).getName());
 																						
 						NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"', true);
 	
@@ -1550,11 +1551,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					//Subtitles are visible only from a video file
 					if (Shutter.caseAddSubtitles.isSelected())
 					{				
-						generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + VideoPlayerCore.videoPath + '"' + VideoPlayerCore.setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -an -sn -f rawvideo -"); 
+						generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -an -sn -f rawvideo -"); 
 					}
 					else
 					{															
-						generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + colorFormat + " -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + VideoPlayerCore.setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -f rawvideo -");
+						generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + colorFormat + " -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -f rawvideo -");
 					}							
 				}
 	        }
@@ -1599,7 +1600,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		
 		try {		
 						
-			ProcessBuilder pbv = new ProcessBuilder(VideoPlayerCore.formatCommand(cmd));
+			ProcessBuilder pbv = new ProcessBuilder(formatCommand(cmd));
 			Process process = pbv.start();
 						
 			//Console.consoleFFMPEG.append(cmd + System.lineSeparator());
@@ -1631,7 +1632,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			}
 			else
 			{
-				VideoPlayerCore.readFrame(inputStream, player.getWidth(), player.getHeight(), false);
+				readFrame(inputStream, player.getWidth(), player.getHeight(), false);
 			}
 	
 			inputStream.close();
@@ -1640,7 +1641,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			e.printStackTrace();
 		}
 		
-		if (VideoPlayerCore.frameVideo != null)
+		if (frameVideo != null)
 		{
 			player.repaint();
 		}
@@ -1736,7 +1737,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	        		command.add("-ss");
 	        		command.add(formattedSeek);
 	        		command.add("-i");
-	        		command.add(VideoPlayerCore.videoPath);
+	        		command.add(videoPath);
 	        		command.add("-vf");
 	        		command.add(scaling + crop);
 	        		command.add("-analyzeduration");
@@ -1819,5 +1820,37 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	        }
 	    }
 	    activeFFmpegProcesses.clear();
+	}
+	
+	public static void clearVideoPlayerStatus() {
+		
+		// Waveform
+		if (addWaveformIsRunning)
+		{		
+			stopWaveformCreation();
+			
+			try {
+				addWaveform.join();
+			} catch (InterruptedException er) {
+			    Thread.currentThread().interrupt();
+			}
+		}
+		
+		// Thumbnails
+		if (thumbnails != null)
+		{			
+			allThumbnails = null;
+			stopThumbnailsCreation();
+		}
+		
+		if (playerIsPlaying())
+			VideoPlayerUI.btnPlay.doClick();
+		
+		playerStop();
+		VideoPlayerUI.player.removeAll();					
+		frameVideo = null;
+		preview = null;
+		VideoPlayerUI.resizeAll();
+
 	}
 }

@@ -999,17 +999,17 @@ public class VideoWeb {
 					    //Download	    
 						YOUTUBEDL.run('"' + line + '"', options());
 						
-				       do { 
-				    	   Thread.sleep(100);		
-				       }while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
+						do { 
+							Thread.sleep(100);		
+						} while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
 				       
-				       if (Shutter.cancelled)
-				       {
+						if (Shutter.cancelled)
+						{
 					    	 if (YOUTUBEDL.outputFile.exists()) 
 					    		 YOUTUBEDL.outputFile.delete();
-				       }
-				       else //Audio conversion
-				       {
+						}
+						else //Audio conversion
+						{
 				    	   Shutter.lblRemainingTime.setVisible(false);
 				    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
 				    	   if (caseWAV.isSelected())
@@ -1046,10 +1046,10 @@ public class VideoWeb {
 						    	   audioFile.delete();
 						       }
 				    	   }		    	   			       
-				       }
+						}
 				       					       
-				       if (Shutter.cancelled == false)
-				       {
+						if (Shutter.cancelled == false)
+						{
 							complete++;
 							Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 							
@@ -1058,8 +1058,8 @@ public class VideoWeb {
 							{
 								Utils.openFile(new File(Shutter.lblDestination1.getText()));
 							}
-				       }
-				       UIController.enableAll();
+						}
+						UIController.enableAll();
 						UIController.endOfFunction();							
 	        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		       
 					}

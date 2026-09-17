@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
 import shutterencoder.ui.main.Shutter;
@@ -181,11 +182,17 @@ public class MEDIAINFO extends Shutter {
 				       	content.setOpaque(true);
 				       	
 						JScrollPane scrollPane = new JScrollPane();
+						scrollPane.setBackground(Utils.c25);
 				       	scrollPane.setBorder(null);
 						scrollPane.setViewportView(content);							
-						scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-						
+						scrollPane.getVerticalScrollBar().setUnitIncrement(16);						
 						scrollPane.setBounds(Informations.tabPanel.getBounds());
+						
+						JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
+						verticalBar.setBackground(Utils.c25);
+
+						JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
+						horizontalBar.setBackground(Utils.c25);
 	
 						Informations.lblWait.setVisible(false);
 						Informations.lblArrows.setVisible(true);							
@@ -209,9 +216,16 @@ public class MEDIAINFO extends Shutter {
 			       	content.setOpaque(true);
 					
 					JScrollPane scrollPane = new JScrollPane();
+					scrollPane.setBackground(Utils.c25);
 			       	scrollPane.setBorder(null);
 					scrollPane.setViewportView(content);							
 					scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+					
+					JScrollBar verticalBar = scrollPane.getVerticalScrollBar();
+					verticalBar.setBackground(Utils.c25);
+
+					JScrollBar horizontalBar = scrollPane.getHorizontalScrollBar();
+					horizontalBar.setBackground(Utils.c25);
 					
 				    grpFileInformation.removeAll();
 				    grpFileInformation.setLayout(new BorderLayout());

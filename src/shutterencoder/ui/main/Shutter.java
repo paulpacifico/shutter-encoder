@@ -1962,6 +1962,12 @@ public class Shutter {
 		scrollBar.setOpaque(false);
 		scrollBar.getViewport().setOpaque(false);
 		grpChooseFiles.add(scrollBar);
+		
+		JScrollBar verticalBar = scrollBar.getVerticalScrollBar();
+		verticalBar.setBackground(Utils.c35);
+
+		JScrollBar horizontalBar = scrollBar.getHorizontalScrollBar();
+		horizontalBar.setBackground(Utils.c35);
 
 		// Drag & Drop
 		fileList.setTransferHandler(new ListFileTransferHandler());
@@ -3225,32 +3231,6 @@ public class Shutter {
 				if (btnStart.getText().equals(language.getProperty("btnStartFunction")) && comboFonctions.getEditor().getItem().equals("") == false && list.getSize() > 0)
 				{
 					btnStart.setEnabled(false);						
-					
-					if (VideoPlayerUtils.addWaveformIsRunning)
-					{		
-						VideoPlayerUtils.stopWaveformCreation();
-						
-						try {
-							VideoPlayerUtils.addWaveform.join();
-						} catch (InterruptedException er) {
-						    Thread.currentThread().interrupt();
-						}
-					}
-					
-					// Thumbnails
-					if (VideoPlayerCore.thumbnails != null)
-					{			
-						VideoPlayerUtils.allThumbnails = null;
-						VideoPlayerUtils.stopThumbnailsCreation();
-					}
-					
-					if (VideoPlayerCore.playerIsPlaying())
-						VideoPlayerUI.btnPlay.doClick();
-					
-					VideoPlayerCore.playerStop();
-					VideoPlayerUI.player.removeAll();					
-					VideoPlayerCore.frameVideo = null;					
-					VideoPlayerUI.resizeAll();
 				}
 
 				if ((btnStart.getText().equals(language.getProperty("btnStartFunction")) || btnStart.getText().equals(language.getProperty("btnAddToRender"))) && list.getSize() > 0)
@@ -3625,12 +3605,11 @@ public class Shutter {
 									FFMPEG.writer.close();
 								} catch (IOException er) {}
 
-								do {
-									try {
-										Thread.sleep(10);
-									} catch (InterruptedException e1) {
-									}
-								} while (FFMPEG.runProcess.isAlive());
+								try {
+									FFMPEG.runProcess.join();
+								} catch (InterruptedException er) {
+								    Thread.currentThread().interrupt();
+								}
 							}
 						}
 
@@ -5748,7 +5727,9 @@ public class Shutter {
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 				if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
+				{
 					Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+				}
 				else
 					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
 			}
@@ -11881,11 +11862,11 @@ public class Shutter {
 					FunctionUtils.addSubtitles(false);
 					if (VideoPlayerUtils.loadImageProcess != null)
 					{
-						do {
-							try {
-								Thread.sleep(100);
-							} catch (InterruptedException e) {}
-						} while (VideoPlayerUtils.loadImageProcess.isAlive());
+						try {
+							VideoPlayerUtils.loadImageProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
 					}
 					FunctionUtils.addSubtitles(true);
 				}
@@ -17985,6 +17966,15 @@ public class Shutter {
 			}
 
 		});
+		
+		grpFileInformation.addComponentListener(new ComponentAdapter() {
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				settingsScrollBar.setVisible(false);				
+			}
+			
+		});
 
 		grpFileInformation.setTransferHandler(new ListFileTransferHandler());
 		
@@ -18890,13 +18880,6 @@ public class Shutter {
 		}
 		else
 			LibraryUtils.checkHWaccel("-hwaccels");
-
-		do {
-			try {
-				Thread.sleep(100);
-			} catch (InterruptedException e1) {
-			}
-		} while (FFMPEG.runProcess.isAlive());
 
 		comboGPUDecoding = new JComboBox<String>(LibraryUtils.hwaccels.toString().split(System.lineSeparator()));
 		comboGPUDecoding.setName("comboGPUDecoding");

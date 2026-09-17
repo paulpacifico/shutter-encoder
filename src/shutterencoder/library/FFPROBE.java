@@ -1188,10 +1188,12 @@ public static String colorprimaries = "";
 									//Sending to Data()
 									FFPROBE.Data(f.toString());
 									
-							        do {
-										Thread.sleep(100);
-									} while (processData.isAlive()); 
-							        
+									try {
+										processData.join();
+									} catch (InterruptedException e) {
+									    Thread.currentThread().interrupt();
+									}
+																        
 									break;
 								}
 							}
@@ -1202,9 +1204,11 @@ public static String colorprimaries = "";
 							if (inputDeviceIsRunning == false)					
 								FFPROBE.Data(Shutter.fileList.getSelectedValue());
 							
-							do {
-								Thread.sleep(100);
-							} while (processData.isAlive()); 
+							try {
+								processData.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 							
 							if (totalLength != 0 && inputDeviceIsRunning == false)
 							{           		

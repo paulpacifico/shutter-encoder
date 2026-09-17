@@ -213,10 +213,12 @@ public class Rewrap extends Shutter {
 			        	if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
 			        	{
 				        	AudioNormalization.main(file);
-				        							
-				        	do {
-								Thread.sleep(100);
-							} while (AudioNormalization.thread.isAlive());
+				        		
+				        	try {
+				        		AudioNormalization.thread.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 				        	
 				        	if (cancelled)
 				        	{
@@ -314,9 +316,11 @@ public class Rewrap extends Shutter {
 							
 							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + rotate, " -i " + '"' + file.toString() + '"', subtitles + InputAndOutput.outPoint) + cmd);	
 							
-							do {
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
+							try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 							
 							//Multi cuts merge
 							mergeMultiCuts(tempFolder, fileName, extension, newExtension, timecode, fileOut);
@@ -347,11 +351,13 @@ public class Rewrap extends Shutter {
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+					
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else
@@ -544,11 +550,11 @@ public class Rewrap extends Shutter {
 				FunctionUtils.addSubtitles(false);
 				if (VideoPlayerUtils.loadImageProcess != null)
 				{
-					do {
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerUtils.loadImageProcess.isAlive());
+					try {
+						VideoPlayerUtils.loadImageProcess.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
 				}
 				FunctionUtils.addSubtitles(true);
 			}
@@ -647,9 +653,11 @@ public class Rewrap extends Shutter {
 		    
 			FFMPEG.run(" -safe 0 -f concat -i " + '"' + concatFile + '"' + timecode + " -c copy -map v:0? -map a? -y " + '"' + fileOut.toString() + '"');	
 			
-			do {
-				Thread.sleep(100);
-			} while(FFMPEG.runProcess.isAlive());
+			try {
+				FFMPEG.runProcess.join();
+			} catch (InterruptedException e) {
+			    Thread.currentThread().interrupt();
+			}
 		}		
 	}
 	

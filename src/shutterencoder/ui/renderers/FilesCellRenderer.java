@@ -64,9 +64,9 @@ public class FilesCellRenderer extends JLabel implements ListCellRenderer {
 		    switch (extension) {
 		        case "jpg": case "jpeg": case "png": case "gif": case "bmp":
 		        case "tiff": case "tif": case "webp": case "svg": case "ico":
-		        case "heic": case "heif": case "raw": case "cr2": case "nef":
-		        case "arw": case "dng": case "orf": case "psd": case "dpx":
-		        case "exr": case "tga":
+		        case "heic": case "heif": case "raw": case "cr2": case "cr3":
+		        case "nef":  case "arw": case "dng": case "orf": case "psd":
+		        case "dpx": case "exr": case "tga":
 		            setIcon(new FlatSVGIcon("resources/image.svg", iconSize, iconSize));
 		            break;
 	

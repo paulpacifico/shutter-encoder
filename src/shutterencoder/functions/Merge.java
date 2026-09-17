@@ -21,9 +21,7 @@ package shutterencoder.functions;
 
 import java.awt.Cursor;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 
 import shutterencoder.functions.settings.AudioSettings;
 import shutterencoder.functions.settings.Timecode;
@@ -133,9 +131,11 @@ public class Merge extends Shutter {
 							String cmd = timecode + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + audioMapping + metadatas + " -map s? -y ";
 							FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + fileOutputName + '"');		
 					
-							do {
-								Thread.sleep(100);
-							} while(FFMPEG.runProcess.isAlive());
+							try {
+								FFMPEG.runProcess.join();
+							} catch (InterruptedException e) {
+							    Thread.currentThread().interrupt();
+							}
 						}
 													
 						listeBAB.delete();							
@@ -145,7 +145,7 @@ public class Merge extends Shutter {
 							lastActions(fileOut);
 						}
 				
-					} catch (InterruptedException | FileNotFoundException | UnsupportedEncodingException e) {
+					} catch (Exception e) {
 													
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						
@@ -158,11 +158,13 @@ public class Merge extends Shutter {
 			    	//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerUtils.setMedia();
-					do {
-						try {
-							Thread.sleep(10);
-						} catch (InterruptedException e) {}
-					} while (VideoPlayerCore.loadMedia.isAlive());
+
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
 					RenderQueue.frame.toFront();
 				}
 				else

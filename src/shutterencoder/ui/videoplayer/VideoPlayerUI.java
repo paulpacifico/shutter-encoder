@@ -51,6 +51,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -77,6 +78,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -89,6 +91,7 @@ import shutterencoder.library.MEDIAINFO;
 import shutterencoder.library.NCNN;
 import shutterencoder.ui.handlers.ListFileTransferHandler;
 import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.subtitling.SubtitlesTimeline;
@@ -248,6 +251,9 @@ public class VideoPlayerUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				
+				if (UIController.noVideoPlayer)
+					return;
 				
 				if (caseApplyCutToAll.isSelected())
 				{
@@ -790,7 +796,7 @@ public class VideoPlayerUI {
 			comboPlayerQuality.setVisible(true);
 			comboAudioTrack.setVisible(false);
 		}
-		else if (fileDuration <= 40 || Shutter.caseEnableSequence.isSelected() || enable == false) //Image or disableAll()
+		else if (fileDuration <= 40 || Settings.btnDisableVideoPlayer.isSelected() || Shutter.caseEnableSequence.isSelected() || enable == false) //Image or disableAll()
 		{			
 			waveformScrollPane.setVisible(false);
 			cursorHead.setVisible(false);
@@ -1321,7 +1327,8 @@ public class VideoPlayerUI {
 					
 					if (VideoPlayerCore.playerVideo != null)
 					{				
-						VideoPlayerCore.playerStop();						
+						VideoPlayerCore.playerStop();	
+						
 						do {
 							try {
 								Thread.sleep(1);
@@ -1366,6 +1373,9 @@ public class VideoPlayerUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 					
+				if (UIController.noVideoPlayer)
+					return;
+				
 				if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 				{
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
@@ -1491,6 +1501,9 @@ public class VideoPlayerUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
+				if (UIController.noVideoPlayer)
+					return;
+				
 				if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 				{
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
@@ -1609,6 +1622,9 @@ public class VideoPlayerUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 					
+				if (UIController.noVideoPlayer)
+					return;
+				
 				if (caseApplyCutToAll.isSelected() == false)
 				{
 					VideoPlayerMultiCuts.editCurrentSegment();
@@ -1629,6 +1645,9 @@ public class VideoPlayerUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 					
+				if (UIController.noVideoPlayer)
+					return;
+				
 				if (caseApplyCutToAll.isSelected() == false)
 				{
 					if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
@@ -2229,7 +2248,7 @@ public class VideoPlayerUI {
                 if (Shutter.list.getSize() > 0 && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false)
                 {
 	                //Mark in & out
-                	if (caseApplyCutToAll.isSelected())
+                	if (caseApplyCutToAll.isSelected() || UIController.noVideoPlayer)
 	                {
                 		g2.setColor(Color.GRAY);          
 	                }
@@ -2375,7 +2394,43 @@ public class VideoPlayerUI {
 		};
 
 		waveformContainer.setSize((Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2) * waveformZoom, 40);
-				
+			
+		//Allows to move the scrollBar value for the mouseWheel button pressed
+		Point[] startPoint = {null};
+		int[] startScrollValue = {0};
+
+		waveformContainer.addMouseListener(new MouseAdapter() {
+		    @Override
+		    public void mousePressed(MouseEvent e) {
+		        if (SwingUtilities.isMiddleMouseButton(e)) {
+		            startPoint[0] = e.getPoint();
+		            startScrollValue[0] = waveformScrollPane.getHorizontalScrollBar().getValue();
+		            waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+		        }
+		    }
+
+		    @Override
+		    public void mouseReleased(MouseEvent e) {
+		        if (SwingUtilities.isMiddleMouseButton(e)) {
+		            startPoint[0] = null;
+		            waveformContainer.setCursor(Cursor.getDefaultCursor());
+		        }
+		    }
+		});
+
+		waveformContainer.addMouseMotionListener(new MouseMotionAdapter() {
+		    @Override
+		    public void mouseDragged(MouseEvent e) {
+		        if (startPoint[0] != null) {
+		            int dx = e.getX() - startPoint[0].x;
+
+		            waveformScrollPane.getHorizontalScrollBar().setValue(
+		                startScrollValue[0] - dx
+		            );
+		        }
+		    }
+		});
+		
 		waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));		
 		waveformContainer.setLayout(null);
 		Shutter.frame.getContentPane().add(waveformContainer);
@@ -2441,6 +2496,9 @@ public class VideoPlayerUI {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+				
+				if (e.getButton() != MouseEvent.BUTTON1)
+					return;
 				
 				mouseIsPressed = true;
 				
@@ -2673,7 +2731,10 @@ public class VideoPlayerUI {
 			
 			@Override
 			public void mouseDragged(MouseEvent e) {
-									
+						
+				if (e.getButton() != MouseEvent.BUTTON1)
+					return;
+				
 				if (Shutter.list.getSize() > 0)
                 {
 					if (e.getX() > 0 && e.getX() <= waveformContainer.getWidth())
@@ -2710,6 +2771,9 @@ public class VideoPlayerUI {
 
 			@Override
 			public void mouseMoved(MouseEvent e) {	
+				
+				if (UIController.noVideoPlayer)
+					return;
 				
 				if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 				{
@@ -2762,7 +2826,7 @@ public class VideoPlayerUI {
 				
 				waveformContainer.setSize(waveformScrollPane.getWidth() * waveformZoom, waveformScrollPane.getHeight() - waveformScrollPane.getHorizontalScrollBar().getHeight());
 				waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));	
-				
+
 				VideoPlayerUtils.setMarkers();
 				
 				if (VideoPlayerCore.bufferCurrentFrame > 0)
@@ -3900,12 +3964,11 @@ public class VideoPlayerUI {
 	    			{
 	    				MEDIAINFO.run(VideoPlayerCore.videoPath, false);
 	    				
-	    				do {
-	    					//Slow down the loop
-							try {
-								Thread.sleep(1);
-							} catch (InterruptedException e) {}
-	    				} while (MEDIAINFO.runProcess.isAlive());		    				
+	    				try {
+	    					MEDIAINFO.runProcess.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}	    				
 	    			}
 					
 					if (FFPROBE.timecode1.equals(""))
@@ -3948,8 +4011,9 @@ public class VideoPlayerUI {
 			isPiping = false;
 			
 			if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
-			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("resume"))
-			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")))
+			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnResumeFunction"))
+			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording"))
+			|| Shutter.btnStart.isEnabled() == false)
 			{
 				isPiping = true;				
 				setPlayerButtons(false);
@@ -4284,7 +4348,7 @@ public class VideoPlayerUI {
 			}
 			
 			if (Shutter.windowDrag == false && VideoPlayerCore.videoPath != null && isPiping == false)
-			{					
+			{									
 				if (VideoPlayerUtils.preview != null && fileDuration > 40)
 					VideoPlayerUtils.preview = null;
 				
