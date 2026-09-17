@@ -51,7 +51,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
@@ -74,6 +73,7 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -2271,7 +2271,7 @@ public class VideoPlayerUI {
 	                        int segWidth = seg.outMark - seg.inMark;
 	                         
 	                        //Current segment
-	                        if (VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex == seg.index)
+	                        if (VideoPlayerCore.activeSegmentIndex != -1 && VideoPlayerCore.activeSegmentIndex == seg.index && UIController.noVideoPlayer == false)
 	                        {	                        	
 	                        	g2.setColor(Utils.darkenColor);
 	                        }
@@ -2394,43 +2394,7 @@ public class VideoPlayerUI {
 		};
 
 		waveformContainer.setSize((Shutter.frame.getWidth() - 40 - Shutter.grpChooseFiles.getWidth() * 2) * waveformZoom, 40);
-			
-		//Allows to move the scrollBar value for the mouseWheel button pressed
-		Point[] startPoint = {null};
-		int[] startScrollValue = {0};
-
-		waveformContainer.addMouseListener(new MouseAdapter() {
-		    @Override
-		    public void mousePressed(MouseEvent e) {
-		        if (SwingUtilities.isMiddleMouseButton(e)) {
-		            startPoint[0] = e.getPoint();
-		            startScrollValue[0] = waveformScrollPane.getHorizontalScrollBar().getValue();
-		            waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-		        }
-		    }
-
-		    @Override
-		    public void mouseReleased(MouseEvent e) {
-		        if (SwingUtilities.isMiddleMouseButton(e)) {
-		            startPoint[0] = null;
-		            waveformContainer.setCursor(Cursor.getDefaultCursor());
-		        }
-		    }
-		});
-
-		waveformContainer.addMouseMotionListener(new MouseMotionAdapter() {
-		    @Override
-		    public void mouseDragged(MouseEvent e) {
-		        if (startPoint[0] != null) {
-		            int dx = e.getX() - startPoint[0].x;
-
-		            waveformScrollPane.getHorizontalScrollBar().setValue(
-		                startScrollValue[0] - dx
-		            );
-		        }
-		    }
-		});
-		
+					
 		waveformContainer.setPreferredSize(new Dimension(waveformContainer.getWidth(), waveformContainer.getHeight()));		
 		waveformContainer.setLayout(null);
 		Shutter.frame.getContentPane().add(waveformContainer);
@@ -2477,6 +2441,9 @@ public class VideoPlayerUI {
 		//Important
 		playerMarkOut = waveformContainer.getWidth();
 				
+		//Allows to move the scrollBar value for the mouseWheel button pressed
+		Point[] lastPoint = {null};
+		
 		waveformContainer.addMouseListener(new MouseListener(){
 
 			@Override
@@ -2496,6 +2463,15 @@ public class VideoPlayerUI {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+				
+				if (SwingUtilities.isMiddleMouseButton(e)) {
+		            lastPoint[0] = SwingUtilities.convertPoint(
+		                waveformContainer,
+		                e.getPoint(),
+		                waveformScrollPane.getViewport()
+		            );
+		            waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+		        }
 				
 				if (e.getButton() != MouseEvent.BUTTON1)
 					return;
@@ -2675,6 +2651,11 @@ public class VideoPlayerUI {
 			@Override
 			public void mouseReleased(MouseEvent e) {	
 
+				if (SwingUtilities.isMiddleMouseButton(e)) {
+		            lastPoint[0] = null;
+		            waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		        }
+				
 				if (Shutter.list.getSize() > 0)
                 {						
 					sliderChange = false;
@@ -2732,6 +2713,25 @@ public class VideoPlayerUI {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 						
+				if (SwingUtilities.isMiddleMouseButton(e))
+				{
+				if (lastPoint[0] != null) {
+
+			            Point current = SwingUtilities.convertPoint(
+			                waveformContainer,
+			                e.getPoint(),
+			                waveformScrollPane.getViewport()
+			            );
+
+			            int dx = current.x - lastPoint[0].x;
+
+			            JScrollBar bar = waveformScrollPane.getHorizontalScrollBar();
+			            bar.setValue(bar.getValue() - dx);
+
+			            lastPoint[0] = current;
+			        }
+				}
+				
 				if (e.getButton() != MouseEvent.BUTTON1)
 					return;
 				
@@ -2852,7 +2852,7 @@ public class VideoPlayerUI {
 			}
 			
 		});
-		
+			
 		cursorCurrentFrame = new JPanel() {
 	        @Override
 	        protected void paintComponent(Graphics grphcs) {

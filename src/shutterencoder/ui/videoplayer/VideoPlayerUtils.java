@@ -431,7 +431,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							waveformContainer.repaint();
 							
 							//Setup fileList
-							if ((caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false) && UIController.noVideoPlayer == false)
+							if (caseApplyCutToAll.isVisible() == false || caseApplyCutToAll.isSelected() == false)
 							{
 								getFileList(videoPath, fileDuration);
 							}
