@@ -11596,7 +11596,10 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (caseShowTimecode.isSelected() && list.getSize() > 0) {
+				if (caseShowTimecode.isSelected()
+				&& list.getSize() > 0
+				&& VideoPlayerCore.videoPath != null)
+				{
 					posX.setEnabled(true);
 					textTcPosX.setEnabled(true);
 					px1.setEnabled(true);
@@ -12869,7 +12872,9 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseAddWatermark.isSelected()) {
+				if (caseAddWatermark.isSelected()
+				&& VideoPlayerCore.videoPath != null)
+				{
 					// Initiate location
 					if (logo.getWidth() == 0) {
 						logo.setSize(VideoPlayerUI.player.getWidth(), VideoPlayerUI.player.getHeight());

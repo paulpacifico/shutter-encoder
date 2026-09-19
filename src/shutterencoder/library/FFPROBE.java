@@ -120,6 +120,9 @@ public static String colorprimaries = "";
 
 	public static void Data(final String file) {	
 
+		if (file == null)
+			return;
+			
 		getOutputLog = new StringBuilder();
 		
 		if (file.equals(analyzedMedia) == false || scanIsRunning || Settings.btnWaitFileComplete.isSelected())

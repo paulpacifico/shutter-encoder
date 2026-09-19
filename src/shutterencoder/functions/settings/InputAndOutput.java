@@ -98,12 +98,29 @@ public class InputAndOutput extends Shutter {
 
 	private static String setMultiCuts() {
 			
+		String function = comboFonctions.getSelectedItem().toString();
+		boolean audioOutput = false;
+		if (function.equals("WAV")
+		|| function.equals("AIFF")
+		|| function.equals("FLAC")
+		|| function.equals("ALAC")
+		|| function.equals("MP3")
+		|| function.equals("AAC")
+		|| function.equals("AC3")
+		|| function.equals("Opus")
+		|| function.equals("Vorbis")
+		|| function.equals("Dolby Digital Plus")
+		|| function.equals("Dolby TrueHD"))
+		{
+			audioOutput = true;
+		}
+		
 		//Adding segments
 		int i = 0;
 		for (i = 0 ; i < VideoPlayerMultiCuts.cutSegments.size() ; i++)
     	{
 			//Video segment
-			if (FFPROBE.audioOnly == false)
+			if (FFPROBE.audioOnly == false && audioOutput == false)
 			{
 				String videoIndex = i > 0 ? "[" + i + ":v]" : ""; //first [0:v] is already added from FilterComplex.setFilterComplex()
 				segments += videoIndex + "setpts=PTS-STARTPTS[v" + i + "];";
@@ -123,7 +140,7 @@ public class InputAndOutput extends Shutter {
 		for (int o = 0 ; o < VideoPlayerMultiCuts.cutSegments.size() ; o++)
     	{
 			//Video segment
-			if (FFPROBE.audioOnly == false)
+			if (FFPROBE.audioOnly == false && audioOutput == false)
 			{
 				segments += "[v" + o + "]";
 			}
@@ -140,7 +157,7 @@ public class InputAndOutput extends Shutter {
 		
 		//Output streams
 		String streams = "";
-		if (FFPROBE.audioOnly)
+		if (FFPROBE.audioOnly || audioOutput)
 		{
 			streams = ":v=0:a=" + FFPROBE.channels;
 		}

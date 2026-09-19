@@ -308,16 +308,16 @@ public static StringBuilder errorLog = new StringBuilder();
 				        	        BufferedImage frame;
 
 				        	        while ((frame = ImageIO.read(videoInputStream)) != null)
-				        	        {
+				        	        {				        	        	
 				        	        	while (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
 	        	        				{
 			        	        			VideoPlayerCore.frameVideo = null;
 			        	        			VideoPlayerUI.player.repaint();
 			        	        			lblRemainingTime.setText(Shutter.language.getProperty("timePause"));
 			        	        			Thread.sleep(50);				        	        			
-	        	        				}
-				        	        	
-			        	        		VideoPlayerCore.frameVideo = frame;				        	        	
+	        	        				}				        	        	
+			        	        		
+			        	        		VideoPlayerCore.frameVideo = cancelled ? null : frame;
 			        	        		VideoPlayerUI.player.repaint();
 				        	        }
 

@@ -576,10 +576,10 @@ public class Colorimetry extends Shutter {
 
 	        eq += "curves=master='"
 	            + "0/0 "
-	            + "0.0625/" + (0.0625f + amount * 0.45f) + " "
-	            + "0.125/"  + (0.125f  + amount * 0.85f) + " "
-	            + "0.20/"   + (0.20f   + amount) + " "
-	            + "0.30/"   + (0.30f   + amount * 0.55f) + " "
+	            + "0.0625/" + Math.max(0.0f, Math.min(1.0f, (0.0625f + amount * 0.45f))) + " "
+	            + "0.125/"  + Math.max(0.0f, Math.min(1.0f, (0.125f  + amount * 0.85f))) + " "
+	            + "0.20/"   + Math.max(0.0f, Math.min(1.0f, (0.20f   + amount))) + " "
+	            + "0.30/"   + Math.max(0.0f, Math.min(1.0f, (0.30f   + amount * 0.55f))) + " "
 	            + "0.40/0.40 "
 	            + "0.50/0.50 "
 	            + "0.75/0.75 "
@@ -602,11 +602,11 @@ public class Colorimetry extends Shutter {
 
 	        eq += "curves=master='"
 	            + "0/0 "
-	            + "0.25/" + (0.25f + amount * 0.35f) + " "
-	            + "0.40/" + (0.40f + amount * 0.75f) + " "
-	            + "0.50/" + (0.50f + amount) + " "
-	            + "0.60/" + (0.60f + amount * 0.75f) + " "
-	            + "0.75/" + (0.75f + amount * 0.35f) + " "
+	            + "0.25/" + Math.max(0.0f, Math.min(1.0f, (0.25f + amount * 0.35f))) + " "
+	            + "0.40/" + Math.max(0.0f, Math.min(1.0f, (0.40f + amount * 0.75f))) + " "
+	            + "0.50/" + Math.max(0.0f, Math.min(1.0f, (0.50f + amount))) + " "
+	            + "0.60/" + Math.max(0.0f, Math.min(1.0f, (0.60f + amount * 0.75f))) + " "
+	            + "0.75/" + Math.max(0.0f, Math.min(1.0f, (0.75f + amount * 0.35f))) + " "
 	            + "1/1'";
 	    }
 
@@ -628,13 +628,13 @@ public class Colorimetry extends Shutter {
 	            + "0/0 "
 	            + "0.25/0.25 "
 	            + "0.50/0.50 "
-	            + "0.625/" + (0.625f + amount * 0.15f) + " "
-	            + "0.75/"  + (0.75f  + amount * 0.45f) + " "
-	            + "0.875/" + (0.875f + amount * 0.90f) + " "
-	            + "0.95/"  + (0.95f  + amount) + " "
+	            + "0.625/" + Math.max(0.0f, Math.min(1.0f, (0.625f + amount * 0.15f))) + " "
+	            + "0.75/"  + Math.max(0.0f, Math.min(1.0f, (0.75f  + amount * 0.45f))) + " "
+	            + "0.875/" + Math.max(0.0f, Math.min(1.0f, (0.875f + amount * 0.90f))) + " "
+	            + "0.95/"  + Math.max(0.0f, Math.min(1.0f, (0.95f  + amount))) + " "
 	            + "1/1'";
 	    }
-
+	    	    
 	    return eq;
 	}
 

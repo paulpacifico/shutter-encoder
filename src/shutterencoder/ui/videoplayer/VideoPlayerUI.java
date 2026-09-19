@@ -1843,7 +1843,7 @@ public class VideoPlayerUI {
 		            drawCheckerboard(g2);
 
 		        g2.setColor(Color.BLACK);
-
+		        
 		        // Frame display
 		        if (VideoPlayerCore.frameVideo == null
 		        || Shutter.list.getSize() == 0
