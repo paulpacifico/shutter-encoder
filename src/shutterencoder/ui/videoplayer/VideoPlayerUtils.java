@@ -1397,7 +1397,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			//Stop player
 			if (playerIsPlaying())
 			{
-				btnPlay.doClick();
+				playerLoop = false;
 			}
 		
 	        try
@@ -1546,7 +1546,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				if (preview != null || Shutter.caseAddSubtitles.isSelected())
 				{		
 					//Format
-					String outputFormat = FFPROBE.hasAlpha ? "abgr" : "rgb565be";
+					String outputFormat = FFPROBE.hasAlpha ? "abgr" : "rgb565le";
 					
 					//Subtitles are visible only from a video file
 					if (Shutter.caseAddSubtitles.isSelected())
@@ -1586,7 +1586,8 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	  			    loadImagePending = false;
 	  			}
 	
-	  			if (reload) {
+	  			if (reload)
+	  			{
 	  			    loadImage(false);
 	  			}
 	        }

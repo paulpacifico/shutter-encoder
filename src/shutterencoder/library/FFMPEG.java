@@ -1010,7 +1010,6 @@ public static StringBuilder errorLog = new StringBuilder();
 				}
 			
 	    	});
-			displayThread.setPriority(Thread.MAX_PRIORITY);
 			displayThread.start();
 		   					     																		
 		} catch (Exception e) {			

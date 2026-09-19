@@ -41,17 +41,17 @@ import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 /*
- * AAC
- * ALAC
- * AC3
+ * WAV
  * AIFF
  * FLAC
+ * ALAC
+ * MP3
+ * AAC
+ * AC3
+ * Opus
  * Vorbis
  * Dolby Digital Plus
  * Dolby TrueHD
- * Opus
- * MP3
- * WAV
  */
 
 public class AudioEncoders extends Shutter {

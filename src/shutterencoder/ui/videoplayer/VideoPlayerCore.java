@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.ShortBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -96,7 +97,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
     public static ArrayList<Image> bufferedFrames = new ArrayList<Image>();
     public static int maxBufferedFrames = 500;
 	private static int maximumSeek = 60;
-    public static BufferedImage frameVideo;
     public static BufferedImage fullSizeWatermark;
     public static int activeSegmentIndex = -1;
     public static int dragSegmentIndex = -1;
@@ -105,6 +105,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
     private static long lastEvTime = 0;
     private static String freezeFrame = "";
         	
+    //Read frame
+    public static BufferedImage frameVideo;
+    private static byte[] frameBuffer;
+    private static ByteBuffer byteBuffer;
+    private static ShortBuffer shortBuffer;
+    
 	private static final ExecutorService videoProcessExecutor =
     Executors.newCachedThreadPool(r -> {
         Thread t = new Thread(r, "ffmpeg-prestart");
@@ -127,10 +133,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	        String secondPart = args.substring(pipeIndex + 1).trim();
 
 	        ProcessBuilder pb1 = new ProcessBuilder(formatCommand(firstPart));
+	        pb1.redirectError(ProcessBuilder.Redirect.DISCARD);
 	        if (workingDir != null) pb1.directory(workingDir);
 	        else if (LibraryUtils.libplaceboAvailable) FFMPEG.setEnvironment(pb1);
 
 	        ProcessBuilder pb2 = new ProcessBuilder(tokenize(secondPart));
+	        pb2.redirectError(ProcessBuilder.Redirect.DISCARD);
 	        if (workingDir != null) pb2.directory(workingDir);
 	        else if (LibraryUtils.libplaceboAvailable) FFMPEG.setEnvironment(pb2);
 
@@ -140,6 +148,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	    else
 	    {
 	        ProcessBuilder pb = new ProcessBuilder(formatCommand(args));
+	        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
 	        if (workingDir != null) pb.directory(workingDir);
 	        else if (LibraryUtils.libplaceboAvailable) FFMPEG.setEnvironment(pb);
 
@@ -166,6 +175,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
 			{					
 				ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, false)));	
+				pba.redirectError(ProcessBuilder.Redirect.DISCARD);
 				playerAudio = pba.start();
 
 				//Avoid a crashing issue
@@ -302,7 +312,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 					}
 					
 				});
-				playerThread.setPriority(Thread.MAX_PRIORITY);
 				playerThread.start();	
 				
 				//Audio thread
@@ -433,7 +442,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						}
 						
 					});
-					playerAudiothread.setPriority(Thread.MAX_PRIORITY);
 					playerAudiothread.start();
 				}				
 			}
@@ -504,9 +512,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		        frameVideo = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR);
 		    }
 		    
-		    byte[] abgr = ((DataBufferByte) frameVideo.getRaster().getDataBuffer()).getData();
+		    byte[] bgra = ((DataBufferByte) frameVideo.getRaster().getDataBuffer()).getData();
 	
-		    int read = is.readNBytes(abgr, 0, frameSize);
+		    int read = is.readNBytes(bgra, 0, frameSize);
 		    if (read != frameSize)
 		    {
 		        frameVideo = null;
@@ -514,26 +522,30 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		}
 		else
 		{
-			int frameSize = width * height * 2; //RGB565BE
-	
+			int frameSize = width * height * 2; //rgb565le
+
 			if (frameVideo == null || frameVideo.getWidth() != width || frameVideo.getHeight() != height
-			    || frameVideo.getType() != BufferedImage.TYPE_USHORT_565_RGB)
+			|| frameVideo.getType() != BufferedImage.TYPE_USHORT_565_RGB)
 			{
 			    frameVideo = new BufferedImage(width, height, BufferedImage.TYPE_USHORT_565_RGB);
+			    frameBuffer = new byte[frameSize];
+		        byteBuffer = ByteBuffer.wrap(frameBuffer).order(ByteOrder.LITTLE_ENDIAN);
+		        shortBuffer = byteBuffer.asShortBuffer();
 			}
-	
-			byte[] rgb565 = new byte[frameSize];
-	
-			int read = is.readNBytes(rgb565, 0, frameSize);
-			if (read != frameSize)
-			{
-			    frameVideo = null;
-			}
-			else
-			{
-			    short[] pixels = ((DataBufferUShort) frameVideo.getRaster().getDataBuffer()).getData();
-			    ByteBuffer.wrap(rgb565).order(ByteOrder.BIG_ENDIAN).asShortBuffer().get(pixels);
-			}
+
+		    int read = is.readNBytes(frameBuffer, 0, frameSize);
+		    if (read != frameSize)
+		    {
+		        frameVideo = null;
+		    }
+		    else
+		    {
+		        short[] pixels = ((DataBufferUShort) frameVideo.getRaster().getDataBuffer()).getData();
+		        
+		        // Zero allocations in the hot path
+		        shortBuffer.clear();
+		        shortBuffer.get(pixels);
+		    }
 		}
 	}
 	
@@ -554,6 +566,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			try {	
 				
 				ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, true)));
+				pba.redirectError(ProcessBuilder.Redirect.DISCARD);
 				Process playerAudio = pba.start();			
 					
 				InputStream audio = playerAudio.getInputStream();							
@@ -959,7 +972,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
 				{	
 					//AUDIO STREAM
-					ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, false)));						
+					ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, false)));	
+					pba.redirectError(ProcessBuilder.Redirect.DISCARD);
 					playerAudio = pba.start();
 					
 					//Avoid a crashing issue
@@ -1110,7 +1124,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				}
 			}
 			
-			return " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v rawvideo -pix_fmt rgb565be -an -sn -f rawvideo -";
+			return " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms -i " + '"' + videoPath + '"' + " -f lavfi -i " + '"' + "color=c=black:r=25:s=" + width + "x" + height + '"' + filter + " -c:v rawvideo -pix_fmt rgb565le -an -sn -f rawvideo -";
 		}
 		else
 		{
@@ -1157,7 +1171,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				freezeFrame = "";
 			
 			//Format
-			String colorFormat = "rgb565be";
+			String colorFormat = "rgb565le";
 			if (FFPROBE.hasAlpha)
 			{
 				colorFormat = "abgr";
