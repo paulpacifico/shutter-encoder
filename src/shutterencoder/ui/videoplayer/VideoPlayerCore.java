@@ -1791,6 +1791,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			filter = " -filter_complex " + '"' + "[0:v]" + filter.replace(" -vf ", "").replace("\"", "") + "[v];" + channels + audioOutput + "[v][volume]overlay=W-w:H-h";
 		}	
 				
+		//Avoid an inverted colors issue because of rgb565le output
+		if (filter.contains("libplacebo") && FFPROBE.hasAlpha == false)	
+		{
+			filter += ",format=rgb24";
+		}
+		
 		//Close filter
 		filter += '"';
 		
