@@ -2090,10 +2090,14 @@ public class VideoPlayerUI {
 									sliderChange = false;								
 									
 									//Wait setTime thread to finish	
-									try {
-										VideoPlayerCore.setTime.join();
-									} catch (InterruptedException e) {
-									    Thread.currentThread().interrupt();
+									if (VideoPlayerCore.setTime != null)
+									{
+										try {
+											VideoPlayerCore.setTime.join();
+										} catch (InterruptedException ex) {
+											ex.printStackTrace();
+											Thread.currentThread().interrupt();
+										}
 									}
 									
 									//Reload the frame to apply bicubic filter									

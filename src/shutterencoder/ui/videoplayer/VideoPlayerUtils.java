@@ -1586,18 +1586,24 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		
 		if (VideoPlayerUtils.playerIsPlaying())				
 		{
-			try {
-				VideoPlayerUtils.loadImageThread.join();
-			} catch (InterruptedException ex) {
-				ex.printStackTrace();
-				Thread.currentThread().interrupt();
+			if (loadImageThread != null)
+			{
+				try {
+					VideoPlayerUtils.loadImageThread.join();
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+					Thread.currentThread().interrupt();
+				}
 			}
 			
-			try {
-				VideoPlayerCore.setTime.join();
-			} catch (InterruptedException ex) {
-				ex.printStackTrace();
-				Thread.currentThread().interrupt();
+			if (VideoPlayerCore.setTime != null)
+			{
+				try {
+					VideoPlayerCore.setTime.join();
+				} catch (InterruptedException ex) {
+					ex.printStackTrace();
+					Thread.currentThread().interrupt();
+				}
 			}
 			
 			VideoPlayerUtils.processLoadImage.destroyForcibly();

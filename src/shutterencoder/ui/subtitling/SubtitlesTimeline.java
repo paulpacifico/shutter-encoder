@@ -1376,10 +1376,14 @@ public class SubtitlesTimeline {
 				VideoPlayerUI.sliderChange = false;	
 				
 				//Wait setTime thread to finish	
-				try {
-					VideoPlayerCore.setTime.join();
-				} catch (InterruptedException er) {
-				    Thread.currentThread().interrupt();
+				if (VideoPlayerCore.setTime != null)
+				{
+					try {
+						VideoPlayerCore.setTime.join();
+					} catch (InterruptedException ex) {
+						ex.printStackTrace();
+						Thread.currentThread().interrupt();
+					}
 				}
 
 				if (Timecode.isNonDropFrame())

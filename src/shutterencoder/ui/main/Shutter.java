@@ -18913,10 +18913,14 @@ public class Shutter {
 					
 					if (VideoPlayerUtils.playerIsPlaying())
 					{
-						try {
-							VideoPlayerCore.setTime.join();
-						} catch (InterruptedException er) {
-						    Thread.currentThread().interrupt();
+						if (VideoPlayerCore.setTime != null)
+						{
+							try {
+								VideoPlayerCore.setTime.join();
+							} catch (InterruptedException ex) {
+								ex.printStackTrace();
+								Thread.currentThread().interrupt();
+							}
 						}
 						
 						VideoPlayerCore.playerLoop = true;
