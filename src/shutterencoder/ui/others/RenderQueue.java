@@ -55,6 +55,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 import javax.swing.border.MatteBorder;
 import javax.swing.event.TableModelEvent;
@@ -557,9 +558,9 @@ import shutterencoder.utils.Utils;
 		topImage.addMouseListener(new MouseListener() {
 
 			@Override
-			public void mouseClicked(MouseEvent down) {
+			public void mouseClicked(MouseEvent e) {
 				
-				if (down.getClickCount() == 2 && down.getButton() == MouseEvent.BUTTON1)
+				if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e))
 				{
 					GraphicsConfiguration config = frame.getGraphicsConfiguration();
 					GraphicsDevice myScreen = config.getDevice();

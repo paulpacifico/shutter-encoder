@@ -51,6 +51,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 import javax.swing.border.MatteBorder;
 
@@ -289,7 +290,7 @@ public class Functions {
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON3 && listeDeFonctions.getSelectedIndices().length > 0)
+				if (SwingUtilities.isRightMouseButton(e) && listeDeFonctions.getSelectedIndices().length > 0)
 				{	
 					popupListe.show(listeDeFonctions, e.getX() - 30, e.getY());
 					

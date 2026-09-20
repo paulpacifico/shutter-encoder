@@ -108,6 +108,7 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.border.MatteBorder;
@@ -2648,12 +2649,12 @@ public class Shutter {
 			public void mouseClicked(MouseEvent e) {
 
 				if (FFMPEG.isRunning == false && BMXTRANSWRAP.isRunning == false && DVDAUTHOR.isRunning == false
-						&& TSMUXER.isRunning == false && e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1
+						&& TSMUXER.isRunning == false && e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)
 						&& list.getSize() > 0) {
 					menuDisplay.doClick();
 				}
 
-				if (e.getButton() == MouseEvent.BUTTON3 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1)
+				if (SwingUtilities.isRightMouseButton(e) || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && SwingUtilities.isLeftMouseButton(e))
 				{					
 					if (inputDeviceIsRunning)
 					{						
@@ -2761,7 +2762,7 @@ public class Shutter {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 
-				if (e.getButton() == MouseEvent.BUTTON1 && list.getSize() > 0 && fileList.getSelectedValue().equals(VideoPlayerCore.videoPath) == false)
+				if (SwingUtilities.isLeftMouseButton(e) && list.getSize() > 0 && fileList.getSelectedValue().equals(VideoPlayerCore.videoPath) == false)
 				{
 					VideoPlayerUtils.setMedia();
 				}
@@ -5038,8 +5039,8 @@ public class Shutter {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON3
-						|| (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1) {
+				if (SwingUtilities.isRightMouseButton(e)
+						|| (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && SwingUtilities.isLeftMouseButton(e)) {
 
 					switch (grpDestination.getSelectedIndex()) {
 					case 0:
@@ -5254,8 +5255,8 @@ public class Shutter {
 		grpProgression.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON3
-						|| (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && e.getButton() == MouseEvent.BUTTON1)
+				if (SwingUtilities.isRightMouseButton(e)
+						|| (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0 && SwingUtilities.isLeftMouseButton(e))
 					popupProgression.show(grpProgression, e.getX() - 30, e.getY());
 			}
 

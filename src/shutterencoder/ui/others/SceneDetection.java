@@ -46,6 +46,7 @@ import java.awt.Image;
 
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
 import javax.swing.JButton;
 import javax.swing.JSpinner;
@@ -716,13 +717,13 @@ import javax.swing.JScrollPane;
 		    @Override
 		    public void mouseClicked(MouseEvent e){
 		    	//Double clic
-		        if (e.getClickCount() == 2 && e.getButton() == MouseEvent.BUTTON1 && table.getSelectedRowCount() == 1)
+		        if (e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e) && table.getSelectedRowCount() == 1)
 		        {
 		            Utils.openFile(new File(outputFolder + "/" + table.getSelectedRow() + ".png"));
 		        }
 		        
 		        //Clic droit
-				if (e.getButton() == MouseEvent.BUTTON3 || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == ActionEvent.CTRL_MASK && e.getButton() == MouseEvent.BUTTON1)
+				if (SwingUtilities.isRightMouseButton(e) || (e.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) == ActionEvent.CTRL_MASK && SwingUtilities.isLeftMouseButton(e))
 				{
 					popupListe.show(table, e.getX() - 30, e.getY());
 				}					

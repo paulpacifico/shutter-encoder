@@ -1130,10 +1130,14 @@ public class VideoPlayerUI {
 									VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame - 1);	
 									
 									//Wait setTime thread to finish	
-									try {
-										VideoPlayerCore.setTime.join();
-									} catch (InterruptedException e) {
-									    Thread.currentThread().interrupt();
+									if (VideoPlayerCore.setTime != null)
+									{
+										try {
+											VideoPlayerCore.setTime.join();
+										} catch (InterruptedException ex) {
+											ex.printStackTrace();
+											Thread.currentThread().interrupt();
+										}
 									}
 								}
 								
@@ -1174,10 +1178,14 @@ public class VideoPlayerUI {
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame + 1);
 					
 					//Wait setTime thread to finish	
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException er) {
-					    Thread.currentThread().interrupt();
+					if (VideoPlayerCore.setTime != null)
+					{
+						try {
+							VideoPlayerCore.setTime.join();
+						} catch (InterruptedException ex) {
+							ex.printStackTrace();
+							Thread.currentThread().interrupt();
+						}
 					}
 				}
 
@@ -2477,7 +2485,7 @@ public class VideoPlayerUI {
 		            waveformContainer.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		        }
 				
-				if (e.getButton() != MouseEvent.BUTTON1)
+				if (SwingUtilities.isLeftMouseButton(e) == false)
 					return;
 				
 				mouseIsPressed = true;
@@ -2554,10 +2562,14 @@ public class VideoPlayerUI {
 										}
 										
 										//Wait setTime thread to finish	
-										try {
-											VideoPlayerCore.setTime.join();
-										} catch (InterruptedException e) {
-										    Thread.currentThread().interrupt();
+										if (VideoPlayerCore.setTime != null)
+										{
+											try {
+												VideoPlayerCore.setTime.join();
+											} catch (InterruptedException ex) {
+												ex.printStackTrace();
+												Thread.currentThread().interrupt();
+											}
 										}
 									}
 									
@@ -2567,10 +2579,14 @@ public class VideoPlayerUI {
 									VideoPlayerCore.playerSetTime(value);
 																								
 									//Wait setTime thread to finish	
-									try {
-										VideoPlayerCore.setTime.join();
-									} catch (InterruptedException e) {
-									    Thread.currentThread().interrupt();
+									if (VideoPlayerCore.setTime != null)
+									{
+										try {
+											VideoPlayerCore.setTime.join();
+										} catch (InterruptedException ex) {
+											ex.printStackTrace();
+											Thread.currentThread().interrupt();
+										}
 									}
 									
 									//When changing segment while dragging									
@@ -2670,10 +2686,14 @@ public class VideoPlayerUI {
 						public void run() {
 
 							//Wait setTime thread to finish	
-							try {
-								VideoPlayerCore.setTime.join();
-							} catch (InterruptedException e) {
-							    Thread.currentThread().interrupt();
+							if (VideoPlayerCore.setTime != null)
+							{
+								try {
+									VideoPlayerCore.setTime.join();
+								} catch (InterruptedException ex) {
+									ex.printStackTrace();
+									Thread.currentThread().interrupt();
+								}
 							}
 							
 							mouseIsPressed = false;
@@ -2682,10 +2702,14 @@ public class VideoPlayerUI {
 							VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);	
 							
 							//Wait setTime thread to finish	
-							try {
-								VideoPlayerCore.setTime.join();
-							} catch (InterruptedException e) {
-							    Thread.currentThread().interrupt();
+							if (VideoPlayerCore.setTime != null)
+							{
+								try {
+									VideoPlayerCore.setTime.join();
+								} catch (InterruptedException ex) {
+									ex.printStackTrace();
+									Thread.currentThread().interrupt();
+								}
 							}
 							
 							if (VideoPlayerCore.playerIsPlaying())
@@ -2736,7 +2760,7 @@ public class VideoPlayerUI {
 			        }
 				}
 				
-				if (e.getButton() != MouseEvent.BUTTON1)
+				if (SwingUtilities.isLeftMouseButton(e) == false)
 					return;
 				
 				if (Shutter.list.getSize() > 0)
@@ -2913,7 +2937,7 @@ public class VideoPlayerUI {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
-				if (e.getButton() == MouseEvent.BUTTON1)
+				if (SwingUtilities.isLeftMouseButton(e))
 				{
 					if (sliderVolume.getValue() > 0)
 					{
@@ -2922,7 +2946,7 @@ public class VideoPlayerUI {
 					else
 						sliderVolume.setValue(50);
 				}
-				else if (e.getButton() == MouseEvent.BUTTON3)
+				else if (SwingUtilities.isRightMouseButton(e))
 				{
 					AudioFormat format = new AudioFormat(48000, 16, 2, true, false);
 			        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
