@@ -3786,7 +3786,7 @@ public class UIController extends Shutter {
 								if (VideoPlayerUtils.preview != null)
 									VideoPlayerUtils.preview = null;
 
-								VideoPlayerUtils.loadImage(true);
+								VideoPlayerUtils.loadImage();
 							}
 
 							grpResolution.repaint();
@@ -4720,7 +4720,7 @@ public class UIController extends Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("resources/arrow.svg", 30, 30));
 
-				String types[] = { ".mpg", ".ts" };
+				String types[] = { ".mpg", ".ts", ".m2v" };
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				if (model.getElementAt(0).equals(comboFilter.getModel().getElementAt(0)) == false) {
 					comboFilter.setModel(model);

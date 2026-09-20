@@ -548,10 +548,10 @@ public class Rewrap extends Shutter {
 			|| new File (file.replace(ext, ".scc")).exists())
 			{
 				FunctionUtils.addSubtitles(false);
-				if (VideoPlayerUtils.loadImageProcess != null)
+				if (VideoPlayerUtils.loadImageThread != null)
 				{
 					try {
-						VideoPlayerUtils.loadImageProcess.join();
+						VideoPlayerUtils.loadImageThread.join();
 					} catch (InterruptedException e) {
 					    Thread.currentThread().interrupt();
 					}

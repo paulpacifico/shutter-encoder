@@ -699,7 +699,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 					
 		if (fileDuration <= 40)
 		{	
-			VideoPlayerUtils.loadImage(true);
+			VideoPlayerUtils.loadImage();
 			return;
 		}
 		 

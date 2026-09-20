@@ -1769,7 +1769,12 @@ public class Utils extends Shutter {
 					public void run() {
 		
 						try {
-
+							
+							if (VideoPlayerCore.playerIsPlaying())
+							{
+								VideoPlayerUI.btnPlay.doClick();
+							}
+							
 							doNotLoadImage = true;					
 							
 							File fXmlFile = encFile;

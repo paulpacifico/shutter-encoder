@@ -194,7 +194,7 @@ public class VideoPlayerOverlay extends Shutter {
 			Shutter.subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - Shutter.subsCanvas.getWidth()) / 2, 0);
 		}	
 		
-		VideoPlayerUtils.loadImage(false);
+		VideoPlayerUtils.loadImage();
 	}
 	
 	public static void writeSub(String srt, Charset encoding) 

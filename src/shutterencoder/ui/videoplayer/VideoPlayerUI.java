@@ -2180,7 +2180,7 @@ public class VideoPlayerUI {
 					if (VideoPlayerUtils.preview != null)
 						VideoPlayerUtils.preview = null;
 					
-					VideoPlayerUtils.loadImage(true);
+					VideoPlayerUtils.loadImage();
 				}
 				else						
 				{
@@ -2208,7 +2208,7 @@ public class VideoPlayerUI {
 					if (VideoPlayerUtils.preview != null)
 						VideoPlayerUtils.preview = null;
 					
-					VideoPlayerUtils.loadImage(true);
+					VideoPlayerUtils.loadImage();
 				}
 				else
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
@@ -4358,7 +4358,7 @@ public class VideoPlayerUI {
 				}
 				else if (fileDuration <= 40)
 				{
-					VideoPlayerUtils.loadImage(false);
+					VideoPlayerUtils.loadImage();
 				}
 				else if (btnPlay.isEnabled())
 				{			

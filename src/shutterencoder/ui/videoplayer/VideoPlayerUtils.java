@@ -82,10 +82,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
   		
 	//Preview
 	public static byte[] preview = null;
-	protected static volatile boolean loadImageRunning = false;
-	protected static volatile boolean loadImagePending = false;
-	public static Thread loadImageProcess = new Thread();
-	protected static final Object loadImageLock = new Object();
+	public static Thread loadImageThread = new Thread();
+	private static volatile boolean loadImagePending = false;
+	public static Process processLoadImage;
 	
 	public static void setMedia() {
 
@@ -317,10 +316,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								|| Shutter.comboSubsSource.getSelectedIndex() != 0)
 								{
 									FunctionUtils.addSubtitles(false);
-									if (loadImageProcess != null)
+									if (loadImageThread != null)
 									{
 										try {
-											loadImageProcess.join();
+											loadImageThread.join();
 										} catch (InterruptedException e) {
 										    Thread.currentThread().interrupt();
 										}
@@ -1367,25 +1366,27 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	    }
 	}
 
-	public static void loadImage(boolean forceRefresh) {
+	public static void loadImage() {
 		
 	    if (videoPath == null || Shutter.list.getSize() <= 0 || Shutter.doNotLoadImage)
 	    {
 	        return;
 	    }
+	    
+	    //Stop player
+		if (playerIsPlaying())
+		{
+			playerLoop = false;
+		}
 	    	
-	    synchronized (loadImageLock) {
+		if (loadImageThread != null && loadImageThread.isAlive()) {
+		    loadImagePending = true;
+		    return;
+		}
+		
+		loadImagePending = false;
 	
-	        if (loadImageRunning)
-	        {
-	            loadImagePending = true;
-	            return;
-	        }
-	
-	        loadImageRunning = true;
-	    }
-	
-	    loadImageProcess = new Thread(() -> {
+	    loadImageThread = new Thread(() -> {
 	
 	    	//Clear the buffer
 			if (bufferedFrames.size() > 0)
@@ -1393,19 +1394,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				bufferedFrames.clear();
 				waveformContainer.repaint();
 			}
-						
-			//Stop player
-			if (playerIsPlaying())
-			{
-				playerLoop = false;
-			}
 		
 	        try
-	        {	
-	        	do {
-	        		Thread.sleep(10);
-	        	} while (videoPath == null);
-	        		
+	        {		        		
 	        	File file = new File(videoPath);
 	        			        						
 				String extension =  file.toString().substring(file.toString().lastIndexOf("."));	
@@ -1470,18 +1461,22 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						XPDFREADER.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 					
-						do {
-			            	Thread.sleep(10);  					            	
-			            } while (XPDFREADER.isRunning && XPDFREADER.error == false);	
+						try {
+							XPDFREADER.runProcess.join();
+						} catch (InterruptedException ie) {
+							Thread.currentThread().interrupt();
+						}
 					}
 					else if (isRaw)
 					{									
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						DCRAW.run(" -v -w -q 0 -o 1 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 						
-			            do {
-			            	Thread.sleep(10);  					            	
-			            } while (DCRAW.isRunning && DCRAW.error == false);	
+						try {
+							DCRAW.runProcess.join();
+						} catch (InterruptedException ie) {
+							Thread.currentThread().interrupt();
+						}
 					}
 					else if (Shutter.comboResolution.getSelectedItem().toString().contains("AI"))							
 					{													
@@ -1511,9 +1506,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 																						
 						NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"', true);
 	
-						do {									
-							Thread.sleep(10);
-						} while (NCNN.isRunning);
+						try {
+							NCNN.runProcess.join();
+						} catch (InterruptedException ie) {
+							Thread.currentThread().interrupt();
+						}
 													
 						Shutter.progressBar.setValue(0);
 						Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));
@@ -1566,35 +1563,48 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		    }
 	        finally {
 	
-	        	try {
-					FFMPEG.runProcess.join();
-				} catch (InterruptedException e) {
-				    Thread.currentThread().interrupt();
-				}
-				
 	  			if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
-					Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
-				else
+	  			{
+	  				Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+	  			}
+  				else
 					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
-	        	
-	  			boolean reload;
-	
-	  			synchronized (loadImageLock)
-	  			{
-	  			    loadImageRunning = false;
-	  			    reload = loadImagePending;
-	  			    loadImagePending = false;
-	  			}
-	
-	  			if (reload)
-	  			{
-	  			    loadImage(false);
-	  			}
+	  			
+	  			 if (loadImagePending) {
+	  		        loadImagePending = false;
+
+	  		        SwingUtilities.invokeLater(() -> loadImage());
+	  		    }
 	        }
 	
 	    });
 	
-	    loadImageProcess.start();
+	    loadImageThread.start();
+	}
+	
+	public static void restartPlayback() {
+		
+		if (VideoPlayerUtils.playerIsPlaying())				
+		{
+			try {
+				VideoPlayerUtils.loadImageThread.join();
+			} catch (InterruptedException ex) {
+				ex.printStackTrace();
+				Thread.currentThread().interrupt();
+			}
+			
+			try {
+				VideoPlayerCore.setTime.join();
+			} catch (InterruptedException ex) {
+				ex.printStackTrace();
+				Thread.currentThread().interrupt();
+			}
+			
+			VideoPlayerUtils.processLoadImage.destroyForcibly();
+			VideoPlayerUtils.loadImageThread.interrupt();					
+			
+			VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+		}
 	}
 
 	private static void generatePreview(String cmd) {
@@ -1602,15 +1612,15 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		try {		
 						
 			ProcessBuilder pbv = new ProcessBuilder(formatCommand(cmd));
-			Process process = pbv.start();
+			processLoadImage = pbv.start();
 						
 			//Console.consoleFFMPEG.append(cmd + System.lineSeparator());
 	
 			//Write preview frame to ffmpeg input
 			if (preview != null)
 			{
-		        OutputStream outputStream = process.getOutputStream();
-		        process.getOutputStream().write(preview);
+		        OutputStream outputStream = processLoadImage.getOutputStream();
+		        processLoadImage.getOutputStream().write(preview);
 		        outputStream.close();
 			}				     	
 			/*
@@ -1622,7 +1632,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				System.out.println(line);
 			}*/
 	        
-	        InputStream is = process.getInputStream();				
+	        InputStream is = processLoadImage.getInputStream();				
 			BufferedInputStream inputStream = new BufferedInputStream(is);
 	
 			if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
@@ -1638,9 +1648,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	
 			inputStream.close();
 		
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {}
 		
 		if (frameVideo != null)
 		{

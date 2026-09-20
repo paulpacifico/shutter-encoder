@@ -5336,7 +5336,7 @@ public class Shutter {
 					if (VideoPlayerUtils.preview != null)
 						VideoPlayerUtils.preview = null;
 
-					VideoPlayerUtils.loadImage(true);
+					VideoPlayerUtils.loadImage();
 				}
 				else
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
@@ -5439,7 +5439,14 @@ public class Shutter {
 
 				VideoPlayerUtils.preview = null; //Reload the preview image before rotation
 				
+				boolean isPlaying = VideoPlayerUtils.playerIsPlaying();
+				
 				VideoPlayerUI.btnStop.doClick(); //Use VideoPlayer.resizeAll and reload the frame
+				
+				if (isPlaying)
+				{
+					VideoPlayerUI.btnPlay.doClick();
+				}
 			}
 
 		});
@@ -5463,7 +5470,14 @@ public class Shutter {
 				
 				VideoPlayerUtils.preview = null; //Reload the preview image before rotation
 				
+				boolean isPlaying = VideoPlayerUtils.playerIsPlaying();
+				
 				VideoPlayerUI.btnStop.doClick(); //Use VideoPlayer.resizeAll and reload the frame
+				
+				if (isPlaying)
+				{
+					VideoPlayerUI.btnPlay.doClick();
+				}
 			}
 
 		});
@@ -5503,7 +5517,14 @@ public class Shutter {
 				else
 					comboDAR.setEnabled(false);
 
-				VideoPlayerUI.btnStop.doClick(); // Use VideoPlayer.resizeAll and reload the frame
+				boolean isPlaying = VideoPlayerUtils.playerIsPlaying();
+				
+				VideoPlayerUI.btnStop.doClick(); //Use VideoPlayer.resizeAll and reload the frame
+				
+				if (isPlaying)
+				{
+					VideoPlayerUI.btnPlay.doClick();
+				}
 			}
 
 		});
@@ -5526,7 +5547,14 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerUI.btnStop.doClick(); // Use VideoPlayer.resizeAll and reload the frame
+				boolean isPlaying = VideoPlayerUtils.playerIsPlaying();
+				
+				VideoPlayerUI.btnStop.doClick(); //Use VideoPlayer.resizeAll and reload the frame
+				
+				if (isPlaying)
+				{
+					VideoPlayerUI.btnPlay.doClick();
+				}
 			}
 
 		});
@@ -11863,10 +11891,10 @@ public class Shutter {
 				if (caseAddSubtitles.isSelected() && VideoPlayerCore.loadMedia.isAlive() == false) //LoadMedia already load the subs
 				{
 					FunctionUtils.addSubtitles(false);
-					if (VideoPlayerUtils.loadImageProcess != null)
+					if (VideoPlayerUtils.loadImageThread != null)
 					{
 						try {
-							VideoPlayerUtils.loadImageProcess.join();
+							VideoPlayerUtils.loadImageThread.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
@@ -11947,7 +11975,19 @@ public class Shutter {
 			public void itemStateChanged(ItemEvent arg0) {
 
 				comboSubsFont.setFont(new Font(comboSubsFont.getSelectedItem().toString(), Font.PLAIN, 11));
-				VideoPlayerUtils.loadImage(false);
+				
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -11968,7 +12008,18 @@ public class Shutter {
 				else
 					btnG.setForeground(Color.BLACK);
 
-				VideoPlayerUtils.loadImage(true);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -11989,7 +12040,18 @@ public class Shutter {
 				else
 					btnI.setForeground(Color.BLACK);
 
-				VideoPlayerUtils.loadImage(true);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -12035,6 +12097,8 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -12048,7 +12112,12 @@ public class Shutter {
 			@Override
 			public void keyReleased(KeyEvent e) {
 
+				if (textSubtitlesPosition.getText().isEmpty() || textSubtitlesPosition.getText().equals("-"))
+					return;
+					
 				VideoPlayerOverlay.refreshSubtitles();
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 			@Override
@@ -12062,10 +12131,9 @@ public class Shutter {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 
-				if (textSubtitlesPosition.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR)
-						&& textSubtitlesPosition.getText().length() > 0) {
-					textSubtitlesPosition
-							.setText(String.valueOf(MouseSubsPosition.offsetY + (e.getY() - MouseSubsPosition.mouseY)));
+				if (textSubtitlesPosition.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR) && textSubtitlesPosition.getText().length() > 0)
+				{
+					textSubtitlesPosition.setText(String.valueOf(MouseSubsPosition.offsetY + (e.getY() - MouseSubsPosition.mouseY)));
 					VideoPlayerOverlay.refreshSubtitles();
 				}
 
@@ -12128,6 +12196,19 @@ public class Shutter {
 
 						subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
 					}
+					
+					if (VideoPlayerUtils.playerIsPlaying())
+					{
+						try {
+							VideoPlayerUtils.loadImageThread.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
+						
+						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+					}
+					else
+						VideoPlayerUtils.loadImage();
 				}
 			}
 
@@ -12168,7 +12249,19 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				VideoPlayerUtils.loadImage(true);
+				
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -12227,7 +12320,7 @@ public class Shutter {
 		panelSubsColor.setBounds(lblColor.getLocation().x + lblColor.getWidth(), lblColor.getY() - 4, 41, 22);
 		grpSubtitles.add(panelSubsColor);
 
-		panelSubsColor.addMouseListener(new MouseListener() {
+		panelSubsColor.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -12237,24 +12330,20 @@ public class Shutter {
 
 				if (fontSubsColor != null) {
 					panelSubsColor.setBackground(fontSubsColor);
-					VideoPlayerUtils.loadImage(true);
+					
+					if (VideoPlayerUtils.playerIsPlaying())
+					{
+						try {
+							VideoPlayerUtils.loadImageThread.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
+						
+						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+					}
+					else
+						VideoPlayerUtils.loadImage();
 				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
 			}
 
 		});
@@ -12299,6 +12388,8 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -12312,7 +12403,18 @@ public class Shutter {
 			@Override
 			public void keyReleased(KeyEvent e) {
 
-				VideoPlayerUtils.loadImage(false);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 			@Override
@@ -12343,7 +12445,7 @@ public class Shutter {
 					} else
 						textSubsSize.setText(String.valueOf(value));
 
-					VideoPlayerUtils.loadImage(false);
+					VideoPlayerUtils.loadImage();
 				}
 
 			}
@@ -12390,7 +12492,6 @@ public class Shutter {
 				}
 
 				VideoPlayerOverlay.writeCurrentSubs(VideoPlayerCore.playerCurrentFrame, false);
-				VideoPlayerUtils.loadImage(true);
 			}
 
 			@Override
@@ -12409,6 +12510,19 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -12428,7 +12542,7 @@ public class Shutter {
 		panelSubsColor2.setBounds(lblColor2.getLocation().x + lblColor2.getWidth(), lblColor2.getY() - 4, 41, 22);
 		grpSubtitles.add(panelSubsColor2);
 
-		panelSubsColor2.addMouseListener(new MouseListener() {
+		panelSubsColor2.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -12438,24 +12552,20 @@ public class Shutter {
 
 				if (backgroundSubsColor != null) {
 					panelSubsColor2.setBackground(backgroundSubsColor);
-					VideoPlayerUtils.loadImage(true);
+					
+					if (VideoPlayerUtils.playerIsPlaying())
+					{
+						try {
+							VideoPlayerUtils.loadImageThread.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
+						
+						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+					}
+					else
+						VideoPlayerUtils.loadImage();
 				}
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent e) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent e) {
 			}
 
 		});
@@ -12508,6 +12618,8 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -12521,7 +12633,18 @@ public class Shutter {
 			@Override
 			public void keyReleased(KeyEvent e) {
 
-				VideoPlayerUtils.loadImage(false);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 			@Override
@@ -12553,7 +12676,7 @@ public class Shutter {
 					} else
 						textSubsOutline.setText(String.valueOf(value));
 
-					VideoPlayerUtils.loadImage(false);
+					VideoPlayerUtils.loadImage();
 				}
 
 			}
@@ -14119,7 +14242,18 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerUtils.loadImage(true);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14140,31 +14274,13 @@ public class Shutter {
 		sliderExposure.addMouseListener(new MouseAdapter() {			
 			
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderExposure.setValue(0);
 					lblExposure.setText(Shutter.language.getProperty("lblExposure"));
 				}
-			}
-						
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14180,7 +14296,7 @@ public class Shutter {
 					lblExposure.setText(Shutter.language.getProperty("lblExposure") + " " + sliderExposure.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14206,31 +14322,13 @@ public class Shutter {
 		sliderGamma.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {				
 				if (e.getClickCount() == 2) {
 					sliderGamma.setValue(0);
-					lblGamma.setText(Shutter.language.getProperty("lblGamma"));
+					lblGamma.setText(Shutter.language.getProperty("lblGamma"));					
 				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14244,8 +14342,8 @@ public class Shutter {
 				} else {
 					lblGamma.setText(Shutter.language.getProperty("lblGamma") + " " + sliderGamma.getValue());
 				}
-
-				VideoPlayerUtils.loadImage(false);
+				
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14272,31 +14370,13 @@ public class Shutter {
 		sliderContrast.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderContrast.setValue(0);
 					lblContrast.setText(Shutter.language.getProperty("lblContrast"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14311,7 +14391,7 @@ public class Shutter {
 					lblContrast.setText(Shutter.language.getProperty("lblContrast") + " " + sliderContrast.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14338,32 +14418,13 @@ public class Shutter {
 		sliderWhite.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderWhite.setValue(0);
 					lblWhite.setText(Shutter.language.getProperty("lblWhite"));
-
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14378,7 +14439,7 @@ public class Shutter {
 					lblWhite.setText(Shutter.language.getProperty("lblWhite") + " " + sliderWhite.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14405,31 +14466,13 @@ public class Shutter {
 		sliderBlack.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderBlack.setValue(0);
 					lblBlack.setText(Shutter.language.getProperty("lblBlack"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14444,7 +14487,7 @@ public class Shutter {
 					lblBlack.setText(Shutter.language.getProperty("lblBlack") + " " + sliderBlack.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14465,38 +14508,18 @@ public class Shutter {
 		sliderHighlights.setMinimum(-100);
 		sliderHighlights.setValue(0);
 		sliderHighlights.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
-		sliderHighlights.setBounds(sliderExposure.getX(), lblHighlights.getY() + lblHighlights.getHeight() - 2,
-				sliderExposure.getWidth(), 22);
+		sliderHighlights.setBounds(sliderExposure.getX(), lblHighlights.getY() + lblHighlights.getHeight() - 2, sliderExposure.getWidth(), 22);
 
 		sliderHighlights.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderHighlights.setValue(0);
 					lblHighlights.setText(Shutter.language.getProperty("lblHighlights"));
-					
 				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14508,11 +14531,10 @@ public class Shutter {
 				if (sliderHighlights.getValue() == 0) {
 					lblHighlights.setText(Shutter.language.getProperty("lblHighlights"));
 				} else {
-					lblHighlights
-							.setText(Shutter.language.getProperty("lblHighlights") + " " + sliderHighlights.getValue());
+					lblHighlights .setText(Shutter.language.getProperty("lblHighlights") + " " + sliderHighlights.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14533,37 +14555,18 @@ public class Shutter {
 		sliderMediums.setMinimum(-100);
 		sliderMediums.setValue(0);
 		sliderMediums.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
-		sliderMediums.setBounds(sliderExposure.getX(), lblMediums.getY() + lblMediums.getHeight() - 2,
-				sliderExposure.getWidth(), 22);
+		sliderMediums.setBounds(sliderExposure.getX(), lblMediums.getY() + lblMediums.getHeight() - 2, sliderExposure.getWidth(), 22);
 
 		sliderMediums.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderMediums.setValue(0);
 					lblMediums.setText(Shutter.language.getProperty("lblMediums"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14578,7 +14581,7 @@ public class Shutter {
 					lblMediums.setText(Shutter.language.getProperty("lblMediums") + " " + sliderMediums.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14604,31 +14607,13 @@ public class Shutter {
 		sliderShadows.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderShadows.setValue(0);
 					lblShadows.setText(Shutter.language.getProperty("lblShadows"));
 				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14643,7 +14628,7 @@ public class Shutter {
 					lblShadows.setText(Shutter.language.getProperty("lblShadows") + " " + sliderShadows.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14670,31 +14655,13 @@ public class Shutter {
 		sliderBalance.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderBalance.setValue(6500);
-					lblBalance.setText(Shutter.language.getProperty("lblBalance"));	
+					lblBalance.setText(Shutter.language.getProperty("lblBalance"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14706,11 +14673,10 @@ public class Shutter {
 				if (sliderBalance.getValue() == 6500) {
 					lblBalance.setText(Shutter.language.getProperty("lblBalance"));
 				} else {
-					lblBalance
-							.setText(Shutter.language.getProperty("lblBalance") + " " + sliderBalance.getValue() + "k");
+					lblBalance.setText(Shutter.language.getProperty("lblBalance") + " " + sliderBalance.getValue() + "k");
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14731,37 +14697,18 @@ public class Shutter {
 		sliderHUE.setMinimum(-180);
 		sliderHUE.setValue(0);
 		sliderHUE.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
-		sliderHUE.setBounds(sliderExposure.getX(), lblHUE.getY() + lblHUE.getHeight() - 2, sliderExposure.getWidth(),
-				22);
+		sliderHUE.setBounds(sliderExposure.getX(), lblHUE.getY() + lblHUE.getHeight() - 2, sliderExposure.getWidth(), 22);
 
 		sliderHUE.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderHUE.setValue(0);
 					lblHUE.setText(Shutter.language.getProperty("lblHUE"));
 				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -14776,7 +14723,7 @@ public class Shutter {
 					lblHUE.setText(Shutter.language.getProperty("lblHUE") + " " + sliderHUE.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14785,10 +14732,7 @@ public class Shutter {
 
 		JLabel lblRGB = new JLabel(Shutter.language.getProperty("lblRGB"));
 		lblRGB.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
-		lblRGB.setBounds(lblExposure.getX(), sliderHUE.getY() + sliderHUE.getHeight() + 6,
-				lblRGB.getPreferredSize().width + 4, 16);
-		grpImageAdjustement.add(lblRGB);
-
+		lblRGB.setBounds(lblExposure.getX(), sliderHUE.getY() + sliderHUE.getHeight() + 6, lblRGB.getPreferredSize().width + 4, 16);
 		grpImageAdjustement.add(lblRGB);
 
 		comboRGB = new JComboBox<String>();
@@ -14847,24 +14791,12 @@ public class Shutter {
 		sliderRED.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {				
 				if (e.getClickCount() == 2) {
 					sliderRED.setValue(0);
 					lblR.setText(Shutter.language.getProperty("lblRED"));
-
-					if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
-						Colorimetry.allR = sliderRED.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))
-						Colorimetry.lowR = sliderRED.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setMedium")))
-						Colorimetry.mediumR = sliderRED.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
-						Colorimetry.highR = sliderRED.getValue();
 				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
+				
 				if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
 					Colorimetry.allR = sliderRED.getValue();
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))
@@ -14874,22 +14806,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highR = sliderRED.getValue();
 				
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}				
+				VideoPlayerUtils.restartPlayback();				
 			}
 
 		});
@@ -14913,7 +14830,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highR = sliderRED.getValue();
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -14938,24 +14855,12 @@ public class Shutter {
 		sliderGREEN.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderGREEN.setValue(0);
 					lblG.setText(Shutter.language.getProperty("lblGREEN"));
-
-					if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
-						Colorimetry.allG = sliderGREEN.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))
-						Colorimetry.lowG = sliderGREEN.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setMedium")))
-						Colorimetry.mediumG = sliderGREEN.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
-						Colorimetry.highG = sliderGREEN.getValue();
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
+				
 				if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
 					Colorimetry.allG = sliderGREEN.getValue();
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))
@@ -14965,22 +14870,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highG = sliderGREEN.getValue();
 				
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15004,7 +14894,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highG = sliderGREEN.getValue();
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15030,24 +14920,12 @@ public class Shutter {
 		sliderBLUE.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderBLUE.setValue(0);
 					lblB.setText(Shutter.language.getProperty("lblBLUE"));
-
-					if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
-						Colorimetry.allB = sliderBLUE.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))
-						Colorimetry.lowB = sliderBLUE.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setMedium")))
-						Colorimetry.mediumB = sliderBLUE.getValue();
-					else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
-						Colorimetry.highB = sliderBLUE.getValue();
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
+				
 				if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
 					Colorimetry.allB = sliderBLUE.getValue();
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))
@@ -15057,22 +14935,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highB = sliderBLUE.getValue();
 				
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15096,7 +14959,7 @@ public class Shutter {
 				else if (comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
 					Colorimetry.highB = sliderBLUE.getValue();
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15122,31 +14985,13 @@ public class Shutter {
 		sliderSaturation.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderSaturation.setValue(0);
 					lblSaturation.setText(Shutter.language.getProperty("lblSaturation"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15158,11 +15003,10 @@ public class Shutter {
 				if (sliderSaturation.getValue() == 0) {
 					lblSaturation.setText(Shutter.language.getProperty("lblSaturation"));
 				} else {
-					lblSaturation
-							.setText(Shutter.language.getProperty("lblSaturation") + " " + sliderSaturation.getValue());
+					lblSaturation.setText(Shutter.language.getProperty("lblSaturation") + " " + sliderSaturation.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15220,24 +15064,12 @@ public class Shutter {
 		sliderVibrance.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderVibrance.setValue(0);
 					lblVibrance.setText(Shutter.language.getProperty("lblVibrance"));
-
-					if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("intensity")))
-						Colorimetry.vibranceValue = sliderVibrance.getValue();
-					else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("red")))
-						Colorimetry.vibranceR = sliderVibrance.getValue();
-					else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("green")))
-						Colorimetry.vibranceG = sliderVibrance.getValue();
-					else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
-						Colorimetry.vibranceB = sliderVibrance.getValue();
 				}
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
+				
 				if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("intensity")))
 					Colorimetry.vibranceValue = sliderVibrance.getValue();
 				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("red")))
@@ -15247,22 +15079,7 @@ public class Shutter {
 				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("blue")))
 					Colorimetry.vibranceB = sliderVibrance.getValue();
 				
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}				
+				VideoPlayerUtils.restartPlayback();			
 			}
 
 		});
@@ -15286,17 +15103,14 @@ public class Shutter {
 				else if (comboVibrance.getSelectedItem().equals(Shutter.language.getProperty("blue")))
 					Colorimetry.vibranceB = sliderVibrance.getValue();
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
 
 		JLabel lblGrain = new JLabel(Shutter.language.getProperty("lblGrain"));
 		lblGrain.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
-		lblGrain.setBounds(lblExposure.getX(), sliderVibrance.getY() + sliderVibrance.getHeight(),
-				lblExposure.getSize().width, 16);
-		grpImageAdjustement.add(lblGrain);
-
+		lblGrain.setBounds(lblExposure.getX(), sliderVibrance.getY() + sliderVibrance.getHeight(), lblExposure.getSize().width, 16);
 		grpImageAdjustement.add(lblGrain);
 
 		sliderGrain = new JSlider();
@@ -15305,37 +15119,18 @@ public class Shutter {
 		sliderGrain.setMinimum(-100);
 		sliderGrain.setValue(0);
 		sliderGrain.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
-		sliderGrain.setBounds(sliderExposure.getX(), lblGrain.getY() + lblGrain.getHeight() - 2,
-				sliderExposure.getWidth(), 22);
+		sliderGrain.setBounds(sliderExposure.getX(), lblGrain.getY() + lblGrain.getHeight() - 2, sliderExposure.getWidth(), 22);
 
 		sliderGrain.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderGrain.setValue(0);
 					lblGrain.setText(Shutter.language.getProperty("lblGrain"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15350,7 +15145,7 @@ public class Shutter {
 					lblGrain.setText(Shutter.language.getProperty("lblGrain") + " " + sliderGrain.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15359,8 +15154,7 @@ public class Shutter {
 
 		JLabel lblVignette = new JLabel(Shutter.language.getProperty("lblVignette"));
 		lblVignette.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
-		lblVignette.setBounds(lblExposure.getX(), sliderGrain.getY() + sliderGrain.getHeight(),
-				lblExposure.getSize().width, 16);
+		lblVignette.setBounds(lblExposure.getX(), sliderGrain.getY() + sliderGrain.getHeight(), lblExposure.getSize().width, 16);
 		grpImageAdjustement.add(lblVignette);
 
 		sliderVignette = new JSlider();
@@ -15375,31 +15169,13 @@ public class Shutter {
 		sliderVignette.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderVignette.setValue(0);
 					lblVignette.setText(Shutter.language.getProperty("lblVignette"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15414,7 +15190,7 @@ public class Shutter {
 					lblVignette.setText(Shutter.language.getProperty("lblVignette") + " " + sliderVignette.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15437,31 +15213,13 @@ public class Shutter {
 		sliderAngle.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderAngle.setValue(0);
 					lblAngle.setText(Shutter.language.getProperty("caseAngle"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15477,7 +15235,7 @@ public class Shutter {
 					lblAngle.setText(Shutter.language.getProperty("caseAngle") + " " + sliderAngle.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15500,31 +15258,13 @@ public class Shutter {
 		sliderZoom.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void mouseReleased(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					sliderZoom.setValue(0);
 					lblZoom.setText(Shutter.language.getProperty("lblZoom"));
 				}
-			}
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15540,7 +15280,7 @@ public class Shutter {
 					lblZoom.setText(Shutter.language.getProperty("lblZoom") + " " + sliderZoom.getValue());
 				}
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15554,8 +15294,6 @@ public class Shutter {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				boolean isPlaying = VideoPlayerUtils.playerIsPlaying();
 
 				Colorimetry.allR = 0;
 				Colorimetry.allG = 0;
@@ -15602,16 +15340,7 @@ public class Shutter {
 				comboRGB.setSelectedIndex(0);
 				comboVibrance.setSelectedIndex(0);
 				
-				if (isPlaying)				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
-				}
+				VideoPlayerUtils.restartPlayback();
 				
 			}
 
@@ -15670,7 +15399,18 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerUtils.loadImage(false);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+				        VideoPlayerUtils.loadImageThread.join();
+				    } catch (InterruptedException e) {
+				        Thread.currentThread().interrupt();
+				    }
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15685,7 +15425,18 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerUtils.loadImage(false);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15700,7 +15451,18 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				VideoPlayerUtils.loadImage(false);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15722,7 +15484,7 @@ public class Shutter {
 					if (VideoPlayerUtils.playerIsPlaying())
 					{
 						try {
-							VideoPlayerUtils.loadImageProcess.join();
+							VideoPlayerUtils.loadImageThread.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
@@ -15730,7 +15492,7 @@ public class Shutter {
 						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 					}
 					else
-						VideoPlayerUtils.loadImage(false);
+						VideoPlayerUtils.loadImage();
 				}
 			}
 
@@ -15758,7 +15520,7 @@ public class Shutter {
 
 				caseDetails.setText(Shutter.language.getProperty("details") + " " + value);
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15773,22 +15535,7 @@ public class Shutter {
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15809,7 +15556,7 @@ public class Shutter {
 					if (VideoPlayerUtils.playerIsPlaying())
 					{
 						try {
-							VideoPlayerUtils.loadImageProcess.join();
+							VideoPlayerUtils.loadImageThread.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
@@ -15817,7 +15564,7 @@ public class Shutter {
 						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 					}
 					else
-						VideoPlayerUtils.loadImage(false);
+						VideoPlayerUtils.loadImage();
 				}
 			}
 
@@ -15845,7 +15592,7 @@ public class Shutter {
 
 				caseAddGrain.setText(Shutter.language.getProperty("caseAddGrain") + " " + value);
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15860,22 +15607,7 @@ public class Shutter {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15896,7 +15628,7 @@ public class Shutter {
 					if (VideoPlayerUtils.playerIsPlaying())
 					{
 						try {
-							VideoPlayerUtils.loadImageProcess.join();
+							VideoPlayerUtils.loadImageThread.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
@@ -15904,7 +15636,7 @@ public class Shutter {
 						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 					}
 					else
-						VideoPlayerUtils.loadImage(false);
+						VideoPlayerUtils.loadImage();
 				}
 			}
 
@@ -15932,7 +15664,7 @@ public class Shutter {
 
 				caseDenoise.setText(Shutter.language.getProperty("noiseSuppression") + " " + value);
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -15947,22 +15679,7 @@ public class Shutter {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -15983,7 +15700,7 @@ public class Shutter {
 					if (VideoPlayerUtils.playerIsPlaying())
 					{
 						try {
-							VideoPlayerUtils.loadImageProcess.join();
+							VideoPlayerUtils.loadImageThread.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
@@ -15991,7 +15708,7 @@ public class Shutter {
 						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 					}
 					else
-						VideoPlayerUtils.loadImage(false);
+						VideoPlayerUtils.loadImage();
 				}
 			}
 
@@ -16019,7 +15736,7 @@ public class Shutter {
 
 				caseSmoothExposure.setText(Shutter.language.getProperty("smoothExposure") + " " + value);
 
-				VideoPlayerUtils.loadImage(false);
+				VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -16034,22 +15751,7 @@ public class Shutter {
 			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				if (VideoPlayerUtils.playerIsPlaying())				
-				{
-					try {
-						VideoPlayerUtils.loadImageProcess.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					try {
-						VideoPlayerCore.setTime.join();
-					} catch (InterruptedException ex) {
-						Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);		
-				}
+				VideoPlayerUtils.restartPlayback();
 			}
 
 		});
@@ -18506,19 +18208,7 @@ public class Shutter {
 		btnReset.setBackground(Utils.c42);
 		frame.getContentPane().add(btnReset);
 
-		btnReset.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-			}
+		btnReset.addMouseListener(new MouseAdapter() {
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
@@ -19220,6 +18910,17 @@ public class Shutter {
 
 					VideoPlayerCore.playerCurrentFrame = position;
 					VideoPlayerUI.resizeAll();
+					
+					if (VideoPlayerUtils.playerIsPlaying())
+					{
+						try {
+							VideoPlayerCore.setTime.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
+						
+						VideoPlayerCore.playerLoop = true;
+					}
 				}
 			}
 
