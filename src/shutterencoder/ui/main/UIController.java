@@ -516,12 +516,11 @@ public class UIController extends Shutter {
 
 			// grpWatermark
 			if (caseAddWatermark.isSelected()
-					&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
-					&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false) {
+			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
+			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
+			{
 				VideoPlayerOverlay.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
-				Shutter.logo.setLocation(
-						(int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio),
-						(int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
+				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
 			}
 		}
 	}

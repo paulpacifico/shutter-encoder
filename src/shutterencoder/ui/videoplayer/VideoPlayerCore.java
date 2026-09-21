@@ -483,7 +483,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	    return new Dimension(width, height);
 	}
 
-	public static void readFrame(BufferedInputStream is, int width, int height, boolean isBuffering) throws IOException {
+	public synchronized static void readFrame(BufferedInputStream is, int width, int height, boolean isBuffering) throws IOException {
 		
 		if (Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source"))
 		&& Shutter.caseRotate.isSelected() && (Shutter.comboRotate.getSelectedIndex() == 1 || Shutter.comboRotate.getSelectedIndex() == 2))
@@ -1017,67 +1017,74 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 	public static void playerFreeze() {
 
+		if (FFMPEG.isRunning || Shutter.doNotLoadImage
+		|| playerThread != null && playerThread.isAlive())
+		{
+			return;
+		}
+			
 		synchronized (setTimeLock)
 		{
-			if (FFMPEG.isRunning == false
-			&& (setTime == null || setTime.isAlive() == false)
-			&& Shutter.doNotLoadImage == false
-			&& (playerVideo == null || playerVideo.isAlive() == false))
+			if (setTime != null)
 			{
-				setTime = new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-						
-						frameVideo = null;
-
-						playerPlayVideo = false;
-
-						VideoPlayerOverlay.writeCurrentSubs(0, false);
-
-						Future<Process> nextVideoProcess = null;
-						if (playerThread != null)
-						{
-							nextVideoProcess = videoProcessExecutor.submit(() -> startVideoProcess(playerCurrentFrame));
-
-							playerStop();
-							try {
-							    playerThread.join();
-							} catch (InterruptedException e) {
-							    Thread.currentThread().interrupt();
-							}
-						}
-
-						frameControl = true; //IMPORTANT to stop the player loop
-						frameIsComplete = false;
-						playerLoop = true;
-
-						Process started = null;
-						if (nextVideoProcess != null)
-						{
-							try {
-								started = nextVideoProcess.get();
-							} catch (Exception e) {
-								started = null; // falls back to starting it inline below
-							}
-						}
-
-						playerProcess(playerCurrentFrame, started);
-
-						playerLoop = true;
-						VideoPlayerCore.waitForLastFrame();
-
-						if (playerCurrentFrame > 0)
-							playerCurrentFrame -= 1;
-
-						VideoPlayerUtils.getTimePoint(playerCurrentFrame);
-
-						frameControl = false;
-						playerPlayVideo = true;
-					}
-				});
-				setTime.start();
+				try {
+					setTime.join();			
+				} catch (InterruptedException e) {
+					Thread.currentThread().interrupt();
+				}		
 			}
+			
+			setTime = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					
+					frameVideo = null;
+
+					playerPlayVideo = false;
+
+					VideoPlayerOverlay.writeCurrentSubs(0, false);
+
+					Future<Process> nextVideoProcess = videoProcessExecutor.submit(() -> startVideoProcess(playerCurrentFrame));
+					
+					if (playerThread != null)
+					{
+						playerStop();
+						try {
+						    playerThread.join();
+						} catch (InterruptedException e) {
+						    Thread.currentThread().interrupt();
+						}
+					}
+
+					if (playerIsPlaying() == false)
+						frameControl = true;
+					
+					frameIsComplete = false;
+					playerLoop = true;
+
+					Process started;
+					try {
+					    started = nextVideoProcess.get();
+					} catch (Exception e) {
+					    started = null;
+					}
+
+					playerProcess(playerCurrentFrame, started);
+
+					playerLoop = true;
+					VideoPlayerCore.waitForLastFrame();
+
+					if (playerCurrentFrame > 0)
+						playerCurrentFrame -= 1;
+
+					VideoPlayerUtils.getTimePoint(playerCurrentFrame);
+
+					frameControl = false;
+					playerPlayVideo = true;
+				}
+			});
+			setTime.start();
 		}
 	}
 		

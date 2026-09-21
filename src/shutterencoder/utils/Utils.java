@@ -2339,14 +2339,18 @@ public class Utils extends Shutter {
 				loadEncFile.start();		
 
 				Thread wait = new Thread(() -> {
+					
 					try {
 						loadEncFile.join();
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
 						
-						VideoPlayerCore.playerProcess(0, null);
-						LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
-						
-						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					} catch (InterruptedException e) {}	
+					VideoPlayerCore.playerProcess(0, null);
+					LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
+					
+					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					
 				});
 				wait.start();
 			}

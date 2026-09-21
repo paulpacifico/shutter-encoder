@@ -39,6 +39,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
@@ -1367,18 +1368,18 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	}
 
 	public static void loadImage() {
-		
+
 	    if (videoPath == null || Shutter.list.getSize() <= 0 || Shutter.doNotLoadImage)
 	    {
 	        return;
 	    }
-	    
+
 	    //Stop player
 		if (playerIsPlaying())
 		{
 			playerLoop = false;
 		}
-	    	
+
 		if (loadImageThread != null && loadImageThread.isAlive()) {
 		    loadImagePending = true;
 		    return;
@@ -1394,7 +1395,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				bufferedFrames.clear();
 				waveformContainer.repaint();
 			}
-		
+			
 	        try
 	        {		        		
 	        	File file = new File(videoPath);
@@ -1453,7 +1454,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		
 				//Creating preview file													
 				String cmd = deinterlace + " -frames:v 1 -an -sn -s " + player.getWidth() + "x" + player.getHeight() + " -scaler bicubic -y ";	
-				
+
 				if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 				{
 					if (extension.toLowerCase().equals(".pdf"))
@@ -1539,9 +1540,8 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	
 		            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
 				}	
-										
 				if (preview != null || Shutter.caseAddSubtitles.isSelected())
-				{		
+				{
 					//Format
 					String outputFormat = FFPROBE.hasAlpha ? "abgr" : "rgb565le";
 					
@@ -1570,9 +1570,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
   				else
 					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
 	  			
-	  			 if (loadImagePending) {
+	  			if (loadImagePending)
+	  			{	  				
 	  		        loadImagePending = false;
-
 	  		        SwingUtilities.invokeLater(() -> loadImage());
 	  		    }
 	        }
@@ -1614,53 +1614,50 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	}
 
 	private static void generatePreview(String cmd) {
-		
-		try {		
-						
-			ProcessBuilder pbv = new ProcessBuilder(formatCommand(cmd));
-			processLoadImage = pbv.start();
-						
-			//Console.consoleFFMPEG.append(cmd + System.lineSeparator());
-	
-			//Write preview frame to ffmpeg input
-			if (preview != null)
-			{
-		        OutputStream outputStream = processLoadImage.getOutputStream();
-		        processLoadImage.getOutputStream().write(preview);
-		        outputStream.close();
-			}				     	
-			/*
-			String line;
-			BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));	
-			
-			while ((line = input.readLine()) != null)
-			{
-				System.out.println(line);
-			}*/
-	        
-	        InputStream is = processLoadImage.getInputStream();				
-			BufferedInputStream inputStream = new BufferedInputStream(is);
-	
-			if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
-			{	
-				int bpp = FFPROBE.hasAlpha ? 8 : 6;
-				int frameSize = player.getWidth() * player.getHeight() * bpp;
-				preview = inputStream.readNBytes(frameSize);
-			}
-			else
-			{
-				readFrame(inputStream, player.getWidth(), player.getHeight(), false);
-			}
-	
-			inputStream.close();
-		
-		} catch (Exception e) {}
-		
-		if (frameVideo != null)
-		{
-			player.repaint();
-		}
-		
+
+	    try {
+	    	
+	        ProcessBuilder pbv = new ProcessBuilder(formatCommand(cmd));
+	        pbv.redirectError(ProcessBuilder.Redirect.DISCARD);
+
+	        processLoadImage = pbv.start();
+
+	        // Always close stdin
+	        try (OutputStream outputStream = processLoadImage.getOutputStream())
+	        {
+	            if (preview != null)
+	                outputStream.write(preview);	            
+	        }
+
+	        try (BufferedInputStream inputStream = new BufferedInputStream(processLoadImage.getInputStream()))
+	        {
+	            if (preview == null && !Shutter.caseAddSubtitles.isSelected())
+	            {
+	                int frameSize = player.getWidth() * player.getHeight() * 6; //bgr48le
+
+	                preview = inputStream.readNBytes(frameSize);
+	            }
+	            else
+	            	readFrame(inputStream, player.getWidth(), player.getHeight(), false);
+	            
+	        }
+
+	        if (processLoadImage.waitFor(5, TimeUnit.SECONDS) == false) {
+	            processLoadImage.destroyForcibly();
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+
+	        if (processLoadImage != null &&  processLoadImage.isAlive())
+	        {
+	            processLoadImage.destroyForcibly();
+	        }
+	    }
+
+	    if (frameVideo != null) {
+	        player.repaint();
+	    }
 	}
 	
 	public static void generateThumbnails() {
