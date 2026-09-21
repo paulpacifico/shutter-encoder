@@ -285,7 +285,7 @@ public class AudioNormalization extends Shutter {
 					    Thread.currentThread().interrupt();
 					}
 
-					RenderQueue.frame.toFront();
+					RenderQueue.completeQueueBuild();
 				}
 				else if (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
 				{

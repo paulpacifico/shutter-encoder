@@ -331,7 +331,7 @@ public class VideoInserts extends Shutter {
 					    Thread.currentThread().interrupt();
 					}
 					
-					RenderQueue.frame.toFront();
+					RenderQueue.completeQueueBuild();
 				}
 				else
 				{
