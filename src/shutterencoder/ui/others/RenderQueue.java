@@ -97,11 +97,30 @@ import shutterencoder.utils.Utils;
 	public static DefaultTableModel tableRow;
 	public static JScrollPane scrollPane;		
 	private static int complete;
+	private static Runnable queueBuildCompletion;
 	private boolean drag = false;
 	public static int filesCompleted = 0;
 	
 	private static int MousePositionX;
 	private static int MousePositionY;
+
+	public static synchronized void setQueueBuildCompletion(Runnable completion) {
+		queueBuildCompletion = completion;
+	}
+
+	public static void completeQueueBuild() {
+		if (frame != null)
+			frame.toFront();
+
+		Runnable completion;
+		synchronized (RenderQueue.class) {
+			completion = queueBuildCompletion;
+			queueBuildCompletion = null;
+		}
+
+		if (completion != null)
+			SwingUtilities.invokeLater(completion);
+	}
 	
 	public RenderQueue() {
 		
