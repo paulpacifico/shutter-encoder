@@ -83,6 +83,10 @@ import shutterencoder.utils.Utils;
 public class FunctionUtils extends Shutter {
 
 	public static int completed;
+
+	//Total sizes of all files converted during the current job, used by the space saved popup
+	public static long totalSourceSize = 0;
+	public static long totalOutputSize = 0;
 	public static StringBuilder watchFolder = new StringBuilder();
 	public static boolean allowsInvalidCharacters = false;
 	public static boolean yesToAll = false;
@@ -2026,6 +2030,12 @@ public class FunctionUtils extends Shutter {
 		{
 			completed++;
 			lblFilesEnded.setText(completedFiles(completed));
+
+			if (file != null && fileOut != null)
+			{
+				totalSourceSize += file.length();
+				totalOutputSize += fileOut.length();
+			}
 		}
 		
 		//Timecode

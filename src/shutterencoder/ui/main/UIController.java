@@ -68,6 +68,7 @@ import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
+import shutterencoder.ui.others.SpaceSavedDialog;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
@@ -5782,6 +5783,16 @@ public class UIController extends Shutter {
 
 		// IMPORTANT
 		screenshotIsRunning = false;
+
+		//Space saved popup
+		if (cancelled == false && FFMPEG.error == false)
+		{
+			SwingUtilities.invokeLater(() -> {
+				try {
+					SpaceSavedDialog.showIfNeeded();
+				} catch (Exception er) {}
+			});
+		}
 
 		FunctionUtils.sendMail();
 		lastActions();

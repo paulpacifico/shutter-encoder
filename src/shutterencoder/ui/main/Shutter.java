@@ -3242,6 +3242,8 @@ public class Shutter {
 					lblElapsedTime.setVisible(false);
 					FFMPEG.elapsedTime = 0;
 					FFMPEG.previousElapsedTime = 0;
+					FunctionUtils.totalSourceSize = 0;
+					FunctionUtils.totalOutputSize = 0;
 
 					if (btnStart.getText().equals(language.getProperty("btnAddToRender")))
 						RenderQueue.btnStartRender.setEnabled(true);
