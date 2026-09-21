@@ -678,6 +678,29 @@ public class Utils extends Shutter {
 		return labelName;
 	}
 
+	//Video container extensions accepted when adding files to the list
+	public static final String[] videoExtensions = { ".mp4", ".mov", ".mkv", ".avi", ".flv", ".f4v", ".wmv", ".mpg",
+			".mpeg", ".m1v", ".m2v", ".ts", ".m2ts", ".mts", ".mxf", ".webm", ".m4v", ".3gp", ".3g2", ".ogv", ".vob",
+			".dv", ".gxf", ".lxf", ".asf", ".rm", ".rmvb", ".divx", ".y4m", ".mjpeg" };
+
+	public static boolean isVideoFile(File f) {
+
+		String name = f.getName();
+		int i = name.lastIndexOf('.');
+
+		if (i <= 0)
+			return false;
+
+		String ext = name.substring(i).toLowerCase();
+
+		for (String videoExt : videoExtensions) {
+			if (videoExt.equals(ext))
+				return true;
+		}
+
+		return false;
+	}
+
 	public static void findFiles(String path) {
 
 		File root = new File(path);
@@ -687,59 +710,66 @@ public class Utils extends Shutter {
 			return;
 
 		for (File f : list) {
-			
-			if (f.isDirectory()) 
+
+			try
 			{
-				findFiles(f.getAbsolutePath());
-			}
-			else
-			{
-				int s = f.getAbsoluteFile().toString().lastIndexOf('.');
-				String ext = f.getAbsoluteFile().toString().substring(s);
-				
-				if (ext.equals(".enc")) 
+				if (f.isDirectory())
 				{
-					loadSettings(new File (f.getAbsoluteFile().toString()));
+					findFiles(f.getAbsolutePath());
 				}
-				else if (f.isHidden() == false && f.getName().contains("."))
-				{			
-					if (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\"))
+				else
+				{
+					if (f.getName().toLowerCase().equals(".enc"))
 					{
-						if (FunctionUtils.allowsInvalidCharacters == false) 
-						{
-							JOptionPane.showConfirmDialog(Shutter.frame, f.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
-							JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
-							
-							FunctionUtils.allowsInvalidCharacters = true;
-						}
+						loadSettings(f);
 					}
-					
-					if (Settings.btnExclude.isSelected())
-					{		
-						boolean allowed = true;
-						for (String excludeExt : Settings.txtExclude.getText().replace(" ", "").split("\\*"))
+					else if (f.isHidden() == false && isVideoFile(f))
+					{
+						String ext = f.getName().substring(f.getName().lastIndexOf('.'));
+
+						if (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\"))
 						{
-							if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
-								allowed = false;
+							if (FunctionUtils.allowsInvalidCharacters == false)
+							{
+								JOptionPane.showConfirmDialog(Shutter.frame, f.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
+								JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
+
+								FunctionUtils.allowsInvalidCharacters = true;
+							}
 						}
-						
-						if (allowed)
+
+						if (Settings.btnExclude.isSelected())
 						{
-							Shutter.list.addElement(f.getAbsoluteFile().toString());	
+							boolean allowed = true;
+							for (String excludeExt : Settings.txtExclude.getText().replace(" ", "").split("\\*"))
+							{
+								if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
+									allowed = false;
+							}
+
+							if (allowed)
+							{
+								Shutter.list.addElement(f.getAbsoluteFile().toString());
+								Shutter.addToList.setVisible(false);
+								Shutter.lblFiles.setText(Utils.filesNumber());
+							}
+						}
+						else
+						{
+							Shutter.list.addElement(f.getAbsoluteFile().toString());
 							Shutter.addToList.setVisible(false);
 							Shutter.lblFiles.setText(Utils.filesNumber());
 						}
 					}
-					else
-					{
-						Shutter.list.addElement(f.getAbsoluteFile().toString());
-						Shutter.addToList.setVisible(false);
-						Shutter.lblFiles.setText(Utils.filesNumber());
-					}
 				}
 			}
+			catch (Exception e)
+			{
+				//Keep walking: one unreadable/broken file must not abort the whole folder scan
+				e.printStackTrace();
+			}
 		}
-		
+
 		lblFiles.setText(filesNumber());
 	}
 	

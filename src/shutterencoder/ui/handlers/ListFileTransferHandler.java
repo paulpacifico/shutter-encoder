@@ -114,14 +114,14 @@ public class ListFileTransferHandler extends TransferHandler {
 							}
 
 						} else {
-							if (file.isFile() && file.getName().contains(".")) {
-								int s = file.toString().lastIndexOf('.');
-								String ext = file.getCanonicalFile().toString().substring(s);
+							if (file.isFile()) {
+								String name = file.getName();
+								int s = name.lastIndexOf('.');
+								String ext = s > 0 ? name.substring(s) : "";
 
-								if (ext.equals(".enc")) {
+								if (ext.toLowerCase().equals(".enc")) {
 									Utils.loadSettings(new File(file.toString()));
-								} else {
-									if (file.isHidden() == false) {
+								} else if (file.isHidden() == false && Utils.isVideoFile(file)) {
 										boolean allowed = true;
 										if (Settings.btnExclude.isSelected()) {
 											for (String excludeExt : Settings.txtExclude.getText().replace(" ", "")
@@ -156,7 +156,6 @@ public class ListFileTransferHandler extends TransferHandler {
 										Shutter.addToList.setVisible(false);
 										Shutter.lblFiles.setText(Utils.filesNumber());
 									}
-								}
 							} else {
 								Utils.findFiles(file.toString());
 							}

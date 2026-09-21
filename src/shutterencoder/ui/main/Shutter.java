@@ -1270,11 +1270,8 @@ public class Shutter {
 			for (String file : droppedFiles) {
 				File droppedFiles = new File(file);
 				if (droppedFiles.isFile()) {
-					int s = droppedFiles.toString().lastIndexOf('.');
-					String ext = droppedFiles.toString().substring(s);
-
-					if (ext.equals(".enc") == false && droppedFiles.isHidden() == false
-							&& droppedFiles.getName().contains("."))
+					if (droppedFiles.getName().toLowerCase().equals(".enc") == false && droppedFiles.isHidden() == false
+							&& Utils.isVideoFile(droppedFiles))
 						list.addElement(droppedFiles.toString());
 				} else
 					Utils.findFiles(droppedFiles.toString());
