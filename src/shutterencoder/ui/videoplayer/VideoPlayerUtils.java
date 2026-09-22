@@ -1632,21 +1632,20 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 
 	        try (BufferedInputStream inputStream = new BufferedInputStream(processLoadImage.getInputStream()))
 	        {
-	            if (preview == null && !Shutter.caseAddSubtitles.isSelected())
+	            if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 	            {
-	                int frameSize = player.getWidth() * player.getHeight() * 6; //bgr48le
-
-	                preview = inputStream.readNBytes(frameSize);
+	                int bpp = FFPROBE.hasAlpha ? 8 : 6;
+					int frameSize = player.getWidth() * player.getHeight() * bpp;
+					preview = inputStream.readNBytes(frameSize);
 	            }
 	            else
 	            	readFrame(inputStream, player.getWidth(), player.getHeight(), false);
-	            
 	        }
 
 	        if (processLoadImage.waitFor(5, TimeUnit.SECONDS) == false) {
 	            processLoadImage.destroyForcibly();
 	        }
-
+	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
 
