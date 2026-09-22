@@ -87,6 +87,7 @@ public class FunctionUtils extends Shutter {
 	//Total sizes of all files converted during the current job, used by the space saved popup
 	public static long totalSourceSize = 0;
 	public static long totalOutputSize = 0;
+	public static String lastOutputFolder = "";
 	public static StringBuilder watchFolder = new StringBuilder();
 	public static boolean allowsInvalidCharacters = false;
 	public static boolean yesToAll = false;
@@ -2035,6 +2036,7 @@ public class FunctionUtils extends Shutter {
 			{
 				totalSourceSize += file.length();
 				totalOutputSize += fileOut.length();
+				lastOutputFolder = output;
 			}
 		}
 		

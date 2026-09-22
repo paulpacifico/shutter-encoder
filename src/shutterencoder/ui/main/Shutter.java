@@ -208,7 +208,7 @@ public class Shutter {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "20.3";
+	public static String actualVersion = "20.4dev";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -302,6 +302,10 @@ public class Shutter {
 	public static JButton btnStart;
 	public static JButton btnCancel;
 	public static JCheckBox caseOpenFolderAtEnd1;
+
+	//Import filter: skip files whose path contains one of the comma separated snippets
+	public static JCheckBox caseSkipFiles;
+	public static JTextField txtSkipFiles;
 	public static JCheckBox caseOpenFolderAtEnd2;
 	public static JCheckBox caseOpenFolderAtEnd3;
 	public static JCheckBox caseChangeFolder1;
@@ -1272,17 +1276,23 @@ public class Shutter {
 				if (droppedFiles.isFile()) {
 					if (droppedFiles.getName().toLowerCase().equals(".enc") == false && droppedFiles.isHidden() == false
 							&& Utils.isVideoFile(droppedFiles))
-						list.addElement(droppedFiles.toString());
+						Utils.addToFileList(droppedFiles.toString());
 				} else
 					Utils.findFiles(droppedFiles.toString());
 			}
 
 			addToList.setVisible(false);
 			lblFiles.setText(Utils.filesNumber());
+			Utils.suggestInvalidFileNameFix();
 		}
 
 		//Load settings
 		new Settings();
+
+		//Restore the import filter state from the Settings exclusion filter
+		caseSkipFiles.setSelected(Settings.btnExclude.isSelected());
+		txtSkipFiles.setText(Settings.txtExclude.getText());
+		txtSkipFiles.setEnabled(Settings.btnExclude.isSelected());
 		SplashRenderer.increment();
 
 		YOUTUBEDL.update();
@@ -1804,6 +1814,16 @@ public class Shutter {
 	}
 
 	@SuppressWarnings({ "unchecked" })
+	//Sync the main window import filter with the (persisted) Settings exclusion filter
+	public static void skipFilesChanged() {
+
+		if (Settings.btnExclude == null || txtSkipFiles == null)
+			return;
+
+		Settings.btnExclude.setSelected(caseSkipFiles.isSelected());
+		Settings.txtExclude.setText(txtSkipFiles.getText());
+	}
+
 	private void grpChooseFiles() {
 
 		grpChooseFiles = new CollapsiblePanel(language.getProperty("grpChooseFiles"), false);
@@ -1817,7 +1837,7 @@ public class Shutter {
 		fileList.setBackground(Utils.c35);
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
-		fileList.setBounds(10, 50, 292, frame.getHeight() - 483);
+		fileList.setBounds(10, 74, 292, frame.getHeight() - 507);
 		fileList.setToolTipText(language.getProperty("rightClick"));
 
 		fileList.getModel().addListDataListener(new ListDataListener() {
@@ -1956,10 +1976,55 @@ public class Shutter {
 		
 		scrollBar = new JScrollPane();
 		scrollBar.getViewport().add(fileList);
-		scrollBar.setBounds(10, 50, 292, fileList.getHeight());
+		scrollBar.setBounds(10, 74, 292, fileList.getHeight());
 		scrollBar.setOpaque(false);
 		scrollBar.getViewport().setOpaque(false);
 		grpChooseFiles.add(scrollBar);
+
+		//Import filter: skip files whose name contains one of the snippets (mirrors the Settings exclusion filter)
+		caseSkipFiles = new JCheckBox(language.getProperty("btnSkipFiles"));
+		caseSkipFiles.setName("caseSkipFiles");
+		caseSkipFiles.setFont(new Font(mainFont, Font.PLAIN, 12));
+		caseSkipFiles.setOpaque(false);
+		caseSkipFiles.setBounds(10, 48, caseSkipFiles.getPreferredSize().width, 21);
+		grpChooseFiles.add(caseSkipFiles);
+
+		txtSkipFiles = new JTextField();
+		txtSkipFiles.setName("txtSkipFiles");
+		txtSkipFiles.setToolTipText("<html>*_abc, *part*, *.av1<br>"
+				+ language.getProperty("caseSkipFiles") + "</html>");
+		txtSkipFiles.setFont(new Font(mainFont, Font.PLAIN, 11));
+		txtSkipFiles.setBounds(caseSkipFiles.getLocation().x + caseSkipFiles.getWidth() + 4, 48,
+				302 - (caseSkipFiles.getLocation().x + caseSkipFiles.getWidth()) - 12, 21);
+		txtSkipFiles.setEnabled(false);
+		grpChooseFiles.add(txtSkipFiles);
+
+		caseSkipFiles.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				txtSkipFiles.setEnabled(caseSkipFiles.isSelected());
+				skipFilesChanged();
+			}
+		});
+
+		txtSkipFiles.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+
+			@Override
+			public void insertUpdate(javax.swing.event.DocumentEvent e) {
+				skipFilesChanged();
+			}
+
+			@Override
+			public void removeUpdate(javax.swing.event.DocumentEvent e) {
+				skipFilesChanged();
+			}
+
+			@Override
+			public void changedUpdate(javax.swing.event.DocumentEvent e) {
+				skipFilesChanged();
+			}
+		});
 		
 		JScrollBar verticalBar = scrollBar.getVerticalScrollBar();
 		verticalBar.setBackground(Utils.c35);
@@ -2838,26 +2903,14 @@ public class Shutter {
 						&& file.toString().substring(0, 2).equals("\\\\"))
 							file = Utils.UNCPath(file);
 
-						if (file.getAbsolutePath().toString().contains("\"")
-						|| file.getAbsolutePath().toString().contains("\'") || file.getName().contains("/")
-						|| file.getName().contains("\\"))
-						{
-							if (FunctionUtils.allowsInvalidCharacters == false) {
-								JOptionPane.showConfirmDialog(Shutter.frame,
-										file.getAbsoluteFile().toString() + System.lineSeparator()
-												+ Shutter.language.getProperty("invalidCharacter"),
-										Shutter.language.getProperty("import"), JOptionPane.PLAIN_MESSAGE,
-										JOptionPane.WARNING_MESSAGE);
+						//No warning for quote characters: the command builder handles them
 
-								FunctionUtils.allowsInvalidCharacters = true;
-							}
-						}
-
-						list.addElement(file.getAbsolutePath());
+						Utils.addToFileList(file.getAbsolutePath());
 						addToList.setVisible(false);
 						lblFiles.setText(Utils.filesNumber());
 					}
 
+					Utils.suggestInvalidFileNameFix();
 					UIController.changeFilters();
 
 					switch (comboFonctions.getSelectedItem().toString()) {
@@ -3270,11 +3323,37 @@ public class Shutter {
 									JOptionPane.INFORMATION_MESSAGE);
 						} else {
 							if (inputDeviceIsRunning) {
-								VideoPlayerCore.playerStop();
-							}
+									VideoPlayerCore.playerStop();
+								}
 
-							String function = comboFonctions.getSelectedItem().toString();
-							if (language.getProperty("functionCut").equals(function)) {
+								String function = comboFonctions.getSelectedItem().toString();
+
+								//Functions that do not deinterlace automatically: offer it when interlaced files are detected
+								java.util.Set<String> noAutoDeinterlace = java.util.Set.of("MPEG-2", "DNxHD", "Apple ProRes",
+										"AVC-Intra 100", "FFV1", "GoPro CineForm", "HAP", "QT Animation", "Uncompressed",
+										"XAVC", "XAVC Long GOP", "XDCAM HD422", "XDCAM HD 35", "Blu-ray", "DVD", "AVI");
+
+								if (noAutoDeinterlace.contains(function) && caseForcerDesentrelacement.isSelected() == false
+										&& scanIsRunning == false && list.getSize() > 0) {
+									frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+									int interlacedCount = Utils.countInterlacedFiles();
+									frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+									if (interlacedCount > 0) {
+										int answer = JOptionPane.showConfirmDialog(frame,
+												interlacedCount + (interlacedCount > 1 ? " files are" : " file is")
+														+ " interlaced.\n\nDeinterlace for correct playback? (recommended)",
+												"Interlaced files detected", JOptionPane.YES_NO_OPTION,
+												JOptionPane.QUESTION_MESSAGE);
+
+										if (answer == JOptionPane.YES_OPTION) {
+											caseForcerDesentrelacement.setSelected(true);
+											comboForcerDesentrelacement.setSelectedItem("auto");
+										}
+									}
+								}
+
+								if (language.getProperty("functionCut").equals(function)) {
 								if (inputDeviceIsRunning) {
 									JOptionPane.showMessageDialog(frame,
 											language.getProperty("incompatibleInputDevice"),
@@ -4013,7 +4092,7 @@ public class Shutter {
 
 		caseOpenFolderAtEnd1 = new JCheckBox(language.getProperty("caseOpenFolderAtEnd"));
 		caseOpenFolderAtEnd1.setName("caseOpenFolderAtEnd1");
-		caseOpenFolderAtEnd1.setSelected(true);
+		caseOpenFolderAtEnd1.setSelected(false);
 		caseOpenFolderAtEnd1.setFont(new Font(mainFont, Font.PLAIN, 12));
 		caseOpenFolderAtEnd1.setBounds(6, 23, caseOpenFolderAtEnd1.getPreferredSize().width, 23);
 		destination1.add(caseOpenFolderAtEnd1);
@@ -16496,17 +16575,21 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (lblTFF.getText().equals("TFF"))
-					FFPROBE.fieldOrder = "0";
-				else if (lblTFF.getText().equals("BFF"))
-					FFPROBE.fieldOrder = "1";
-				else
-					FFPROBE.fieldOrder = "0";
+				//In auto mode the field order is detected per file during the FFPROBE analysis
+				if (comboForcerDesentrelacement.getSelectedItem() != null
+						&& comboForcerDesentrelacement.getSelectedItem().toString().equals("auto") == false) {
+					if (lblTFF.getText().equals("TFF"))
+						FFPROBE.fieldOrder = "0";
+					else if (lblTFF.getText().equals("BFF"))
+						FFPROBE.fieldOrder = "1";
+					else
+						FFPROBE.fieldOrder = "0";
+				}
 
 				if (caseForcerDesentrelacement.isSelected()) {
 					comboForcerDesentrelacement.setEnabled(true);
 				} else {
-					comboForcerDesentrelacement.setSelectedItem("bwdif");
+					comboForcerDesentrelacement.setSelectedItem("auto");
 					comboForcerDesentrelacement.setEnabled(false);
 				}
 
@@ -16518,7 +16601,7 @@ public class Shutter {
 
 		comboForcerDesentrelacement = new JComboBox<String>();
 		comboForcerDesentrelacement.setName("comboForcerDesentrelacement");
-		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif", "yadif", "estdif", "w3fdif", "detelecine" }));
+		comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "auto", "bwdif", "yadif", "estdif", "w3fdif", "detelecine" }));
 		comboForcerDesentrelacement.setSelectedIndex(0);
 		comboForcerDesentrelacement.setFont(new Font(mainFont, Font.PLAIN, 10));
 		comboForcerDesentrelacement.setEditable(false);

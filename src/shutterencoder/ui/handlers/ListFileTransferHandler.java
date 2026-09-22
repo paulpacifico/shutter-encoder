@@ -95,9 +95,9 @@ public class ListFileTransferHandler extends TransferHandler {
 
 							if (System.getProperty("os.name").contains("Mac")
 									|| System.getProperty("os.name").contains("Linux"))
-								Shutter.list.addElement(file + "/");
+								Utils.addToFileList(file + "/");
 							else
-								Shutter.list.addElement(file + "\\");
+								Utils.addToFileList(file + "\\");
 
 							Shutter.addToList.setVisible(false);
 							Shutter.lblFiles.setText(Utils.filesNumber());
@@ -124,10 +124,11 @@ public class ListFileTransferHandler extends TransferHandler {
 								} else if (file.isHidden() == false && Utils.isVideoFile(file)) {
 										boolean allowed = true;
 										if (Settings.btnExclude.isSelected()) {
-											for (String excludeExt : Settings.txtExclude.getText().replace(" ", "")
-													.split("\\*")) {
-												if (excludeExt.contains(".") && ext.toLowerCase()
-														.equals(excludeExt.replace(",", "").toLowerCase())) {
+											//Substring match on the file name, comma separated snippets ("*" is ignored)
+											for (String snippet : Settings.txtExclude.getText().replace(" ", "")
+													.split(",")) {
+												String token = snippet.replace("*", "").toLowerCase();
+												if (token.length() > 0 && file.getName().toLowerCase().contains(token)) {
 													allowed = false;
 													break;
 												}
@@ -138,29 +139,16 @@ public class ListFileTransferHandler extends TransferHandler {
 											}
 										}
 
-										if (file.toString().contains("\"")
-												|| file.toString().contains("\'")
-												|| file.getName().contains("/") || file.getName().contains("\\")) {
-											if (FunctionUtils.allowsInvalidCharacters == false) {
-												JOptionPane.showConfirmDialog(Shutter.frame,
-														file.getAbsoluteFile().toString() + System.lineSeparator()
-																+ Shutter.language.getProperty("invalidCharacter"),
-														Shutter.language.getProperty("import"),
-														JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
-
-												FunctionUtils.allowsInvalidCharacters = true;
-											}
-										}
-
-										Shutter.list.addElement(file.toString());
-										Shutter.addToList.setVisible(false);
-										Shutter.lblFiles.setText(Utils.filesNumber());
+										Utils.addToFileList(file.toString());
 									}
 							} else {
 								Utils.findFiles(file.toString());
 							}
 						}
 					}
+
+					// Suggest renaming files containing invalid characters right after the import
+					Utils.suggestInvalidFileNameFix();
 
 					// CaseOPATOM
 					switch (Shutter.comboFonctions.getSelectedItem().toString()) {

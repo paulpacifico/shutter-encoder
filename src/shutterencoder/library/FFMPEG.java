@@ -150,8 +150,48 @@ public static StringBuilder errorLog = new StringBuilder();
         env.put("MVK_CONFIG_LOG_LEVEL", "1");		
 	}
 	
-	public static void run(String cmd) {
-			
+	public static void run(String cmdParam) {
+
+		//Skip the empty audio streams (0 channels) that ffmpeg cannot initialize
+		if (FFPROBE.invalidAudioIndexes.isEmpty() == false) {
+
+			//" -map a?" is expanded to the valid audio streams
+			if (cmdParam.contains("-map a?")) {
+				String validMaps = "";
+				for (int i = 0; i < FFPROBE.audioStreams; i++) {
+					if (FFPROBE.invalidAudioIndexes.contains(i) == false)
+						validMaps += " -map 0:a:" + i + "?";
+				}
+				cmdParam = cmdParam.replace("-map a?", validMaps.trim());
+			}
+
+			//Explicit indexes pointing to an invalid stream are removed
+			java.util.regex.Pattern mapPattern = java.util.regex.Pattern.compile(" -map (?:0:a|a):(\\d+)\\??");
+			java.util.regex.Matcher mapMatcher = mapPattern.matcher(cmdParam);
+			boolean hadAudioMap = false;
+			StringBuffer sb = new StringBuffer();
+			while (mapMatcher.find()) {
+				hadAudioMap = true;
+				int index = Integer.parseInt(mapMatcher.group(1));
+				mapMatcher.appendReplacement(sb, FFPROBE.invalidAudioIndexes.contains(index) ? ""
+						: java.util.regex.Matcher.quoteReplacement(mapMatcher.group()));
+			}
+			mapMatcher.appendTail(sb);
+			cmdParam = sb.toString();
+
+			//If every mapped audio stream was invalid, fall back to the first valid one
+			if (hadAudioMap && mapPattern.matcher(cmdParam).find() == false && FFPROBE.invalidAudioIndexes.size() < FFPROBE.audioStreams) {
+				for (int i = 0; i < FFPROBE.audioStreams; i++) {
+					if (FFPROBE.invalidAudioIndexes.contains(i) == false) {
+						cmdParam += " -map 0:a:" + i + "?";
+						break;
+					}
+				}
+			}
+		}
+
+		String cmd = cmdParam;
+
 		time = 0;
 		fps = 0;
 

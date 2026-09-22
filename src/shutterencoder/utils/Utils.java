@@ -701,6 +701,169 @@ public class Utils extends Shutter {
 		return false;
 	}
 
+	/**
+	 * Called after files were added to the list: if any of them contains problematic
+	 * quote characters, suggests renaming them so they can be converted safely.
+	 */
+	public static void suggestInvalidFileNameFix() {
+
+		int count = 0;
+		for (int i = 0; i < Shutter.list.getSize(); i++) {
+			String entry = Shutter.list.getElementAt(i).toString();
+			if (new File(entry).isFile() && (entry.contains("\'") || entry.contains("\"")))
+				count++;
+		}
+
+		if (count == 0)
+			return;
+
+		int answer = JOptionPane.showConfirmDialog(Shutter.frame,
+				count + (count > 1 ? " files contain" : " file contains") + " invalid characters ( ' \" )"
+						+ " in their path (files or folders) that can cause conversion failures.\n\n"
+						+ "Rename the " + (count > 1 ? "files" : "file")
+						+ " to add " + (count > 1 ? "them" : "it") + " safely to the conversion list? (recommended)",
+				"Invalid characters detected", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+		if (answer == JOptionPane.YES_OPTION) {
+			int fixed = fixInvalidFileNames();
+			if (fixed > 0)
+				JOptionPane.showMessageDialog(Shutter.frame,
+						fixed + (fixed > 1 ? " files were" : " file was") + " renamed.",
+						"Invalid characters fixed", JOptionPane.INFORMATION_MESSAGE);
+		}
+	}
+
+	/**
+	 * Adds a path to the list unless it is already present. Returns true if it was added.
+	 */
+	public static boolean addToFileList(String path) {
+
+		for (int i = 0; i < Shutter.list.getSize(); i++) {
+			String entry = Shutter.list.getElementAt(i).toString();
+			if (System.getProperty("os.name").contains("Windows") ? entry.equalsIgnoreCase(path) : entry.equals(path))
+				return false;
+		}
+
+		Shutter.list.addElement(path);
+		Shutter.addToList.setVisible(false);
+		Shutter.lblFiles.setText(Utils.filesNumber());
+		return true;
+	}
+
+	/**
+	 * Returns how many files in the list contain problematic quote characters.
+	 */
+	public static int countInvalidFileNames() {
+
+		int count = 0;
+
+		for (int i = 0; i < Shutter.list.getSize(); i++) {
+			String entry = Shutter.list.getElementAt(i).toString();
+			if (new File(entry).isFile() && (entry.contains("\'") || entry.contains("\"")))
+				count++;
+		}
+
+		return count;
+	}
+
+	/**
+	 * Renames the files AND folders containing quote characters on disk and updates the list.
+	 * Returns how many files/folders were renamed.
+	 */
+	public static int fixInvalidFileNames() {
+
+		java.util.LinkedHashMap<String, String> renames = new java.util.LinkedHashMap<String, String>();
+
+		//1) Folders containing invalid characters, deepest first
+		java.util.ArrayList<File> dirs = new java.util.ArrayList<File>();
+		for (int i = 0; i < Shutter.list.getSize(); i++) {
+			File f = new File(Shutter.list.getElementAt(i).toString());
+			File p = f.getParentFile();
+			while (p != null) {
+				String n = p.getName();
+				if ((n.contains("\'") || n.contains("\"")) && dirs.contains(p) == false)
+					dirs.add(p);
+				p = p.getParentFile();
+			}
+		}
+		dirs.sort((a, b) -> b.getAbsolutePath().length() - a.getAbsolutePath().length());
+		for (File d : dirs) {
+			File target = new File(d.getParentFile(), d.getName().replace("\'", "").replace("\"", ""));
+			if (target.exists() == false && d.renameTo(target))
+				renames.put(d.getAbsolutePath(), target.getAbsolutePath());
+		}
+
+		//2) Files of the list
+		for (int i = 0; i < Shutter.list.getSize(); i++) {
+			File f = new File(applyRenames(Shutter.list.getElementAt(i).toString(), renames));
+			String n = f.getName();
+			if ((n.contains("\'") || n.contains("\"")) && f.isFile()) {
+				File target = new File(f.getParentFile(), n.replace("\'", "").replace("\"", ""));
+				if (target.exists() == false && f.renameTo(target))
+					renames.put(f.getAbsolutePath(), target.getAbsolutePath());
+			}
+		}
+
+		//3) Update the list with the new paths
+		int fixed = 0;
+		for (int i = 0; i < Shutter.list.getSize(); i++) {
+			String oldEntry = Shutter.list.getElementAt(i).toString();
+			String updated = applyRenames(oldEntry, renames);
+			if (updated.equals(oldEntry) == false) {
+				Shutter.list.set(i, updated);
+				fixed++;
+			}
+		}
+
+		return fixed;
+	}
+
+	private static String applyRenames(String path, java.util.LinkedHashMap<String, String> renames) {
+
+		for (java.util.Map.Entry<String, String> e : renames.entrySet()) {
+			if (path.equals(e.getKey()) || path.startsWith(e.getKey() + File.separator))
+				path = e.getValue() + path.substring(e.getKey().length());
+		}
+
+		return path;
+	}
+
+	/**
+	 * Scans the current file list with ffprobe and returns how many video files are interlaced.
+	 */
+	public static int countInterlacedFiles() {
+
+		int count = 0;
+
+		String ffprobe;
+		if (System.getProperty("os.name").contains("Windows"))
+			ffprobe = '"' + getLibraryPath() + "\\ffprobe.exe" + '"';
+		else
+			ffprobe = '"' + getLibraryPath() + "/ffprobe" + '"';
+
+		for (int i = 0; i < Shutter.list.getSize(); i++) {
+
+			File f = new File(Shutter.list.getElementAt(i).toString());
+
+			if (f.isFile() && isVideoFile(f)) {
+				try {
+					ProcessBuilder pb = new ProcessBuilder(ffprobe, "-v", "error", "-select_streams", "v:0",
+							"-show_entries", "stream=field_order", "-of", "csv=p=0", f.getAbsolutePath());
+					pb.redirectErrorStream(true);
+					Process p = pb.start();
+					String out = new String(p.getInputStream().readAllBytes()).trim();
+					p.waitFor();
+
+					if (out.equals("tt") || out.equals("bb") || out.equals("tb") || out.equals("bt"))
+						count++;
+				} catch (Exception e) {
+				}
+			}
+		}
+
+		return count;
+	}
+
 	public static void findFiles(String path) {
 
 		File root = new File(path);
@@ -723,42 +886,29 @@ public class Utils extends Shutter {
 					{
 						loadSettings(f);
 					}
-					else if (f.isHidden() == false && isVideoFile(f))
-					{
-						String ext = f.getName().substring(f.getName().lastIndexOf('.'));
+				else if (f.isHidden() == false && isVideoFile(f))
+				{
+					String ext = f.getName().substring(f.getName().lastIndexOf('.'));
 
-						if (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\"))
-						{
-							if (FunctionUtils.allowsInvalidCharacters == false)
-							{
-								JOptionPane.showConfirmDialog(Shutter.frame, f.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
-								JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
-
-								FunctionUtils.allowsInvalidCharacters = true;
-							}
-						}
-
-						if (Settings.btnExclude.isSelected())
+					if (Settings.btnExclude.isSelected())
 						{
 							boolean allowed = true;
-							for (String excludeExt : Settings.txtExclude.getText().replace(" ", "").split("\\*"))
+							//Substring match on the file name, comma separated snippets ("*" is ignored)
+							for (String snippet : Settings.txtExclude.getText().replace(" ", "").split(","))
 							{
-								if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
+								String s = snippet.replace("*", "").toLowerCase();
+								if (s.length() > 0 && f.getName().toLowerCase().contains(s))
 									allowed = false;
 							}
 
 							if (allowed)
 							{
-								Shutter.list.addElement(f.getAbsoluteFile().toString());
-								Shutter.addToList.setVisible(false);
-								Shutter.lblFiles.setText(Utils.filesNumber());
+								addToFileList(f.getAbsoluteFile().toString());
 							}
 						}
 						else
 						{
-							Shutter.list.addElement(f.getAbsoluteFile().toString());
-							Shutter.addToList.setVisible(false);
-							Shutter.lblFiles.setText(Utils.filesNumber());
+							addToFileList(f.getAbsoluteFile().toString());
 						}
 					}
 				}
@@ -782,16 +932,13 @@ public class Utils extends Shutter {
 			return;
 
 		for (File f : list) {
-			
-			if (f.isDirectory()) 
+
+			if (f.isDirectory())
 			{
-				Shutter.list.addElement(f.getAbsoluteFile().toString());
-				Shutter.addToList.setVisible(false);
-				Shutter.lblFiles.setText(Utils.filesNumber());
-				
+				addToFileList(f.getAbsoluteFile().toString());
 				findDirectories(f.getAbsolutePath());
 			}
-		}	
+		}
 		
 		lblFiles.setText(filesNumber());
 	}	
