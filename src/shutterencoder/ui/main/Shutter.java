@@ -16587,6 +16587,8 @@ public class Shutter {
 					comboForcerDesentrelacement.setEnabled(false);
 				}
 
+				updateTFFState();
+
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the
 																			// frame
 				VideoPlayerUtils.setInfo();
@@ -16619,7 +16621,7 @@ public class Shutter {
 					lblTFF.setEnabled(false);
 				}
 				else
-					lblTFF.setEnabled(true);
+					updateTFFState();
 					
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the
 																			// frame
@@ -19757,6 +19759,16 @@ public class Shutter {
 		else
 			comboForcerDesentrelacement.setEnabled(true);
 		comboForcerDesentrelacement.setSelectedItem("auto");
+	}
+
+	/**
+	 * The TFF/BFF field-order label only applies to manual deinterlacers;
+	 * in auto mode the field order is detected per file, so it is dimmed.
+	 */
+	private static void updateTFFState() {
+		boolean auto = caseForcerDesentrelacement.isSelected()
+				&& "auto".equals(comboForcerDesentrelacement.getSelectedItem().toString());
+		lblTFF.setEnabled(auto == false);
 	}
 
 	/**
