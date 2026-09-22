@@ -178,6 +178,9 @@ public class ListFileTransferHandler extends TransferHandler {
 					// Filter
 					UIController.changeFilters();
 
+					// Warn immediately about interlaced files so the user can confirm before leaving the conversion unattended
+					Shutter.offerInterlaceFix();
+
 					return true;
 				}
 			} catch (IOException | UnsupportedFlavorException ex) {

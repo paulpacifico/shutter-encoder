@@ -378,8 +378,8 @@ public class Shutter {
 	protected static JCheckBox caseForcerProgressif;
 	protected static JCheckBox caseForcerEntrelacement;
 	protected static JCheckBox caseForcerInversion;
-	protected static JCheckBox caseForcerDesentrelacement;
-	protected static JComboBox<String> comboForcerDesentrelacement;
+	public static JCheckBox caseForcerDesentrelacement;
+	public static JComboBox<String> comboForcerDesentrelacement;
 	protected static JCheckBox caseForceOutput;
 	protected static JCheckBox caseFastStart;
 	protected static JCheckBox caseFastDecode;
@@ -1284,6 +1284,7 @@ public class Shutter {
 			addToList.setVisible(false);
 			lblFiles.setText(Utils.filesNumber());
 			Utils.suggestInvalidFileNameFix();
+			offerInterlaceFix();
 		}
 
 		//Load settings
@@ -3329,24 +3330,19 @@ public class Shutter {
 								String function = comboFonctions.getSelectedItem().toString();
 
 								//Functions that do not deinterlace automatically: offer it when interlaced files are detected
+								//(skipped when the prompt was already shown when the files were added to the list)
 								java.util.Set<String> noAutoDeinterlace = java.util.Set.of("MPEG-2", "DNxHD", "Apple ProRes",
 										"AVC-Intra 100", "FFV1", "GoPro CineForm", "HAP", "QT Animation", "Uncompressed",
 										"XAVC", "XAVC Long GOP", "XDCAM HD422", "XDCAM HD 35", "Blu-ray", "DVD", "AVI");
 
-								if (noAutoDeinterlace.contains(function) && caseForcerDesentrelacement.isSelected() == false
+								if (interlacePromptAnswered == false && noAutoDeinterlace.contains(function) && caseForcerDesentrelacement.isSelected() == false
 										&& scanIsRunning == false && list.getSize() > 0) {
 									frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 									int interlacedCount = Utils.countInterlacedFiles();
 									frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 									if (interlacedCount > 0) {
-										int answer = JOptionPane.showConfirmDialog(frame,
-												interlacedCount + (interlacedCount > 1 ? " files are" : " file is")
-														+ " interlaced.\n\nDeinterlace for correct playback? (recommended)",
-												"Interlaced files detected", JOptionPane.YES_NO_OPTION,
-												JOptionPane.QUESTION_MESSAGE);
-
-										if (answer == JOptionPane.YES_OPTION) {
+										if (askDeinterlace(interlacedCount)) {
 											caseForcerDesentrelacement.setSelected(true);
 											comboForcerDesentrelacement.setSelectedItem("auto");
 										}
@@ -19731,4 +19727,55 @@ public class Shutter {
 		frame.getContentPane().add(statusBar);
 
 	}
+
+	/**
+	 * True once the user answered the interlace prompt for the current file list,
+	 * so the check is not repeated at start. Reset whenever a file is added.
+	 */
+	public static boolean interlacePromptAnswered = false;
+
+	/**
+	 * Shows the interlace confirmation dialog. Returns true if the user accepts deinterlacing.
+	 */
+	public static boolean askDeinterlace(int interlacedCount) {
+		int answer = JOptionPane.showConfirmDialog(frame,
+				interlacedCount + (interlacedCount > 1 ? " files are" : " file is")
+						+ " interlaced.\n\nDeinterlace for correct playback? (recommended)",
+				"Interlaced files detected", JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE);
+		interlacePromptAnswered = true;
+		return answer == JOptionPane.YES_OPTION;
+	}
+
+	/**
+	 * Scans the file list in the background and offers auto deinterlacing
+	 * as soon as interlaced files have been added to the list.
+	 */
+	public static void offerInterlaceFix() {
+
+		if (caseForcerDesentrelacement.isSelected() || scanIsRunning || interlacePromptAnswered || list.getSize() == 0)
+			return;
+
+		new javax.swing.SwingWorker<Integer, Void>() {
+			@Override
+			protected Integer doInBackground() throws Exception {
+				return Utils.countInterlacedFiles();
+			}
+
+			@Override
+			protected void done() {
+				try {
+					int interlacedCount = get();
+					if (interlacedCount > 0 && caseForcerDesentrelacement.isSelected() == false) {
+						if (askDeinterlace(interlacedCount)) {
+							caseForcerDesentrelacement.setSelected(true);
+							comboForcerDesentrelacement.setSelectedItem("auto");
+						}
+					}
+				} catch (Exception e) {
+				}
+			}
+		}.execute();
+	}
+
 }

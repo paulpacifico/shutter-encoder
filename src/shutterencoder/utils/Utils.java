@@ -770,6 +770,7 @@ public class Utils extends Shutter {
 		Shutter.list.addElement(path);
 		Shutter.addToList.setVisible(false);
 		Shutter.lblFiles.setText(Utils.filesNumber());
+		Shutter.interlacePromptAnswered = false;
 		return true;
 	}
 
