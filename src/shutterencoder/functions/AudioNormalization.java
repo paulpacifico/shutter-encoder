@@ -299,10 +299,13 @@ public class AudioNormalization extends Shutter {
     }
 
 	private static String setFilterComplex() {
+		boolean normalizeToPeak = language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString())
+				&& casePeakNormalization.isSelected();
+		String peakMode = normalizeToPeak ? "sample" : "true";
 	
 		if (FFPROBE.stereo)
 		{
-			return " -af ebur128=peak=true";
+			return " -af ebur128=peak=" + peakMode;
 		}
 	    else if (FFPROBE.channels > 1)	
 	    {
@@ -311,15 +314,15 @@ public class AudioNormalization extends Shutter {
 	    		String[] options = {"A1 & A2", "A3 & A4"};
 	    		audioTracks = JOptionPane.showOptionDialog(frame, language.getProperty("ChooseMultitrack"), language.getProperty("multitrack"), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
 	    		if (audioTracks == 0)
-		    		return " -filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a];[a]ebur128=peak=true" + '"';
+					return " -filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a];[a]ebur128=peak=" + peakMode + '"';
 		    	else
-		    		return " -filter_complex " + '"' + "[0:a:2][0:a:3]amerge=inputs=2[a];[a]ebur128=peak=true" + '"';
+					return " -filter_complex " + '"' + "[0:a:2][0:a:3]amerge=inputs=2[a];[a]ebur128=peak=" + peakMode + '"';
 	    	}
 	    	else
-	    		return " -filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a];[a]ebur128=peak=true" + '"';
+				return " -filter_complex " + '"' + "[0:a:0][0:a:1]amerge=inputs=2[a];[a]ebur128=peak=" + peakMode + '"';
 	    }
 	    else
-	    	return " -af ebur128=peak=true";
+			return " -af ebur128=peak=" + peakMode;
 	}
 
 	private static String setAudio() {		
