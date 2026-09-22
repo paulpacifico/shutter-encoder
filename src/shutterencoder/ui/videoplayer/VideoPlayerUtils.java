@@ -569,7 +569,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						String videoWithoutExt = video.getName().substring(0, video.getName().lastIndexOf("."));
 						
 						SubtitlesTimeline.srt = new File(video.getParent() + "/" + videoWithoutExt + ".srt");		
-						SubtitlesTimeline.timelineScrollBar.setMaximum((int) (((totalFrames - 2) * inputFramerateMS) * SubtitlesTimeline.zoom));
+						SubtitlesTimeline.timelineScrollBar.setMaximum((int) (((totalFrames - 1) * inputFramerateMS) * SubtitlesTimeline.zoom));
 									
 						Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 			    		Shutter.frame.setLocation(Shutter.frame.getLocation().x , dim.height/3 - Shutter.frame.getHeight()/2);
@@ -1093,11 +1093,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	}
 
 	public static void getTimePoint(double inputTime) {	
-				
+						
 		if (inputTime >= totalFrames)
 		{
 			sliderChange = true;
-			playerSetTime(totalFrames);
+			playerSetTime(totalFrames - 1);
 			sliderChange = false;    		
 		}
 				
@@ -1120,7 +1120,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				time += offset;
 			
 			int newValue = (int) Math.floor((double) (waveformContainer.getSize().width * (time - offset)) / totalFrames);
-			 		
+
 			String dropFrame = ":";
 			if (Timecode.isDropFrame())
 			{
@@ -1170,12 +1170,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			}    
 		}
 		
-		if (inputTime - offset >= totalFrames - 2)
+		if (inputTime - offset >= totalFrames - 1)
 		{
 			btnPlay.setIcon(new FlatSVGIcon("resources/play.svg", 15, 15));
 			btnPlay.setName("play");
-		}
-			
+		}			
 	}
 
 	public static void totalDuration() {	
@@ -1242,7 +1241,12 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 
 	public static void addWaveform(boolean newWaveform) {
 
-		if (FFMPEG.isRunning == false && caseShowWaveform.isSelected() && FFPROBE.hasAudio && addWaveformIsRunning == false && Settings.btnDisableVideoPlayer.isSelected() == false)
+		if (FFMPEG.isRunning == false
+		&& waveformContainer.isVisible()
+		&& caseShowWaveform.isSelected()
+		&& FFPROBE.hasAudio
+		&& addWaveformIsRunning == false
+		&& Settings.btnDisableVideoPlayer.isSelected() == false)
 		{		
 			addWaveformIsRunning = true;
 			
@@ -1308,7 +1312,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						else
 						{
 							LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=" + size + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
-						}
+						}						
 						
 						if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
 						{
@@ -1317,28 +1321,22 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						else
 							Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
 					}
-					
-					//add Waveform		
-					try {
-						
-						if (Shutter.list.getSize() > 0 && isPiping == false && waveform != null)
+
+					//add Waveform to Subtitling function
+					if (Shutter.list.getSize() > 0 && waveform != null && SubtitlesTimeline.frame != null)
+					{
+						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) //Ne charge plus l'image si la fenêtre est fermée entre temps
 						{
-							if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles"))) //Ne charge plus l'image si la fenêtre est fermée entre temps
-							{
-								ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));
-								
-								SubtitlesTimeline.waveform.setIcon(resizedWaveform);							
-								SubtitlesTimeline.waveform.setBounds(SubtitlesTimeline.timelineScrollBar.getValue(), SubtitlesTimeline.waveform.getY(), (int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight());
-								SubtitlesTimeline.waveform.repaint();
-							}
+							ImageIcon resizedWaveform = new ImageIcon(new ImageIcon(waveform).getImage().getScaledInstance((int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight(), Image.SCALE_AREA_AVERAGING));
+							
+							SubtitlesTimeline.waveform.setIcon(resizedWaveform);							
+							SubtitlesTimeline.waveform.setBounds(SubtitlesTimeline.timelineScrollBar.getValue(), SubtitlesTimeline.waveform.getY(), (int) (SubtitlesTimeline.frame.getWidth() * 10 * SubtitlesTimeline.zoom), SubtitlesTimeline.timeline.getHeight());
+							SubtitlesTimeline.waveform.repaint();
 						}
 					}
-					catch (Exception e) {}
-					finally
-					{					
-						addWaveformIsRunning = false;
-						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					}	
+					
+					addWaveformIsRunning = false;
+					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}				
 			});
 			addWaveform.start();

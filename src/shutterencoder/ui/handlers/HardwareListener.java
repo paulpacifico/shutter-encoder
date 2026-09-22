@@ -156,7 +156,7 @@ public class HardwareListener extends Shutter {
 							if (ke.getKeyCode() == KeyEvent.VK_END)
 							{
 								ke.consume();
-								VideoPlayerCore.playerSetTime((double) VideoPlayerUI.totalFrames - 2);
+								VideoPlayerCore.playerSetTime((double) VideoPlayerUI.totalFrames - 1);
 							}
 							
 							if (ke.getKeyCode() == KeyEvent.VK_PAGE_UP)

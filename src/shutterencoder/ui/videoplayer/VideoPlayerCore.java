@@ -246,8 +246,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									{
 										updateCurrentFrame();
 									}
-									else
+									else if (playerCurrentFrame < totalFrames - 1 || mouseIsPressed || frameControl) //The first condition stop playerCurrentFrame being updated if the max duration is reached
+									{
 										playerCurrentFrame = inputTime;															
+									}
 																
 								} catch (Exception e) {}
 								finally {
@@ -433,7 +435,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									//IMPORTANT reduce CPU usage
 									do {
 										try {
-										Thread.sleep(1);
+											Thread.sleep(1);
 										} catch (InterruptedException e) {}
 									} while (playerLoop == false && playerVideo.isAlive());
 								}
@@ -933,8 +935,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							
 							frameControl = false;
 							playerPlayVideo = true;	
-						}	
-	
+						}
+						
 						if (bufferedFrames.size() > 0)
 						{
 							cursorCurrentFrame.setLocation((int) Math.floor((double) (waveformContainer.getWidth() * Timecode.setNTSCtimecode(bufferCurrentFrame)) / totalFrames), 0);
@@ -1039,8 +1041,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				@Override
 				public void run() {
 					
-					frameVideo = null;
-
 					playerPlayVideo = false;
 
 					VideoPlayerOverlay.writeCurrentSubs(0, false);
