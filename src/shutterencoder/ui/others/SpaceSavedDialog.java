@@ -54,7 +54,7 @@ public class SpaceSavedDialog {
 	private static final Color COLOR_ADDED = new Color(217, 154, 78);
 	private static final Color COLOR_TEXT = new Color(232, 232, 232);
 	private static final Color COLOR_TEXT_DIM = new Color(154, 154, 154);
-	private static final Color COLOR_PANEL = new Color(60, 63, 65);
+	private static final Color COLOR_PANEL = Utils.c30;
 
 	public static void showIfNeeded() {
 
@@ -88,7 +88,7 @@ public class SpaceSavedDialog {
 
 		//Hero value: "−12.4 GB  |  −78.5 %"
 		JLabel hero = new JLabel(sign + formatSize(Math.abs(diff)) + "   |   " + sign + String.format("%.1f", Math.abs(percent)) + " %");
-		hero.setFont(hero.getFont().deriveFont(Font.BOLD, 26f));
+		hero.setFont(new Font(Shutter.mainFont, Font.BOLD, 24));
 		hero.setForeground(diff >= 0 ? COLOR_SAVED : COLOR_ADDED);
 		panel.add(hero, gbc);
 
@@ -98,7 +98,7 @@ public class SpaceSavedDialog {
 			caption = new JLabel("Disk space saved");
 		else
 			caption = new JLabel("The converted files are larger than the originals");
-		caption.setFont(caption.getFont().deriveFont(Font.PLAIN, 11f));
+		caption.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		caption.setForeground(COLOR_TEXT_DIM);
 		gbc.gridy++;
 		gbc.insets = new Insets(0, 0, 18, 0);
@@ -115,7 +115,7 @@ public class SpaceSavedDialog {
 		gbc.insets = new Insets(12, 0, 0, 0);
 		JLabel files = new JLabel("Files converted:  " + FunctionUtils.completed);
 		files.setForeground(COLOR_TEXT);
-		files.setFont(files.getFont().deriveFont(Font.PLAIN, 13f));
+		files.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		panel.add(files, gbc);
 
 		//Buttons
@@ -124,20 +124,14 @@ public class SpaceSavedDialog {
 
 		if (destination != null && destination.isEmpty() == false && new File(destination).isDirectory()) {
 			JButton openFolder = new JButton("Open destination");
-			openFolder.setForeground(Color.WHITE);
-			openFolder.setBackground(new Color(75, 78, 80));
-			openFolder.setFocusPainted(false);
-			openFolder.setBorder(BorderFactory.createEmptyBorder(8, 18, 8, 18));
+			openFolder.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 			openFolder.addActionListener(e -> Utils.openFile(new File(destination)));
 			buttonPanel.add(openFolder);
 			buttonPanel.add(Box.createHorizontalStrut(10));
 		}
 
 		JButton ok = new JButton("OK");
-		ok.setBackground(new Color(79, 143, 218));
-		ok.setForeground(Color.WHITE);
-		ok.setFocusPainted(false);
-		ok.setBorder(BorderFactory.createEmptyBorder(8, 24, 8, 24));
+		ok.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
 		buttonPanel.add(ok);
 
 		JDialog dialog = new JDialog(Shutter.frame, "Conversion complete", JDialog.ModalityType.APPLICATION_MODAL);
@@ -166,7 +160,7 @@ public class SpaceSavedDialog {
 
 		JLabel lbl = new JLabel(label);
 		lbl.setForeground(COLOR_TEXT_DIM);
-		lbl.setFont(lbl.getFont().deriveFont(Font.PLAIN, 13f));
+		lbl.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		gbc.gridx = 0;
 		gbc.weightx = 0;
 		gbc.insets = new Insets(4, 0, 4, 10);
@@ -189,7 +183,7 @@ public class SpaceSavedDialog {
 
 		JLabel val = new JLabel(formatSize(size));
 		val.setForeground(COLOR_TEXT);
-		val.setFont(val.getFont().deriveFont(Font.PLAIN, 13f));
+		val.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
 		gbc.gridx = 2;
 		gbc.weightx = 0;
 		gbc.insets = new Insets(4, 10, 4, 0);
