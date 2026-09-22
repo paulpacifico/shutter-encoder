@@ -878,6 +878,9 @@ public class Utils extends Shutter {
 					String out = new String(p.getInputStream().readAllBytes()).trim();
 					p.waitFor();
 
+					if (out.isEmpty() == false)
+						out = out.split(",")[0].trim(); //csv output may carry a trailing comma
+
 					if (out.equals("tt") || out.equals("bb") || out.equals("tb") || out.equals("bt"))
 						count++;
 				} catch (Exception e) {
