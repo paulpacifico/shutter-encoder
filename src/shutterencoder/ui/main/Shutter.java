@@ -3342,10 +3342,8 @@ public class Shutter {
 									frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
 									if (interlacedCount > 0) {
-										if (askDeinterlace(interlacedCount)) {
-											caseForcerDesentrelacement.setSelected(true);
-											comboForcerDesentrelacement.setSelectedItem("auto");
-										}
+										if (askDeinterlace(interlacedCount))
+											enableAutoDeinterlace();
 									}
 								}
 
@@ -19744,7 +19742,21 @@ public class Shutter {
 				"Interlaced files detected", JOptionPane.YES_NO_OPTION,
 				JOptionPane.QUESTION_MESSAGE);
 		interlacePromptAnswered = true;
+		if (answer == JOptionPane.YES_OPTION)
+			enableAutoDeinterlace();
 		return answer == JOptionPane.YES_OPTION;
+	}
+
+	/**
+	 * Ticks "Force deinterlacing" and sets it to auto, firing the normal click
+	 * listeners so the Advanced features panel reflects the enabled state.
+	 */
+	public static void enableAutoDeinterlace() {
+		if (caseForcerDesentrelacement.isSelected() == false)
+			caseForcerDesentrelacement.doClick(); // fires the listeners → combo enabled
+		else
+			comboForcerDesentrelacement.setEnabled(true);
+		comboForcerDesentrelacement.setSelectedItem("auto");
 	}
 
 	/**
@@ -19767,10 +19779,8 @@ public class Shutter {
 				try {
 					int interlacedCount = get();
 					if (interlacedCount > 0 && caseForcerDesentrelacement.isSelected() == false) {
-						if (askDeinterlace(interlacedCount)) {
-							caseForcerDesentrelacement.setSelected(true);
-							comboForcerDesentrelacement.setSelectedItem("auto");
-						}
+						if (askDeinterlace(interlacedCount))
+							enableAutoDeinterlace();
 					}
 				} catch (Exception e) {
 				}
