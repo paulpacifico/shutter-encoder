@@ -124,11 +124,9 @@ public class ListFileTransferHandler extends TransferHandler {
 								} else if (file.isHidden() == false && Utils.isVideoFile(file)) {
 										boolean allowed = true;
 										if (Settings.btnExclude.isSelected()) {
-											//Substring match on the file name, comma separated snippets ("*" is ignored)
-											for (String snippet : Settings.txtExclude.getText().replace(" ", "")
-													.split(",")) {
-												String token = snippet.replace("*", "").toLowerCase();
-												if (token.length() > 0 && file.getName().toLowerCase().contains(token)) {
+											//Wildcard match on the file name, comma separated patterns
+											for (String snippet : Settings.txtExclude.getText().split(",")) {
+												if (Utils.matchesWildcard(file.getName(), snippet)) {
 													allowed = false;
 													break;
 												}

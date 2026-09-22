@@ -734,9 +734,32 @@ public class Utils extends Shutter {
 	}
 
 	/**
-	 * Adds a path to the list unless it is already present. Returns true if it was added.
+	 * Wildcard match on a file name: * = any characters, ? = one character.
+	 * Case-insensitive; the pattern must match the whole name
+	 * ("*.srt" = extension, "*_AV1*" = contains _AV1, "AV1" = exact name).
 	 */
-	public static boolean addToFileList(String path) {
+	public static boolean matchesWildcard(String fileName, String pattern) {
+
+		String p = pattern.trim();
+		if (p.isEmpty())
+			return false;
+
+		StringBuilder regex = new StringBuilder();
+		for (char c : p.toLowerCase().toCharArray()) {
+			if (c == '*')
+				regex.append(".*");
+			else if (c == '?')
+				regex.append('.');
+			else
+				regex.append(java.util.regex.Pattern.quote(String.valueOf(c)));
+		}
+
+		return fileName.toLowerCase().matches(regex.toString());
+	}
+
+	/**
+	 * Adds a path to the list unless it is already present. Returns true if it was added.
+	 */	public static boolean addToFileList(String path) {
 
 		for (int i = 0; i < Shutter.list.getSize(); i++) {
 			String entry = Shutter.list.getElementAt(i).toString();
@@ -893,11 +916,10 @@ public class Utils extends Shutter {
 					if (Settings.btnExclude.isSelected())
 						{
 							boolean allowed = true;
-							//Substring match on the file name, comma separated snippets ("*" is ignored)
-							for (String snippet : Settings.txtExclude.getText().replace(" ", "").split(","))
+							//Wildcard match on the file name, comma separated patterns
+							for (String snippet : Settings.txtExclude.getText().split(","))
 							{
-								String s = snippet.replace("*", "").toLowerCase();
-								if (s.length() > 0 && f.getName().toLowerCase().contains(s))
+								if (matchesWildcard(f.getName(), snippet))
 									allowed = false;
 							}
 
