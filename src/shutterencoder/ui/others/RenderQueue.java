@@ -75,6 +75,7 @@ import shutterencoder.library.TSMUXER;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
@@ -799,7 +800,9 @@ import shutterencoder.utils.Utils;
 							{
 								String s[] = fileOut.toString().split("\\|");
 								fileOut = new File(s[0]); 
-							}					
+							}	
+							
+							VideoPlayerCore.videoPath = null;
 							
 							if (cmd.contains("pipe:1"))
 							{

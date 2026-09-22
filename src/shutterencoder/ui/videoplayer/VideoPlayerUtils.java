@@ -632,7 +632,8 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				tff = " BFF";
 		}
 	
-		if (FFPROBE.videoCodec != null && fileDuration > 40 && Shutter.inputDeviceIsRunning == false)
+		if (FFPROBE.videoCodec != null && FFPROBE.imageResolution != null
+		&& fileDuration > 40 && Shutter.inputDeviceIsRunning == false)
 		{
 			String vcodec = FFPROBE.videoCodec.replace("video", "");
 			for (String s : Shutter.functionsList)
@@ -646,11 +647,13 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				else
 					vcodec = vcodec.toUpperCase();
 			}
-	
+
 			showScale.setText(FFPROBE.imageResolution + " " + vcodec + tff + " " + FFPROBE.imageDepth + "-bit");
 		}
-		else
+		else if (FFPROBE.imageResolution != null)
+		{
 			showScale.setText(FFPROBE.imageResolution + tff);
+		}
 		
 		showScale.repaint();
 		showFPS.repaint();
@@ -1386,7 +1389,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		loadImagePending = false;
 	
 	    loadImageThread = new Thread(() -> {
-	
+		    	
 	    	//Clear the buffer
 			if (bufferedFrames.size() > 0)
 			{				

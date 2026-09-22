@@ -96,6 +96,8 @@ public class Picture extends Shutter {
 						screenshotIsRunning = true;
 						file = new File(VideoPlayerCore.videoPath);
 					}
+					else
+						VideoPlayerCore.videoPath = null;
 					
 					try {
 						
@@ -518,7 +520,7 @@ public class Picture extends Shutter {
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".webp"))
 		{
-			return " -quality " + comboImageOption.getSelectedItem().toString().replace("%", "");
+			return " -qscale " + comboImageOption.getSelectedItem().toString().replace("%", "");
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".avif"))
 		{
