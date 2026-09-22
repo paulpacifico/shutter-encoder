@@ -111,7 +111,6 @@ public class SpaceSavedDialog {
 
 		//Files converted
 		gbc.gridy++;
-		gbc.gridwidth = 1;
 		gbc.insets = new Insets(12, 0, 0, 0);
 		JLabel files = new JLabel("Files converted:  " + FunctionUtils.completed);
 		files.setForeground(COLOR_TEXT);
@@ -119,7 +118,7 @@ public class SpaceSavedDialog {
 		panel.add(files, gbc);
 
 		//Buttons
-		JPanel buttonPanel = new JPanel();
+		JPanel buttonPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 10, 0));
 		buttonPanel.setBackground(COLOR_PANEL);
 
 		if (destination != null && destination.isEmpty() == false && new File(destination).isDirectory()) {
@@ -139,6 +138,8 @@ public class SpaceSavedDialog {
 		ok.addActionListener(e -> dialog.dispose());
 
 		gbc.gridy++;
+		gbc.anchor = GridBagConstraints.CENTER;
+		gbc.fill = GridBagConstraints.NONE;
 		gbc.insets = new Insets(18, 0, 4, 0);
 		panel.add(buttonPanel, gbc);
 
@@ -151,20 +152,19 @@ public class SpaceSavedDialog {
 	}
 
 	/**
-	 * One comparison line: label, proportional bar, size value.
+	 * One comparison line: label, proportional bar, size value — centered as a compact block.
 	 */
 	private static void addComparisonLine(JPanel panel, GridBagConstraints gbc, String label, long size, long maxSize, Color color) {
 
-		gbc.gridwidth = 1;
 		gbc.gridy++;
+
+		JPanel line = new JPanel();
+		line.setBackground(COLOR_PANEL);
 
 		JLabel lbl = new JLabel(label);
 		lbl.setForeground(COLOR_TEXT_DIM);
 		lbl.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
-		gbc.gridx = 0;
-		gbc.weightx = 0;
-		gbc.insets = new Insets(4, 0, 4, 10);
-		panel.add(lbl, gbc);
+		line.add(lbl);
 
 		JLabel bar = new JLabel() {
 
@@ -173,21 +173,20 @@ public class SpaceSavedDialog {
 				Graphics2D g2 = (Graphics2D) g;
 				g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 				g2.setColor(color);
-				int w = (int) (Math.max(4, (double) size / (double) maxSize * (getWidth() - 2)));
+				int w = (int) (Math.max(6, (double) size / (double) maxSize * (getWidth() - 2)));
 				g2.fillRoundRect(1, 1, w, getHeight() - 2, 8, 8);
 			}
-		};		bar.setPreferredSize(new Dimension(220, 12));
-		gbc.gridx = 1;
-		gbc.weightx = 1;
-		panel.add(bar, gbc);
+		};
+		bar.setPreferredSize(new Dimension(200, 12));
+		line.add(bar);
 
 		JLabel val = new JLabel(formatSize(size));
 		val.setForeground(COLOR_TEXT);
 		val.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
-		gbc.gridx = 2;
-		gbc.weightx = 0;
-		gbc.insets = new Insets(4, 10, 4, 0);
-		panel.add(val, gbc);
+		val.setPreferredSize(new Dimension(60, 16));
+		line.add(val);
+
+		panel.add(line, gbc);
 	}
 
 	/**
@@ -197,7 +196,9 @@ public class SpaceSavedDialog {
 
 		if (bytes >= 1024L * 1024 * 1024)
 			return String.format("%.1f GB", bytes / (1024.0 * 1024 * 1024));
-		else
+		else if (bytes >= 1024L * 1024)
 			return String.format("%.0f MB", bytes / (1024.0 * 1024));
+		else
+			return String.format("%.0f KB", bytes / 1024.0);
 	}
 }
