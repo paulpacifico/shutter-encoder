@@ -132,7 +132,7 @@ public class VMAF extends Shutter {
 					    Thread.currentThread().interrupt();
 					}
 					
-					RenderQueue.frame.toFront();
+					RenderQueue.completeQueueBuild();
 				}
 				else
 				{

@@ -1751,6 +1751,11 @@ public class Utils extends Shutter {
 		
 	@SuppressWarnings("rawtypes")
 	public static void loadSettings(File encFile) {
+		loadSettings(encFile, null);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static void loadSettings(File encFile, Runnable onLoaded) {
 	
 		SwingUtilities.invokeLater(() ->
 		{
@@ -2350,7 +2355,10 @@ public class Utils extends Shutter {
 					LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
 					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					
+
+					if (onLoaded != null)
+						SwingUtilities.invokeLater(onLoaded);
+
 				});
 				wait.start();
 			}

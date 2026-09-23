@@ -33,6 +33,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -188,7 +189,7 @@ public class Functions {
 		listeDeFonctions = new JList<String>(liste);
 		listeDeFonctions.setBackground(Utils.c35);
 		listeDeFonctions.setForeground(Color.LIGHT_GRAY);
-		listeDeFonctions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		listeDeFonctions.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		listeDeFonctions.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
 		listeDeFonctions.setCellRenderer(new FonctionsRenderer());
 		listeDeFonctions.setFixedCellHeight(17);
@@ -206,11 +207,13 @@ public class Functions {
 		
 		popupListe = new JPopupMenu();
 		final JMenuItem load = new JMenuItem(Shutter.language.getProperty("menuItemLoad"));
+		final JMenuItem addToQueue = new JMenuItem(Shutter.language.getProperty("btnAddToRender"));
 		final JMenuItem update = new JMenuItem(Shutter.language.getProperty("menuItemUpdate"));
 		final JMenuItem delete = new JMenuItem(Shutter.language.getProperty("menuItemDelete"));
 		final JMenuItem openFolder = new JMenuItem(Shutter.language.getProperty("menuItemOpenFolder"));
 		
 		popupListe.add(load);
+		popupListe.add(addToQueue);
 		popupListe.add(update);
 		popupListe.add(delete);
 		popupListe.add(openFolder);
@@ -225,6 +228,20 @@ public class Functions {
 				Utils.loadSettings(new File(functionsFolder + "/" + listeDeFonctions.getSelectedValue()));
 			}
 			
+		});
+
+		addToQueue.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				List<File> presets = new ArrayList<File>();
+				for (String preset : listeDeFonctions.getSelectedValuesList())
+					presets.add(new File(functionsFolder, preset));
+
+				if (presets.isEmpty() == false)
+					queuePresets(presets, 0);
+			}
+
 		});
 		
 		update.addActionListener(new ActionListener(){
@@ -294,9 +311,10 @@ public class Functions {
 				{	
 					popupListe.show(listeDeFonctions, e.getX() - 30, e.getY());
 					
-					load.setVisible(true);
-					update.setVisible(true);
-					delete.setVisible(true);
+					load.setVisible(listeDeFonctions.getSelectedIndices().length == 1);
+					addToQueue.setVisible(true);
+					update.setVisible(listeDeFonctions.getSelectedIndices().length == 1);
+					delete.setVisible(listeDeFonctions.getSelectedIndices().length == 1);
 					openFolder.setVisible(true);
 					
 				}
@@ -667,6 +685,32 @@ public class Functions {
 			
 		});
 		
+	}
+
+	private static void queuePresets(List<File> presets, int index) {
+		if (Shutter.list.getSize() == 0) {
+			JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("addFileToList"),
+					Shutter.language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		if (index >= presets.size()) {
+			if (RenderQueue.frame != null)
+				RenderQueue.frame.toFront();
+			return;
+		}
+
+		if (RenderQueue.frame == null)
+			new RenderQueue();
+
+		Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+		Shutter.btnReset.doClick();
+		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+		Utils.loadSettings(presets.get(index), () -> {
+			RenderQueue.setQueueBuildCompletion(() -> queuePresets(presets, index + 1));
+			Shutter.btnStart.doClick();
+		});
 	}
 
 	public static void addFonctions() {
