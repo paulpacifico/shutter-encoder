@@ -522,7 +522,7 @@ public class VideoEncoders extends Shutter {
 									break;
 							}
 						}	
-						
+
 						//Scaling									
 			        	if (setScalingFirst()) //Set scaling before or after depending on using a pad or stretch mode			
 			        	{
@@ -567,7 +567,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Image.setRotate(filterComplex, false);
 			        	
 			        	//Crop
-						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Cropping is made before upscaling
+						if (setCroppingLast() == false && comboResolution.getSelectedItem().toString().contains("AI") == false)  //Cropping is made inside the upscale statement using Image.setCrop())
 				        {
 							filterComplex = Image.setCrop(filterComplex, file);
 				        }
@@ -733,6 +733,12 @@ public class VideoEncoders extends Shutter {
 			            
 						//Fade-in Fade-out
 						filterComplex = Transitions.setVideoFade(filterComplex, false);
+						
+						//Crop
+						if (setCroppingLast() && comboResolution.getSelectedItem().toString().contains("AI") == false)  //Cropping is made inside the upscale statement using Image.setCrop())
+				        {
+							filterComplex = Image.setCrop(filterComplex, file);
+				        }
 										
 		            	//Audio
 			            if (comboFonctions.getSelectedItem().toString().equals("DV"))
@@ -972,7 +978,7 @@ public class VideoEncoders extends Shutter {
 								String quality = "";
 								if (comboImageOption.getSelectedItem().equals(".webp"))
 								{
-									quality = " -quality 100";
+									quality = " -qscale 100";
 								}
 								else if (comboImageOption.getSelectedItem().equals(".jpg"))
 								{
@@ -1257,7 +1263,7 @@ public class VideoEncoders extends Shutter {
 	
 	public static boolean setScalingFirst() {
 		
-		//Crop need to be before scaling
+		//Options that need to be before scaling
 		if (caseEnableCrop.isSelected() || comboResolution.getSelectedItem().toString().contains("AI") || caseStabilisation.isSelected())
 		{
 			return false;
@@ -1301,7 +1307,7 @@ public class VideoEncoders extends Shutter {
     	int oh = Integer.parseInt(o[1]);        	
     	float ir = (float) iw / ih;
     	float or = (float) ow / oh;
-
+    	
     	//Ratio comparison
     	if (ir != or 
     	&& (Shutter.caseAddTimecode.isSelected()
@@ -1313,7 +1319,22 @@ public class VideoEncoders extends Shutter {
     		return false;
     	}
     	else
-    		return true;	
+    		return true;   		
+	}
+	
+	public static boolean setCroppingLast() {
+		
+		//Always crop after these options
+		if (Shutter.caseAddTimecode.isSelected()
+    	|| Shutter.caseShowTimecode.isSelected()
+    	|| Shutter.caseAddText.isSelected()
+    	|| Shutter.caseShowFileName.isSelected()    	
+    	|| Shutter.caseAddWatermark.isSelected())
+    	{
+    		return true;
+    	}
+    	else
+    		return false;   
 	}
 	
 	public static String setCodec() {

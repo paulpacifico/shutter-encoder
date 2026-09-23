@@ -686,10 +686,10 @@ public class UIController extends Shutter {
 		{
 			if (grpFileInformation.getHeight() == 17)
 			{
-				grpFileInformation.setLocation(grpX, grpChooseFiles.getY());
+				grpFileInformation.setLocation(frame.getWidth() - 312 - 12, grpChooseFiles.getY());
 			}
 			else
-				grpFileInformation.setBounds(grpX, grpChooseFiles.getY(), 312, frame.getHeight() - grpChooseFiles.getY() - statusBar.getHeight() - 10);		
+				grpFileInformation.setBounds(frame.getWidth() - 312 - 12, grpChooseFiles.getY(), 312, frame.getHeight() - grpChooseFiles.getY() - statusBar.getHeight() - 10);		
 			
 			settingsScrollBar.setVisible(false);
 		}
@@ -1749,7 +1749,9 @@ public class UIController extends Shutter {
 							grpAdvanced.removeAll();
 
 							// grpAdvanced
-							caseConform.setLocation(7, 14);
+							caseDecimate.setLocation(7, 14);
+							grpAdvanced.add(caseDecimate);									
+							caseConform.setLocation(7, caseDecimate.getY() + 17);
 							grpAdvanced.add(caseConform);
 							comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4,
 									caseConform.getLocation().y + 4);
@@ -2124,7 +2126,9 @@ public class UIController extends Shutter {
 							grpAdvanced.removeAll();
 
 							// grpAdvanced
-							caseConform.setLocation(7, 14);
+							caseDecimate.setLocation(7, 14);
+							grpAdvanced.add(caseDecimate);									
+							caseConform.setLocation(7, caseDecimate.getY() + 17);
 							grpAdvanced.add(caseConform);
 							comboConform.setLocation(caseConform.getX() + caseConform.getWidth() + 4,
 									caseConform.getLocation().y + 4);

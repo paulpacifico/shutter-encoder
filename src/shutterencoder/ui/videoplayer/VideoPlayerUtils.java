@@ -1109,14 +1109,18 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	}
 
 	public static void getTimePoint(double inputTime) {	
-						
+				
 		if (inputTime >= totalFrames)
 		{
 			sliderChange = true;
 			playerSetTime(totalFrames - 1);
 			sliderChange = false;    		
 		}
-				
+		else if (inputTime < 0)
+		{
+			inputTime = 0;
+		}
+		
 		if (playerVideo != null && inputTime - offset < totalFrames)
 		{    	    		
 			if (waveformContainer.getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR)) && mouseIsPressed)

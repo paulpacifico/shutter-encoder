@@ -661,29 +661,11 @@ public class AdvancedFeatures extends Shutter {
 	
 	public static String setDecimate(String filterComplex) {
 	
-		switch (comboFonctions.getSelectedItem().toString())
+		if (caseDecimate.isSelected())
 		{			
-			case "AV1":
-			case "H.264":
-			case "H.265":
-			case "H.266":
-			case "VP8":
-			case "VP9":						
-			case "MPEG-1":
-			case "MPEG-2":
-			case "MJPEG":
-			case "Theora":
-			case "WMV":
-			case "Xvid":				
-				
-				if (caseDecimate.isSelected())
-				{			
-					if (filterComplex != "") filterComplex += ",";	
-					
-					filterComplex += "mpdecimate";	
-				}
-				
-				break;
+			if (filterComplex != "") filterComplex += ",";	
+			
+			filterComplex += "mpdecimate,setpts=N/FRAME_RATE/TB";	
 		}
 
 		return filterComplex;
@@ -916,7 +898,7 @@ public class AdvancedFeatures extends Shutter {
 		
 		String flags = "";
 		
-		if (Settings.comboSync.getSelectedItem().equals("auto") == false && caseDecimate.isSelected() == false)
+		if (Settings.comboSync.getSelectedItem().equals("auto") == false)
 		{
 			flags += " -fps_mode " + Settings.comboSync.getSelectedItem();	
 		}
@@ -939,9 +921,6 @@ public class AdvancedFeatures extends Shutter {
 								
 				if (caseFastStart.isSelected() && (comboFilter.getSelectedItem().toString().equals(".mp4") || comboFilter.getSelectedItem().toString().equals(".mov")))
 					flags += " -movflags faststart";
-				
-				if (caseDecimate.isSelected())		
-					flags += " -fps_mode vfr";	
 
 				break;	
 			
@@ -956,11 +935,6 @@ public class AdvancedFeatures extends Shutter {
 			case "Theora":
 			case "WMV":
 			case "Xvid":
-				
-				if (caseDecimate.isSelected())		
-				{
-					flags += " -fps_mode vfr";	
-				}
 				
 				break;
 			

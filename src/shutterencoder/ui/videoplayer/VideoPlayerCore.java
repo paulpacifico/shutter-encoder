@@ -723,6 +723,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						{
 							requestedFrame = totalFrames - 1;
 						}
+						else if (requestedFrame < 0)
+						{
+							requestedFrame = 0;
+						}
 						
 						boolean useBuffer = false;
 						if (VideoPlayerUtils.preview != null || Shutter.caseAddSubtitles.isSelected())
