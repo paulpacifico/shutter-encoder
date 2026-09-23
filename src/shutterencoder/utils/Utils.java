@@ -703,10 +703,37 @@ public class Utils extends Shutter {
 		return fileName.toLowerCase().matches(regex.toString());
 	}
 
+	//Video container extensions accepted when adding files to the list
+	public static final String[] videoExtensions = { ".mp4", ".mov", ".mkv", ".avi", ".flv", ".f4v", ".wmv", ".mpg",
+			".mpeg", ".m1v", ".m2v", ".ts", ".m2ts", ".mts", ".mxf", ".webm", ".m4v", ".3gp", ".3g2", ".ogv", ".vob",
+			".dv", ".gxf", ".lxf", ".asf", ".rm", ".rmvb", ".divx", ".y4m", ".mjpeg" };
+
+	public static boolean isVideoFile(File f) {
+
+		String name = f.getName();
+		int i = name.lastIndexOf('.');
+
+		if (i <= 0)
+			return false;
+
+		String ext = name.substring(i).toLowerCase();
+
+		for (String videoExt : videoExtensions) {
+			if (videoExt.equals(ext))
+				return true;
+		}
+
+		return false;
+	}
+
 	/**
 	 * Adds a path to the list unless it is already present. Returns true if it was added.
 	 */
 	public static boolean addToFileList(String path) {
+
+		//Only video files can be added to the conversion list
+		if (isVideoFile(new File(path)) == false)
+			return false;
 
 		for (int i = 0; i < Shutter.list.getSize(); i++) {
 			String entry = Shutter.list.getElementAt(i).toString();
