@@ -113,21 +113,27 @@ public class ListFileTransferHandler extends TransferHandler {
 											JOptionPane.INFORMATION_MESSAGE);
 							}
 
-						} else {
-							if (file.isFile() && file.getName().contains(".")) {
-								int s = file.toString().lastIndexOf('.');
-								String ext = file.getCanonicalFile().toString().substring(s);
+						}
+						else
+						{							
+							if (file.isFile())
+							{
+								String name = file.getName();
+								int s = name.lastIndexOf('.');
+								String ext = s > 0 ? name.substring(s) : "";
 
-								if (ext.equals(".enc")) {
+								if (ext.toLowerCase().equals(".enc"))
+								{
 									Utils.loadSettings(new File(file.toString()));
-								} else {
-									if (file.isHidden() == false) {
+								}
+								else if (file.isHidden() == false)
+								{
 										boolean allowed = true;
-										if (Settings.btnExclude.isSelected()) {
-											for (String excludeExt : Settings.txtExclude.getText().replace(" ", "")
-													.split("\\*")) {
-												if (excludeExt.contains(".") && ext.toLowerCase()
-														.equals(excludeExt.replace(",", "").toLowerCase())) {
+										if (Settings.btnExclude.isSelected())
+										{
+											//Wildcard match on the file name, comma separated patterns
+											for (String snippet : Settings.txtExclude.getText().split(",")) {
+												if (Utils.matchesWildcard(file.getName(), snippet)) {
 													allowed = false;
 													break;
 												}
@@ -155,11 +161,10 @@ public class ListFileTransferHandler extends TransferHandler {
 										Shutter.list.addElement(file.toString());
 										Shutter.addToList.setVisible(false);
 										Shutter.lblFiles.setText(Utils.filesNumber());
-									}
-								}
-							} else {
-								Utils.findFiles(file.toString());
+									}								
 							}
+							else
+								Utils.findFiles(file.toString());							
 						}
 					}
 

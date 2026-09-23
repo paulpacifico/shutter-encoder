@@ -678,6 +678,48 @@ public class Utils extends Shutter {
 		return labelName;
 	}
 
+	/**
+	 * Adds a path to the list unless it is already present. Returns true if it was added.
+	 * Wildcard match on a file name: * = any characters, ? = one character.
+	 * Case-insensitive; the pattern must match the whole name
+	 * ("*.srt" = extension, "*_AV1*" = contains _AV1, "AV1" = exact name).
+	 */
+	public static boolean matchesWildcard(String fileName, String pattern) {
+
+		String p = pattern.trim();
+		if (p.isEmpty())
+			return false;
+
+		StringBuilder regex = new StringBuilder();
+		for (char c : p.toLowerCase().toCharArray()) {
+			if (c == '*')
+				regex.append(".*");
+			else if (c == '?')
+				regex.append('.');
+			else
+				regex.append(java.util.regex.Pattern.quote(String.valueOf(c)));
+		}
+
+		return fileName.toLowerCase().matches(regex.toString());
+	}
+
+	/**
+	 * Adds a path to the list unless it is already present. Returns true if it was added.
+	 */
+	public static boolean addToFileList(String path) {
+
+		for (int i = 0; i < Shutter.list.getSize(); i++) {
+			String entry = Shutter.list.getElementAt(i).toString();
+			if (System.getProperty("os.name").contains("Windows") ? entry.equalsIgnoreCase(path) : entry.equals(path))
+				return false;
+		}
+
+		Shutter.list.addElement(path);
+		Shutter.addToList.setVisible(false);
+		Shutter.lblFiles.setText(Utils.filesNumber());
+		return true;
+	}
+	
 	public static void findFiles(String path) {
 
 		File root = new File(path);
@@ -687,59 +729,53 @@ public class Utils extends Shutter {
 			return;
 
 		for (File f : list) {
-			
-			if (f.isDirectory()) 
+
+			try
 			{
-				findFiles(f.getAbsolutePath());
-			}
-			else
-			{
-				int s = f.getAbsoluteFile().toString().lastIndexOf('.');
-				String ext = f.getAbsoluteFile().toString().substring(s);
-				
-				if (ext.equals(".enc")) 
+				if (f.isDirectory())
 				{
-					loadSettings(new File (f.getAbsoluteFile().toString()));
+					findFiles(f.getAbsolutePath());
 				}
-				else if (f.isHidden() == false && f.getName().contains("."))
-				{			
-					if (f.getAbsoluteFile().toString().contains("\"") || f.getAbsoluteFile().toString().contains("\'") || f.getName().contains("/") || f.getName().contains("\\"))
+				else
+				{
+					if (f.getName().toLowerCase().equals(".enc"))
 					{
-						if (FunctionUtils.allowsInvalidCharacters == false) 
-						{
-							JOptionPane.showConfirmDialog(Shutter.frame, f.getAbsoluteFile().toString() + System.lineSeparator() + Shutter.language.getProperty("invalidCharacter"), Shutter.language.getProperty("import"),
-							JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
-							
-							FunctionUtils.allowsInvalidCharacters = true;
-						}
+						loadSettings(f);
 					}
-					
+				else if (f.isHidden() == false)
+				{
 					if (Settings.btnExclude.isSelected())
-					{		
-						boolean allowed = true;
-						for (String excludeExt : Settings.txtExclude.getText().replace(" ", "").split("\\*"))
 						{
-							if (excludeExt.contains(".") && ext.toLowerCase().equals(excludeExt.replace(",", "").toLowerCase()))
-								allowed = false;
+							boolean allowed = true;
+
+							//Wildcard match on the file name, comma separated patterns
+							for (String snippet : Settings.txtExclude.getText().split(","))
+							{
+								String s = snippet.replace("*", "").toLowerCase();
+								if (s.length() > 0 && f.getName().toLowerCase().contains(s))
+								if (matchesWildcard(f.getName(), snippet))
+									allowed = false;
+							}
+
+							if (allowed)
+							{
+								addToFileList(f.getAbsoluteFile().toString());
+							}
 						}
-						
-						if (allowed)
+						else
 						{
-							Shutter.list.addElement(f.getAbsoluteFile().toString());	
-							Shutter.addToList.setVisible(false);
-							Shutter.lblFiles.setText(Utils.filesNumber());
+							addToFileList(f.getAbsoluteFile().toString());
 						}
-					}
-					else
-					{
-						Shutter.list.addElement(f.getAbsoluteFile().toString());
-						Shutter.addToList.setVisible(false);
-						Shutter.lblFiles.setText(Utils.filesNumber());
 					}
 				}
+			}
+			catch (Exception e)
+			{
+				//Keep walking: one unreadable/broken file must not abort the whole folder scan
+				e.printStackTrace();
 			}
 		}
-		
+
 		lblFiles.setText(filesNumber());
 	}
 	
