@@ -1268,7 +1268,13 @@ public class UIController extends Shutter {
 								// grpAdvanced
 								grpAdvanced.removeAll();
 								grpAdvanced.setVisible(true);
-								caseTruePeak.setLocation(7, 14);
+								casePeakNormalization.setLocation(7, 14);
+								grpAdvanced.add(casePeakNormalization);
+								comboPeakNormalization.setLocation(
+										casePeakNormalization.getLocation().x + casePeakNormalization.getWidth() + 4,
+										casePeakNormalization.getLocation().y + 4);
+								grpAdvanced.add(comboPeakNormalization);
+								caseTruePeak.setLocation(7, casePeakNormalization.getLocation().y + 17);
 								grpAdvanced.add(caseTruePeak);
 								comboTruePeak.setLocation(
 										caseTruePeak.getLocation().x + caseTruePeak.getWidth() + 4,
