@@ -3184,7 +3184,7 @@ public class Shutter {
 						}
 						new Functions();
 					} else {
-						if (Functions.listeDeFonctions.getModel().getSize() > 0) {
+						if (Functions.presetsList.getModel().getSize() > 0) {
 							Functions.lblSave.setVisible(false);
 							Functions.lblDrop.setVisible(false);
 						}

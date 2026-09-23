@@ -77,8 +77,8 @@ import javax.swing.ListSelectionModel;
 public class Functions {
 
 	public static JFrame frame;
-	private static DefaultListModel<String> liste = new DefaultListModel<String>();	
-	public static JList<String> listeDeFonctions;
+	private static DefaultListModel<String> list = new DefaultListModel<String>();	
+	public static JList<String> presetsList;
 	public static JLabel lblSave;
 	public static JLabel lblDrop;
 	private JScrollPane scrollPane;
@@ -186,19 +186,39 @@ public class Functions {
 		lblDrop.setVisible(false);
 		frame.getContentPane().add(lblDrop);
 		
-		listeDeFonctions = new JList<String>(liste);
-		listeDeFonctions.setBackground(Utils.c35);
-		listeDeFonctions.setForeground(Color.LIGHT_GRAY);
-		listeDeFonctions.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		listeDeFonctions.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
-		listeDeFonctions.setCellRenderer(new FonctionsRenderer());
-		listeDeFonctions.setFixedCellHeight(17);
-		listeDeFonctions.setBounds(0, 28, 333, 269);
+		presetsList = new JList<String>(list);
+		presetsList.setBackground(Utils.c35);
+		presetsList.setForeground(Color.LIGHT_GRAY);
+		presetsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+		presetsList.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
+		presetsList.setCellRenderer(new FonctionsRenderer());
+		presetsList.setFixedCellHeight(17);
+		presetsList.setBounds(0, 28, 333, 269);
 		
-		listeDeFonctions.setTransferHandler(new FonctionsTransferHandler());   	
+		presetsList.setTransferHandler(new FonctionsTransferHandler());   	
+		
+		presetsList.addMouseMotionListener(new MouseMotionListener() {
+
+			int anchor = -1;
+
+			@Override
+			public void mouseDragged(MouseEvent arg0) {
+				if (anchor == -1)
+					anchor = presetsList.getSelectedIndex();
+
+				presetsList.setSelectionInterval(anchor, presetsList.getSelectedIndex());
+			}
+
+			@Override
+			public void mouseMoved(MouseEvent e) {
+				anchor = -1;
+
+			}
+
+		});
 		
 		scrollPane = new JScrollPane();		
-		scrollPane.getViewport().add(listeDeFonctions);
+		scrollPane.getViewport().add(presetsList);
 		scrollPane.setOpaque(false);
 		scrollPane.getViewport().setOpaque(false);
 		scrollPane.setBounds(0, 26, 333, 269);
@@ -225,7 +245,7 @@ public class Functions {
 				
 				Shutter.btnReset.doClick();
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				Utils.loadSettings(new File(functionsFolder + "/" + listeDeFonctions.getSelectedValue()));
+				Utils.loadSettings(new File(functionsFolder + "/" + presetsList.getSelectedValue()));
 			}
 			
 		});
@@ -235,7 +255,7 @@ public class Functions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				List<File> presets = new ArrayList<File>();
-				for (String preset : listeDeFonctions.getSelectedValuesList())
+				for (String preset : presetsList.getSelectedValuesList())
 					presets.add(new File(functionsFolder, preset));
 
 				if (presets.isEmpty() == false)
@@ -265,17 +285,17 @@ public class Functions {
 			public void actionPerformed(ActionEvent e) {
 				int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("areYouSure"), Shutter.language.getProperty("menuItemDelete"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);					
 				
-				if (liste.getSize() > 0 && listeDeFonctions.getSelectedIndices().length == 1 && reply == JOptionPane.YES_OPTION)
+				if (list.getSize() > 0 && presetsList.getSelectedIndices().length == 1 && reply == JOptionPane.YES_OPTION)
 				{
-					if (liste.getSize() == 1)
+					if (list.getSize() == 1)
 					{
 						lblSave.setVisible(true);
 						lblDrop.setVisible(true);
 					}
 	
-					File enc = new File(functionsFolder + "/" + listeDeFonctions.getSelectedValue());
+					File enc = new File(functionsFolder + "/" + presetsList.getSelectedValue());
 					enc.delete();
-					liste.remove(listeDeFonctions.getSelectedIndex());
+					list.remove(presetsList.getSelectedIndex());
 				}
 			}
 	
@@ -303,28 +323,28 @@ public class Functions {
 	
 		});
 		
-		listeDeFonctions.addMouseListener(new MouseListener(){
+		presetsList.addMouseListener(new MouseListener(){
 			
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				if (SwingUtilities.isRightMouseButton(e) && listeDeFonctions.getSelectedIndices().length > 0)
+				if (SwingUtilities.isRightMouseButton(e) && presetsList.getSelectedIndices().length > 0)
 				{	
-					popupListe.show(listeDeFonctions, e.getX() - 30, e.getY());
+					popupListe.show(presetsList, e.getX() - 30, e.getY());
 					
-					load.setVisible(listeDeFonctions.getSelectedIndices().length == 1);
+					load.setVisible(presetsList.getSelectedIndices().length == 1);
 					addToQueue.setVisible(true);
-					update.setVisible(listeDeFonctions.getSelectedIndices().length == 1);
-					delete.setVisible(listeDeFonctions.getSelectedIndices().length == 1);
+					update.setVisible(presetsList.getSelectedIndices().length == 1);
+					delete.setVisible(presetsList.getSelectedIndices().length == 1);
 					openFolder.setVisible(true);
 					
 				}
 				else
 				{
-					if (listeDeFonctions.getSelectedIndices().length > 0 && e.getClickCount() == 2)
+					if (presetsList.getSelectedIndices().length > 0 && e.getClickCount() == 2)
 					{					
 						Shutter.btnReset.doClick();
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-						Utils.loadSettings(new File(functionsFolder + "/" + listeDeFonctions.getSelectedValue()));
+						Utils.loadSettings(new File(functionsFolder + "/" + presetsList.getSelectedValue()));
 					}
 				}
 			}
@@ -701,7 +721,9 @@ public class Functions {
 		}
 
 		if (RenderQueue.frame == null)
+		{
 			new RenderQueue();
+		}
 
 		Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
 		Shutter.btnReset.doClick();
@@ -715,7 +737,7 @@ public class Functions {
 
 	public static void addFonctions() {
 		
-		liste.clear();
+		list.clear();
 		
 		File oldFolder = new File(functionsFolder.toString().replace("Functions", "Fonctions"));
 		if (oldFolder.exists())
@@ -741,7 +763,7 @@ public class Functions {
 				for (File f : functionsFolder.listFiles())
 				{
 					if(f.getName().toString().equals(".DS_Store") == false)
-						liste.addElement(f.getName());
+						list.addElement(f.getName());
 				}
 				
 				lblSave.setVisible(false);
@@ -749,17 +771,17 @@ public class Functions {
 			}
 		}
 		
-		String[] data = new String[liste.getSize()]; 
+		String[] data = new String[list.getSize()]; 
 
-        for (int i = 0 ; i < liste.getSize() ; i++) { 
-           data[i] = (String) liste.getElementAt(i); 
+        for (int i = 0 ; i < list.getSize() ; i++) { 
+           data[i] = (String) list.getElementAt(i); 
         }
 
         Arrays.sort(data); 
-        liste.clear();
+        list.clear();
         
         for (int i = 0 ; i < data.length ; i++) { 
-			liste.addElement(data[i].toString());
+        	list.addElement(data[i].toString());
 	    }
 }
 

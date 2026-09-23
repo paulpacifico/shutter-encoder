@@ -806,7 +806,7 @@ public class Utils extends Shutter {
         fc.setCurrentDirectory(Functions.functionsFolder);
         
         if (update)
-        	fc.setSelectedFile(new File(Functions.listeDeFonctions.getSelectedValue()));					
+        	fc.setSelectedFile(new File(Functions.presetsList.getSelectedValue()));					
 		
         if (fc.showSaveDialog(null) == SystemFileChooser.APPROVE_OPTION)
 		 { 
@@ -1749,7 +1749,6 @@ public class Utils extends Shutter {
 		 }
 	}
 		
-	@SuppressWarnings("rawtypes")
 	public static void loadSettings(File encFile) {
 		loadSettings(encFile, null);
 	}
