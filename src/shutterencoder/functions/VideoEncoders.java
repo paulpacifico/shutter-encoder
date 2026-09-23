@@ -33,6 +33,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 
 import javax.imageio.ImageIO;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.io.FileUtils;
 
@@ -108,7 +109,17 @@ public class VideoEncoders extends Shutter {
 				
 				if (scanIsRunning == false)
 					FunctionUtils.completed = 0;
-				
+
+				//Batch progress
+				FunctionUtils.batchFilesDone = 0;
+				FunctionUtils.resetBatchPercent();
+				if (Shutter.batchProgressBar != null)
+				{
+					Shutter.batchProgressBar.setValue(0);
+					Shutter.batchProgressBar.setString("0%");
+					Shutter.batchProgressBar.setVisible(list.getSize() > 1);
+				}
+
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
 				for (int i = 0 ; i < list.getSize() ; i++)
@@ -130,6 +141,22 @@ public class VideoEncoders extends Shutter {
 						{
 							continue;
 						}							
+					}
+					
+					//Skip files already processed in a previous run
+					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false
+					&& FunctionUtils.processedFiles.contains(list.getElementAt(i)))
+					{
+						FunctionUtils.completed++;
+						FunctionUtils.batchFilesDone++;
+						lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
+						SwingUtilities.invokeLater(new Runnable() {
+							@Override
+							public void run() {
+								FunctionUtils.updateBatchProgress();
+							}
+						});
+						continue;
 					}
 					
 					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));		

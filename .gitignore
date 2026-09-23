@@ -1,0 +1,14 @@
+# Runtime dependencies (ffmpeg, DLLs, models, ...)
+Library/
+
+# Build output
+build/
+*.jar
+Shutter Encoder (test build)/
+
+# Test / scratch material
+deinterlace-test/
+verify/
+screen.png
+mockup-*.html
+.zcode/

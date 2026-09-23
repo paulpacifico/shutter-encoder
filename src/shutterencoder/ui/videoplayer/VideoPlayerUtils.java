@@ -1634,11 +1634,29 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	private static void generatePreview(String cmd, int playerWidth, int playerHeight) {
 
 	    try {
-	    	
+
 	        ProcessBuilder pbv = new ProcessBuilder(formatCommand(cmd));
-	        pbv.redirectError(ProcessBuilder.Redirect.DISCARD);
+	        //Log preview errors in the console instead of discarding them (diagnoses black previews)
+	        pbv.redirectError(ProcessBuilder.Redirect.PIPE);
 
 	        processLoadImage = pbv.start();
+
+	        //Report ffmpeg errors in the FFPROBE console
+	        Thread errorReader = new Thread(new Runnable() {
+
+				@Override
+				public void run() {
+					try (java.io.BufferedReader errorStream = new java.io.BufferedReader(
+							new java.io.InputStreamReader(processLoadImage.getErrorStream()))) {
+						String errorLine;
+						while ((errorLine = errorStream.readLine()) != null) {
+							shutterencoder.ui.others.Console.consoleFFPROBE.append(errorLine + System.lineSeparator());
+						}
+					} catch (Exception e) {}
+				}
+			});
+	        errorReader.setDaemon(true);
+	        errorReader.start();
 
 	        // Always close stdin
 	        try (OutputStream outputStream = processLoadImage.getOutputStream())

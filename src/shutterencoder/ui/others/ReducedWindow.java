@@ -67,9 +67,9 @@ public class ReducedWindow extends JDialog {
 	public static JDialog frame;
 	private JPanel panel;
 	private JLabel lblEnCours;
-	private JLabel pourcentage;
 	private JLabel iconImage;
 	private JProgressBar progressBar;
+	private JProgressBar batchProgressBar;
 	private JLabel lblTempsRestant;
 	private ImageIcon icon;
 	private boolean drag = false;
@@ -84,7 +84,7 @@ public class ReducedWindow extends JDialog {
 		frame.setTitle("Shutter Encoder");
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
-		frame.setSize(290, 94);
+		frame.setSize(290, 110);
 		frame.setResizable(false);		
 		
 		if (frame.isUndecorated() == false) //Evite un bug lors de la seconde ouverture
@@ -116,20 +116,12 @@ public class ReducedWindow extends JDialog {
 		else
 			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width, Shutter.MiniWindowY);	
 		
-		panel = new JPanel();	
+		panel = new JPanel();
 		panel.setLayout(null);
 		panel.setBounds(6, 3, 88, 88);
 		panel.setBackground(Utils.c30);
 		frame.getContentPane().add(panel);
-		
-		pourcentage = new JLabel("0%");
-		pourcentage.setHorizontalAlignment(SwingConstants.RIGHT);
-		pourcentage.setBounds(29, 36, 33, 16);
-		pourcentage.setVisible(false);
-		pourcentage.setFont(new Font(Shutter.boldFont, Font.PLAIN, 13));
-		pourcentage.setBackground(new Color(0,0,0));
-		panel.add(pourcentage);
-		
+
 		ImageIcon imageIcon = new ImageIcon(getClass().getClassLoader().getResource("resources/icon.png"));
 		icon = new ImageIcon(imageIcon.getImage().getScaledInstance(panel.getSize().width - 5, panel.getSize().height - 5, Image.SCALE_AREA_AVERAGING));			
         iconImage = new JLabel(icon);	
@@ -143,19 +135,31 @@ public class ReducedWindow extends JDialog {
 		lblEnCours.setBounds(100, 6, 178, 16);		
 		frame.getContentPane().add(lblEnCours);
 		
-		progressBar = new JProgressBar();		
-		progressBar.setBounds(100, 24, 178, 24);
+		progressBar = new JProgressBar();
+		progressBar.setBounds(100, 24, 178, 14);
+		progressBar.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		progressBar.setStringPainted(true);
 		frame.getContentPane().add(progressBar);
-		
-		Shutter.caseRunInBackground.setBounds(100, 53, Shutter.caseRunInBackground.getPreferredSize().width, 16);	
+
+		//Batch progress: fraction of the whole file list (green to be visually distinct)
+		batchProgressBar = new JProgressBar();
+		batchProgressBar.setBounds(100, 42, 178, 14);
+		batchProgressBar.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		batchProgressBar.setStringPainted(true);
+		batchProgressBar.setString("0%");
+		batchProgressBar.setForeground(new Color(90, 200, 90));
+		batchProgressBar.setVisible(false);
+		frame.getContentPane().add(batchProgressBar);
+
+		Shutter.caseRunInBackground.setBounds(100, 62, Shutter.caseRunInBackground.getPreferredSize().width, 16);
 		frame.getContentPane().add(Shutter.caseRunInBackground);
-						
+
 		lblTempsRestant = new JLabel(Shutter.language.getProperty("tempsRestant") + " ");
 		lblTempsRestant.setVisible(false);
 		lblTempsRestant.setHorizontalAlignment(SwingConstants.LEFT);
 		lblTempsRestant.setForeground(Utils.themeColor);
 		lblTempsRestant.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
-		lblTempsRestant.setBounds(100, 72, 178, 16);		
+		lblTempsRestant.setBounds(100, 82, 178, 16);
 		frame.getContentPane().add(lblTempsRestant);
 				
 		//Right_to_left
@@ -189,14 +193,9 @@ public class ReducedWindow extends JDialog {
 				if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")) == false)
 				{
 					lblEnCours.setText(Shutter.lblCurrentEncoding.getText());
-					if (Shutter.progressBar.isIndeterminate() == false)
-						pourcentage.setVisible(true);
-					else
-						pourcentage.setVisible(false);
 				}
 				else
 				{
-					pourcentage.setVisible(false);
 					lblEnCours.setText(Shutter.language.getProperty("lblEnCours"));
 				}
 				lblEnCours.setForeground(Shutter.lblCurrentEncoding.getForeground());
@@ -225,15 +224,24 @@ public class ReducedWindow extends JDialog {
 				
 				progressBar.setMaximum(Shutter.progressBar.getMaximum());
 				progressBar.setValue(Shutter.progressBar.getValue());
+
+				//Mirror the percent string; hide it when no valid maximum exists (would print NaN)
+				progressBar.setString(Shutter.progressBar.getString());
+				progressBar.setStringPainted(progressBar.getMaximum() > 0);
+				//Batch progress
+				if (Shutter.batchProgressBar != null && Shutter.batchProgressBar.isVisible())
+				{
+					batchProgressBar.setVisible(true);
+					batchProgressBar.setValue(Shutter.batchProgressBar.getValue());
+					batchProgressBar.setString(Shutter.batchProgressBar.getString());
+				}
+				else
+					batchProgressBar.setVisible(false);
 				
 				//RotateIcon
 				if (Shutter.progressBar.isIndeterminate() == false && progressBar.getValue() != 0)
-					rotateIcon(( (long) progressBar.getValue() * 360) / ( (long) progressBar.getMaximum()));		
-				 
-				//Pourcentage
-				if (Shutter.progressBar.isIndeterminate() == false && progressBar.getValue() != 0)
-					pourcentage.setText(String.valueOf(( (long) progressBar.getValue() * 100) / ( (long) progressBar.getMaximum()) + "%"));
-			}	
+					rotateIcon(( (long) progressBar.getValue() * 360) / ( (long) progressBar.getMaximum()));
+			}
 		};    			
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(task, 0, 100); 		

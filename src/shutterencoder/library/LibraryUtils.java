@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -270,16 +271,18 @@ public class LibraryUtils extends Shutter {
 	                    }
 	                }
 	
-	                int previousIndex = comboAccel.getSelectedIndex();
-	                comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
-	                
-	                if (previousIndex <= comboAccel.getModel().getSize())
-	                    comboAccel.setSelectedIndex(previousIndex);
-	
-	                if (Utils.loadEncFile != null && !Utils.hwaccel.isEmpty()) {
-	                    comboAccel.setSelectedItem(Utils.hwaccel);
-	                    Utils.hwaccel = "";
-	                }
+                int previousIndex = comboAccel.getSelectedIndex();
+                comboAccel.setModel(new DefaultComboBoxModel(graphicsAccel.toArray()));
+
+                if (Utils.loadEncFile != null && !Utils.hwaccel.isEmpty()) {
+                    comboAccel.setSelectedItem(Utils.hwaccel);
+                    Utils.hwaccel = "";
+                } else if (graphicsAccel.size() > 1 && previousIndex <= 0) {
+                    //No user preference: automatically pick the first available hardware acceleration
+                    comboAccel.setSelectedIndex(1);
+                } else if (previousIndex <= comboAccel.getModel().getSize()) {
+                    comboAccel.setSelectedIndex(previousIndex);
+                }
 	
 	            } catch (Exception e) {
 	            } finally {
@@ -837,51 +840,51 @@ public class LibraryUtils extends Shutter {
 			//setScale gives already all the correct settings
 			if (shutterencoder.functions.settings.Image.setScale("", limitToFHD, false).contains("cuda"))
 			{
-				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("yadif") == false)
+				if (comboForcerDesentrelacement.getModel().getSize() != 3 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("yadif") == false)
 				{
-					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif", "yadif" }));
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "auto", "bwdif", "yadif" }));
 					comboForcerDesentrelacement.setSelectedIndex(0);
 				}
 			}
 			else if (shutterencoder.functions.settings.Image.setScale("", limitToFHD, false).contains("qsv"))
 			{
-				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("advanced") == false)
+				if (comboForcerDesentrelacement.getModel().getSize() != 3 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("advanced") == false)
 				{
-					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif", "advanced" }));
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "auto", "bwdif", "advanced" }));
 					comboForcerDesentrelacement.setSelectedIndex(0);
 				}
 			}
 			else if (shutterencoder.functions.settings.Image.setScale("", limitToFHD, false).contains("vulkan"))
 			{
-				if (comboForcerDesentrelacement.getModel().getSize() != 1 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("bwdif") == false)
+				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("auto") == false)
 				{
-					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif" }));
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "auto", "bwdif" }));
 					comboForcerDesentrelacement.setSelectedIndex(0);
 				}
 			}
 			else if (shutterencoder.functions.settings.Image.setScale("", limitToFHD, false).contains("libplacebo"))
 			{
-				if (comboForcerDesentrelacement.getModel().getSize() != 2 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("yadif") == false)
+				if (comboForcerDesentrelacement.getModel().getSize() != 3 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("yadif") == false)
 				{
-					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif", "yadif" }));
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "auto", "bwdif", "yadif" }));
 					comboForcerDesentrelacement.setSelectedIndex(0);
 				}
 			}
 			else
 			{
-				if (comboForcerDesentrelacement.getModel().getSize() != 5 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("bwdif") == false)
+				if (comboForcerDesentrelacement.getModel().getSize() != 6 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("bwdif") == false)
 				{
-					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif", "yadif", "estdif", "w3fdif", "detelecine" }));
-					comboForcerDesentrelacement.setSelectedIndex(0);	
+					comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "auto", "bwdif", "yadif", "estdif", "w3fdif", "detelecine" }));
+					comboForcerDesentrelacement.setSelectedIndex(0);
 				}
 			}
 		}
 		else
 		{
-			if (comboForcerDesentrelacement.getModel().getSize() != 5 || comboForcerDesentrelacement.getModel().getElementAt(0).equals("bwdif") == false)
+			if (comboForcerDesentrelacement.getModel().getSize() != 6 || comboForcerDesentrelacement.getModel().getElementAt(1).equals("bwdif") == false)
 			{
-				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "bwdif", "yadif", "estdif", "w3fdif", "detelecine" }));
-				comboForcerDesentrelacement.setSelectedIndex(0);	
+				comboForcerDesentrelacement.setModel(new DefaultComboBoxModel<String>(new String[] { "auto", "bwdif", "yadif", "estdif", "w3fdif", "detelecine" }));
+				comboForcerDesentrelacement.setSelectedIndex(0);
 			}
 		}	
 	}
@@ -1079,8 +1082,16 @@ public class LibraryUtils extends Shutter {
 				//getOutputLog.append(line + System.lineSeparator());
 			}*/
 							
+			//Never wait forever: a hung GPU driver (e.g. Vulkan) must be treated as unavailable
+			if (FFMPEG.process.waitFor(15, TimeUnit.SECONDS) == false)
+			{
+				Console.consoleFFMPEG.append(System.lineSeparator() + "GPU test timed out, process killed." + System.lineSeparator());
+				FFMPEG.process.destroy();
+				return false;
+			}
+
 			int exitCode = FFMPEG.process.waitFor();
-			
+
 			if (exitCode != 0)
 			{
 				return false;

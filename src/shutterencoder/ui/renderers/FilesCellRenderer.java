@@ -106,8 +106,12 @@ public class FilesCellRenderer extends JLabel implements ListCellRenderer {
 		        }
 		        else
 		            setBackground(new Color(Utils.c35.getRed() + 9, Utils.c35.getGreen() + 9, Utils.c35.getBlue() + 9));
-	
-		        setForeground(Color.LIGHT_GRAY);
+
+		        //Files completed in a previous run are shown in green
+		        if (shutterencoder.functions.utils.FunctionUtils.processedFiles.contains(value.toString()))
+		            setForeground(new Color(90, 200, 90));
+		        else
+		            setForeground(Color.LIGHT_GRAY);
 		    }
 	
 		    return this;

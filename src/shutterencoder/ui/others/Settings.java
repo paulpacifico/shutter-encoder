@@ -1454,14 +1454,19 @@ public class Settings {
 				{								
 					Node nNode = nList.item(temp);
 					
-					if (nNode.getNodeType() == Node.ELEMENT_NODE)
-					{
+				if (nNode.getNodeType() == Node.ELEMENT_NODE)
+				{
 						Element eElement = (Element) nNode;
+
 	
 						for (Component p : frame.getContentPane().getComponents())
 						{		
 							if (p.getName() != "" && p.getName() != null && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
-							{								
+							{
+								//Skip malformed entries saved without the Enable field (handled by the JobComponent deep restore)
+								if (eElement.getElementsByTagName("Enable").getLength() == 0)
+									break;
+
 								if (p instanceof JPanel && p.getName().equals("backgroundPanel") == false)
 								{						
 									//Value
@@ -1550,13 +1555,17 @@ public class Settings {
 							if (p.getName() != "" && p.getName() != null && p.getName().equals("comboAccel") == false && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{
 								if (p instanceof JComboBox)
-								{															
-									//Value
+								{
+									//Skip malformed entries saved without the Visible field
+									if (eElement.getElementsByTagName("Visible").item(0) == null
+									|| eElement.getElementsByTagName("Visible").item(0).getFirstChild() == null)
+										continue;
+
 									((JComboBox) p).setSelectedItem(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-									
+
 									//Visible
 									((JComboBox) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
-									
+
 								}
 							}
 						}
@@ -1815,22 +1824,86 @@ public class Settings {
 							String[] items = eElement.getElementsByTagName("Model").item(0).getFirstChild().getTextContent().split("\\|");
 							int savedItemCount = Integer.valueOf(eElement.getElementsByTagName("ItemsCount").item(0).getFirstChild().getTextContent());
 														
-							if (Shutter.functionsList.size() == savedItemCount)
+						if (Shutter.functionsList.size() == savedItemCount)
+						{
+							Shutter.comboFonctions.setModel(new DefaultComboBoxModel(items));
+
+							//Restore the selected function if it is still part of the list
+							org.w3c.dom.Node selectedNode = eElement.getElementsByTagName("Selected").item(0);
+							String selectedFunction = "";
+							if (selectedNode != null && selectedNode.getFirstChild() != null)
+								selectedFunction = selectedNode.getFirstChild().getTextContent();
+
+							boolean found = false;
+							for (int f = 0; f < items.length; f++)
 							{
-								Shutter.comboFonctions.setModel(new DefaultComboBoxModel(items));
-								Shutter.comboFonctions.setSelectedItem("");
-								
-								ManageFunctions.selectedFunctions = items;
-								
-								if (Shutter.functionsList.size() != items.length)
-								{						
-									ManageFunctions.selectAll.setSelected(false);
+								if (items[f].equals(selectedFunction))
+								{
+									found = true;
+									break;
 								}
 							}
+							Shutter.comboFonctions.setSelectedItem(found ? selectedFunction : "");
+
+							ManageFunctions.selectedFunctions = items;
+
+							if (Shutter.functionsList.size() != items.length)
+							{
+								ManageFunctions.selectAll.setSelected(false);
+							}
 						}
+						}
+
 					}
-				}		
-			}							
+				}
+			}
+
+			//Deep restore of the main window's job settings (values only, no enable/visible states)
+			if (Shutter.settingsXML.exists())
+			{
+				DocumentBuilderFactory jobFactory = DocumentBuilderFactory.newInstance();
+				DocumentBuilder jobBuilder = jobFactory.newDocumentBuilder();
+				Document jobDoc = jobBuilder.parse(Shutter.settingsXML);
+				jobDoc.getDocumentElement().normalize();
+
+				org.w3c.dom.NodeList jobList = jobDoc.getElementsByTagName("JobComponent");
+
+			for (int j = 0; j < jobList.getLength(); j++)
+			{
+				Element jobElement = (Element) jobList.item(j);
+				String deepName = jobElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent();
+				org.w3c.dom.Node valueNode = jobElement.getElementsByTagName("Value").item(0);
+
+				if (valueNode == null || valueNode.getFirstChild() == null)
+					continue;
+
+				String deepValue = valueNode.getFirstChild().getTextContent();
+
+				for (Component p : allComponents(Shutter.frame.getContentPane()))
+				{
+					if (p.getName() != null && p.getName().equals(deepName))
+					{
+						if (p instanceof JCheckBox)
+						{
+							if (p.getName().equals("caseDeleteSourceFile"))
+							{
+								//Set directly: doClick would fire the "are you sure" dialog at startup
+								((JCheckBox) p).setSelected(Boolean.valueOf(deepValue));
+								if (Boolean.valueOf(deepValue))
+									((JCheckBox) p).setForeground(Utils.red);
+							}
+							else if (Boolean.valueOf(deepValue) != ((JCheckBox) p).isSelected())
+								((JCheckBox) p).doClick();
+						}
+						else if (p instanceof JComboBox)
+							((JComboBox) p).setSelectedItem(deepValue);
+						else if (p instanceof JTextField)
+							((JTextField) p).setText(deepValue);
+						break;
+					}
+				}
+			}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}		
@@ -2062,7 +2135,75 @@ public class Settings {
 					}
 				}
 			}
-			
+
+			//Deep save of the main window's job settings (function options, destination, etc.)
+			//Only the values are saved: enable/visible states are deliberately not restored,
+			//and controls with side effects at startup are excluded.
+			java.util.Set<String> excluded = new java.util.HashSet<>(java.util.Arrays.asList(
+					"comboFonctions", "caseScan", "caseRunInBackground", "caseDisplay"));
+			java.util.Set<String> topLevelNames = new java.util.HashSet<>();
+			for (Component p : Shutter.frame.getContentPane().getComponents())
+			{
+				if (p.getName() != null && p.getName().length() > 0)
+					topLevelNames.add(p.getName());
+			}
+
+			for (Component p : allComponents(Shutter.frame.getContentPane()))
+			{
+				if (p == null || p.getName() == null || p.getName().length() == 0)
+					continue;
+
+				if (topLevelNames.contains(p.getName()) || excluded.contains(p.getName()))
+					continue;
+
+				//Only save controls visible in the UI (skips hidden video-player overlays)
+				if (p.isShowing() == false)
+					continue;
+
+				if (p instanceof JCheckBox)
+				{
+					component = document.createElement("JobComponent");
+					cType = document.createElement("Type");
+					cType.appendChild(document.createTextNode("JCheckBox"));
+					component.appendChild(cType);
+					cName = document.createElement("Name");
+					cName.appendChild(document.createTextNode(p.getName()));
+					component.appendChild(cName);
+					cValue = document.createElement("Value");
+					cValue.appendChild(document.createTextNode(String.valueOf(((JCheckBox) p).isSelected())));
+					component.appendChild(cValue);
+					root.appendChild(component);
+				}
+				else if (p instanceof JComboBox && ((JComboBox) p).getSelectedItem() != null)
+				{
+					component = document.createElement("JobComponent");
+					cType = document.createElement("Type");
+					cType.appendChild(document.createTextNode("JComboBox"));
+					component.appendChild(cType);
+					cName = document.createElement("Name");
+					cName.appendChild(document.createTextNode(p.getName()));
+					component.appendChild(cName);
+					cValue = document.createElement("Value");
+					cValue.appendChild(document.createTextNode(((JComboBox) p).getSelectedItem().toString()));
+					component.appendChild(cValue);
+					root.appendChild(component);
+				}
+				else if (p instanceof JTextField && ((JTextField) p).getText().length() > 0)
+				{
+					component = document.createElement("JobComponent");
+					cType = document.createElement("Type");
+					cType.appendChild(document.createTextNode("JTextField"));
+					component.appendChild(cType);
+					cName = document.createElement("Name");
+					cName.appendChild(document.createTextNode(p.getName()));
+					component.appendChild(cName);
+					cValue = document.createElement("Value");
+					cValue.appendChild(document.createTextNode(((JTextField) p).getText()));
+					component.appendChild(cValue);
+					root.appendChild(component);
+				}
+			}
+
 			for (Component p : Shutter.statusBar.getComponents())
 			{
 				if (p.getName() != "" && p.getName() != null)
@@ -2735,7 +2876,15 @@ public class Settings {
 				cValue = document.createElement("ItemsCount");
 				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.functionsList.size())));
 				component.appendChild(cValue);
-	
+
+				//Currently selected function
+				cValue = document.createElement("Selected");
+				if (Shutter.comboFonctions.getSelectedItem() != null)
+					cValue.appendChild(document.createTextNode(Shutter.comboFonctions.getSelectedItem().toString()));
+				else
+					cValue.appendChild(document.createTextNode(""));
+				component.appendChild(cValue);
+
 				functions.appendChild(component);
 						
 				root.appendChild(functions);
@@ -2750,11 +2899,26 @@ public class Settings {
 			StreamResult streamResult = new StreamResult(Shutter.settingsXML);
 
 			transformer.transform(domSource, streamResult);
-			
+
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-	}				
+	}
+
+	/** Recursively collects every component of the container tree. */
+	private static java.util.List<Component> allComponents(java.awt.Container parent) {
+
+		java.util.List<Component> out = new java.util.ArrayList<Component>();
+
+		for (Component c : parent.getComponents())
+		{
+			out.add(c);
+			if (c instanceof java.awt.Container)
+				out.addAll(allComponents((java.awt.Container) c));
+		}
+
+		return out;
+	}
 }
 
 //Drag & Drop lblDestination

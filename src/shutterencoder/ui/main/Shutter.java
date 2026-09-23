@@ -286,6 +286,7 @@ public class Shutter {
 
 	protected static JButton btnBrowse;
 	protected static JButton btnEmptyList;
+	public static JButton btnRemoveProcessed;
 	public static JComboBox<Object> comboFilter;
 	protected static JComboBox<Object> comboLUTs;
 	protected static JComboBox<Object> comboGamma;
@@ -302,6 +303,10 @@ public class Shutter {
 	public static JButton btnStart;
 	public static JButton btnCancel;
 	public static JCheckBox caseOpenFolderAtEnd1;
+
+	//Import filter: skip files whose path contains one of the comma separated snippets
+	public static JCheckBox caseSkipFiles;
+	public static JTextField txtSkipFiles;
 	public static JCheckBox caseOpenFolderAtEnd2;
 	public static JCheckBox caseOpenFolderAtEnd3;
 	public static JCheckBox caseChangeFolder1;
@@ -487,6 +492,7 @@ public class Shutter {
 	public static JTextField lblDestination2;
 	public static JTextField lblDestination3;
 	public static JProgressBar progressBar;
+	public static JProgressBar batchProgressBar;
 	public static JLabel lblCurrentEncoding;
 	protected static JLabel lblImageSize;
 	protected static JLabel lblScreenshot;
@@ -890,6 +896,9 @@ public class Shutter {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				Settings.saveSettings();
+
+				//Normal close: the session is considered done, next start begins fresh
+				FunctionUtils.clearSession();
 			}
 
 		});
@@ -1331,6 +1340,14 @@ public class Shutter {
 		Utils.changeFrameVisibility(frame, false);
 		btnStart.requestFocus();
 		UIController.changeWidth();
+
+		//Restore the previous session (file list + processed marks) after a crash or force close
+		if (list.getSize() == 0)
+			FunctionUtils.loadSession();
+
+		//Restore the previous session (file list + processed marks) after a crash or force close
+		if (list.getSize() == 0)
+			FunctionUtils.loadSession();
 
 		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0)
 		{
@@ -1809,6 +1826,43 @@ public class Shutter {
 	}
 
 	@SuppressWarnings({ "unchecked" })
+	//Sync the main window import filter with the (persisted) Settings exclusion filter
+	public static void skipFilesChanged() {
+
+		if (Settings.btnExclude == null || txtSkipFiles == null)
+			return;
+
+		Settings.btnExclude.setSelected(caseSkipFiles.isSelected());
+		Settings.txtExclude.setText(txtSkipFiles.getText());
+	}
+
+	/**
+	 * Shows the "Remove processed" button only when the list
+	 * contains at least one file that completed successfully.
+	 */
+	public static void updateRemoveProcessedButton() {
+
+		if (btnRemoveProcessed == null)
+			return;
+
+		boolean hasProcessed = false;
+		for (int i = 0; i < list.getSize(); i++)
+		{
+			if (FunctionUtils.processedFiles.contains(list.getElementAt(i)))
+			{
+				hasProcessed = true;
+				break;
+			}
+		}
+
+		btnRemoveProcessed.setVisible(hasProcessed);
+		if (grpChooseFiles != null)
+			grpChooseFiles.repaint();
+
+		//Keep the session (file list + processed marks) persistent
+		FunctionUtils.saveSession();
+	}
+
 	private void grpChooseFiles() {
 
 		grpChooseFiles = new CollapsiblePanel(language.getProperty("grpChooseFiles"), false);
@@ -1919,19 +1973,30 @@ public class Shutter {
 
 		    @Override
 		    public void intervalAdded(ListDataEvent e) {
+
+		    	//Re-adding a file resets its processed state
+		    	javax.swing.DefaultListModel<?> model = (javax.swing.DefaultListModel<?>) e.getSource();
+		    	for (int i = e.getIndex0(); i <= e.getIndex1(); i++)
+		    		FunctionUtils.processedFiles.remove(model.getElementAt(i));
+
+		    	updateRemoveProcessedButton();
 		        checkVisibility();
 		    }
 
 		    @Override
 		    public void intervalRemoved(ListDataEvent e) {
+		    	updateRemoveProcessedButton();
 		        checkVisibility();
 		    }
 
 		    @Override
 		    public void contentsChanged(ListDataEvent e) {
+		    	updateRemoveProcessedButton();
 		        checkVisibility();
 		    }
 		});
+
+		updateRemoveProcessedButton();
 		
 		addToList.setIcon(new FlatSVGIcon("resources/drop.svg", 40, 40));
 		addToList.setText(language.getProperty("dropFilesHere"));
@@ -1955,18 +2020,18 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				list.clear();
-				
+
 			}
-			
+
 		});
-		
+
 		scrollBar = new JScrollPane();
 		scrollBar.getViewport().add(fileList);
 		scrollBar.setBounds(10, 50, 292, fileList.getHeight());
 		scrollBar.setOpaque(false);
 		scrollBar.getViewport().setOpaque(false);
 		grpChooseFiles.add(scrollBar);
-		
+
 		JScrollBar verticalBar = scrollBar.getVerticalScrollBar();
 		verticalBar.setBackground(Utils.c35);
 
@@ -3227,6 +3292,12 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
+				//Save the current settings so a crash keeps the last job's configuration
+				Settings.saveSettings();
+
+				//Save the current settings so a crash keeps the last job's configuration
+				Settings.saveSettings();
+
 				lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 				
 				FunctionUtils.yesToAll = false;
@@ -3249,6 +3320,8 @@ public class Shutter {
 					lblElapsedTime.setVisible(false);
 					FFMPEG.elapsedTime = 0;
 					FFMPEG.previousElapsedTime = 0;
+					FunctionUtils.totalSourceSize = 0;
+					FunctionUtils.totalOutputSize = 0;
 
 					if (btnStart.getText().equals(language.getProperty("btnAddToRender")))
 						RenderQueue.btnStartRender.setEnabled(true);
@@ -3275,11 +3348,30 @@ public class Shutter {
 									JOptionPane.INFORMATION_MESSAGE);
 						} else {
 							if (inputDeviceIsRunning) {
-								VideoPlayerCore.playerStop();
-							}
+									VideoPlayerCore.playerStop();
+								}
 
-							String function = comboFonctions.getSelectedItem().toString();
-							if (language.getProperty("functionCut").equals(function)) {
+								String function = comboFonctions.getSelectedItem().toString();
+
+								//Functions that do not deinterlace automatically: offer it when interlaced files are detected
+								//(skipped when the prompt was already shown when the files were added to the list)
+								java.util.Set<String> noAutoDeinterlace = java.util.Set.of("MPEG-2", "DNxHD", "Apple ProRes",
+										"AVC-Intra 100", "FFV1", "GoPro CineForm", "HAP", "QT Animation", "Uncompressed",
+										"XAVC", "XAVC Long GOP", "XDCAM HD422", "XDCAM HD 35", "Blu-ray", "DVD", "AVI");
+
+								if (interlacePromptAnswered == false && noAutoDeinterlace.contains(function) && caseForcerDesentrelacement.isSelected() == false
+										&& scanIsRunning == false && list.getSize() > 0) {
+									frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+									int interlacedCount = Utils.countInterlacedFiles();
+									frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+									if (interlacedCount > 0) {
+										if (askDeinterlace(interlacedCount))
+											enableAutoDeinterlace();
+									}
+								}
+
+								if (language.getProperty("functionCut").equals(function)) {
 								if (inputDeviceIsRunning) {
 									JOptionPane.showMessageDialog(frame,
 											language.getProperty("incompatibleInputDevice"),
@@ -4899,6 +4991,7 @@ public class Shutter {
 		});
 
 		caseDeleteSourceFile = new JCheckBox(Shutter.language.getProperty("caseDeleteSourceFile"));
+		caseDeleteSourceFile.setName("caseDeleteSourceFile");
 		caseDeleteSourceFile.setFont(new Font(mainFont, Font.PLAIN, 12));
 		caseDeleteSourceFile.setBounds(6, caseSubFolder.getY() + caseSubFolder.getHeight(),
 				caseDeleteSourceFile.getPreferredSize().width, 23);
@@ -5212,6 +5305,28 @@ public class Shutter {
 		progressBar.setStringPainted(true);
 		grpProgression.add(progressBar);
 
+		//Batch progress: fraction of the whole file list (green to be visually distinct)
+		batchProgressBar = new JProgressBar();
+		batchProgressBar.setName("batchProgressBar");
+		batchProgressBar.setBounds(6, 56, 300, 13);
+		batchProgressBar.setFont(new Font(boldFont, Font.PLAIN, 12));
+		batchProgressBar.setStringPainted(true);
+		batchProgressBar.setString("0%");
+		batchProgressBar.setForeground(new Color(90, 200, 90));
+		batchProgressBar.setVisible(false);
+		grpProgression.add(batchProgressBar);
+
+		//Batch progress: fraction of the whole file list (green to be visually distinct)
+		batchProgressBar = new JProgressBar();
+		batchProgressBar.setName("batchProgressBar");
+		batchProgressBar.setBounds(6, 56, 300, 13);
+		batchProgressBar.setFont(new Font(boldFont, Font.PLAIN, 12));
+		batchProgressBar.setStringPainted(true);
+		batchProgressBar.setString("0%");
+		batchProgressBar.setForeground(new Color(90, 200, 90));
+		batchProgressBar.setVisible(false);
+		grpProgression.add(batchProgressBar);
+
 		progressBar.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -5228,6 +5343,8 @@ public class Shutter {
 					else
 						Taskbar.getTaskbar().setWindowProgressValue(frame, 0);
 				}
+
+				FunctionUtils.updateBatchProgress();
 			}
 
 		});
@@ -5390,6 +5507,8 @@ public class Shutter {
 						iconPresets.setBounds(180, 45, 21, 21);
 						btnCancel.setBounds(207, 46, 97, 21);
 					}
+
+				FunctionUtils.updateBatchProgress();
 				}
 			}
 
@@ -13987,6 +14106,7 @@ public class Shutter {
 		comboCLLvalue = new JComboBox<String>(new String[] { "auto", "400 nits", "500 nits", "600 nits", "1000 nits",
 				"1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits" });
 		comboCLLvalue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboCLLvalue.setName("comboCLLvalue");
 		comboCLLvalue.setEditable(true);
 		comboCLLvalue.setVisible(false);
 		comboCLLvalue.setSelectedIndex(0);
@@ -14005,6 +14125,7 @@ public class Shutter {
 		comboFALLvalue = new JComboBox<String>(new String[] { "auto", "400 nits", "500 nits", "600 nits", "1000 nits",
 				"1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits" });
 		comboFALLvalue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboFALLvalue.setName("comboFALLvalue");
 		comboFALLvalue.setEditable(true);
 		comboFALLvalue.setVisible(false);
 		comboFALLvalue.setSelectedIndex(0);
@@ -16501,12 +16622,12 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (lblTFF.getText().equals("TFF"))
-					FFPROBE.fieldOrder = "0";
-				else if (lblTFF.getText().equals("BFF"))
-					FFPROBE.fieldOrder = "1";
-				else
-					FFPROBE.fieldOrder = "0";
+					if (lblTFF.getText().equals("TFF"))
+						FFPROBE.fieldOrder = "0";
+					else if (lblTFF.getText().equals("BFF"))
+						FFPROBE.fieldOrder = "1";
+					else
+						FFPROBE.fieldOrder = "0";
 
 				if (caseForcerDesentrelacement.isSelected()) {
 					comboForcerDesentrelacement.setEnabled(true);
@@ -19704,4 +19825,77 @@ public class Shutter {
 		frame.getContentPane().add(statusBar);
 
 	}
+
+	/**
+	 * True once the user answered the interlace prompt for the current file list,
+	 * so the check is not repeated at start. Reset whenever a file is added.
+	 */
+	public static boolean interlacePromptAnswered = false;
+
+	/**
+	 * Shows the interlace confirmation dialog. Returns true if the user accepts deinterlacing.
+	 */
+	public static boolean askDeinterlace(int interlacedCount) {
+		int answer = JOptionPane.showConfirmDialog(frame,
+				interlacedCount + (interlacedCount > 1 ? " files are" : " file is")
+						+ " interlaced.\n\nDeinterlace for correct playback? (recommended)",
+				"Interlaced files detected", JOptionPane.YES_NO_OPTION,
+				JOptionPane.QUESTION_MESSAGE);
+		interlacePromptAnswered = true;
+		if (answer == JOptionPane.YES_OPTION)
+			enableAutoDeinterlace();
+		return answer == JOptionPane.YES_OPTION;
+	}
+
+	/**
+	 * Ticks "Force deinterlacing" and sets it to auto, firing the normal click
+	 * listeners so the Advanced features panel reflects the enabled state.
+	 */
+	public static void enableAutoDeinterlace() {
+		if (caseForcerDesentrelacement.isSelected() == false)
+			caseForcerDesentrelacement.doClick(); // fires the listeners → combo enabled
+		else
+			comboForcerDesentrelacement.setEnabled(true);
+		comboForcerDesentrelacement.setSelectedItem("auto");
+	}
+
+	/**
+	 * The TFF/BFF field-order label only applies to manual deinterlacers;
+	 * in auto mode the field order is detected per file, so it is dimmed.
+	 */
+	private static void updateTFFState() {
+		boolean auto = caseForcerDesentrelacement.isSelected()
+				&& "auto".equals(comboForcerDesentrelacement.getSelectedItem().toString());
+		lblTFF.setEnabled(auto == false);
+	}
+
+	/**
+	 * Scans the file list in the background and offers auto deinterlacing
+	 * as soon as interlaced files have been added to the list.
+	 */
+	public static void offerInterlaceFix() {
+
+		if (caseForcerDesentrelacement.isSelected() || scanIsRunning || interlacePromptAnswered || list.getSize() == 0)
+			return;
+
+		new javax.swing.SwingWorker<Integer, Void>() {
+			@Override
+			protected Integer doInBackground() throws Exception {
+				return Utils.countInterlacedFiles();
+			}
+
+			@Override
+			protected void done() {
+				try {
+					int interlacedCount = get();
+					if (interlacedCount > 0 && caseForcerDesentrelacement.isSelected() == false) {
+						if (askDeinterlace(interlacedCount))
+							enableAutoDeinterlace();
+					}
+				} catch (Exception e) {
+				}
+			}
+		}.execute();
+	}
+
 }
