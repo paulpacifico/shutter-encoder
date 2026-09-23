@@ -86,6 +86,10 @@ public static String PathToFFMPEG;
 public static int fileLength = 0; 
 public static boolean error = false;
 public static boolean isRunning = false;
+/** True when the watchdog killed ffmpeg because it stopped producing output. */
+public static volatile boolean stalled = false;
+/** Last time (ms) ffmpeg wrote a line to its output; used by the stall watchdog. */
+private static volatile long lastProcessOutput = System.currentTimeMillis();
 public static BufferedWriter writer;
 public static Thread runProcess = new Thread();
 private static Thread displayThread;
@@ -151,13 +155,54 @@ public static StringBuilder errorLog = new StringBuilder();
         env.put("MVK_CONFIG_LOG_LEVEL", "1");		
 	}
 	
-	public static void run(String cmd) {
-			
+	public static void run(String cmdParam) {
+
+		//Skip the empty audio streams (0 channels) that ffmpeg cannot initialize
+		if (FFPROBE.invalidAudioIndexes.isEmpty() == false) {
+
+			//" -map a?" is expanded to the valid audio streams
+			if (cmdParam.contains("-map a?")) {
+				String validMaps = "";
+				for (int i = 0; i < FFPROBE.audioStreams; i++) {
+					if (FFPROBE.invalidAudioIndexes.contains(i) == false)
+						validMaps += " -map 0:a:" + i + "?";
+				}
+				cmdParam = cmdParam.replace("-map a?", validMaps.trim());
+			}
+
+			//Explicit indexes pointing to an invalid stream are removed
+			java.util.regex.Pattern mapPattern = java.util.regex.Pattern.compile(" -map (?:0:a|a):(\\d+)\\??");
+			java.util.regex.Matcher mapMatcher = mapPattern.matcher(cmdParam);
+			boolean hadAudioMap = false;
+			StringBuffer sb = new StringBuffer();
+			while (mapMatcher.find()) {
+				hadAudioMap = true;
+				int index = Integer.parseInt(mapMatcher.group(1));
+				mapMatcher.appendReplacement(sb, FFPROBE.invalidAudioIndexes.contains(index) ? ""
+						: java.util.regex.Matcher.quoteReplacement(mapMatcher.group()));
+			}
+			mapMatcher.appendTail(sb);
+			cmdParam = sb.toString();
+
+			//If every mapped audio stream was invalid, fall back to the first valid one
+			if (hadAudioMap && mapPattern.matcher(cmdParam).find() == false && FFPROBE.invalidAudioIndexes.size() < FFPROBE.audioStreams) {
+				for (int i = 0; i < FFPROBE.audioStreams; i++) {
+					if (FFPROBE.invalidAudioIndexes.contains(i) == false) {
+						cmdParam += " -map 0:a:" + i + "?";
+						break;
+					}
+				}
+			}
+		}
+
+		String cmd = cmdParam;
+
 		time = 0;
 		fps = 0;
 
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
-		error = false;	
+		error = false;
+		stalled = false;
 		firstInput = true;
 		
 		Console.consoleFFMPEG.append(System.lineSeparator());
@@ -331,10 +376,47 @@ public static StringBuilder errorLog = new StringBuilder();
 				        	playerThread.start();
 						}
 
-				        Console.consoleFFMPEG.append(System.lineSeparator());
+						Console.consoleFFMPEG.append(System.lineSeparator());
+
+						//Watchdog: kill ffmpeg if it stops producing any output (e.g. a hung GPU driver)
+						lastProcessOutput = System.currentTimeMillis();
+						Thread watchdog = new Thread(new Runnable() {
+
+							@Override
+							public void run() {
+
+								while (process.isAlive() && cancelled == false)
+								{
+									//Skip the check while the process is paused
+									if (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
+									{
+										lastProcessOutput = System.currentTimeMillis();
+									}
+									else if (System.currentTimeMillis() - lastProcessOutput > 120000)
+									{
+										stalled = true;
+										Console.consoleFFMPEG.append(System.lineSeparator()
+												+ "ffmpeg does not respond for 2 minutes, process killed."
+												+ System.lineSeparator());
+										process.destroy();
+										return;
+									}
+
+									try {
+										Thread.sleep(5000);
+									} catch (InterruptedException e) {
+										return;
+									}
+								}
+							}
+						});
+						watchdog.setDaemon(true);
+						watchdog.start();
 
 						while ((line = input.readLine()) != null)
-						{			
+						{
+							lastProcessOutput = System.currentTimeMillis();
+
 							Console.consoleFFMPEG.append(line + System.lineSeparator());
 
 							getOutputLog.append(line + System.lineSeparator());
@@ -1194,10 +1276,17 @@ public static StringBuilder errorLog = new StringBuilder();
 		  	int timeStart = line.indexOf("time=");
 		  	String ffmpegTime = line.substring(timeStart + "time=".length(),line.indexOf(" ", timeStart)).replace('.', ':');    	
 
-    		if (progressBar.getString().equals("NaN") || inputDeviceIsRunning)
+    		if (progressBar.getMaximum() <= 0 || inputDeviceIsRunning)
+    		{
+    			//No valid duration: hide the string, a percent cannot be computed (would print NaN)
     			progressBar.setStringPainted(false);
+    		}
     		else
-    			progressBar.setStringPainted(true);    		    	
+    		{
+    			int percent = (int) Math.min(100, (100L * progressBar.getValue()) / progressBar.getMaximum());
+    			progressBar.setString(percent + "%");
+    			progressBar.setStringPainted(true);
+    		}
     		
     		if (pass2)
 			{

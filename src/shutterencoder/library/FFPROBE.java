@@ -66,6 +66,9 @@ public static String subtitlesCodec = "";
 public static int subtitleStreams = 0;
 public static int videoStreams = 0;
 public static int audioStreams = 0;
+
+	//Indexes of the audio streams that are empty (0 channels) and must be skipped in the mappings
+	public static java.util.ArrayList<Integer> invalidAudioIndexes = new java.util.ArrayList<Integer>();
 public static long totalLength;
 public static String getVideoLengthTC;
 public static String lumaLevel;
@@ -156,6 +159,7 @@ public static String colorprimaries = "";
 	 		audioSampleRate = 48000;
 	 		videoStreams = 0;
 	 		audioStreams = 0;
+	 		invalidAudioIndexes.clear();
 			if (calcul == false) //pour ne pas réactive audioOnly lors de l'analyse calculH264
 				audioOnly = true;
 			creationTime = "";
@@ -284,15 +288,15 @@ public static String colorprimaries = "";
 													
 							//Entrelacement
 							if (line.contains("top first") || line.contains("top coded first"))
-							{								
+							{
 								interlaced = "1";
-								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
+								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("auto") || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
 									fieldOrder = "0";
 							}
 							else if (line.contains("bottom first") || line.contains("bottom coded first"))
-							{								
+							{
 								interlaced = "1";
-								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
+								if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("auto") || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
 									fieldOrder = "1";
 							}
 							
@@ -577,9 +581,13 @@ public static String colorprimaries = "";
 				        	 if (line.contains("Video:"))
 				        		 videoStreams ++;
 				        	 
-				        	 //Extract Audio	
-				        	 if (line.contains("Audio:"))
-				        		 audioStreams ++;
+            	 //Extract Audio
+            	 if (line.contains("Audio:") && line.contains("Could not find codec parameters") == false)
+            	 {
+            		 audioStreams ++;
+            		 if (line.contains("0 channels"))
+            			 invalidAudioIndexes.add(audioStreams - 1);
+            	 }
 				        	 
 				        	 //Extract Subtitles			     		
 				        	 if (line.contains("Subtitle:"))
@@ -622,7 +630,8 @@ public static String colorprimaries = "";
 			                	hasDolbyVision = true;
 			                }
 			                			            
-					}		
+					}
+
 					int exitCode = process.waitFor();
 					
 					if (exitCode != 0)
@@ -761,7 +770,7 @@ public static String colorprimaries = "";
 						  {
 							  String field = line.substring(line.indexOf("top_field_first") + 16);
 							  
-							  if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
+							  if (caseForcerDesentrelacement.isSelected() == false || caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("auto") || caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
 							  {
 								  if (field.equals("1"))
 									  fieldOrder = "0";

@@ -30,26 +30,35 @@ public class AdvancedFeatures extends Shutter {
 		
 	public static String setDeinterlace(boolean progressiveOutput, boolean noGPU, String filterComplex) {		
 		
-		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))	
+		if (caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine"))
 		{
 			String detelecineFields = "top";
 			if (lblTFF.getText().equals("BFF"))
 				detelecineFields = "bottom";
-			
+
 			if (filterComplex != "") filterComplex += ",";
-			
+
 			filterComplex += comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
 		}
-		else if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
-		|| FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
-		|| caseForcerDesentrelacement.isSelected())
+		else
+		{
+			//Auto mode: deinterlace only interlaced files, with bwdif and the field order detected for each file
+			final boolean autoMode = caseForcerDesentrelacement.isSelected() && comboForcerDesentrelacement.getSelectedItem().toString().equals("auto");
+			final boolean manualMode = caseForcerDesentrelacement.isSelected() && autoMode == false;
+			//The deinterlacer to use in the filter graph
+			final String deinterlacer = autoMode ? "bwdif" : comboForcerDesentrelacement.getSelectedItem().toString();
+
+			if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput
+			|| FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
+			|| manualMode
+			|| autoMode && FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
 		{
 			int doubler = 0;
 			String field = FFPROBE.fieldOrder;
-			if (lblTFF.getText().contains("x2") && caseForcerDesentrelacement.isSelected())
+			if (lblTFF.getText().contains("x2") && manualMode)
 			{
 				doubler = 1;
-				
+
 				if (lblTFF.getText().equals("x2 T"))
 				{
 					field = "0";
@@ -59,74 +68,75 @@ public class AdvancedFeatures extends Shutter {
 					field = "1";
 				}
 			}
-			
+
 			//Format
 			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
-						
+
 			if (LibraryUtils.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false)
 			{
 				//GPU filter
 				if ((LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
-				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
-				{				
+				&& (caseForcerDesentrelacement.isSelected() == false || deinterlacer.equals("bwdif") || deinterlacer.equals("yadif")))
+				{
 					if (filterComplex != "") filterComplex += ",";
-					
-					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+
+					if (caseForcerDesentrelacement.isSelected() == false || autoMode) // => Auto deinterlacing
 					{
 						filterComplex += "bwdif_cuda=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 					}
 					else
-						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_cuda").replace("yadif", "yadif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
+						filterComplex += deinterlacer.replace("bwdif", "bwdif_cuda").replace("yadif", "yadif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
 				else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
-				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced")))
-				{		
+				&& (caseForcerDesentrelacement.isSelected() == false || deinterlacer.equals("bwdif") || deinterlacer.equals("advanced")))
+				{
 					if (filterComplex != "") filterComplex += ",";
-					
-					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+
+					if (caseForcerDesentrelacement.isSelected() == false || autoMode) // => Auto deinterlacing
 					{
 						filterComplex += "vpp_qsv=deinterlace=1,hwdownload,format=" + bitDepth;
 					}
 					else
-						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "vpp_qsv=deinterlace=1").replace("advanced", "vpp_qsv=deinterlace=2") + ",hwdownload,format=" + bitDepth;
+						filterComplex += deinterlacer.replace("bwdif", "vpp_qsv=deinterlace=1").replace("advanced", "vpp_qsv=deinterlace=2") + ",hwdownload,format=" + bitDepth;
 				}
 				else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
-				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
+				&& (caseForcerDesentrelacement.isSelected() == false || deinterlacer.equals("bwdif") || deinterlacer.equals("yadif")))
 				{
-					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+					if (caseForcerDesentrelacement.isSelected() == false || autoMode) // => Auto deinterlacing
 					{
 						filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=bwdif");
 					}
 					else
-						filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
+						filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=" + deinterlacer);
 				}
 				else  //Do not use libplacebo deinterlace if GPU can decode the input otherwise the process is slower
 				{
 					if (filterComplex != "") filterComplex += ",";
-					
-					filterComplex += comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+
+					filterComplex += deinterlacer + "=" + doubler + ":" + field + ":0";
 				}
-				
+
 			}
 			else if (Libplacebo.useLibplaceboFilters
 			&& comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false && doubler == 0
-			&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
+			&& (caseForcerDesentrelacement.isSelected() == false || deinterlacer.equals("bwdif") || deinterlacer.equals("yadif")))
 			{
-				if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
+				if (caseForcerDesentrelacement.isSelected() == false || autoMode) // => Auto deinterlacing
 				{
 					filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=bwdif");
 				}
 				else
-					filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=" + comboForcerDesentrelacement.getSelectedItem().toString());
+					filterComplex = Libplacebo.setLibplaceboFilter("", "deinterlace=" + deinterlacer);
 			}
 			else
 			{
 				if (filterComplex != "") filterComplex += ",";
-				
-				filterComplex += comboForcerDesentrelacement.getSelectedItem().toString() + "=" + doubler + ":" + field + ":0";
+
+				filterComplex += deinterlacer + "=" + doubler + ":" + field + ":0";
 			}
-		}							
-		
+		}
+		}
+
 		return filterComplex;
 	}
 	

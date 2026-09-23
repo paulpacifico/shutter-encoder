@@ -47,6 +47,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -68,6 +69,7 @@ import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
+import shutterencoder.ui.others.SpaceSavedDialog;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
@@ -609,7 +611,7 @@ public class UIController extends Shutter {
 		setButtonsLocation();
 
 		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 423);
-		fileList.setSize(292, frame.getHeight() - 483);
+		fileList.setSize(292, frame.getHeight() - 507);
 		addToList.setSize(fileList.getSize());
 		scrollBar.setSize(292, fileList.getHeight());
 		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4);
@@ -5656,16 +5658,76 @@ public class UIController extends Shutter {
 
 			JTextArea errorText = new JTextArea(errorList.toString());
 			errorText.setWrapStyleWord(true);
+			errorText.setEditable(false);
 
 			JScrollPane scrollPane = new JScrollPane(errorText);
 			scrollPane.setOpaque(false);
 			scrollPane.getViewport().setOpaque(false);
 			scrollPane.setPreferredSize(new Dimension(500, 400));
 
+			//Let the user open the folder containing a failed file
+			final java.util.List<String> failedFiles = new java.util.ArrayList<String>();
+			for (String line : errorList.toString().split(System.lineSeparator())) {
+				String trimmed = line.trim();
+				if (trimmed.length() > 0 && new File(trimmed).isFile())
+					failedFiles.add(trimmed);
+			}
+
+			javax.swing.JComboBox<String> failedFilesCombo = null;
+			JPanel openFolderPanel = null;
+
+			if (failedFiles.size() > 0) {
+				openFolderPanel = new JPanel();
+				openFolderPanel.setOpaque(false);
+
+				if (failedFiles.size() > 1) {
+					failedFilesCombo = new javax.swing.JComboBox<String>(failedFiles.toArray(new String[0]));
+					openFolderPanel.add(failedFilesCombo);
+				}
+
+				final javax.swing.JComboBox<String> combo = failedFilesCombo;
+				JButton openFolderButton = new JButton(language.getProperty("menuItemOuvrirDossier"));
+				openFolderButton.addActionListener(a -> {
+					String failedFile;
+					if (combo != null)
+						failedFile = combo.getSelectedItem().toString();
+					else
+						failedFile = failedFiles.get(0);
+
+					File folder = null;
+
+					if (new File(failedFile).isFile())
+						folder = new File(failedFile).getParentFile();
+					else {
+						//The error list may only contain the file name: resolve it against the file list
+						for (int i = 0; i < list.getSize(); i++) {
+							String entry = list.getElementAt(i).toString();
+							if (entry.equals(failedFile) || entry.endsWith(File.separator + failedFile)
+									|| entry.endsWith("/" + failedFile)) {
+								folder = new File(entry).getParentFile();
+								break;
+							}
+						}
+					}
+
+					if (folder != null && folder.isDirectory())
+						Utils.openFile(folder);
+				});
+				openFolderPanel.add(openFolderButton);
+			}
+
+			Object message = scrollPane;
+			if (openFolderPanel != null) {
+				javax.swing.Box box = javax.swing.Box.createVerticalBox();
+				box.add(scrollPane);
+				box.add(openFolderPanel);
+				message = box;
+			}
+
 			if (scanIsRunning == false) {
 				Object[] moreInfo = { "OK", language.getProperty("menuItemConsole") };
 
-				int result = JOptionPane.showOptionDialog(Shutter.frame, scrollPane,
+				int result = JOptionPane.showOptionDialog(Shutter.frame, message,
 						Shutter.language.getProperty("notProcessedFiles"), JOptionPane.YES_NO_OPTION,
 						JOptionPane.ERROR_MESSAGE, null, moreInfo, null);
 
@@ -5816,6 +5878,52 @@ public class UIController extends Shutter {
 
 		// IMPORTANT
 		screenshotIsRunning = false;
+
+		//Space saved popup
+		if (cancelled == false && FFMPEG.error == false)
+		{
+			SwingUtilities.invokeLater(() -> {
+				try {
+					SpaceSavedDialog.showIfNeeded();
+				} catch (Exception er) {}
+			});
+		}
+
+		//After a crash or a stall, offer to restart the job for the files that have not been processed yet
+		if (scanIsRunning == false && cancelled == false
+		&& FFMPEG.isRunning == false
+		&& (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
+		&& btnStart.getText().equals(language.getProperty("btnStartFunction")))
+		{
+			int remaining = 0;
+			for (int i = 0; i < list.getSize(); i++)
+			{
+				if (FunctionUtils.processedFiles.contains(list.getElementAt(i)) == false)
+					remaining++;
+			}
+
+			if (remaining > 0)
+			{
+				String reason;
+				if (FFMPEG.stalled)
+					reason = language.getProperty("stalledReason", "The encoder stopped responding and was interrupted.");
+				else
+					reason = language.getProperty("crashedReason", "The encoder crashed or stopped working.");
+
+				String msg = reason + "\n"
+						+ remaining + " " + language.getProperty("filesPending", "file(s) have not been processed.") + "\n\n"
+						+ language.getProperty("askRestartJob", "Restart the job for the remaining files now?");
+
+				int choice = JOptionPane.showConfirmDialog(frame, msg,
+						language.getProperty("jobInterrupted", "Job interrupted"),
+						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+				if (choice == JOptionPane.YES_OPTION)
+				{
+					btnStart.doClick();
+				}
+			}
+		}
 
 		FunctionUtils.sendMail();
 		lastActions();

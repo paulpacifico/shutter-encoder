@@ -158,7 +158,8 @@ public class ListFileTransferHandler extends TransferHandler {
 											}
 										}
 
-										Shutter.list.addElement(file.toString());
+										if (Utils.isVideoFile(file))
+											Shutter.list.addElement(file.toString());
 										Shutter.addToList.setVisible(false);
 										Shutter.lblFiles.setText(Utils.filesNumber());
 									}								

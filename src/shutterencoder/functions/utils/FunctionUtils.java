@@ -22,18 +22,23 @@ package shutterencoder.functions.utils;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Properties;
 import java.util.Random;
 
@@ -83,6 +88,11 @@ import shutterencoder.utils.Utils;
 public class FunctionUtils extends Shutter {
 
 	public static int completed;
+
+	//Total sizes of all files converted during the current job, used by the space saved popup
+	public static long totalSourceSize = 0;
+	public static long totalOutputSize = 0;
+	public static String lastOutputFolder = "";
 	public static StringBuilder watchFolder = new StringBuilder();
 	public static boolean allowsInvalidCharacters = false;
 	public static boolean yesToAll = false;
@@ -489,8 +499,171 @@ public class FunctionUtils extends Shutter {
 		}
 	}
 	
-	public static String completedFiles(int number) {
-	
+	//Full paths of source files that completed successfully in a previous run
+	public static final Set<String> processedFiles = Collections.synchronizedSet(new LinkedHashSet<String>());
+
+	//Number of files already finished (success, error or skipped) in the current batch run
+	public static int batchFilesDone = 0;
+
+	//Last percent shown by the batch progress bar: the value can only go up
+	private static int lastBatchPercent = 0;
+
+	/** Resets the monotonic batch percent; called when a new batch run starts. */
+	public static void resetBatchPercent() {
+		lastBatchPercent = 0;
+	}
+
+	//True once the session has been restored at startup; prevents saving an empty session during construction
+	public static boolean sessionReady = false;
+
+	/**
+	 * Deletes the saved session: used on a normal close, where the job is
+	 * considered done and the next start begins fresh.
+	 */
+	public static void clearSession() {
+
+		sessionReady = false;
+		try {
+			new File(Shutter.documents + "/session.lst").delete();
+		} catch (Exception e) {}
+	}
+
+	/**
+	 * Saves the file list and the processed marks so a crashed or
+	 * force-closed session can be restored at the next start.
+	 */
+	public static void saveSession() {
+
+		if (sessionReady == false)
+			return;
+
+		try {
+			PrintWriter writer = new PrintWriter(new File(Shutter.documents + "/session.lst"), StandardCharsets.UTF_8.name());
+
+			writer.println("[PROCESSED]");
+			synchronized (processedFiles) {
+				for (String path : processedFiles)
+					writer.println(path);
+			}
+
+			writer.println("[FILES]");
+			for (int i = 0; i < Shutter.list.getSize(); i++)
+			{
+				String entry = Shutter.list.getElementAt(i).toString();
+				if (new File(entry).isFile())
+					writer.println(entry);
+			}
+
+			writer.close();
+		} catch (Exception e) {}
+	}
+
+	/**
+	 * Restores the file list and the processed marks saved by saveSession().
+	 */
+	public static void loadSession() {
+
+		File session = new File(Shutter.documents + "/session.lst");
+
+		if (session.exists() == false)
+		{
+			sessionReady = true;
+			return;
+		}
+
+		java.util.List<String> files = new java.util.ArrayList<String>();
+		java.util.List<String> processed = new java.util.ArrayList<String>();
+		String section = "";
+
+		try {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(session), StandardCharsets.UTF_8));
+			String line;
+
+			while ((line = reader.readLine()) != null)
+			{
+				if (line.equals("[PROCESSED]") || line.equals("[FILES]"))
+				{
+					section = line;
+					continue;
+				}
+
+				if (line.isEmpty())
+					continue;
+
+				if (section.equals("[PROCESSED]"))
+					processed.add(line);
+				else if (section.equals("[FILES]") && new File(line).isFile())
+					files.add(line);
+			}
+
+			reader.close();
+		} catch (Exception e) {
+			sessionReady = true;
+			return;
+		}
+
+		for (String path : files)
+			Shutter.list.addElement(path);
+
+		//Set the marks after populating the list: adding an entry resets its processed state
+		processedFiles.addAll(processed);
+
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				Shutter.lblFiles.setText(Utils.filesNumber());
+				Shutter.updateRemoveProcessedButton();
+			}
+		});
+
+		sessionReady = true;
+	}
+
+	/**
+	 * Updates the batch progress bar: fraction of the whole file list
+	 * (files finished + fraction of the file currently being encoded).
+	 */
+	public static void updateBatchProgress() {
+
+		if (Shutter.batchProgressBar == null)
+			return;
+
+		int total = Shutter.list.getSize();
+
+		if (total <= 1)
+			return;
+
+		if (batchFilesDone >= total)
+		{
+			lastBatchPercent = 100;
+			Shutter.batchProgressBar.setValue(100);
+			Shutter.batchProgressBar.setString("100%");
+			return;
+		}
+
+		double currentFraction = 0;
+
+		if (Shutter.progressBar.isIndeterminate() == false && Shutter.progressBar.getMaximum() > 0)
+			currentFraction = Math.min(1.0, Math.max(0.0,
+					(double) Shutter.progressBar.getValue() / Shutter.progressBar.getMaximum()));
+
+		int value = (int) (((batchFilesDone + currentFraction) * 100.0) / total);
+
+		if (value > 100)
+			value = 100;
+
+		//Monotonic: at the start of a new file the current fraction resets to 0
+		//before the finished-file counter is applied, which would show a dip
+		if (value < lastBatchPercent)
+			value = lastBatchPercent;
+		else
+			lastBatchPercent = value;
+
+		Shutter.batchProgressBar.setValue(value);
+		Shutter.batchProgressBar.setString(value + "%");
+	}
+
+	public static String completedFiles(int number) {	
 		String labelName;
 		
 		if (number > 1 && number < 1000)
@@ -1966,7 +2139,15 @@ public class FunctionUtils extends Shutter {
 	}
 
 	public static boolean cleanFunction(File file, String fileName, File fileOut, String output) {
-		
+
+		batchFilesDone++;
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				updateBatchProgress();
+			}
+		});
+
 		String extension = "";
 
 		if (fileName != null && fileName != "" && fileName.contains("."))
@@ -2026,6 +2207,26 @@ public class FunctionUtils extends Shutter {
 		{
 			completed++;
 			lblFilesEnded.setText(completedFiles(completed));
+
+			if (file != null)
+				processedFiles.add(file.getPath());
+
+			if (Shutter.fileList != null)
+				Shutter.fileList.repaint();
+
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					Shutter.updateRemoveProcessedButton();
+				}
+			});
+
+			if (file != null && fileOut != null)
+			{
+				totalSourceSize += file.length();
+				totalOutputSize += fileOut.length();
+				lastOutputFolder = output;
+			}
 		}
 		
 		//Timecode
