@@ -1505,8 +1505,7 @@ public static StringBuilder errorLog = new StringBuilder();
                 	   db = comboNormalizeAudio.getSelectedItem().toString().split(" ");
                    }
 
-				   if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization"))
-				   && casePeakNormalization.isSelected())
+				   if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")) && casePeakNormalization.isSelected())
 				   {
 					   newVolume = 0.0f;
 					   if (samplePeak.isEmpty() == false)

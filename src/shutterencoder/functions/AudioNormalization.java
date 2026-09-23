@@ -299,8 +299,7 @@ public class AudioNormalization extends Shutter {
     }
 
 	private static String setFilterComplex() {
-		boolean normalizeToPeak = language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString())
-				&& casePeakNormalization.isSelected();
+		boolean normalizeToPeak = language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) && casePeakNormalization.isSelected();
 		String peakMode = normalizeToPeak ? "sample" : "true";
 	
 		if (FFPROBE.stereo)
