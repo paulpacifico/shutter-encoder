@@ -504,7 +504,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			width = dim.width;
 			height = dim.height;
 		}
-		
+				
 		if (FFPROBE.hasAlpha)
 		{
 		    int frameSize = width * height * 4; // BGRA
@@ -700,10 +700,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	public static void playerSetTime(double inputTime) {
 					
 		if (fileDuration <= 40)
-		{	
-			VideoPlayerUtils.loadImage();
 			return;
-		}
 		 
 		synchronized (setTimeLock) {
 		

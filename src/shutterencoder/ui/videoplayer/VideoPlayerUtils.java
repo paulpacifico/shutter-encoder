@@ -135,6 +135,19 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								btnPlay.doClick();
 							}
 							
+							//Stop generating image from loadImage()
+							if (processLoadImage != null && processLoadImage.isAlive())
+					        {
+					            processLoadImage.destroyForcibly();
+					            
+					            try {
+									VideoPlayerUtils.loadImageThread.join();
+								} catch (InterruptedException ex) {
+									ex.printStackTrace();
+									Thread.currentThread().interrupt();
+								}
+					        }
+							
 							//Clear the buffer
 							if (bufferedFrames.size() > 0)
 							{											
@@ -1438,6 +1451,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					Shutter.TC4.setEnabled(true);	
 				}			
 						
+				//Player size
+				final int playerWidth = player.getWidth();
+				final int playerHeight = player.getHeight();
+				
 				//Deinterlace
 				String deinterlace = "";
 				
@@ -1454,7 +1471,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					inputPoint = "";
 		
 				//Creating preview file													
-				String cmd = deinterlace + " -frames:v 1 -an -sn -s " + player.getWidth() + "x" + player.getHeight() + " -scaler bicubic -y ";	
+				String cmd = deinterlace + " -frames:v 1 -an -sn -s " + playerWidth + "x" + playerHeight + " -scaler bicubic -y ";	
 
 				if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 				{
@@ -1519,7 +1536,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 														
 						if (preview.exists())
 						{									
-							generatePreview(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -"); 
+							generatePreview(" -v quiet -hide_banner -i " + '"' + preview + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -", playerWidth, playerHeight); 
 	
 							if (mouseIsPressed == false)
 							{
@@ -1528,7 +1545,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						}
 						else
 						{
-							generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+							generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + '"' + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -", playerWidth, playerHeight);
 						}
 							
 						if (preview.exists())
@@ -1536,7 +1553,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					}		
 					else									
 					{	
-						generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -");
+						generatePreview(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -", playerWidth, playerHeight);
 					}		
 	
 		            Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));				            
@@ -1549,11 +1566,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					//Subtitles are visible only from a video file
 					if (Shutter.caseAddSubtitles.isSelected())
 					{				
-						generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -an -sn -f rawvideo -"); 
+						generatePreview(Colorimetry.setInputCodec(extension) + " -v quiet -hide_banner" + inputPoint + " -i " + '"' + videoPath + '"' + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -an -sn -f rawvideo -", playerWidth, playerHeight); 
 					}
 					else
 					{															
-						generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + colorFormat + " -video_size " + player.getWidth() + "x" + player.getHeight() + " -i pipe:0" + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -f rawvideo -");
+						generatePreview(" -v quiet -hide_banner -f rawvideo -pixel_format " + colorFormat + " -video_size " + playerWidth + "x" + playerHeight + " -i pipe:0" + setFilter(true, true) + " -frames:v 1 -c:v rawvideo -pix_fmt " + outputFormat + " -f rawvideo -", playerWidth, playerHeight);
 					}							
 				}
 	        }
@@ -1614,7 +1631,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		}
 	}
 
-	private static void generatePreview(String cmd) {
+	private static void generatePreview(String cmd, int playerWidth, int playerHeight) {
 
 	    try {
 	    	
@@ -1628,28 +1645,28 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	        {
 	            if (preview != null)
 	                outputStream.write(preview);	            
-	        }
+	        }	        
 
 	        try (BufferedInputStream inputStream = new BufferedInputStream(processLoadImage.getInputStream()))
 	        {
 	            if (preview == null && Shutter.caseAddSubtitles.isSelected() == false)
 	            {
 	                int bpp = FFPROBE.hasAlpha ? 8 : 6;
-					int frameSize = player.getWidth() * player.getHeight() * bpp;
+					int frameSize = playerWidth * playerHeight * bpp;
 					preview = inputStream.readNBytes(frameSize);
 	            }
 	            else
-	            	readFrame(inputStream, player.getWidth(), player.getHeight(), false);
+	            	readFrame(inputStream, playerWidth, playerHeight, false);
 	        }
 
 	        if (processLoadImage.waitFor(5, TimeUnit.SECONDS) == false) {
 	            processLoadImage.destroyForcibly();
-	        }
+	        }	        
 	        
 	    } catch (Exception e) {
 	        e.printStackTrace();
 
-	        if (processLoadImage != null &&  processLoadImage.isAlive())
+	        if (processLoadImage != null && processLoadImage.isAlive())
 	        {
 	            processLoadImage.destroyForcibly();
 	        }

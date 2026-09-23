@@ -5724,8 +5724,10 @@ public class UIController extends Shutter {
 		// Unlock the file to be deletable
 		if (scanIsRunning == false && screenshotIsRunning == false)
 		{
+			FFPROBE.analyzedMedia = null;			
 			VideoPlayerCore.videoPath = null;
 			fileList.clearSelection();
+			VideoPlayerUtils.preview = null;
 			VideoPlayerCore.frameVideo = null;			
 			VideoPlayerUI.player.repaint();
 

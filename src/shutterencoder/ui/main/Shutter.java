@@ -1884,6 +1884,7 @@ public class Shutter {
 					lblFiles.setText(Utils.filesNumber());
 
 					FFPROBE.analyzedMedia = null;
+					VideoPlayerUtils.preview = null;
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerCore.frameVideo = null;
 					
@@ -2369,6 +2370,7 @@ public class Shutter {
 				if (VideoPlayerCore.videoPath != null)
 				{
 					VideoPlayerCore.videoPath = null;
+					VideoPlayerUtils.preview = null;
 					VideoPlayerCore.frameVideo = null;
 					VideoPlayerCore.playerRepaint();
 					
