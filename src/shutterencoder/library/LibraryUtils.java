@@ -31,6 +31,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -1081,8 +1082,16 @@ public class LibraryUtils extends Shutter {
 				//getOutputLog.append(line + System.lineSeparator());
 			}*/
 							
+			//Never wait forever: a hung GPU driver (e.g. Vulkan) must be treated as unavailable
+			if (FFMPEG.process.waitFor(15, TimeUnit.SECONDS) == false)
+			{
+				Console.consoleFFMPEG.append(System.lineSeparator() + "GPU test timed out, process killed." + System.lineSeparator());
+				FFMPEG.process.destroy();
+				return false;
+			}
+
 			int exitCode = FFMPEG.process.waitFor();
-			
+
 			if (exitCode != 0)
 			{
 				return false;

@@ -286,6 +286,7 @@ public class Shutter {
 
 	protected static JButton btnBrowse;
 	protected static JButton btnEmptyList;
+	public static JButton btnRemoveProcessed;
 	public static JComboBox<Object> comboFilter;
 	protected static JComboBox<Object> comboLUTs;
 	protected static JComboBox<Object> comboGamma;
@@ -489,6 +490,7 @@ public class Shutter {
 	public static JTextField lblDestination2;
 	public static JTextField lblDestination3;
 	public static JProgressBar progressBar;
+	public static JProgressBar batchProgressBar;
 	public static JLabel lblCurrentEncoding;
 	protected static JLabel lblImageSize;
 	protected static JLabel lblScreenshot;
@@ -892,6 +894,9 @@ public class Shutter {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				Settings.saveSettings();
+
+				//Normal close: the session is considered done, next start begins fresh
+				FunctionUtils.clearSession();
 			}
 
 		});
@@ -1337,6 +1342,10 @@ public class Shutter {
 		Utils.changeFrameVisibility(frame, false);
 		btnStart.requestFocus();
 		UIController.changeWidth();
+
+		//Restore the previous session (file list + processed marks) after a crash or force close
+		if (list.getSize() == 0)
+			FunctionUtils.loadSession();
 
 		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0)
 		{
@@ -1825,6 +1834,33 @@ public class Shutter {
 		Settings.txtExclude.setText(txtSkipFiles.getText());
 	}
 
+	/**
+	 * Shows the "Remove processed" button only when the list
+	 * contains at least one file that completed successfully.
+	 */
+	public static void updateRemoveProcessedButton() {
+
+		if (btnRemoveProcessed == null)
+			return;
+
+		boolean hasProcessed = false;
+		for (int i = 0; i < list.getSize(); i++)
+		{
+			if (FunctionUtils.processedFiles.contains(list.getElementAt(i)))
+			{
+				hasProcessed = true;
+				break;
+			}
+		}
+
+		btnRemoveProcessed.setVisible(hasProcessed);
+		if (grpChooseFiles != null)
+			grpChooseFiles.repaint();
+
+		//Keep the session (file list + processed marks) persistent
+		FunctionUtils.saveSession();
+	}
+
 	private void grpChooseFiles() {
 
 		grpChooseFiles = new CollapsiblePanel(language.getProperty("grpChooseFiles"), false);
@@ -1838,7 +1874,7 @@ public class Shutter {
 		fileList.setBackground(Utils.c35);
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
-		fileList.setBounds(10, 74, 292, frame.getHeight() - 507);
+		fileList.setBounds(10, 74, 292, frame.getHeight() - 532);
 		fileList.setToolTipText(language.getProperty("rightClick"));
 
 		fileList.getModel().addListDataListener(new ListDataListener() {
@@ -1934,19 +1970,30 @@ public class Shutter {
 
 		    @Override
 		    public void intervalAdded(ListDataEvent e) {
+
+		    	//Re-adding a file resets its processed state
+		    	javax.swing.DefaultListModel<?> model = (javax.swing.DefaultListModel<?>) e.getSource();
+		    	for (int i = e.getIndex0(); i <= e.getIndex1(); i++)
+		    		FunctionUtils.processedFiles.remove(model.getElementAt(i));
+
+		    	updateRemoveProcessedButton();
 		        checkVisibility();
 		    }
 
 		    @Override
 		    public void intervalRemoved(ListDataEvent e) {
+		    	updateRemoveProcessedButton();
 		        checkVisibility();
 		    }
 
 		    @Override
 		    public void contentsChanged(ListDataEvent e) {
+		    	updateRemoveProcessedButton();
 		        checkVisibility();
 		    }
 		});
+
+		updateRemoveProcessedButton();
 		
 		addToList.setIcon(new FlatSVGIcon("resources/drop.svg", 40, 40));
 		addToList.setText(language.getProperty("dropFilesHere"));
@@ -1970,14 +2017,39 @@ public class Shutter {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				list.clear();
-				
+
 			}
-			
+
+		});
+
+		//Removes the files that completed successfully from the list
+		btnRemoveProcessed = new JButton(language.getProperty("btnRemoveProcessed", "Remove processed"));
+		btnRemoveProcessed.setName("btnRemoveProcessed");
+		btnRemoveProcessed.setFont(new Font(boldFont, Font.PLAIN, 12));
+		btnRemoveProcessed.setBounds(10, 74 + fileList.getHeight() + 4, 292, 21);
+		btnRemoveProcessed.setVisible(false);
+		grpChooseFiles.add(btnRemoveProcessed);
+
+		btnRemoveProcessed.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				for (int i = list.getSize() - 1; i >= 0; i--)
+				{
+					if (FunctionUtils.processedFiles.contains(list.getElementAt(i)))
+						list.removeElementAt(i);
+				}
+				lblFiles.setText(Utils.filesNumber());
+			}
+
 		});
 		
 		scrollBar = new JScrollPane();
 		scrollBar.getViewport().add(fileList);
 		scrollBar.setBounds(10, 74, 292, fileList.getHeight());
+
+		//Full-width button under the file list
+		btnRemoveProcessed.setBounds(10, 74 + fileList.getHeight() + 4, 292, 21);
 		scrollBar.setOpaque(false);
 		scrollBar.getViewport().setOpaque(false);
 		grpChooseFiles.add(scrollBar);
@@ -3273,6 +3345,9 @@ public class Shutter {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
+
+				//Save the current settings so a crash keeps the last job's configuration
+				Settings.saveSettings();
 
 				lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 				
@@ -4967,6 +5042,7 @@ public class Shutter {
 		});
 
 		caseDeleteSourceFile = new JCheckBox(Shutter.language.getProperty("caseDeleteSourceFile"));
+		caseDeleteSourceFile.setName("caseDeleteSourceFile");
 		caseDeleteSourceFile.setFont(new Font(mainFont, Font.PLAIN, 12));
 		caseDeleteSourceFile.setBounds(6, caseSubFolder.getY() + caseSubFolder.getHeight(),
 				caseDeleteSourceFile.getPreferredSize().width, 23);
@@ -5205,7 +5281,7 @@ public class Shutter {
 		caseRunInBackground.setName("caseRunInBackground");
 		caseRunInBackground.setEnabled(false);
 		caseRunInBackground.setFont(new Font(mainFont, Font.PLAIN, 12));
-		caseRunInBackground.setBounds(9, 64, caseRunInBackground.getPreferredSize().width, 23);
+		caseRunInBackground.setBounds(9, 71, caseRunInBackground.getPreferredSize().width, 23);
 		grpProgression.add(caseRunInBackground);
 
 		// Inactivité
@@ -5271,7 +5347,7 @@ public class Shutter {
 		caseDisplay.setName("caseDisplay");
 		caseDisplay.setEnabled(false);
 		caseDisplay.setFont(new Font(mainFont, Font.PLAIN, 12));
-		caseDisplay.setBounds(215, 64, caseDisplay.getPreferredSize().width, 23);
+		caseDisplay.setBounds(215, 71, caseDisplay.getPreferredSize().width, 23);
 		grpProgression.add(caseDisplay);
 
 		progressBar = new JProgressBar();
@@ -5279,6 +5355,17 @@ public class Shutter {
 		progressBar.setFont(new Font(boldFont, Font.PLAIN, 12));
 		progressBar.setStringPainted(true);
 		grpProgression.add(progressBar);
+
+		//Batch progress: fraction of the whole file list (green to be visually distinct)
+		batchProgressBar = new JProgressBar();
+		batchProgressBar.setName("batchProgressBar");
+		batchProgressBar.setBounds(6, 56, 300, 13);
+		batchProgressBar.setFont(new Font(boldFont, Font.PLAIN, 12));
+		batchProgressBar.setStringPainted(true);
+		batchProgressBar.setString("0%");
+		batchProgressBar.setForeground(new Color(90, 200, 90));
+		batchProgressBar.setVisible(false);
+		grpProgression.add(batchProgressBar);
 
 		progressBar.addChangeListener(new ChangeListener() {
 
@@ -5296,6 +5383,8 @@ public class Shutter {
 					else
 						Taskbar.getTaskbar().setWindowProgressValue(frame, 0);
 				}
+
+				FunctionUtils.updateBatchProgress();
 			}
 
 		});
@@ -14041,9 +14130,9 @@ public class Shutter {
 			
 		});
 		
-		comboHDRvalue = new JComboBox<String>(new String[] { "auto", "400 nits", "500 nits", "600 nits", "1000 nits",
-				"1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits" });
+		comboHDRvalue = new JComboBox<String>(new String[] { "auto", "400 nits", "500 nits", "600 nits", "1000 nits",				"1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits" });
 		comboHDRvalue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboHDRvalue.setName("comboHDRvalue");
 		comboHDRvalue.setEditable(true);
 		comboHDRvalue.setVisible(false);
 		comboHDRvalue.setSelectedIndex(0);
@@ -14055,6 +14144,7 @@ public class Shutter {
 		comboCLLvalue = new JComboBox<String>(new String[] { "auto", "400 nits", "500 nits", "600 nits", "1000 nits",
 				"1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits" });
 		comboCLLvalue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboCLLvalue.setName("comboCLLvalue");
 		comboCLLvalue.setEditable(true);
 		comboCLLvalue.setVisible(false);
 		comboCLLvalue.setSelectedIndex(0);
@@ -14073,6 +14163,7 @@ public class Shutter {
 		comboFALLvalue = new JComboBox<String>(new String[] { "auto", "400 nits", "500 nits", "600 nits", "1000 nits",
 				"1400 nits", "2000 nits", "4000 nits", "6000 nits", "8000 nits", "10000 nits" });
 		comboFALLvalue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboFALLvalue.setName("comboFALLvalue");
 		comboFALLvalue.setEditable(true);
 		comboFALLvalue.setVisible(false);
 		comboFALLvalue.setSelectedIndex(0);

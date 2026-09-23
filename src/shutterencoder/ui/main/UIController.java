@@ -5855,6 +5855,42 @@ public class UIController extends Shutter {
 			});
 		}
 
+		//After a crash or a stall, offer to restart the job for the files that have not been processed yet
+		if (scanIsRunning == false && cancelled == false
+		&& FFMPEG.isRunning == false
+		&& (RenderQueue.frame == null || RenderQueue.frame.isVisible() == false)
+		&& btnStart.getText().equals(language.getProperty("btnStartFunction")))
+		{
+			int remaining = 0;
+			for (int i = 0; i < list.getSize(); i++)
+			{
+				if (FunctionUtils.processedFiles.contains(list.getElementAt(i)) == false)
+					remaining++;
+			}
+
+			if (remaining > 0)
+			{
+				String reason;
+				if (FFMPEG.stalled)
+					reason = language.getProperty("stalledReason", "The encoder stopped responding and was interrupted.");
+				else
+					reason = language.getProperty("crashedReason", "The encoder crashed or stopped working.");
+
+				String msg = reason + "\n"
+						+ remaining + " " + language.getProperty("filesPending", "file(s) have not been processed.") + "\n\n"
+						+ language.getProperty("askRestartJob", "Restart the job for the remaining files now?");
+
+				int choice = JOptionPane.showConfirmDialog(frame, msg,
+						language.getProperty("jobInterrupted", "Job interrupted"),
+						JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+
+				if (choice == JOptionPane.YES_OPTION)
+				{
+					btnStart.doClick();
+				}
+			}
+		}
+
 		FunctionUtils.sendMail();
 		lastActions();
 	}

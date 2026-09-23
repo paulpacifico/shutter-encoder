@@ -86,6 +86,10 @@ public static String PathToFFMPEG;
 public static int fileLength = 0; 
 public static boolean error = false;
 public static boolean isRunning = false;
+/** True when the watchdog killed ffmpeg because it stopped producing output. */
+public static volatile boolean stalled = false;
+/** Last time (ms) ffmpeg wrote a line to its output; used by the stall watchdog. */
+private static volatile long lastProcessOutput = System.currentTimeMillis();
 public static BufferedWriter writer;
 public static Thread runProcess = new Thread();
 private static Thread displayThread;
@@ -196,7 +200,8 @@ public static StringBuilder errorLog = new StringBuilder();
 		fps = 0;
 
 		elapsedTime = (System.currentTimeMillis() - previousElapsedTime);
-		error = false;	
+		error = false;
+		stalled = false;
 		firstInput = true;
 		
 		Console.consoleFFMPEG.append(System.lineSeparator());
@@ -370,10 +375,47 @@ public static StringBuilder errorLog = new StringBuilder();
 				        	playerThread.start();
 						}
 
-				        Console.consoleFFMPEG.append(System.lineSeparator());
+						Console.consoleFFMPEG.append(System.lineSeparator());
+
+						//Watchdog: kill ffmpeg if it stops producing any output (e.g. a hung GPU driver)
+						lastProcessOutput = System.currentTimeMillis();
+						Thread watchdog = new Thread(new Runnable() {
+
+							@Override
+							public void run() {
+
+								while (process.isAlive() && cancelled == false)
+								{
+									//Skip the check while the process is paused
+									if (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
+									{
+										lastProcessOutput = System.currentTimeMillis();
+									}
+									else if (System.currentTimeMillis() - lastProcessOutput > 120000)
+									{
+										stalled = true;
+										Console.consoleFFMPEG.append(System.lineSeparator()
+												+ "ffmpeg does not respond for 2 minutes, process killed."
+												+ System.lineSeparator());
+										process.destroy();
+										return;
+									}
+
+									try {
+										Thread.sleep(5000);
+									} catch (InterruptedException e) {
+										return;
+									}
+								}
+							}
+						});
+						watchdog.setDaemon(true);
+						watchdog.start();
 
 						while ((line = input.readLine()) != null)
-						{			
+						{
+							lastProcessOutput = System.currentTimeMillis();
+
 							Console.consoleFFMPEG.append(line + System.lineSeparator());
 
 							getOutputLog.append(line + System.lineSeparator());
@@ -1233,10 +1275,17 @@ public static StringBuilder errorLog = new StringBuilder();
 		  	int timeStart = line.indexOf("time=");
 		  	String ffmpegTime = line.substring(timeStart + "time=".length(),line.indexOf(" ", timeStart)).replace('.', ':');    	
 
-    		if (progressBar.getString().equals("NaN") || inputDeviceIsRunning)
+    		if (progressBar.getMaximum() <= 0 || inputDeviceIsRunning)
+    		{
+    			//No valid duration: hide the string, a percent cannot be computed (would print NaN)
     			progressBar.setStringPainted(false);
+    		}
     		else
-    			progressBar.setStringPainted(true);    		    	
+    		{
+    			int percent = (int) Math.min(100, (100L * progressBar.getValue()) / progressBar.getMaximum());
+    			progressBar.setString(percent + "%");
+    			progressBar.setStringPainted(true);
+    		}
     		
     		if (pass2)
 			{
