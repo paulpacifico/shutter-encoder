@@ -1231,7 +1231,7 @@ public class SubtitlesTimeline {
 					else
 						zoom = actualZoom;												
 
-					timeline.setSize((int) (((VideoPlayerCore.totalFrames - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());
+					timeline.setSize((int) (((VideoPlayerCore.totalFrames - 1) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());
 					timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
 										
 					cursor.setLocation((int) (setTime((int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS))*zoom), cursor.getY());
@@ -1321,7 +1321,7 @@ public class SubtitlesTimeline {
 		
 		timeline.setBackground(Utils.c30);
 		timeline.setLayout(null);
-		timeline.setBounds(0, 15, (int) (((VideoPlayerCore.totalFrames - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
+		timeline.setBounds(0, 15, (int) (((VideoPlayerCore.totalFrames - 1) * VideoPlayerUI.inputFramerateMS)*zoom), timelineBackround.getHeight() - 20);
 		timelineBackround.add(timeline);
 				
 		timeline.addMouseListener(new MouseListener() {
@@ -1789,7 +1789,7 @@ public class SubtitlesTimeline {
 					
 					zoom = (double) 0.1;	
 					
-					timeline.setSize((int) (((VideoPlayerCore.totalFrames - 2) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());		
+					timeline.setSize((int) (((VideoPlayerCore.totalFrames - 1) * VideoPlayerUI.inputFramerateMS)*zoom), timeline.getHeight());		
 					timelineScrollBar.setMaximum(timeline.getWidth() - frame.getWidth());
 					
 					cursor.setLocation((int) (setTime((int) VideoPlayerCore.playerCurrentFrame)*zoom), cursor.getY());

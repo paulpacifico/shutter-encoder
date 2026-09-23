@@ -11,3 +11,4 @@ deinterlace-test/
 verify/
 screen.png
 mockup-*.html
+.zcode/

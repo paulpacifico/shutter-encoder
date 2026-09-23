@@ -388,6 +388,14 @@ public class UIController extends Shutter {
 		}
 		else
 			comboSubsSource.setEnabled(true);
+		
+		// Audio normalization
+		if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")) && casePeakNormalization.isSelected())
+		{
+			comboFilter.setEnabled(false);
+		}
+		else
+			comboFilter.setEnabled(true);
 	}
 
 	public static void changeWidth() {
@@ -1270,7 +1278,13 @@ public class UIController extends Shutter {
 								// grpAdvanced
 								grpAdvanced.removeAll();
 								grpAdvanced.setVisible(true);
-								caseTruePeak.setLocation(7, 14);
+								casePeakNormalization.setLocation(7, 14);
+								grpAdvanced.add(casePeakNormalization);
+								comboPeakNormalization.setLocation(
+										casePeakNormalization.getLocation().x + casePeakNormalization.getWidth() + 4,
+										casePeakNormalization.getLocation().y + 4);
+								grpAdvanced.add(comboPeakNormalization);
+								caseTruePeak.setLocation(7, casePeakNormalization.getLocation().y + 17);
 								grpAdvanced.add(caseTruePeak);
 								comboTruePeak.setLocation(
 										caseTruePeak.getLocation().x + caseTruePeak.getWidth() + 4,
@@ -5568,20 +5582,34 @@ public class UIController extends Shutter {
 			comboForceQuality.setEnabled(false);
 		}
 
-		if (caseTruePeak.isSelected() == false) {
-			comboTruePeak.setEnabled(false);
+		// Audio normalization
+		if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")))
+		{
+			if (caseTruePeak.isSelected() == false)
+				comboTruePeak.setEnabled(false);			
+	
+			if (caseLRA.isSelected() == false)
+				comboLRA.setEnabled(false);
+	
+			if (casePeakNormalization.isSelected())
+			{
+				comboFilter.setEnabled(false);
+				comboPeakNormalization.setEnabled(true);
+				comboFilter.setEnabled(false);
+				caseTruePeak.setEnabled(false);
+				caseLRA.setEnabled(false);
+			}
+			else
+				comboFilter.setEnabled(true);
 		}
+		else
+			comboFilter.setEnabled(true);
 
-		if (caseLRA.isSelected() == false) {
-			comboLRA.setEnabled(false);
-		}
-
-		// Dans tous les cas
+		// Always set this
 		caseRunInBackground.setEnabled(false);
 		caseRunInBackground.setSelected(false);
 		lblRemainingTime.setVisible(false);
-		comboFonctions.setEnabled(true);
-		comboFilter.setEnabled(true);
+		comboFonctions.setEnabled(true);		
 		btnReset.setEnabled(true);
 		btnStart.setEnabled(true);
 		btnCancel.setEnabled(false);
@@ -5786,8 +5814,10 @@ public class UIController extends Shutter {
 		// Unlock the file to be deletable
 		if (scanIsRunning == false && screenshotIsRunning == false)
 		{
+			FFPROBE.analyzedMedia = null;			
 			VideoPlayerCore.videoPath = null;
 			fileList.clearSelection();
+			VideoPlayerUtils.preview = null;
 			VideoPlayerCore.frameVideo = null;			
 			VideoPlayerUI.player.repaint();
 

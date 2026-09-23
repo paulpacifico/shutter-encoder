@@ -103,6 +103,7 @@ private static Image frameVideo;
 public static String analyseLufs;
 public static String integrated;
 public static String truePeak;
+public static String samplePeak;
 public static String LRA;
 public static String Threshold;
 public static Float mseSensibility = 800f;
@@ -1499,7 +1500,7 @@ public static StringBuilder errorLog = new StringBuilder();
 	    || comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization"))
 	    || (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible()))
 	     {
-               analyseLufs = "";               
+			   analyseLufs = "";
                integrated = extractLoudnormValue(getOutputLog.toString(), "Input Integrated:\\s*([-+]?[\\d.]+)\\s*LUFS");
                truePeak = extractLoudnormValue(getOutputLog.toString(), "Input True Peak:\\s*([\\-+]?[\\d.]+)\\s*dBTP");
                LRA = extractLoudnormValue(getOutputLog.toString(), "Input LRA:\\s*([\\-+]?[\\d.]+)\\s*LU");
@@ -1516,6 +1517,8 @@ public static StringBuilder errorLog = new StringBuilder();
             		   analyseLufs += line + System.lineSeparator();
             	   }
                }
+
+			   samplePeak = extractLoudnormValue(analyseLufs, "Sample peak:\\s*Peak:\\s*([\\-+]?[\\d.]+)\\s*dBFS");
                                              
                shortTermValues = new StringBuilder();
                
@@ -1591,7 +1594,17 @@ public static StringBuilder errorLog = new StringBuilder();
                 	   db = comboNormalizeAudio.getSelectedItem().toString().split(" ");
                    }
 
-                   newVolume = Float.parseFloat(db[0]) - Float.parseFloat(lufs);
+				   if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionNormalization")) && casePeakNormalization.isSelected())
+				   {
+					   newVolume = 0.0f;
+					   if (samplePeak.isEmpty() == false)
+					   {
+						   String peakTarget[] = comboPeakNormalization.getSelectedItem().toString().split(" ");
+						   newVolume = Float.parseFloat(peakTarget[0]) - Float.parseFloat(samplePeak);
+					   }
+				   }
+				   else
+					   newVolume = Float.parseFloat(db[0]) - Float.parseFloat(lufs);
                }
 	     }	
 	     	     

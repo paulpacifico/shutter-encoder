@@ -589,7 +589,7 @@ public class VideoPlayerUI {
 					if (e.getKeyCode() == KeyEvent.VK_END)
 					{
 						e.consume();
-						VideoPlayerCore.playerSetTime((double) totalFrames - 2);
+						VideoPlayerCore.playerSetTime((double) totalFrames - 1);
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_PAGE_UP)
@@ -1266,8 +1266,7 @@ public class VideoPlayerUI {
 						{
 							VideoPlayerUtils.getTimePoint(VideoPlayerCore.playerCurrentFrame); 
 						}
-					}
-					
+					}					
 				}
 				else if (btnPlay.getName().equals("play"))
 				{		
@@ -1289,9 +1288,22 @@ public class VideoPlayerUI {
 					}
 					
 					//Loop the player
-					if (VideoPlayerCore.playerCurrentFrame >= totalFrames - 2)
+					if (VideoPlayerCore.playerCurrentFrame >= totalFrames - 1)
 					{
+						VideoPlayerCore.playerCurrentFrame = 0;
 						VideoPlayerCore.playerSetTime(0);
+						
+						//Wait setTime thread to finish	
+						if (VideoPlayerCore.setTime != null)
+						{
+							try {
+								VideoPlayerCore.setTime.join();
+							} catch (InterruptedException ex) {
+								ex.printStackTrace();
+								Thread.currentThread().interrupt();
+							}
+						}
+		
 						btnPlay.doClick();
 					}
 					
@@ -2161,10 +2173,6 @@ public class VideoPlayerUI {
 	
 	public static void toggleFullscreen() {
 				
-		//Avoid glitch when resizing while playing
-		if (VideoPlayerCore.playerIsPlaying())
-			playerLoop = false;
-		
 		Shutter.windowDrag = true;
 		
 		if (fullscreenPlayer == false)
@@ -4037,11 +4045,11 @@ public class VideoPlayerUI {
 			}
 			
 			isPiping = false;
-			
+						
 			if (Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction"))
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnResumeFunction"))
 			|| Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording"))
-			|| Shutter.btnStart.isEnabled() == false)
+			|| (Shutter.btnStart.isEnabled() == false && Shutter.comboFonctions.getSelectedItem().toString().equals("functionSubtitles")))
 			{
 				isPiping = true;				
 				setPlayerButtons(false);

@@ -1237,7 +1237,7 @@ public class LibraryUtils extends Shutter {
 	}
 
 	public static void playerWaveform(final String cmd) {
-						
+				
 		try {
 						
 			ProcessBuilder processFFMPEG = new ProcessBuilder(VideoPlayerCore.formatCommand(cmd));

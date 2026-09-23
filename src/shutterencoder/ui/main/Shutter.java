@@ -426,6 +426,8 @@ public class Shutter {
 	protected static JCheckBox caseDRC;
 	protected static JCheckBox caseTruePeak;
 	protected static JComboBox<Object> comboTruePeak;
+	protected static JCheckBox casePeakNormalization;
+	protected static JComboBox<Object> comboPeakNormalization;
 	protected static JCheckBox caseLRA;
 	protected static JComboBox<Object> comboLRA;
 	protected static JComboBox<String> chunksSize;
@@ -1279,8 +1281,7 @@ public class Shutter {
 			for (String file : droppedFiles) {
 				File droppedFiles = new File(file);
 				if (droppedFiles.isFile()) {
-					if (droppedFiles.getName().toLowerCase().equals(".enc") == false && droppedFiles.isHidden() == false
-							&& Utils.isVideoFile(droppedFiles))
+					if (droppedFiles.getName().toLowerCase().equals(".enc") == false && droppedFiles.isHidden() == false)
 						Utils.addToFileList(droppedFiles.toString());
 				} else
 					Utils.findFiles(droppedFiles.toString());
@@ -1938,6 +1939,7 @@ public class Shutter {
 					lblFiles.setText(Utils.filesNumber());
 
 					FFPROBE.analyzedMedia = null;
+					VideoPlayerUtils.preview = null;
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerCore.frameVideo = null;
 					
@@ -2504,6 +2506,7 @@ public class Shutter {
 				if (VideoPlayerCore.videoPath != null)
 				{
 					VideoPlayerCore.videoPath = null;
+					VideoPlayerUtils.preview = null;
 					VideoPlayerCore.frameVideo = null;
 					VideoPlayerCore.playerRepaint();
 					
@@ -3305,7 +3308,7 @@ public class Shutter {
 						}
 						new Functions();
 					} else {
-						if (Functions.listeDeFonctions.getModel().getSize() > 0) {
+						if (Functions.presetsList.getModel().getSize() > 0) {
 							Functions.lblSave.setVisible(false);
 							Functions.lblDrop.setVisible(false);
 						}
@@ -17694,6 +17697,51 @@ public class Shutter {
 		comboTruePeak.setEditable(true);
 		comboTruePeak.setSize(75, 16);
 
+		casePeakNormalization = new JCheckBox("Peak normalization" + language.getProperty("colon"));
+		casePeakNormalization.setName("casePeakNormalization");
+		casePeakNormalization.setFont(new Font(mainFont, Font.PLAIN, 12));
+		casePeakNormalization.setSize(casePeakNormalization.getPreferredSize().width + 4, 23);
+
+		casePeakNormalization.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				boolean peakNormalization = casePeakNormalization.isSelected();
+				comboPeakNormalization.setEnabled(peakNormalization);
+				comboFilter.setEnabled(peakNormalization == false);
+				caseTruePeak.setEnabled(peakNormalization == false);
+				caseLRA.setEnabled(peakNormalization == false);
+
+				if (peakNormalization)
+				{
+					caseTruePeak.setSelected(false);
+					comboTruePeak.setEnabled(false);
+					caseLRA.setSelected(false);
+					comboLRA.setEnabled(false);
+				}
+			}
+
+		});
+
+		comboPeakNormalization = new JComboBox<Object>();
+		comboPeakNormalization.setName("comboPeakNormalization");
+		comboPeakNormalization.setEnabled(false);
+		comboPeakNormalization.setMaximumRowCount(15);
+
+		String peakNormalizationValues[] = new String[101];
+		peakNormalizationValues[0] = "0.0 dBFS";
+		for (int peakIndex = 1; peakIndex < peakNormalizationValues.length; peakIndex++)
+		{
+			peakNormalizationValues[peakIndex] = String.format(Locale.US, "-%.1f dBFS", peakIndex / 10.0);
+		}
+
+		comboPeakNormalization.setModel(new DefaultComboBoxModel<Object>(peakNormalizationValues));
+		comboPeakNormalization.setSelectedIndex(10);
+		comboPeakNormalization.setFont(new Font(mainFont, Font.PLAIN, 10));
+		comboPeakNormalization.setEditable(true);
+		comboPeakNormalization.setSize(75, 16);
+
 		caseLRA = new JCheckBox("LRA" + language.getProperty("colon"));
 		caseLRA.setName("caseLRA");
 		caseLRA.setFont(new Font(mainFont, Font.PLAIN, 12));
@@ -18981,6 +19029,12 @@ public class Shutter {
 					caseTruePeak.setSelected(false);
 					comboTruePeak.setEnabled(false);
 					comboTruePeak.setSelectedIndex(3);
+					casePeakNormalization.setSelected(false);
+					comboPeakNormalization.setEnabled(false);
+					comboPeakNormalization.setSelectedIndex(10);
+					comboFilter.setEnabled(true);
+					caseTruePeak.setEnabled(true);
+					caseLRA.setEnabled(true);
 					caseLRA.setSelected(false);
 					comboLRA.setEnabled(false);
 					comboLRA.setSelectedIndex(15);

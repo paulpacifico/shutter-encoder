@@ -60,7 +60,7 @@ public class FilterComplex extends Shutter {
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false
 				&& comboAccel.getSelectedItem().equals("VAAPI") || comboAccel.getSelectedItem().equals("Vulkan Video"))			
 				{		
-					if (FunctionUtils.checkPreviousFilterVulkan(filterComplex) == false || Shutter.caseLUTs.isSelected())
+					if (filterComplex.isEmpty() || FunctionUtils.checkPreviousFilterVulkan(filterComplex) == false || Shutter.caseLUTs.isSelected())
 					{
 						if (filterComplex != "")
 							filterComplex += ",";

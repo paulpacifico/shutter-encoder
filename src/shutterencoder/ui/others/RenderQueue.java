@@ -75,6 +75,7 @@ import shutterencoder.library.TSMUXER;
 import shutterencoder.ui.main.Shutter;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
+import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
@@ -97,11 +98,30 @@ import shutterencoder.utils.Utils;
 	public static DefaultTableModel tableRow;
 	public static JScrollPane scrollPane;		
 	private static int complete;
+	private static Runnable queueBuildCompletion;
 	private boolean drag = false;
 	public static int filesCompleted = 0;
 	
 	private static int MousePositionX;
 	private static int MousePositionY;
+
+	public static synchronized void setQueueBuildCompletion(Runnable completion) {
+		queueBuildCompletion = completion;
+	}
+
+	public static void completeQueueBuild() {
+		if (frame != null)
+			frame.toFront();
+
+		Runnable completion;
+		synchronized (RenderQueue.class) {
+			completion = queueBuildCompletion;
+			queueBuildCompletion = null;
+		}
+
+		if (completion != null)
+			SwingUtilities.invokeLater(completion);
+	}
 	
 	public RenderQueue() {
 		
@@ -799,7 +819,9 @@ import shutterencoder.utils.Utils;
 							{
 								String s[] = fileOut.toString().split("\\|");
 								fileOut = new File(s[0]); 
-							}					
+							}	
+							
+							VideoPlayerCore.videoPath = null;
 							
 							if (cmd.contains("pipe:1"))
 							{
