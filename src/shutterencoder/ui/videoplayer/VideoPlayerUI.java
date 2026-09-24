@@ -2173,6 +2173,10 @@ public class VideoPlayerUI {
 	
 	public static void toggleFullscreen() {
 				
+		//Avoid glitch when resizing while playing
+		if (VideoPlayerCore.playerIsPlaying())
+			playerLoop = false;
+		
 		Shutter.windowDrag = true;
 		
 		if (fullscreenPlayer == false)
@@ -2193,20 +2197,23 @@ public class VideoPlayerUI {
 	        		
 	        resizeAll();
 	        
-			if (isPiping == false)
-			{
-				if (fileDuration <= 40 || Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
-				{	
-					if (VideoPlayerUtils.preview != null)
-						VideoPlayerUtils.preview = null;
-					
-					VideoPlayerUtils.loadImage();
-				}
-				else						
+	        SwingUtilities.invokeLater(() -> {
+	        	
+				if (isPiping == false)
 				{
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
+					if (fileDuration <= 40 || Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
+					{	
+						if (VideoPlayerUtils.preview != null)
+							VideoPlayerUtils.preview = null;
+						
+						VideoPlayerUtils.loadImage();
+					}
+					else						
+					{						
+						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
+					}
 				}
-			}
+	        });
 	    }
 	    else
 	    {
@@ -2219,25 +2226,30 @@ public class VideoPlayerUI {
 	        Shutter.frame.getContentPane().revalidate();
 	        Shutter.frame.setVisible(true);
 	        
-	        if (isPiping == false)
-			{							
-	    		mouseIsPressed = false;
-	    		
-	    		if (fileDuration <= 40 || Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
-				{	
-					if (VideoPlayerUtils.preview != null)
-						VideoPlayerUtils.preview = null;
-					
-					VideoPlayerUtils.loadImage();
-				}
-				else
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame			
-			}
-	        
 	        resizeAll();
 	        
-	        if (isPiping == false)
-	    		btnPlay.requestFocus();
+	        SwingUtilities.invokeLater(() -> {
+	        
+		        if (isPiping == false)
+				{							
+		    		mouseIsPressed = false;
+		    		
+		    		if (fileDuration <= 40 || Shutter.comboResolution.getSelectedItem().toString().contains("AI"))
+					{	
+						if (VideoPlayerUtils.preview != null)
+							VideoPlayerUtils.preview = null;
+						
+						VideoPlayerUtils.loadImage();
+					}
+					else
+					{
+						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame
+					}
+				}	        
+		        
+		        if (isPiping == false)
+		    		btnPlay.requestFocus();
+	        });
 	    }
 		
 		Shutter.windowDrag = false;
@@ -4192,7 +4204,7 @@ public class VideoPlayerUI {
 					
 					VideoPlayerUtils.setMarkers();
 					
-				} catch (Exception e) {}
+				} catch (Exception ignored) {}
 			}
 			
 			//lblTimecode & lblDuration

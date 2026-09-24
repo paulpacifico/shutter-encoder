@@ -702,8 +702,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		if (fileDuration <= 40)
 			return;
 		 
-		synchronized (setTimeLock) {
-		
+		synchronized (setTimeLock)
+		{		
 			if (setTime != null && setTime.isAlive())
 		        return;
 			
@@ -717,6 +717,15 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						
 						previewUpscale = false;
 						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						
+						//Restart playback after changing position
+						boolean playback;
+						if (playerIsPlaying())
+						{
+							playback = true;
+						}
+						else
+							playback = false;
 	
 						double requestedFrame = Math.floor(inputTime);						
 						if (inputTime >= totalFrames)
@@ -849,7 +858,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							}
 						}
 						else if (framesToSkip != 0 || (framesToSkip == 0 && mouseIsPressed == false)) //Do not use if there is no time difference and user is currently scrolling
-						{					
+						{							
 							//Clear the buffer
 							if (bufferedFrames.size() > 0 && playerCurrentFrame != requestedFrame && (framesToSkip >= maximumSeek || 0 - framesToSkip >= bufferedFrames.size() || useBuffer == false))
 							{		
@@ -884,15 +893,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							VideoPlayerOverlay.writeCurrentSubs(requestedFrame, false);
 							
 							playerPlayVideo = false;
-							
-							boolean playback;
-							if (playerIsPlaying())
-							{
-								playback = true;
-							}
-							else
-								playback = false;
-											
+																		
 							final double time = requestedFrame;
 							
 							Future<Process> nextVideoProcess = videoProcessExecutor.submit(() -> startVideoProcess(time));
@@ -918,8 +919,13 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							playerProcess(requestedFrame, started);
 							
 							playerLoop = true;
-							VideoPlayerCore.waitForLastFrame();
-														
+							VideoPlayerCore.waitForLastFrame();																										
+							VideoPlayerUtils.getTimePoint(requestedFrame); 
+							Shutter.timecode.repaint();
+							
+							frameControl = false;
+							playerPlayVideo = true;	
+							
 							if (playback && mouseIsPressed == false)
 							{									
 								playerLoop = true;
@@ -930,12 +936,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							}
 							else
 								playerLoop = false;
-												
-							VideoPlayerUtils.getTimePoint(requestedFrame); 
-							Shutter.timecode.repaint();
-							
-							frameControl = false;
-							playerPlayVideo = true;	
 						}
 						
 						if (bufferedFrames.size() > 0)

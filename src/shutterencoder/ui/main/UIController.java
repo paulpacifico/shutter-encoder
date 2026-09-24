@@ -4099,9 +4099,13 @@ public class UIController extends Shutter {
 	    	
 	        // Smooth animation with Timer
 	        int step = expanding ? 10 : -10;
+	        boolean isPlaying = VideoPlayerCore.playerIsPlaying();
+	        
+	        if (isPlaying)
+	        	VideoPlayerUI.playerLoop = false;
 	        
 	        Timer timer = new Timer(5, null);
-	        timer.addActionListener(e -> {
+	        timer.addActionListener(e -> {	        	
 	            int previousSize = currentSize[0];
 	            currentSize[0] += step;
 	            
@@ -4169,6 +4173,9 @@ public class UIController extends Shutter {
 	            if (complete) {
 	                ((Timer)e.getSource()).stop();
 	                extendSectionsIsRunning = false;
+	                
+	                if (isPlaying)
+	    	        	VideoPlayerUI.playerLoop = true;
 	            }
 	            
 	            if (grpPanel.getName() != null && grpPanel.getName().equals("grpFileInformation"))
@@ -4176,9 +4183,8 @@ public class UIController extends Shutter {
 	            	labelFileInfo.setVisible(grpPanel.getHeight() > 17);
 	            	grpPanel.revalidate();
 	            	grpPanel.repaint();
-	            }	            
-	        });
-	        
+	            }
+	        });	        
 	        timer.start();
 	    }
 

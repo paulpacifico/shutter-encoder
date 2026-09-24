@@ -61,12 +61,12 @@ public class DEMUCS extends Shutter {
 			{	    									
 				if (System.getProperty("os.name").contains("Windows"))
 				{
-					String[] cmd = { demucsFolder.toString() + "/python.exe", "-m", "pip", "install", "demucs", "torchcodec", "--target", demucsFolder.toString(), "--no-warn-script-location" };
+					String[] cmd = { demucsFolder.toString() + "/python.exe", "-m", "pip", "install", "demucs", "torchcodec", "numpy==1.25.2", "--target", demucsFolder.toString(), "--no-warn-script-location" };
 					PYTHON.installModule(demucsFolder, cmd, demucs);						 	
 				}
 				else
 				{
-					String[] cmd = { demucsFolder.toString() + "/bin/python3", "-m", "pip", "install", "demucs", "torchcodec", "--no-warn-script-location" };
+					String[] cmd = { demucsFolder.toString() + "/bin/python3", "-m", "pip", "install", "demucs", "torchcodec", "numpy==1.25.2", "--no-warn-script-location" };
 					
 					if (System.getProperty("os.name").contains("Mac") && arch.equals("x86_64"))
 					{
