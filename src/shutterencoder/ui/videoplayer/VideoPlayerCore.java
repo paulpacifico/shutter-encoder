@@ -505,7 +505,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			height = dim.height;
 		}
 				
-		if (FFPROBE.hasAlpha)
+		if (FFPROBE.hasAlpha && FFPROBE.audioOnly == false) //Attached pic from audio can contains alpha
 		{
 		    int frameSize = width * height * 4; // BGRA
 	
@@ -924,7 +924,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 							Shutter.timecode.repaint();
 							
 							frameControl = false;
-							playerPlayVideo = true;	
+							playerPlayVideo = true;
 							
 							if (playback && mouseIsPressed == false)
 							{									

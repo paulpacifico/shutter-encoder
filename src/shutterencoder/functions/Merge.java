@@ -128,7 +128,11 @@ public class Merge extends Shutter {
 						//Command
 						if (cancelled == false)
 						{
-							String cmd = timecode + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + audioMapping + metadatas + " -map s? -y ";
+							String attachedPic = "";
+							if (FFPROBE.attachedPic)
+								attachedPic = " -disposition:v:0 attached_pic";
+							
+							String cmd = timecode + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + attachedPic + audioMapping + metadatas + " -map s? -y ";
 							FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + fileOutputName + '"');		
 					
 							try {

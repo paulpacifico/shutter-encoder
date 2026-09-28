@@ -73,18 +73,42 @@ public class HardwareListener extends Shutter {
 
 						if (VideoPlayerUI.fullscreenPlayer)
 						{
+							 boolean isPlaying = VideoPlayerCore.playerIsPlaying();
+							
 							if (ke.getKeyCode() == KeyEvent.VK_K || ke.getKeyCode() == KeyEvent.VK_SPACE) {
 								ke.consume();
 								VideoPlayerUI.btnPlay.doClick();
 							}
+							
+							if (Shutter.shift)
+							{				
+								int key = ke.getKeyCode();
+
+								if (key >= KeyEvent.VK_NUMPAD0 && key <= KeyEvent.VK_NUMPAD9) {
+								    ke.consume();
+								    VideoPlayerUI.previousFrame = true;
+
+								    int digit = key - KeyEvent.VK_NUMPAD0;
+								    
+								    if (isPlaying)
+								    	VideoPlayerCore.playerPause();
+								    
+								    VideoPlayerCore.playerSetTime((double) (VideoPlayerUI.totalFrames / 10) * digit);
+								    
+								    if (isPlaying)
+								    	VideoPlayerUI.btnPlay.doClick();
+								}
+							}
 
 							if (ke.getKeyCode() == KeyEvent.VK_J) {
 								VideoPlayerUI.previousFrame = true;
+								VideoPlayerCore.playerPause();
 								VideoPlayerCore.playerSetTime((float) (VideoPlayerCore.playerCurrentFrame - 10));
 							}
 
 							if (ke.getKeyCode() == KeyEvent.VK_L) {
 								VideoPlayerUI.previousFrame = true;
+								VideoPlayerCore.playerPause();
 								VideoPlayerCore.playerSetTime((float) (VideoPlayerCore.playerCurrentFrame + 10));
 							}
 
@@ -176,12 +200,26 @@ public class HardwareListener extends Shutter {
 								if (Shutter.shift)
 								{
 									VideoPlayerUI.previousFrame = true;
+
+									if (isPlaying)
+								    	VideoPlayerCore.playerPause();
+									
 									VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS));
+
+									if (isPlaying)
+								    	VideoPlayerUI.btnPlay.doClick();
 								}
 								else if (Shutter.alt)
 								{
 									VideoPlayerUI.previousFrame = true;
+
+									if (isPlaying)
+								    	VideoPlayerCore.playerPause();
+									
 									VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS) * 10));
+
+									if (isPlaying)
+								    	VideoPlayerUI.btnPlay.doClick();
 								}
 								else
 								{
@@ -194,12 +232,26 @@ public class HardwareListener extends Shutter {
 								if (Shutter.shift)
 								{
 									VideoPlayerUI.previousFrame = true;
+
+									if (isPlaying)
+								    	VideoPlayerCore.playerPause();
+									
 									VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS));
+
+									if (isPlaying)
+								    	VideoPlayerUI.btnPlay.doClick();
 								}
 								else if (Shutter.alt)
 								{
 									VideoPlayerUI.previousFrame = true;
+
+									if (isPlaying)
+								    	VideoPlayerCore.playerPause();
+									
 									VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS) * 10));
+
+									if (isPlaying)
+								    	VideoPlayerUI.btnPlay.doClick();
 								}
 								else
 								{

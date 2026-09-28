@@ -156,8 +156,8 @@ public class LibraryUtils extends Shutter {
 	                                    + "_qsv -b:v 5000k -s 640x360 -f null -");
 	                            if (!FFMPEG.error) graphicsAccel.add("Intel Quick Sync");
 	
-	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v " + codec
-	                                    + "_vaapi -b:v 5000k -s 640x360 -f null -");
+	                            checkHWaccel("-vaapi_device /dev/dri/renderD128 -f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+	                                    + "_vaapi -vf format=nv12,hwupload -b:v 5000k -s 640x360 -f null -");
 	                            if (!FFMPEG.error) graphicsAccel.add("VAAPI");
 	
 	                            if ("H.264".equals(function)) {
@@ -218,8 +218,8 @@ public class LibraryUtils extends Shutter {
 	                        			+ " -b:v 5000k -s 640x360 -f null -");
 	                            if (!FFMPEG.error) graphicsAccel.add("Intel Quick Sync");
 	                            
-	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v vp9_vaapi"
-	                                    + " -b:v 5000k -s 640x360 -f null -");
+	                            checkHWaccel("-vaapi_device /dev/dri/renderD128 -f lavfi -i nullsrc -frames:v 1 -c:v vp9_vaapi"
+	                                    + " -b:v 5000k -vf format=nv12,hwupload -s 640x360 -f null -");
 	                            if (!FFMPEG.error) graphicsAccel.add("VAAPI");
 	                        }
 	                        break;
@@ -259,8 +259,8 @@ public class LibraryUtils extends Shutter {
 	                            		+ " -b:v 5000k -s 640x360 -f null -");
 	                            if (!FFMPEG.error) graphicsAccel.add("Intel Quick Sync");
 	
-	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_vaapi"
-	                            			+ " -b:v 5000k -s 640x360 -f null -");
+	                            checkHWaccel("-vaapi_device /dev/dri/renderD128 -f lavfi -i nullsrc -frames:v 1 -c:v av1_vaapi"
+	                            			+ " -b:v 5000k -vf format=nv12,hwupload -s 640x360 -f null -");
 	                            if (!FFMPEG.error) graphicsAccel.add("VAAPI");                        
 	                        } else if (isMac) {
 	                            checkHWaccel("-f lavfi -i nullsrc -frames:v 1 -c:v av1_videotoolbox"

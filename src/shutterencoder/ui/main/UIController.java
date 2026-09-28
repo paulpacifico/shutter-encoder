@@ -424,6 +424,11 @@ public class UIController extends Shutter {
 				lblGpuFiltering.setVisible(true);
 				comboGPUFilter.setVisible(true);
 			}
+			else
+			{	
+				lblGpuFiltering.setVisible(false);
+				comboGPUFilter.setVisible(false);
+			}
 		}
 
 		lblYears.setBounds(frame.getWidth() - lblYears.getWidth() - 10, lblBy.getY(), lblYears.getWidth() + 4, 15);

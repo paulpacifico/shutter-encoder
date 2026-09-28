@@ -442,7 +442,9 @@ public class VideoPlayerUI {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-									
+							
+				 boolean isPlaying = VideoPlayerCore.playerIsPlaying();
+				
 				//Volume
 				if (e.getKeyCode() == 109 || e.getKeyCode() == 107)
 				{
@@ -505,67 +507,35 @@ public class VideoPlayerUI {
 
 				if (Shutter.shift)
 				{				
-					if (e.getKeyCode() == KeyEvent.VK_NUMPAD0)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime(0);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD1)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 1);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD2)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 2);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD3)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 3);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD4)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 4);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD5)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 5);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD6)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 6);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD7)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 7);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD8)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 8);
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_NUMPAD9)
-					{
-						e.consume();
-						VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * 9);
+					int key = e.getKeyCode();
+
+					if (key >= KeyEvent.VK_NUMPAD0 && key <= KeyEvent.VK_NUMPAD9) {
+					    e.consume();
+					    previousFrame = true;
+
+					    int digit = key - KeyEvent.VK_NUMPAD0;					   
+					    
+					    if (isPlaying)
+					    	VideoPlayerCore.playerPause();
+					    
+					    VideoPlayerCore.playerSetTime((double) (totalFrames / 10) * digit);
+					    
+					    if (isPlaying)
+					    	btnPlay.doClick();
 					}
 				}
 				
 				if (e.getKeyCode() == KeyEvent.VK_J)
 				{
 					previousFrame = true;
+					VideoPlayerCore.playerPause();
 					VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame - 10));
   				}
 					
 				if (e.getKeyCode() == KeyEvent.VK_L)
 				{
 					previousFrame = true;
+					VideoPlayerCore.playerPause();
 					VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame + 10));
 				}
 								
@@ -674,12 +644,26 @@ public class VideoPlayerUI {
 						if (Shutter.shift)
 						{
 							previousFrame = true;
+							
+							if (isPlaying)
+						    	VideoPlayerCore.playerPause();
+							
 							VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS));
+
+							if (isPlaying)
+						    	btnPlay.doClick();
 						}
 						else if (Shutter.alt)
 						{
 							previousFrame = true;
+
+							if (isPlaying)
+						    	VideoPlayerCore.playerPause();
+							
 							VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS) * 10));
+
+							if (isPlaying)
+						    	btnPlay.doClick();
 						}
 						else
 						{
@@ -694,12 +678,26 @@ public class VideoPlayerUI {
 						if (Shutter.shift)
 						{
 							previousFrame = true;
+
+							if (isPlaying)
+						    	VideoPlayerCore.playerPause();
+							
 							VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS));
+
+							if (isPlaying)
+						    	btnPlay.doClick();
 						}
 						else if (Shutter.alt)
 						{
 							previousFrame = true;
+
+							if (isPlaying)
+						    	VideoPlayerCore.playerPause();
+							
 							VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS) * 10));
+
+							if (isPlaying)
+						    	btnPlay.doClick();
 						}
 						else
 						{
