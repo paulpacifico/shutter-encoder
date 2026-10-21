@@ -86,9 +86,9 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
-import shutterencoder.library.FFPROBE;
-import shutterencoder.library.MEDIAINFO;
-import shutterencoder.library.NCNN;
+import shutterencoder.library.FFprobe;
+import shutterencoder.library.Mediainfo;
+import shutterencoder.library.Ncnn;
 import shutterencoder.ui.handlers.ListFileTransferHandler;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
@@ -257,13 +257,13 @@ public class VideoPlayerUI {
 				
 				if (caseApplyCutToAll.isSelected())
 				{
-					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseInF.getText());
+					double timeIn = (Integer.parseInt(caseInH.getText()) * 3600 + Integer.parseInt(caseInM.getText()) * 60 + Integer.parseInt(caseInS.getText())) * FFprobe.accurateFPS + Integer.parseInt(caseInF.getText());
 							
 					InputAndOutput.savedInPoint = (double) Math.ceil(timeIn);	
 					
 					if (playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 					{
-						double totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFPROBE.accurateFPS + Integer.parseInt(caseOutF.getText());
+						double totalOut = (Integer.parseInt(caseOutH.getText()) * 3600 + Integer.parseInt(caseOutM.getText()) * 60 + Integer.parseInt(caseOutS.getText())) * FFprobe.accurateFPS + Integer.parseInt(caseOutF.getText());
 						double total = (totalFrames - totalOut); //Get how much frames to remove from totalFrames					
 												
 						InputAndOutput.savedOutPoint = total;					
@@ -648,7 +648,7 @@ public class VideoPlayerUI {
 							if (isPlaying)
 						    	VideoPlayerCore.playerPause();
 							
-							VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS));
+							VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame - Math.ceil(FFprobe.accurateFPS));
 
 							if (isPlaying)
 						    	btnPlay.doClick();
@@ -660,7 +660,7 @@ public class VideoPlayerUI {
 							if (isPlaying)
 						    	VideoPlayerCore.playerPause();
 							
-							VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS) * 10));
+							VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame - Math.ceil(FFprobe.accurateFPS) * 10));
 
 							if (isPlaying)
 						    	btnPlay.doClick();
@@ -682,7 +682,7 @@ public class VideoPlayerUI {
 							if (isPlaying)
 						    	VideoPlayerCore.playerPause();
 							
-							VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS));
+							VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame + Math.ceil(FFprobe.accurateFPS));
 
 							if (isPlaying)
 						    	btnPlay.doClick();
@@ -694,7 +694,7 @@ public class VideoPlayerUI {
 							if (isPlaying)
 						    	VideoPlayerCore.playerPause();
 							
-							VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS) * 10));
+							VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame + Math.ceil(FFprobe.accurateFPS) * 10));
 
 							if (isPlaying)
 						    	btnPlay.doClick();
@@ -862,7 +862,7 @@ public class VideoPlayerUI {
 		}
 		else if (Main.frame.getSize().width > 654)
 		{	
-			if (FFPROBE.audioOnly)
+			if (FFprobe.audioOnly)
 			{
 				Main.caseVideoFadeIn.setEnabled(false);
 				Main.caseVideoFadeOut.setEnabled(false);
@@ -948,7 +948,7 @@ public class VideoPlayerUI {
 				caseApplyCutToAll.setEnabled(true);
 			}
 			
-			if (FFPROBE.hasAudio)
+			if (FFprobe.hasAudio)
 			{
 				caseShowWaveform.setVisible(true);
 				caseVuMeter.setVisible(true);												
@@ -956,9 +956,9 @@ public class VideoPlayerUI {
 				
 				//Add Audio tracks
 				comboAudioTrack.removeAllItems();
-				if (FFPROBE.channels > 1 && Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) == false)
+				if (FFprobe.channels > 1 && Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) == false)
 				{	
-					for (int i = 0 ; i < FFPROBE.channels ; i++)
+					for (int i = 0 ; i < FFprobe.channels ; i++)
 					{
 						comboAudioTrack.addItem(Main.language.getProperty("audio").toUpperCase().substring(0, 1) + "" + (i + 1));
 					}
@@ -976,7 +976,7 @@ public class VideoPlayerUI {
 				comboAudioTrack.setVisible(false);
 			}
 			
-			if (FFPROBE.audioOnly || Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")))
+			if (FFprobe.audioOnly || Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")))
 			{
 				caseInternalTc.setVisible(false);
 				casePlaySound.setBounds(caseInternalTc.getX(), caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);	
@@ -1004,7 +1004,7 @@ public class VideoPlayerUI {
 			//Timecode			
 			if (Main.caseShowTimecode.isSelected() || caseInternalTc.isSelected())
 			{
-				if (FFPROBE.timecode1.equals(""))
+				if (FFprobe.timecode1.equals(""))
 				{
 					if (Main.caseShowTimecode.isSelected())
 					{
@@ -1041,10 +1041,10 @@ public class VideoPlayerUI {
 					
 					if (caseInternalTc.isSelected())
 					{
-						offset = Integer.valueOf(FFPROBE.timecode1) * 3600 * FFPROBE.accurateFPS
-								+ Integer.valueOf(FFPROBE.timecode2) * 60 * FFPROBE.accurateFPS
-								+ Integer.valueOf(FFPROBE.timecode3) * FFPROBE.accurateFPS
-								+ Integer.valueOf(FFPROBE.timecode4);				
+						offset = Integer.valueOf(FFprobe.timecode1) * 3600 * FFprobe.accurateFPS
+								+ Integer.valueOf(FFprobe.timecode2) * 60 * FFprobe.accurateFPS
+								+ Integer.valueOf(FFprobe.timecode3) * FFprobe.accurateFPS
+								+ Integer.valueOf(FFprobe.timecode4);				
 					}
 				}
 			}
@@ -1094,7 +1094,7 @@ public class VideoPlayerUI {
 
 								frameIsComplete = false;
 								
-								if (seekOnKeyFrames && FFPROBE.isRunning == false)
+								if (seekOnKeyFrames && FFprobe.isRunning == false)
 								{		
 									//Clear the buffer
 									if (VideoPlayerCore.bufferedFrames.size() > 0)
@@ -1104,19 +1104,19 @@ public class VideoPlayerUI {
 										waveformContainer.repaint();
 									}
 									
-									FFPROBE.Keyframes(VideoPlayerCore.videoPath, (VideoPlayerCore.playerCurrentFrame - 2) * inputFramerateMS, false);
+									FFprobe.Keyframes(VideoPlayerCore.videoPath, (VideoPlayerCore.playerCurrentFrame - 2) * inputFramerateMS, false);
 									try {
-										FFPROBE.processFrameData.join();
+										FFprobe.processFrameData.join();
 									} catch (InterruptedException er) {
 									    Thread.currentThread().interrupt();
 									}
 									
-									if (FFPROBE.keyFrame > 0)
+									if (FFprobe.keyFrame > 0)
 									{
 										//Allows fast seeking
 										previousFrame = true;
 										
-										VideoPlayerCore.playerSetTime(FFPROBE.keyFrame);
+										VideoPlayerCore.playerSetTime(FFprobe.keyFrame);
 									}
 								}
 								else if (VideoPlayerCore.bufferedFrames.size() > 0)
@@ -1193,7 +1193,7 @@ public class VideoPlayerUI {
 				{
 					VideoPlayerCore.playerPause();
 					
-					if (seekOnKeyFrames && FFPROBE.isRunning == false)
+					if (seekOnKeyFrames && FFprobe.isRunning == false)
 					{		
 						//Clear the buffer
 						if (VideoPlayerCore.bufferedFrames.size() > 0)
@@ -1203,19 +1203,19 @@ public class VideoPlayerUI {
 							waveformContainer.repaint();
 						}
 						
-						FFPROBE.Keyframes(VideoPlayerCore.videoPath, (VideoPlayerCore.playerCurrentFrame + 1) * inputFramerateMS, true);
+						FFprobe.Keyframes(VideoPlayerCore.videoPath, (VideoPlayerCore.playerCurrentFrame + 1) * inputFramerateMS, true);
 						try {
-							FFPROBE.processFrameData.join();
+							FFprobe.processFrameData.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
 		
-						if (FFPROBE.keyFrame > 0)
+						if (FFprobe.keyFrame > 0)
 						{	
 							//Allows fast seeking
 							previousFrame = true;
 							
-							VideoPlayerCore.playerSetTime(FFPROBE.keyFrame);
+							VideoPlayerCore.playerSetTime(FFprobe.keyFrame);
 						}
 					}
 					else
@@ -1857,7 +1857,7 @@ public class VideoPlayerUI {
 		        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION,   RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
 		        // Checkerboard drawn into buffer, not directly to screen
-		        if (FFPROBE.hasAlpha)
+		        if (FFprobe.hasAlpha)
 		            drawCheckerboard(g2);
 
 		        g2.setColor(Color.BLACK);
@@ -1889,7 +1889,7 @@ public class VideoPlayerUI {
 		        }
 
 		        // FPS display
-		        if (FFPROBE.audioOnly == false && fileDuration > 40)
+		        if (FFprobe.audioOnly == false && fileDuration > 40)
 		        {
 		            if (System.nanoTime() - fpsTime >= 1_000_000_000L) {
 		                displayCurrentFPS = fps;
@@ -1905,14 +1905,14 @@ public class VideoPlayerUI {
                     && Main.inputDeviceIsRunning == false)
 		            {
 		                showFPS.setVisible(true);
-		                if ((double) displayCurrentFPS >= FFPROBE.currentFPS)
+		                if ((double) displayCurrentFPS >= FFprobe.currentFPS)
 		                {
 		                    showFPS.setForeground(Color.GREEN);
-		                    String[] fpsParts = String.valueOf(FFPROBE.currentFPS).split("\\.");
+		                    String[] fpsParts = String.valueOf(FFprobe.currentFPS).split("\\.");
 		                    showFPS.setText(
 		                        (fpsParts[1].equals("0")
 		                            ? fpsParts[0]
-		                            : String.valueOf(FFPROBE.currentFPS))
+		                            : String.valueOf(FFprobe.currentFPS))
 		                        + " " + Main.language.getProperty("fps")
 		                    );
 		                }
@@ -2331,12 +2331,12 @@ public class VideoPlayerUI {
 	                {
 		                g2.setColor(new Color(25, 27, 30));
 		                int alpha = 255;
-		                int splitTime = (int) (playerMarkIn + Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames)));
+		                int splitTime = (int) (playerMarkIn + Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFprobe.accurateFPS / totalFrames)));
 		                do {
 		                	
 		                	g2.fillRect(splitTime + 1, 0, 1, getHeight() - 1);
 		                	
-		                	splitTime += Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFPROBE.accurateFPS / totalFrames));
+		                	splitTime += Math.floor((double) (waveformContainer.getSize().width * Integer.parseInt(splitValue.getText()) * FFprobe.accurateFPS / totalFrames));
 		                	
 		                	g2.setColor(new Color(25, 27, 30, alpha));
 		                	
@@ -2352,7 +2352,7 @@ public class VideoPlayerUI {
 	                if (VideoPlayerCore.videoPath != null
 	                && VideoPlayerUtils.waveform != null
 	                && caseShowWaveform.isVisible() && caseShowWaveform.isSelected()
-	                && FFPROBE.hasAudio)
+	                && FFprobe.hasAudio)
 	                {
 	                    g2.drawImage(VideoPlayerUtils.waveform, 0, 0, getWidth(), getHeight(), null);
 	                }	                
@@ -2508,9 +2508,9 @@ public class VideoPlayerUI {
 				
 				mouseIsPressed = true;
 				
-				if (NCNN.isRunning)
+				if (Ncnn.isRunning)
 				{
-					NCNN.process.destroy();
+					Ncnn.process.destroy();
 					
 					if (VideoPlayerUtils.preview != null)
 						VideoPlayerUtils.preview = null;
@@ -3999,35 +3999,35 @@ public class VideoPlayerUI {
     			
 				if (caseInternalTc.isSelected())
 				{
-					FFPROBE.Data(VideoPlayerCore.videoPath);
+					FFprobe.Data(VideoPlayerCore.videoPath);
 					try {
-						FFPROBE.processData.join();
+						FFprobe.processData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}							
 					
-					if (FFPROBE.timecode1.equals(""))
+					if (FFprobe.timecode1.equals(""))
 	    			{
-	    				MEDIAINFO.run(VideoPlayerCore.videoPath, false);
+	    				Mediainfo.run(VideoPlayerCore.videoPath, false);
 	    				
 	    				try {
-	    					MEDIAINFO.runProcess.join();
+	    					Mediainfo.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}	    				
 	    			}
 					
-					if (FFPROBE.timecode1.equals(""))
+					if (FFprobe.timecode1.equals(""))
 					{
 						caseInternalTc.setSelected(false);
 						offset = 0;
 					}
 					else
 					{
-						offset = Integer.valueOf(FFPROBE.timecode1) * 3600 * FFPROBE.accurateFPS
-								+ Integer.valueOf(FFPROBE.timecode2) * 60 * FFPROBE.accurateFPS
-								+ Integer.valueOf(FFPROBE.timecode3) * FFPROBE.accurateFPS
-								+ Integer.valueOf(FFPROBE.timecode4);				
+						offset = Integer.valueOf(FFprobe.timecode1) * 3600 * FFprobe.accurateFPS
+								+ Integer.valueOf(FFprobe.timecode2) * 60 * FFprobe.accurateFPS
+								+ Integer.valueOf(FFprobe.timecode3) * FFprobe.accurateFPS
+								+ Integer.valueOf(FFprobe.timecode4);				
 					}						
 				}
 				else
@@ -4066,10 +4066,10 @@ public class VideoPlayerUI {
 			}
 			
 			//Players 		
-			double ratio = FFPROBE.imageRatio;
+			double ratio = FFprobe.imageRatio;
 			if (Main.caseRotate.isSelected() && (Main.comboRotate.getSelectedIndex() == 1 || Main.comboRotate.getSelectedIndex() == 2))
 			{
-				ratio = (double) FFPROBE.imageHeight / FFPROBE.imageWidth;
+				ratio = (double) FFprobe.imageHeight / FFprobe.imageWidth;
 			}
 							
 			//CaseForceDAR
@@ -4155,7 +4155,7 @@ public class VideoPlayerUI {
 				VideoPlayerCore.maxBufferedFrames = (int) ((double) (Main.availableMemory / 3) / (player.getWidth() * player.getHeight() * 3));
 			}
 			
-			Main.playerRatio = (float) FFPROBE.imageWidth / player.getWidth();
+			Main.playerRatio = (float) FFprobe.imageWidth / player.getWidth();
 			
 			int thumbsHeight = caseShowThumbnails.isSelected() && caseShowThumbnails.isVisible() ? 28 : 0;
 			
@@ -4212,14 +4212,14 @@ public class VideoPlayerUI {
 			//grpSubtitles
 			if (Main.caseAddSubtitles.isSelected())
 			{						    		
-				if (Integer.parseInt(Main.textSubsWidth.getText()) >= FFPROBE.imageWidth)
+				if (Integer.parseInt(Main.textSubsWidth.getText()) >= FFprobe.imageWidth)
 				{
-					Main.subsCanvas.setBounds(0, 0, player.getWidth(), (int) (player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFPROBE.imageHeight / player.getHeight())));
+					Main.subsCanvas.setBounds(0, 0, player.getWidth(), (int) (player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFprobe.imageHeight / player.getHeight())));
 				}
 				else
 				{
-					Main.subsCanvas.setSize((int) ((double) Integer.parseInt(Main.textSubsWidth.getText()) / ( (double) FFPROBE.imageHeight / player.getHeight())),
-				    		(int) (player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFPROBE.imageHeight / player.getHeight())));	
+					Main.subsCanvas.setSize((int) ((double) Integer.parseInt(Main.textSubsWidth.getText()) / ( (double) FFprobe.imageHeight / player.getHeight())),
+				    		(int) (player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFprobe.imageHeight / player.getHeight())));	
 					
 					Main.subsCanvas.setLocation((player.getWidth() - Main.subsCanvas.getWidth()) / 2, 0);
 				}			
@@ -4248,8 +4248,8 @@ public class VideoPlayerUI {
 			if (Main.caseEnableCrop.isSelected())
 			{
 				Main.selection.setLocation((int) Math.round(Integer.valueOf(Main.textCropPosX.getText()) / Main.playerRatio), (int) Math.round(Integer.valueOf(Main.textCropPosY.getText()) / Main.playerRatio));
-				int w = (int) Math.round((double)  (Integer.valueOf(Main.textCropWidth.getText()) * player.getHeight()) / FFPROBE.imageHeight);
-				int h = (int) Math.round((double)  (Integer.valueOf(Main.textCropHeight.getText()) * player.getHeight()) / FFPROBE.imageHeight);
+				int w = (int) Math.round((double)  (Integer.valueOf(Main.textCropWidth.getText()) * player.getHeight()) / FFprobe.imageHeight);
+				int h = (int) Math.round((double)  (Integer.valueOf(Main.textCropHeight.getText()) * player.getHeight()) / FFprobe.imageHeight);
 				
 				if (w > player.getWidth())
 					w = player.getWidth();
@@ -4307,7 +4307,7 @@ public class VideoPlayerUI {
 			showScale.setBounds(player.getX(), showFPS.getY(), (comboPlayerQuality.getX() - player.getX()), showScale.getPreferredSize().height);
 			comboAudioTrack.setBounds(7, (waveformContainer.getHeight() / 2) - 8, 40, 16);
 
-			if (showScale.getY() < Main.topPanel.getHeight() || FFPROBE.audioOnly || VideoPlayerCore.videoPath == null || Main.frame.getSize().width <= 654 || fullscreenPlayer)
+			if (showScale.getY() < Main.topPanel.getHeight() || FFprobe.audioOnly || VideoPlayerCore.videoPath == null || Main.frame.getSize().width <= 654 || fullscreenPlayer)
 			{
 				showScale.setVisible(false);
 			}
@@ -4370,7 +4370,7 @@ public class VideoPlayerUI {
 			caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY() - 2, caseVuMeter.getPreferredSize().width, 23);
 			caseShowWaveform.setBounds(caseVuMeter.getX() - caseShowWaveform.getPreferredSize().width - 2, caseVuMeter.getY(), caseShowWaveform.getPreferredSize().width, 23);
 			
-			if (FFPROBE.hasAudio)
+			if (FFprobe.hasAudio)
 			{
 				caseShowThumbnails.setBounds(caseShowWaveform.getX() - caseShowThumbnails.getPreferredSize().width, caseShowWaveform.getY() + 2, caseShowThumbnails.getPreferredSize().width, 23);	
 			}

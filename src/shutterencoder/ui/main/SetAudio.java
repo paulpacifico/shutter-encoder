@@ -37,7 +37,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.others.Equalizer;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -441,7 +441,7 @@ public class SetAudio extends Main {
 					grpSetAudio.repaint();
 
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {}
 				}
 			}
@@ -1153,7 +1153,7 @@ public class SetAudio extends Main {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
-					FFPROBE.setFilesize();		
+					FFprobe.setFilesize();		
 				} catch (Exception er) {}
 			}			
 		};
@@ -1283,7 +1283,7 @@ public class SetAudio extends Main {
 				|| caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {
 					}
 				}
@@ -1333,7 +1333,7 @@ public class SetAudio extends Main {
 				|| caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {
 					}
 				}
@@ -1391,7 +1391,7 @@ public class SetAudio extends Main {
 				|| caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {
 					}
 				}
@@ -1448,7 +1448,7 @@ public class SetAudio extends Main {
 				|| caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {
 					}
 				}
@@ -1504,7 +1504,7 @@ public class SetAudio extends Main {
 				|| caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {
 					}
 				}
@@ -1559,7 +1559,7 @@ public class SetAudio extends Main {
 				|| caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {
 					}
 				}
@@ -1613,7 +1613,7 @@ public class SetAudio extends Main {
 				|| caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {
 					}
 				}
@@ -1664,7 +1664,7 @@ public class SetAudio extends Main {
 				|| caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
 				{
 					try {
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					} catch (Exception e1) {
 					}
 				}

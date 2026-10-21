@@ -42,10 +42,10 @@ import javax.swing.SwingConstants;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.functions.Picture;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.NCNN;
+import shutterencoder.library.Ncnn;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -102,7 +102,7 @@ public class Scaling extends Main {
 							lblPad.setVisible(true);						
 						
 						UIController.changeFilters();
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 					}
 					
 					UIController.changeComboOptions();
@@ -110,21 +110,21 @@ public class Scaling extends Main {
 				
 				LibraryUtils.checkGPUDeinterlacing();
 
-				if (NCNN.isRunning && NCNN.process != null) {
-					NCNN.process.destroyForcibly();
+				if (Ncnn.isRunning && Ncnn.process != null) {
+					Ncnn.process.destroyForcibly();
 
 					do {
 						try {
 							Thread.sleep(1000);
 						} catch (InterruptedException e) {
 						}
-					} while (NCNN.isRunning);
+					} while (Ncnn.isRunning);
 
 					if (VideoPlayerUtils.preview != null)
 						VideoPlayerUtils.preview = null;
 				}
 
-				if (FFPROBE.totalLength <= 40 || comboResolution.getSelectedItem().toString().contains("AI"))
+				if (FFprobe.totalLength <= 40 || comboResolution.getSelectedItem().toString().contains("AI"))
 				{
 					if (VideoPlayerUtils.preview != null)
 						VideoPlayerUtils.preview = null;
@@ -392,15 +392,15 @@ public class Scaling extends Main {
 				if (caseCreateSequence.isSelected()) {
 					if (list.getSize() > 0 && inputDeviceIsRunning == false) {
 						// Analyse
-						FFPROBE.Data(list.firstElement().toString());
+						FFprobe.Data(list.firstElement().toString());
 						try {
-							FFPROBE.processData.join();
+							FFprobe.processData.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
 
 						comboInterpret.setSelectedItem(
-								String.valueOf(FFPROBE.currentFPS).replace(".0", "").replace(".", ","));
+								String.valueOf(FFprobe.currentFPS).replace(".0", "").replace(".", ","));
 					}
 
 					comboInterpret.setEnabled(true);
@@ -475,16 +475,16 @@ public class Scaling extends Main {
 						file = list.firstElement();
 
 					// Analyse
-					FFPROBE.Data(file.toString());
+					FFprobe.Data(file.toString());
 					try {
-						FFPROBE.processData.join();
+						FFprobe.processData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}
 
 					// FFMPEGTOFFPLAY
-					FFMPEG.toFFPLAY(" -r "
-							+ (float) FFPROBE.currentFPS
+					FFmpeg.toFFPLAY(" -r "
+							+ (float) FFprobe.currentFPS
 									/ Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."))
 							+ " -hwaccel "
 							+ Main.comboGPUDecoding.getSelectedItem().toString()

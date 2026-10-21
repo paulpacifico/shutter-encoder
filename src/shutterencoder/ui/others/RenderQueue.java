@@ -66,12 +66,12 @@ import javax.swing.table.DefaultTableModel;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.BMXTRANSWRAP;
-import shutterencoder.library.DCRAW;
-import shutterencoder.library.DVDAUTHOR;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.XPDFREADER;
-import shutterencoder.library.TSMUXER;
+import shutterencoder.library.Bmxtranswrap;
+import shutterencoder.library.Dcraw;
+import shutterencoder.library.Dvdauthor;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.Xpdfreader;
+import shutterencoder.library.Tsmuxer;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
@@ -161,7 +161,7 @@ import shutterencoder.utils.Utils;
 			
 			public void windowClosed(WindowEvent arg0) {
 				
-				if (FFMPEG.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
+				if (FFmpeg.isRunning || Dcraw.isRunning || Xpdfreader.isRunning || Dvdauthor.isRunning || Tsmuxer.isRunning || Bmxtranswrap.isRunning)
 					Main.btnCancel.doClick();
 				
 				if (Main.btnCancel.isEnabled() == false)		
@@ -500,7 +500,7 @@ import shutterencoder.utils.Utils;
 				
 				if (accept)		
 				{		  
-					if (FFMPEG.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
+					if (FFmpeg.isRunning || Dcraw.isRunning || Xpdfreader.isRunning || Dvdauthor.isRunning || Tsmuxer.isRunning || Bmxtranswrap.isRunning)
 						Main.btnCancel.doClick();
 					
 					if (Main.btnCancel.isEnabled() == false)		
@@ -790,9 +790,9 @@ import shutterencoder.utils.Utils;
 			public void actionPerformed(ActionEvent arg0) {
 				
 				//Temps écoulé
-				FFMPEG.lblElapsedTime.setVisible(false);
-				FFMPEG.elapsedTime = 0;
-				FFMPEG.previousElapsedTime = 0;
+				FFmpeg.lblElapsedTime.setVisible(false);
+				FFmpeg.elapsedTime = 0;
+				FFmpeg.previousElapsedTime = 0;
 				
 				btnStartRender.setEnabled(false);
 				caseRunParallel.setEnabled(false);
@@ -835,7 +835,7 @@ import shutterencoder.utils.Utils;
 								case "ffmpeg" :
 									if (caseRunParallel.isSelected())
 									{
-										FFMPEG.run(cmd.toString().replace("ffmpeg"," -v verbose"));
+										FFmpeg.run(cmd.toString().replace("ffmpeg"," -v verbose"));
 										
 										//IMPORTANT avoid a bug
 										try {
@@ -843,23 +843,23 @@ import shutterencoder.utils.Utils;
 										} catch (InterruptedException e) {}
 									}
 									else											
-										FFMPEG.run(cmd.toString().replace("ffmpeg",""));
+										FFmpeg.run(cmd.toString().replace("ffmpeg",""));
 									
 									break;
 								case "bmxtranswrap" :
-									BMXTRANSWRAP.run(cmd.toString().replace("bmxtranswrap",""));
+									Bmxtranswrap.run(cmd.toString().replace("bmxtranswrap",""));
 									break;
 								case "dvdauthor" :
-									DVDAUTHOR.run(cmd.toString().replace("dvdauthor",""));
+									Dvdauthor.run(cmd.toString().replace("dvdauthor",""));
 									break;
 								case "tsMuxeR" :
-									TSMUXER.run(cmd.toString().replace("tsMuxeR",""));
+									Tsmuxer.run(cmd.toString().replace("tsMuxeR",""));
 									break;
 								case "dcraw" :
-									DCRAW.run(cmd.toString().replace("dcraw",""));
+									Dcraw.run(cmd.toString().replace("dcraw",""));
 									break;
 								case "pdftoppm" :
-									XPDFREADER.run(cmd.toString().replace("pdftoppm",""));
+									Xpdfreader.run(cmd.toString().replace("pdftoppm",""));
 									break;
 							}	
 							
@@ -887,14 +887,14 @@ import shutterencoder.utils.Utils;
 								{									
 									do {										
 										Thread.sleep(100);											
-									} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);
+									} while (FFmpeg.runProcess.isAlive() || Bmxtranswrap.isRunning || Dcraw.isRunning || Xpdfreader.isRunning || Dvdauthor.isRunning || Tsmuxer.isRunning);
 																	
 									//Permet d'attendre si un autre processus se lance
 									Thread.sleep(1000);
 									
 									do {
 										Thread.sleep(100);										
-									} while (FFMPEG.runProcess.isAlive() || BMXTRANSWRAP.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning);	
+									} while (FFmpeg.runProcess.isAlive() || Bmxtranswrap.isRunning || Dcraw.isRunning || Xpdfreader.isRunning || Dvdauthor.isRunning || Tsmuxer.isRunning);	
 								}
 								else
 								{									
@@ -908,10 +908,10 @@ import shutterencoder.utils.Utils;
 											Main.lblCurrentEncoding.setText(RenderQueue.filesCompleted + "/" + RenderQueue.tableRow.getRowCount() + " " + Main.language.getProperty("filesEnded"));	
 											Main.progressBar.setValue(RenderQueue.filesCompleted);
 											
-											if (FFMPEG.error || FFMPEG.cancelled)
+											if (FFmpeg.error || FFmpeg.cancelled)
 											{															
 												filesCompleted++;
-												FFMPEG.error = false; //IMPORTANT
+												FFmpeg.error = false; //IMPORTANT
 												
 												if (i != tableRow.getRowCount() - 1) //Do not break if it's the last file
 												{
@@ -921,7 +921,7 @@ import shutterencoder.utils.Utils;
 											
 										} while (filesCompleted != tableRow.getRowCount());											
 									}
-									else if (currentProcessedFiles == maxProcesses || cmd.contains("-pass 1") || FFMPEG.error)
+									else if (currentProcessedFiles == maxProcesses || cmd.contains("-pass 1") || FFmpeg.error)
 									{
 										do {	
 											
@@ -929,13 +929,13 @@ import shutterencoder.utils.Utils;
 											Main.lblCurrentEncoding.setText(RenderQueue.filesCompleted + "/" + RenderQueue.tableRow.getRowCount() + " " + Main.language.getProperty("filesEnded"));	
 											Main.progressBar.setValue(RenderQueue.filesCompleted);
 											
-											if (FFMPEG.error || FFMPEG.cancelled)
+											if (FFmpeg.error || FFmpeg.cancelled)
 											{
 												filesCompleted++;		
 												break;
 											}
 											
-										} while (filesCompleted < sendCommands && FFMPEG.runProcess.isAlive());
+										} while (filesCompleted < sendCommands && FFmpeg.runProcess.isAlive());
 										
 										if (currentProcessedFiles == maxProcesses)
 											currentProcessedFiles = 0;
@@ -1024,17 +1024,17 @@ import shutterencoder.utils.Utils;
 			fileOut = new File(fileOut.toString().replace("%03d", "000"));
 		
 		//Erreurs
-		if (FFMPEG.error || fileOut.length() == 0 && Main.caseCreateSequence.isSelected() == false)
+		if (FFmpeg.error || fileOut.length() == 0 && Main.caseCreateSequence.isSelected() == false)
 		{
-			FFMPEG.errorList.append(Main.language.getProperty("file") + " N°" + (item + 1) + " - " + fileName);
-		    FFMPEG.errorList.append(System.lineSeparator());
+			FFmpeg.errorList.append(Main.language.getProperty("file") + " N°" + (item + 1) + " - " + fileName);
+		    FFmpeg.errorList.append(System.lineSeparator());
 			try {
 				fileOut.delete();
 			} catch (Exception e) {}		
 		}		
 		
 		//Delete file
-		if (Main.caseDeleteSourceFile.isSelected() && fileInput != null && Main.cancelled == false && FFMPEG.error == false)
+		if (Main.caseDeleteSourceFile.isSelected() && fileInput != null && Main.cancelled == false && FFmpeg.error == false)
 		{
 			if (item + 1 < tableRow.getRowCount() && fileName.equals(tableRow.getValueAt(item + 1, 0)))
 			{
@@ -1063,7 +1063,7 @@ import shutterencoder.utils.Utils;
 		}
 
 		//Fichiers terminés
-		if (Main.cancelled == false && FFMPEG.error == false)
+		if (Main.cancelled == false && FFmpeg.error == false)
 		{
 			complete++;
 			Main.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));

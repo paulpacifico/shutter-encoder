@@ -42,11 +42,11 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 
-import shutterencoder.library.BMXTRANSWRAP;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Bmxtranswrap;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.YOUTUBEDL;
+import shutterencoder.library.Ytdlp;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
@@ -99,7 +99,7 @@ public class StatusBar extends Main {
 				windowDrag = false;
 
 				// IMPORTANT
-				if (FFPROBE.totalLength <= 40 && VideoPlayerUtils.preview != null)
+				if (FFprobe.totalLength <= 40 && VideoPlayerUtils.preview != null)
 				{
 					VideoPlayerUtils.preview = null;
 				}
@@ -439,7 +439,7 @@ public class StatusBar extends Main {
 						if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
 							case2pass.setEnabled(true);
 
-						FFPROBE.setLength();
+						FFprobe.setLength();
 					}
 					
 					if (lblVBR.getText().equals("CQ") && comboFonctions.getSelectedItem().toString().equals("AV1"))
@@ -574,7 +574,7 @@ public class StatusBar extends Main {
 
 			public void componentHidden(ComponentEvent e) {
 				if (lblElapsedTime != null && lblElapsedTime.getText().equals(language.getProperty("tempsEcoule")) == false) {
-					if (FFMPEG.isRunning == false && YOUTUBEDL.isRunning == false) {
+					if (FFmpeg.isRunning == false && Ytdlp.isRunning == false) {
 						lblBy.setVisible(true);
 					}
 					lblElapsedTime.setVisible(true);
@@ -628,7 +628,7 @@ public class StatusBar extends Main {
 
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				if (FFMPEG.isRunning || BMXTRANSWRAP.isRunning) {
+				if (FFmpeg.isRunning || Bmxtranswrap.isRunning) {
 					lblElapsedTime.setVisible(false);
 					lblRemainingTime.setVisible(true);
 				}
@@ -636,7 +636,7 @@ public class StatusBar extends Main {
 
 			@Override
 			public void mouseEntered(MouseEvent arg0) {
-				if (FFMPEG.isRunning || BMXTRANSWRAP.isRunning) {
+				if (FFmpeg.isRunning || Bmxtranswrap.isRunning) {
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 				}
 			}

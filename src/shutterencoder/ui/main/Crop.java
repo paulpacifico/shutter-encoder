@@ -49,7 +49,7 @@ import javax.swing.SwingConstants;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -95,10 +95,10 @@ public class Crop extends Main {
 				if (caseEnableCrop.isSelected())
 				{
 					// Make sure the crop is accurate to pixel resolution
-					float squareRatio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
-					if (Main.inputDeviceIsRunning == false && FFPROBE.imageRatio != squareRatio) {
+					float squareRatio = (float) FFprobe.imageWidth / FFprobe.imageHeight;
+					if (Main.inputDeviceIsRunning == false && FFprobe.imageRatio != squareRatio) {
 						ratioChanged = true;
-						FFPROBE.imageRatio = squareRatio;
+						FFprobe.imageRatio = squareRatio;
 						VideoPlayerUI.resizeAll();
 
 						VideoPlayerUI.frameIsComplete = false;
@@ -128,9 +128,9 @@ public class Crop extends Main {
 				} else {
 					// Come back to original DAR
 					if (Main.inputDeviceIsRunning == false && ratioChanged && VideoPlayerCore.videoPath != null) {
-						FFPROBE.Data(VideoPlayerCore.videoPath);
+						FFprobe.Data(VideoPlayerCore.videoPath);
 						try {
-							FFPROBE.processData.join();
+							FFprobe.processData.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
@@ -161,7 +161,7 @@ public class Crop extends Main {
 				
 				if (VideoPlayerCore.frameVideo != null)
 				{
-					FFPROBE.setFilesize();
+					FFprobe.setFilesize();
 				}
 			}
 
@@ -228,7 +228,7 @@ public class Crop extends Main {
 				{
 					try {
 
-						String s[] = FFPROBE.imageResolution.split("x");
+						String s[] = FFprobe.imageResolution.split("x");
 						int w = Integer.parseInt(s[0]);
 						int h = Integer.parseInt(s[1]);
 
@@ -266,12 +266,12 @@ public class Crop extends Main {
 							textCropPosY.setText(String.valueOf((h - Integer.parseInt(textCropHeight.getText())) / 2));
 						}
 
-						int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
+						int x = (int) Math.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayerUI.player.getHeight()) / FFprobe.imageHeight);
 						
-						int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayerUI.player.getWidth()) / FFPROBE.imageWidth);
+						int y = (int) Math.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayerUI.player.getWidth()) / FFprobe.imageWidth);
 						
-						int width = (int) Math.ceil((float) (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
-						int height = (int) Math.floor((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getWidth()) / FFPROBE.imageWidth);
+						int width = (int) Math.ceil((float) (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight()) / FFprobe.imageHeight);
+						int height = (int) Math.floor((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getWidth()) / FFprobe.imageWidth);
 
 						if (width > VideoPlayerUI.player.getWidth())
 							width = VideoPlayerUI.player.getWidth();
@@ -738,7 +738,7 @@ public class Crop extends Main {
 				g2d.setColor(new Color(0, 0, 0, 180));
 				g2d.fill(outter);
 
-				FFPROBE.setFilesize();
+				FFprobe.setFilesize();
 			}
 		};
 		overImage.setSize(640, 360);
@@ -805,7 +805,7 @@ public class Crop extends Main {
 				if (textCropPosX.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
 					int value = (int) Math
 							.round((float) (Integer.valueOf(textCropPosX.getText()) * VideoPlayerUI.player.getHeight())
-									/ FFPROBE.imageHeight);
+									/ FFprobe.imageHeight);
 					selection.setLocation(value, selection.getLocation().y);
 				}
 			}
@@ -895,7 +895,7 @@ public class Crop extends Main {
 				if (textCropPosY.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
 					int value = (int) Math
 							.round((float) (Integer.valueOf(textCropPosY.getText()) * VideoPlayerUI.player.getWidth())
-									/ FFPROBE.imageWidth);
+									/ FFprobe.imageWidth);
 					selection.setLocation(selection.getLocation().x, value);
 				}
 			}
@@ -992,7 +992,7 @@ public class Crop extends Main {
 				if (textCropWidth.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
 					int value = (int) Math
 							.round((float) (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight())
-									/ FFPROBE.imageHeight);
+									/ FFprobe.imageHeight);
 					selection.setSize(value, selection.getHeight());
 				}
 			}
@@ -1053,7 +1053,7 @@ public class Crop extends Main {
 					textCropWidth.setText(String.valueOf(mouseCropOffsetX + (e.getX() - MousePositionX)));
 					int value = (int) Math
 							.round((float) (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight())
-									/ FFPROBE.imageHeight);
+									/ FFprobe.imageHeight);
 					selection.setSize(value, selection.getHeight());
 				}
 
@@ -1104,7 +1104,7 @@ public class Crop extends Main {
 				if (textCropHeight.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
 					int value = (int) Math
 							.round((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getWidth())
-									/ FFPROBE.imageWidth);
+									/ FFprobe.imageWidth);
 					selection.setSize(selection.getWidth(), value);
 				}
 			}
@@ -1165,7 +1165,7 @@ public class Crop extends Main {
 					textCropHeight.setText(String.valueOf(mouseCropOffsetY + (e.getY() - MousePositionY)));
 					int value = (int) Math
 							.round((float) (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getHeight())
-									/ FFPROBE.imageHeight);
+									/ FFprobe.imageHeight);
 					selection.setSize(selection.getWidth(), value);
 				}
 				

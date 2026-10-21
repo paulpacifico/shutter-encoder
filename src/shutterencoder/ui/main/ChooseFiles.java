@@ -51,14 +51,14 @@ import com.formdev.flatlaf.util.SystemFileChooser;
 
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.BMXTRANSWRAP;
-import shutterencoder.library.DVDAUTHOR;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Bmxtranswrap;
+import shutterencoder.library.Dvdauthor;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.MEDIAINFO;
-import shutterencoder.library.SEVENZIP;
-import shutterencoder.library.TSMUXER;
+import shutterencoder.library.Mediainfo;
+import shutterencoder.library.Sevenzip;
+import shutterencoder.library.Tsmuxer;
 import shutterencoder.ui.handlers.ListFileTransferHandler;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.GOP;
@@ -152,7 +152,7 @@ public class ChooseFiles extends Main {
 
 					lblFiles.setText(Utils.filesNumber());
 
-					FFPROBE.analyzedMedia = null;
+					FFprobe.analyzedMedia = null;
 					VideoPlayerUtils.preview = null;
 					VideoPlayerCore.videoPath = null;
 					VideoPlayerCore.frameVideo = null;
@@ -328,12 +328,12 @@ public class ChooseFiles extends Main {
 			public void actionPerformed(ActionEvent e) {
 
 				try {
-					FFPROBE.processData.join();
+					FFprobe.processData.join();
 				} catch (InterruptedException er) {
 				    Thread.currentThread().interrupt();
 				}
 
-				FFMPEG.toSDL();
+				FFmpeg.toSDL();
 			}
 		});
 
@@ -366,25 +366,25 @@ public class ChooseFiles extends Main {
 			public void actionPerformed(ActionEvent e) {
 
 				double totalLength = 0;
-				FFPROBE.totalLength = 0;
-				FFPROBE.analyzedMedia = null;
+				FFprobe.totalLength = 0;
+				FFprobe.analyzedMedia = null;
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 				for (String file : fileList.getSelectedValuesList())
 				{					
 					//IMPORTANT RESET MEDIA
-					FFPROBE.analyzedMedia = null;
+					FFprobe.analyzedMedia = null;
 					
-					FFPROBE.Data(file);					
+					FFprobe.Data(file);					
 					try {
-						FFPROBE.processData.join();
+						FFprobe.processData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}
 
-					totalLength += Math.round((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS);					
-					FFPROBE.totalLength = 0;
+					totalLength += Math.round((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS);					
+					FFprobe.totalLength = 0;
 					
 					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				}
@@ -393,11 +393,11 @@ public class ChooseFiles extends Main {
 				if (VideoPlayerCore.videoPath != null)
 				{
 					//IMPORTANT RESET MEDIA
-					FFPROBE.analyzedMedia = null;
+					FFprobe.analyzedMedia = null;
 					
-					FFPROBE.Data(VideoPlayerCore.videoPath);
+					FFprobe.Data(VideoPlayerCore.videoPath);
 					try {
-						FFPROBE.processData.join();
+						FFprobe.processData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}
@@ -436,25 +436,25 @@ public class ChooseFiles extends Main {
 			public void actionPerformed(ActionEvent e) {
 				
 				int totalLength = 0;
-				FFPROBE.totalLength = 0;
-				FFPROBE.analyzedMedia = null;
+				FFprobe.totalLength = 0;
+				FFprobe.analyzedMedia = null;
 
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 				for (String file : fileList.getSelectedValuesList())
 				{					
 					//IMPORTANT RESET MEDIA
-					FFPROBE.analyzedMedia = null;
+					FFprobe.analyzedMedia = null;
 					
-					FFPROBE.Data(file);					
+					FFprobe.Data(file);					
 					try {
-						FFPROBE.processData.join();
+						FFprobe.processData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}
 
-					totalLength += Math.round((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS);					
-					FFPROBE.totalLength = 0;
+					totalLength += Math.round((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS);					
+					FFprobe.totalLength = 0;
 					
 					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				}
@@ -473,25 +473,25 @@ public class ChooseFiles extends Main {
 					codec = "Apple ProRes " + comboFilter.getSelectedItem().toString();
 					switch (comboFilter.getSelectedItem().toString()) {
 					case "Proxy":
-						bitrate = (int) ((float) 1.52 * FFPROBE.accurateFPS);
+						bitrate = (int) ((float) 1.52 * FFprobe.accurateFPS);
 						break;
 					case "LT":
-						bitrate = (int) ((float) 3.4 * FFPROBE.accurateFPS);
+						bitrate = (int) ((float) 3.4 * FFprobe.accurateFPS);
 						break;
 					case "422":
-						bitrate = (int) ((float) 4.88 * FFPROBE.accurateFPS);
+						bitrate = (int) ((float) 4.88 * FFprobe.accurateFPS);
 						break;
 					case "422 HQ":
-						bitrate = (int) ((float) 7.4 * FFPROBE.accurateFPS);
+						bitrate = (int) ((float) 7.4 * FFprobe.accurateFPS);
 						break;
 					case "444":
-						bitrate = (int) ((float) 11 * FFPROBE.accurateFPS);
+						bitrate = (int) ((float) 11 * FFprobe.accurateFPS);
 						break;
 					case "4444":
-						bitrate = (int) ((float) 11 * FFPROBE.accurateFPS);
+						bitrate = (int) ((float) 11 * FFprobe.accurateFPS);
 						break;
 					case "4444 XQ":
-						bitrate = (int) ((float) 16.5 * FFPROBE.accurateFPS);
+						bitrate = (int) ((float) 16.5 * FFprobe.accurateFPS);
 						break;
 					}
 					break;
@@ -518,32 +518,32 @@ public class ChooseFiles extends Main {
 					case "LB":
 						switch (resolution) {
 						case 4096:
-							bitrate = (int) ((float) 0.7616 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 0.7616 * 8 * FFprobe.accurateFPS);
 							break;
 						case 3840:
-							bitrate = (int) ((float) 0.7148 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 0.7148 * 8 * FFprobe.accurateFPS);
 							break;
 						case 2048:
-							bitrate = (int) ((float) 0.1916 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 0.1916 * 8 * FFprobe.accurateFPS);
 							break;
 						case 1920:
-							bitrate = (int) ((float) 0.1796 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 0.1796 * 8 * FFprobe.accurateFPS);
 							break;
 						}
 						break;
 					case "SQ":
 						switch (resolution) {
 						case 4096:
-							bitrate = (int) ((float) 2.4492 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 2.4492 * 8 * FFprobe.accurateFPS);
 							break;
 						case 3840:
-							bitrate = (int) ((float) 2.2968 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 2.2968 * 8 * FFprobe.accurateFPS);
 							break;
 						case 2048:
-							bitrate = (int) ((float) 0.6132 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 0.6132 * 8 * FFprobe.accurateFPS);
 							break;
 						case 1920:
-							bitrate = (int) ((float) 0.5744 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 0.5744 * 8 * FFprobe.accurateFPS);
 							break;
 						}
 						break;
@@ -551,32 +551,32 @@ public class ChooseFiles extends Main {
 					case "HQX":
 						switch (resolution) {
 						case 4096:
-							bitrate = (int) ((float) 3.7072 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 3.7072 * 8 * FFprobe.accurateFPS);
 							break;
 						case 3840:
-							bitrate = (int) ((float) 3.4728 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 3.4728 * 8 * FFprobe.accurateFPS);
 							break;
 						case 2048:
-							bitrate = (int) ((float) 0.9256 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 0.9256 * 8 * FFprobe.accurateFPS);
 							break;
 						case 1920:
-							bitrate = (int) ((float) 0.8672 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 0.8672 * 8 * FFprobe.accurateFPS);
 							break;
 						}
 						break;
 					case "444":
 						switch (resolution) {
 						case 4096:
-							bitrate = (int) ((float) 7.41 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 7.41 * 8 * FFprobe.accurateFPS);
 							break;
 						case 3840:
-							bitrate = (int) ((float) 6.9492 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 6.9492 * 8 * FFprobe.accurateFPS);
 							break;
 						case 2048:
-							bitrate = (int) ((float) 1.8516 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 1.8516 * 8 * FFprobe.accurateFPS);
 							break;
 						case 1920:
-							bitrate = (int) ((float) 1.7384 * 8 * FFPROBE.accurateFPS);
+							bitrate = (int) ((float) 1.7384 * 8 * FFprobe.accurateFPS);
 							break;
 						}
 						break;
@@ -596,11 +596,11 @@ public class ChooseFiles extends Main {
 				if (VideoPlayerCore.videoPath != null)
 				{
 					//IMPORTANT RESET MEDIA
-					FFPROBE.analyzedMedia = null;
+					FFprobe.analyzedMedia = null;
 					
-					FFPROBE.Data(VideoPlayerCore.videoPath);
+					FFprobe.Data(VideoPlayerCore.videoPath);
 					try {
-						FFPROBE.processData.join();
+						FFprobe.processData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}
@@ -626,7 +626,7 @@ public class ChooseFiles extends Main {
 					Utils.changeFrameVisibility(Informations.frame, false);
 
 				for (String item : fileList.getSelectedValuesList()) {
-					MEDIAINFO.run(item, true);
+					Mediainfo.run(item, true);
 				}
 			}
 		});
@@ -704,7 +704,7 @@ public class ChooseFiles extends Main {
 						}
 
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
@@ -843,7 +843,7 @@ public class ChooseFiles extends Main {
 					}
 
 					UIController.disableAll();
-					SEVENZIP.run("a " + '"' + fc.getSelectedFile().toString().replace(".zip", "") + ".zip" + '"' + items, true);
+					Sevenzip.run("a " + '"' + fc.getSelectedFile().toString().replace(".zip", "") + ".zip" + '"' + items, true);
 				}
 
 			}
@@ -861,7 +861,7 @@ public class ChooseFiles extends Main {
 				progressBar.setIndeterminate(true);
 
 				UIController.disableAll();
-				SEVENZIP.run("e " + '"' + fichier.toString() + '"' + " -y -o" + '"' + path + '"', true);
+				Sevenzip.run("e " + '"' + fichier.toString() + '"' + " -y -o" + '"' + path + '"', true);
 			}
 		});
 
@@ -919,8 +919,8 @@ public class ChooseFiles extends Main {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 
-				if (FFMPEG.isRunning == false && BMXTRANSWRAP.isRunning == false && DVDAUTHOR.isRunning == false
-						&& TSMUXER.isRunning == false && e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)
+				if (FFmpeg.isRunning == false && Bmxtranswrap.isRunning == false && Dvdauthor.isRunning == false
+						&& Tsmuxer.isRunning == false && e.getClickCount() == 2 && SwingUtilities.isLeftMouseButton(e)
 						&& list.getSize() > 0) {
 					menuDisplay.doClick();
 				}
@@ -931,15 +931,15 @@ public class ChooseFiles extends Main {
 					{						
 						popupList.removeAll();
 								
-						if (FFMPEG.process.isAlive() == false && comboFonctions.getSelectedItem().toString().equals(""))
+						if (FFmpeg.process.isAlive() == false && comboFonctions.getSelectedItem().toString().equals(""))
 						{
 							popupList.add(menuDisplay);
 							popupList.show(fileList, e.getX() - 30, e.getY());
 						}
 					} else if (fileList.getSelectedIndices().length > 0
 							&& scan.getText().equals(language.getProperty("menuItemStartScan"))) {
-						if (FFMPEG.isRunning == false && BMXTRANSWRAP.isRunning == false && DVDAUTHOR.isRunning == false
-								&& TSMUXER.isRunning == false) {
+						if (FFmpeg.isRunning == false && Bmxtranswrap.isRunning == false && Dvdauthor.isRunning == false
+								&& Tsmuxer.isRunning == false) {
 							// Ajout à la liste
 							popupList.removeAll();
 							if (comboFonctions.getSelectedItem().toString()
@@ -1148,7 +1148,7 @@ public class ChooseFiles extends Main {
 					case "MJPEG":
 					case "Xvid":
 					case "Blu-ray":
-						FFPROBE.setLength();
+						FFprobe.setLength();
 						break;
 					}
 

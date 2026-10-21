@@ -39,7 +39,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import shutterencoder.library.FFMPEG;
+import shutterencoder.library.FFmpeg;
 import shutterencoder.ui.handlers.GlobalKeyListener;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.renderers.CollapsiblePanel;
@@ -96,7 +96,7 @@ public class Progress extends Main {
 								}
 								if (timeSinceLastInput >= 1000) {
 									if (running == false)
-										FFMPEG.resumeProcess();
+										FFmpeg.resumeProcess();
 									running = true;
 								} else {
 
@@ -104,12 +104,12 @@ public class Progress extends Main {
 									lblRemainingTime.setSize(lblRemainingTime.getPreferredSize().width, 15);
 
 									if (running == true)
-										FFMPEG.suspendProcess();
+										FFmpeg.suspendProcess();
 									running = false;
 								}
 
 								if (caseRunInBackground.isSelected() == false)
-									FFMPEG.resumeProcess();
+									FFmpeg.resumeProcess();
 
 							} while (caseRunInBackground.isSelected()
 									&& btnStart.getText().equals(Main.language.getProperty("btnPauseFunction")));

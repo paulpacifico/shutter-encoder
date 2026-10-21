@@ -62,8 +62,8 @@ import javax.swing.Timer;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Ftp;
@@ -306,11 +306,11 @@ public class UIController extends Main {
 				&& comboFonctions.getSelectedItem().equals("FrameMD5") == false) {
 				btnStart.setText(language.getProperty("btnAddToRender"));
 			} else {
-				if (FFMPEG.isRunning == false)
+				if (FFmpeg.isRunning == false)
 					btnStart.setText(language.getProperty("btnStartFunction"));
 			}
 		} else {
-			if (FFMPEG.isRunning == false)
+			if (FFmpeg.isRunning == false)
 				btnStart.setText(language.getProperty("btnStartFunction"));
 		}
 
@@ -471,7 +471,7 @@ public class UIController extends Main {
 			VideoPlayerUI.playerLoop = false;
 		
 		// IMPORTANT
-		if (FFPROBE.totalLength <= 40 && VideoPlayerUtils.preview != null)
+		if (FFprobe.totalLength <= 40 && VideoPlayerUtils.preview != null)
 		{
 			VideoPlayerUtils.preview = null;
 		}
@@ -562,13 +562,13 @@ public class UIController extends Main {
 				VideoPlayerUI.sliderSpeed.setVisible(false);
 				VideoPlayerUI.sliderVolume.setVisible(false);
 			}
-			else if (Main.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Main.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
+			else if (Main.frame.getSize().width > 654 && FFprobe.totalLength > 40 && Main.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
 			{
 				VideoPlayerUI.sliderSpeed.setVisible(true);
 				VideoPlayerUI.sliderVolume.setVisible(true);
 			}
 		}
-		else if (Main.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Main.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
+		else if (Main.frame.getSize().width > 654 && FFprobe.totalLength > 40 && Main.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
 		{
 			VideoPlayerUI.lblSpeed.setVisible(true);
 			VideoPlayerUI.lblVolume.setVisible(true);
@@ -945,7 +945,7 @@ public class UIController extends Main {
 								}
 								
 							}
-							else if (FFPROBE.gopCount > 2)
+							else if (FFprobe.gopCount > 2)
 							{
 								VideoPlayerUI.seekOnKeyFrames = true;
 							}
@@ -954,7 +954,7 @@ public class UIController extends Main {
 						|| language.getProperty("functionCut").equals(function)
 						|| language.getProperty("functionMerge").equals(function)) {
 							
-							if (FFPROBE.gopCount > 2)
+							if (FFprobe.gopCount > 2)
 								VideoPlayerUI.seekOnKeyFrames = true;
 
 							if (language.getProperty("functionCut").equals(function)
@@ -2651,8 +2651,8 @@ public class UIController extends Main {
 									grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 
 							// CalculH264
-							if (list.getSize() > 0 && FFPROBE.calcul == false)
-								FFPROBE.setLength();
+							if (list.getSize() > 0 && FFprobe.calcul == false)
+								FFprobe.setLength();
 
 							// Qualité Max
 							if (comboAccel.getSelectedItem()
@@ -2962,7 +2962,7 @@ public class UIController extends Main {
 									lblVideoBitrate.setText(language.getProperty("lblVideoBitrate"));
 									lblKbsH264.setVisible(true);
 									h264lines.setVisible(true);
-									FFPROBE.setLength();
+									FFprobe.setLength();
 								}
 								lblVBR.setText("VBR");
 							}
@@ -3216,8 +3216,8 @@ public class UIController extends Main {
 									grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 
 							// CalculH264
-							if (list.getSize() > 0 && FFPROBE.calcul == false)
-								FFPROBE.setLength();
+							if (list.getSize() > 0 && FFprobe.calcul == false)
+								FFprobe.setLength();
 							// Qualité Max
 							if (comboFonctions.getSelectedItem().equals("Theora")
 									|| comboFonctions.getSelectedItem().equals("MJPEG"))
@@ -3742,8 +3742,8 @@ public class UIController extends Main {
 									grpAdvanced.getSize().height + grpAdvanced.getLocation().y + 6);
 
 							// CalculH264
-							if (list.getSize() > 0 && FFPROBE.calcul == false)
-								FFPROBE.setLength();
+							if (list.getSize() > 0 && FFprobe.calcul == false)
+								FFprobe.setLength();
 							// Qualité Max
 							caseQMax.setEnabled(true);
 
@@ -4307,26 +4307,26 @@ public class UIController extends Main {
 				}
 				else
 				{					
-					if (FFPROBE.audioStreams > 0)
+					if (FFprobe.audioStreams > 0)
 					{
 						//Add each audio track
 						comboFilter.addItem(language.getProperty("audio"));					
-						if (FFPROBE.audioStreams > 1)
+						if (FFprobe.audioStreams > 1)
 						{
-							for (int i = 1 ; i < FFPROBE.audioStreams + 1 ; i++)
+							for (int i = 1 ; i < FFprobe.audioStreams + 1 ; i++)
 							{
 								comboFilter.addItem(language.getProperty("audio") + " #" + i);
 							}	
 						}
 					}
 						
-					if (FFPROBE.subtitleStreams > 0)
+					if (FFprobe.subtitleStreams > 0)
 					{
 						//Add each subtitles track
 						comboFilter.addItem(language.getProperty("subtitles"));
-						if (FFPROBE.subtitleStreams > 1)
+						if (FFprobe.subtitleStreams > 1)
 						{
-							for (int i = 1 ; i < FFPROBE.subtitleStreams + 1 ; i++)
+							for (int i = 1 ; i < FFprobe.subtitleStreams + 1 ; i++)
 							{
 								comboFilter.addItem(language.getProperty("subtitles") + " #" + i);
 							}	
@@ -4412,7 +4412,7 @@ public class UIController extends Main {
 				lblFilter.setIcon(new FlatSVGIcon("resources/arrow.svg", 30, 30));
 
 				String types[] = { "artistic", "stable" };
-				if (FFPROBE.totalLength > 40)
+				if (FFprobe.totalLength > 40)
 					types = new String[]{ "video" };
 
 				DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
@@ -5169,7 +5169,7 @@ public class UIController extends Main {
 
 		progressBar.setValue(0);
 
-		if (FFMPEG.isRunning)
+		if (FFmpeg.isRunning)
 		{
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			
@@ -5509,7 +5509,7 @@ public class UIController extends Main {
 		if (comboAccel.getItemCount() > 1)
 			comboAccel.setEnabled(true);
 
-		if (FFPROBE.audioOnly) {
+		if (FFprobe.audioOnly) {
 			caseVideoFadeIn.setEnabled(false);
 			caseVideoFadeOut.setEnabled(false);
 		}
@@ -5729,7 +5729,7 @@ public class UIController extends Main {
 				}
 			}
 
-			FFMPEG.errorLog.setLength(0);
+			FFmpeg.errorLog.setLength(0);
 			errorList.setLength(0);
 		} else if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && Main.cancelled == false) {
 			RenderQueue.tableRow.setRowCount(0);
@@ -5767,7 +5767,7 @@ public class UIController extends Main {
 		// Unlock the file to be deletable
 		if (scanIsRunning == false && screenshotIsRunning == false)
 		{
-			FFPROBE.analyzedMedia = null;			
+			FFprobe.analyzedMedia = null;			
 			VideoPlayerCore.videoPath = null;
 			fileList.clearSelection();
 			VideoPlayerUtils.preview = null;
@@ -5834,7 +5834,7 @@ public class UIController extends Main {
 
 	public static void lastActions() {
 
-		if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFMPEG.error == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionReplaceAudio")) == false)
+		if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFmpeg.error == false && comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionReplaceAudio")) == false)
 			list.clear();
 
 		Thread thread = new Thread(new Runnable() {

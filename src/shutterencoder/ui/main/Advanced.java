@@ -43,7 +43,7 @@ import javax.swing.SwingConstants;
 
 import com.formdev.flatlaf.ui.FlatLineBorder;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
@@ -109,11 +109,11 @@ public class Advanced extends Main {
 			public void actionPerformed(ActionEvent e) {
 
 				if (lblTFF.getText().equals("TFF"))
-					FFPROBE.fieldOrder = "0";
+					FFprobe.fieldOrder = "0";
 				else if (lblTFF.getText().equals("BFF"))
-					FFPROBE.fieldOrder = "1";
+					FFprobe.fieldOrder = "1";
 				else
-					FFPROBE.fieldOrder = "0";
+					FFprobe.fieldOrder = "0";
 
 				if (caseForcerDesentrelacement.isSelected()) {
 					comboForcerDesentrelacement.setEnabled(true);
@@ -146,7 +146,7 @@ public class Advanced extends Main {
 					lblTFF.setText("TFF");
 					
 					if (caseForcerDesentrelacement.isSelected())
-						FFPROBE.fieldOrder = "0";
+						FFprobe.fieldOrder = "0";
 				}
 
 				if (comboForcerDesentrelacement.getModel().getSize() == 2 && comboForcerDesentrelacement.getModel().getElementAt(1).equals("advanced"))
@@ -179,21 +179,21 @@ public class Advanced extends Main {
 				if (lblTFF.getText().equals("TFF")) {
 					lblTFF.setText("BFF");
 					if (caseForcerDesentrelacement.isSelected())
-						FFPROBE.fieldOrder = "1";
+						FFprobe.fieldOrder = "1";
 				} else if (lblTFF.getText().equals("BFF")
 						&& comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine") == false) {
 					lblTFF.setText("x2 T");
 					if (caseForcerDesentrelacement.isSelected())
-						FFPROBE.fieldOrder = "0";
+						FFprobe.fieldOrder = "0";
 				} else if (lblTFF.getText().equals("x2 T")
 						&& comboForcerDesentrelacement.getSelectedItem().toString().equals("detelecine") == false) {
 					lblTFF.setText("x2 B");
 					if (caseForcerDesentrelacement.isSelected())
-						FFPROBE.fieldOrder = "0";
+						FFprobe.fieldOrder = "0";
 				} else {
 					lblTFF.setText("TFF");
 					if (caseForcerDesentrelacement.isSelected())
-						FFPROBE.fieldOrder = "0";
+						FFprobe.fieldOrder = "0";
 				}
 
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the
@@ -427,7 +427,7 @@ public class Advanced extends Main {
 					comboFPS.setEnabled(false);
 				}
 
-				FFPROBE.setFilesize();
+				FFprobe.setFilesize();
 
 				// VideoPlayer.playerSetTime(VideoPlayer.playerCurrentFrame); //Use
 				// VideoPlayer.resizeAll and reload the frame
@@ -489,7 +489,7 @@ public class Advanced extends Main {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				FFPROBE.setFilesize();
+				FFprobe.setFilesize();
 			}
 
 		});

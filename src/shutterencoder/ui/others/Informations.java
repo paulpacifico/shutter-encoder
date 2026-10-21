@@ -46,7 +46,7 @@ import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.library.MEDIAINFO;
+import shutterencoder.library.Mediainfo;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
@@ -117,7 +117,7 @@ import shutterencoder.utils.Utils;
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				
-				if (drag && frame.getSize().height > 90 && MEDIAINFO.isRunning == false)
+				if (drag && frame.getSize().height > 90 && Mediainfo.isRunning == false)
 		       	{	
 			        frame.setSize(frame.getSize().width, e.getY() + 10);		
 			    	lblArrows.setLocation(0, frame.getSize().height - lblArrows.getSize().height);
@@ -129,11 +129,11 @@ import shutterencoder.utils.Utils;
 			@Override
 			public void mouseMoved(MouseEvent e) {
 				
-				if ((MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y) > frame.getSize().height - 20 && infoTabbedPane.getTabCount() > 0 && MEDIAINFO.isRunning == false)
+				if ((MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y) > frame.getSize().height - 20 && infoTabbedPane.getTabCount() > 0 && Mediainfo.isRunning == false)
 					 frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
 				 else 
 				{
-					if (drag == false && infoTabbedPane.getTabCount() > 0 && MEDIAINFO.isRunning == false)
+					if (drag == false && infoTabbedPane.getTabCount() > 0 && Mediainfo.isRunning == false)
 					 frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 			}				
@@ -155,7 +155,7 @@ import shutterencoder.utils.Utils;
 			@Override
 			public void mouseReleased(MouseEvent e) {		
 				drag = false;
-				if (MEDIAINFO.isRunning == false)
+				if (Mediainfo.isRunning == false)
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	
 				
 				Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, frame.getWidth(), frame.getHeight(), 15, 15));

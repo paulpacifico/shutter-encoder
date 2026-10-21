@@ -37,8 +37,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.RenderQueue;
@@ -47,8 +47,8 @@ public class VideoPlayerOverlay extends Main {
 
 	public static void checkSelection() {
 		
-		double ratioW = (double) FFPROBE.imageWidth / VideoPlayerUI.player.getWidth();
-		double ratioH = (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight();
+		double ratioW = (double) FFprobe.imageWidth / VideoPlayerUI.player.getWidth();
+		double ratioH = (double) FFprobe.imageHeight / VideoPlayerUI.player.getHeight();
 				
 		int outW = (int) Math.round(Main.selection.getWidth() * ratioW);
 		int outH = (int) Math.round(Main.selection.getHeight() * ratioH);
@@ -58,21 +58,21 @@ public class VideoPlayerOverlay extends Main {
 					
 		if (Main.textCropWidth.getText().matches("[0-9]+") && Main.textCropHeight.getText().matches("[0-9]+"))
 		{
-			if (Px + Integer.valueOf(Main.textCropWidth.getText()) > FFPROBE.imageWidth)
+			if (Px + Integer.valueOf(Main.textCropWidth.getText()) > FFprobe.imageWidth)
 			{
-				Px = Px + (FFPROBE.imageWidth - (Px + Integer.valueOf(Main.textCropWidth.getText())));
+				Px = Px + (FFprobe.imageWidth - (Px + Integer.valueOf(Main.textCropWidth.getText())));
 			}
 			
-			if (Py + Integer.valueOf(Main.textCropHeight.getText()) > FFPROBE.imageHeight)
+			if (Py + Integer.valueOf(Main.textCropHeight.getText()) > FFprobe.imageHeight)
 			{
-				Py = Py + (FFPROBE.imageHeight - (Py + Integer.valueOf(Main.textCropHeight.getText())));
+				Py = Py + (FFprobe.imageHeight - (Py + Integer.valueOf(Main.textCropHeight.getText())));
 			}
 						
-			if (Integer.valueOf(Main.textCropWidth.getText()) != FFPROBE.imageWidth)
+			if (Integer.valueOf(Main.textCropWidth.getText()) != FFprobe.imageWidth)
 			{
 				Main.textCropPosX.setText(String.valueOf(Px));
 			}
-			if (Integer.valueOf(Main.textCropHeight.getText()) != FFPROBE.imageHeight)
+			if (Integer.valueOf(Main.textCropHeight.getText()) != FFprobe.imageHeight)
 			{
 				Main.textCropPosY.setText(String.valueOf(Py));
 			}
@@ -170,26 +170,26 @@ public class VideoPlayerOverlay extends Main {
 		//Initialisation
 		if (Main.alphaHeight == 0)
 		{
-			Main.alphaHeight = FFPROBE.imageHeight;
+			Main.alphaHeight = FFprobe.imageHeight;
 		}
 		
 		int v = Integer.parseInt(Main.textSubtitlesPosition.getText());
 		int sz = Integer.parseInt(Main.textSubsSize.getText());
-		int newValue = (int) Math.round((double)sz*((double)Main.alphaHeight/(FFPROBE.imageHeight+v)));
+		int newValue = (int) Math.round((double)sz*((double)Main.alphaHeight/(FFprobe.imageHeight+v)));
 		
 		if (newValue > 0)
 			Main.textSubsSize.setText(String.valueOf(newValue));
 		
-		Main.alphaHeight = (int) (FFPROBE.imageHeight + v);
+		Main.alphaHeight = (int) (FFprobe.imageHeight + v);
 		
-		if (Integer.parseInt(Main.textSubsWidth.getText()) >= FFPROBE.imageWidth)
+		if (Integer.parseInt(Main.textSubsWidth.getText()) >= FFprobe.imageWidth)
 		{
-			Main.subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(), (int) (VideoPlayerUI.player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
+			Main.subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(), (int) (VideoPlayerUI.player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));
 		}
 		else
 		{
-			Main.subsCanvas.setSize((int) ((double) Integer.parseInt(Main.textSubsWidth.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
-		    		(int) (VideoPlayerUI.player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));	
+			Main.subsCanvas.setSize((int) ((double) Integer.parseInt(Main.textSubsWidth.getText()) / ( (double) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())),
+		    		(int) (VideoPlayerUI.player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));	
 			
 			Main.subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - Main.subsCanvas.getWidth()) / 2, 0);
 		}	
@@ -246,7 +246,7 @@ public class VideoPlayerOverlay extends Main {
 	    				int inS = Integer.parseInt(inTimecode[2]);
 	    				int inF = Integer.parseInt(inTimecode[3]);
 	    				 					
-	    				double subsInTime = (inH + inM + inS) * FFPROBE.accurateFPS + inF / VideoPlayerUI.inputFramerateMS;
+	    				double subsInTime = (inH + inM + inS) * FFprobe.accurateFPS + inF / VideoPlayerUI.inputFramerateMS;
 
 	    				//Reset player position to the first sub
 	    				if (subNumber == 0 && firstSub)
@@ -266,7 +266,7 @@ public class VideoPlayerOverlay extends Main {
 		    				int outM = Integer.parseInt(outTimecode[1]) * 60;
 		    				int outS = Integer.parseInt(outTimecode[2]);
 		    				int outF = Integer.parseInt(outTimecode[3]);
-		    				double subsOuTime = (outH + outM + outS) * FFPROBE.accurateFPS + outF / VideoPlayerUI.inputFramerateMS;
+		    				double subsOuTime = (outH + outM + outS) * FFprobe.accurateFPS + outF / VideoPlayerUI.inputFramerateMS;
 		
 		    				long inOffset = (long) (subsInTime - inputTime);
 							long outOffset = (long) (subsOuTime - inputTime);							    					
@@ -284,15 +284,15 @@ public class VideoPlayerOverlay extends Main {
 			             		bufferedWriter.write(String.valueOf(subNumber));
 			             		bufferedWriter.newLine();
 								
-								String iH = Main.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 3600));
-								String iM = Main.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 60) % 60);
-								String iS = Main.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS) % 60);    		
-								String iF = Main.formatterToMs.format(Math.floor(inOffset % FFPROBE.accurateFPS * VideoPlayerUI.inputFramerateMS));
+								String iH = Main.formatter.format(Math.floor(inOffset / FFprobe.accurateFPS / 3600));
+								String iM = Main.formatter.format(Math.floor(inOffset / FFprobe.accurateFPS / 60) % 60);
+								String iS = Main.formatter.format(Math.floor(inOffset / FFprobe.accurateFPS) % 60);    		
+								String iF = Main.formatterToMs.format(Math.floor(inOffset % FFprobe.accurateFPS * VideoPlayerUI.inputFramerateMS));
 								
-								String oH = Main.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 3600));
-								String oM = Main.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 60) % 60);
-								String oS = Main.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS) % 60);    		
-								String oF = Main.formatterToMs.format(Math.floor(outOffset % FFPROBE.accurateFPS * VideoPlayerUI.inputFramerateMS));
+								String oH = Main.formatter.format(Math.floor(outOffset / FFprobe.accurateFPS / 3600));
+								String oM = Main.formatter.format(Math.floor(outOffset / FFprobe.accurateFPS / 60) % 60);
+								String oS = Main.formatter.format(Math.floor(outOffset / FFprobe.accurateFPS) % 60);    		
+								String oF = Main.formatterToMs.format(Math.floor(outOffset % FFprobe.accurateFPS * VideoPlayerUI.inputFramerateMS));
 												
 								bufferedWriter.write(iH + ":" + iM + ":" + iS + "," + iF + " --> " + oH + ":" + oM + ":" + oS + "," + oF);
 			            		bufferedWriter.newLine();
@@ -326,26 +326,26 @@ public class VideoPlayerOverlay extends Main {
 		
 	public static boolean loadWatermark(int size) {
 				
-		if (FFPROBE.imageWidth != FFPROBE.previousImageWidth || FFPROBE.imageHeight != FFPROBE.previousImageHeight || Main.logoPNG == null)	
+		if (FFprobe.imageWidth != FFprobe.previousImageWidth || FFprobe.imageHeight != FFprobe.previousImageHeight || Main.logoPNG == null)	
 		{			
 			try {
 			
 				if (Main.logoPNG == null)
 				{				
-					int previousImageWidth = FFPROBE.previousImageWidth;
+					int previousImageWidth = FFprobe.previousImageWidth;
 					
 					//IMPORTANT
-					if (FFPROBE.isRunning)
+					if (FFprobe.isRunning)
 					{
 						try {
-							FFPROBE.processData.join();
+							FFprobe.processData.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
 					}
 					
 					//Keep media size
-					FFPROBE.previousImageWidth = previousImageWidth;
+					FFprobe.previousImageWidth = previousImageWidth;
 					
 					if (Main.overlayDeviceIsRunning)
 					{
@@ -353,16 +353,16 @@ public class VideoPlayerOverlay extends Main {
 					}
 					else 
 					{
-						FFPROBE.Data(Main.logoFile);					
+						FFprobe.Data(Main.logoFile);					
 						try {
-							FFPROBE.processData.join();
+							FFprobe.processData.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
 					}
 					
-					Main.logoWidth = FFPROBE.imageWidth;
-					Main.logoHeight = FFPROBE.imageHeight;
+					Main.logoWidth = FFprobe.imageWidth;
+					Main.logoHeight = FFprobe.imageHeight;
 					
 					//IMPORTANT keeps original source file data			
 					FunctionUtils.analyze(new File(VideoPlayerCore.videoPath), false, true);
@@ -389,20 +389,20 @@ public class VideoPlayerOverlay extends Main {
 				{
 					if (Main.overlayDeviceIsRunning)
 					{
-						FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
+						FFmpeg.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
 					}
 					else if (Main.logoPNG == null)
 					{
-						FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Main.logoFile + '"' + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
+						FFmpeg.run(" -v quiet -hide_banner -i " + '"' + Main.logoFile + '"' + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
 					}
 					
 					do {
 						Thread.sleep(10);
-					} while (FFMPEG.process.isAlive() == false);
+					} while (FFmpeg.process.isAlive() == false);
 					
 					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					
-					InputStream videoInput = FFMPEG.process.getInputStream(); 
+					InputStream videoInput = FFmpeg.process.getInputStream(); 
 					InputStream is = new BufferedInputStream(videoInput);		
 					
 					int frameSize = Main.logoWidth * Main.logoHeight * 4;

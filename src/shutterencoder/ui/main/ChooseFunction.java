@@ -77,19 +77,18 @@ import shutterencoder.functions.VideoEncoders;
 import shutterencoder.functions.VideoInserts;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.ANONYMIZER;
-import shutterencoder.library.BACKGROUNDREMOVER;
-import shutterencoder.library.BMXTRANSWRAP;
-import shutterencoder.library.DCRAW;
-import shutterencoder.library.DEMUCS;
-import shutterencoder.library.DEOLDIFY;
-import shutterencoder.library.FFMPEG;
+import shutterencoder.library.Anonymizer;
+import shutterencoder.library.Bmxtranswrap;
+import shutterencoder.library.Dcraw;
+import shutterencoder.library.Demucs;
+import shutterencoder.library.Deoldify;
+import shutterencoder.library.FFmpeg;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.NCNN;
-import shutterencoder.library.PYTHON;
-import shutterencoder.library.WHISPER;
-import shutterencoder.library.XPDFREADER;
-import shutterencoder.library.YOUTUBEDL;
+import shutterencoder.library.Ncnn;
+import shutterencoder.library.Python;
+import shutterencoder.library.Whisper;
+import shutterencoder.library.Xpdfreader;
+import shutterencoder.library.Ytdlp;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.Functions;
 import shutterencoder.ui.others.ManageFunctions;
@@ -127,7 +126,7 @@ public class ChooseFunction extends Main {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				if (FFMPEG.runProcess != null && FFMPEG.runProcess.isAlive())
+				if (FFmpeg.runProcess != null && FFmpeg.runProcess.isAlive())
 				{
 					//Suspend the process
 					if (btnStart.getText().equals(language.getProperty("btnPauseFunction")))
@@ -148,25 +147,25 @@ public class ChooseFunction extends Main {
 					
 					cancelled = true;
 					
-					FFMPEG.isRunning = false;
+					FFmpeg.isRunning = false;
 
 					if (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
-						FFMPEG.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le détruire
+						FFmpeg.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le détruire
 				
 					if (InputAndOutput.segments != "")
 					{
-						FFMPEG.process.destroyForcibly();
+						FFmpeg.process.destroyForcibly();
 						
 						try {
-							FFMPEG.runProcess.interrupt();
+							FFmpeg.runProcess.interrupt();
 						} catch(Exception err) {}
 					}
 					else
 					{
 						try {
-							FFMPEG.writer.write('q');
-							FFMPEG.writer.flush();
-							FFMPEG.writer.close();
+							FFmpeg.writer.write('q');
+							FFmpeg.writer.flush();
+							FFmpeg.writer.close();
 						} catch (IOException er) {}	
 					}
 
@@ -179,27 +178,27 @@ public class ChooseFunction extends Main {
 								Thread.sleep(10);
 							} catch (InterruptedException e1) {
 							}
-						} while (FFMPEG.runProcess.isAlive());
+						} while (FFmpeg.runProcess.isAlive());
 
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));					
 					});
 					wait.start();
 				}
 
-				if (DCRAW.runProcess != null) {
-					if (DCRAW.runProcess.isAlive()) {
-						DCRAW.process.destroyForcibly();
+				if (Dcraw.runProcess != null) {
+					if (Dcraw.runProcess.isAlive()) {
+						Dcraw.process.destroyForcibly();
 					}
 				}
 				
-				if (XPDFREADER.runProcess != null) {
-					if (XPDFREADER.runProcess.isAlive()) {
-						XPDFREADER.process.destroyForcibly();
+				if (Xpdfreader.runProcess != null) {
+					if (Xpdfreader.runProcess.isAlive()) {
+						Xpdfreader.process.destroyForcibly();
 					}
 				}
 
-				if (YOUTUBEDL.runProcess != null) {
-					if (YOUTUBEDL.runProcess.isAlive()) {
+				if (Ytdlp.runProcess != null) {
+					if (Ytdlp.runProcess.isAlive()) {
 						if (System.getProperty("os.name").contains("Windows")) {
 							try {
 								@SuppressWarnings("unused")
@@ -208,56 +207,56 @@ public class ChooseFunction extends Main {
 							} catch (Exception e1) {
 							}
 						} else {
-							YOUTUBEDL.process.destroyForcibly();
+							Ytdlp.process.destroyForcibly();
 						}
 					}
 				}
 
-				if (BMXTRANSWRAP.runProcess != null) {
-					if (BMXTRANSWRAP.runProcess.isAlive()) {
-						BMXTRANSWRAP.process.destroyForcibly();
+				if (Bmxtranswrap.runProcess != null) {
+					if (Bmxtranswrap.runProcess.isAlive()) {
+						Bmxtranswrap.process.destroyForcibly();
 					}
 				}
 
-				if (NCNN.runProcess != null) {
-					if (NCNN.runProcess.isAlive()) {
-						NCNN.process.destroyForcibly();
+				if (Ncnn.runProcess != null) {
+					if (Ncnn.runProcess.isAlive()) {
+						Ncnn.process.destroyForcibly();
 					}
 				}
 				
-				if (WHISPER.runProcess != null) {
-					if (WHISPER.runProcess.isAlive()) {
-						WHISPER.process.destroyForcibly();
+				if (Whisper.runProcess != null) {
+					if (Whisper.runProcess.isAlive()) {
+						Whisper.process.destroyForcibly();
 					}
 				}
 				
-				if (PYTHON.runProcess != null) {
-					if (PYTHON.runProcess.isAlive()) {
-						PYTHON.process.destroyForcibly();
+				if (Python.runProcess != null) {
+					if (Python.runProcess.isAlive()) {
+						Python.process.destroyForcibly();
 					}
 				}
 				
-				if (DEMUCS.runProcess != null) {
-					if (DEMUCS.runProcess.isAlive()) {
-						DEMUCS.process.destroyForcibly();
+				if (Demucs.runProcess != null) {
+					if (Demucs.runProcess.isAlive()) {
+						Demucs.process.destroyForcibly();
 					}
 				}
 				
-				if (DEOLDIFY.runProcess != null) {
-					if (DEOLDIFY.runProcess.isAlive()) {
-						DEOLDIFY.process.destroyForcibly();
+				if (Deoldify.runProcess != null) {
+					if (Deoldify.runProcess.isAlive()) {
+						Deoldify.process.destroyForcibly();
 					}
 				}
 				
-				if (ANONYMIZER.runProcess != null) {
-					if (ANONYMIZER.runProcess.isAlive()) {
-						ANONYMIZER.process.destroyForcibly();
+				if (Anonymizer.runProcess != null) {
+					if (Anonymizer.runProcess.isAlive()) {
+						Anonymizer.process.destroyForcibly();
 					}
 				}
 				
-				if (BACKGROUNDREMOVER.runProcess != null) {
-					if (BACKGROUNDREMOVER.runProcess.isAlive()) {
-						BACKGROUNDREMOVER.process.destroyForcibly();
+				if (shutterencoder.library.BackgroundRemover.runProcess != null) {
+					if (shutterencoder.library.BackgroundRemover.runProcess.isAlive()) {
+						shutterencoder.library.BackgroundRemover.process.destroyForcibly();
 					}
 				}
 				
@@ -450,14 +449,14 @@ public class ChooseFunction extends Main {
 				if ((btnStart.getText().equals(language.getProperty("btnStartFunction")) || btnStart.getText().equals(language.getProperty("btnAddToRender"))) && list.getSize() > 0)
 				{
 					grpDestination.setSelectedIndex(0);
-					FFMPEG.error = false;
-					FFMPEG.errorLog.setLength(0);
+					FFmpeg.error = false;
+					FFmpeg.errorLog.setLength(0);
 					errorList.setLength(0);
 					
 					// Temps écoulé
 					lblElapsedTime.setVisible(false);
-					FFMPEG.elapsedTime = 0;
-					FFMPEG.previousElapsedTime = 0;
+					FFmpeg.elapsedTime = 0;
+					FFmpeg.previousElapsedTime = 0;
 
 					if (btnStart.getText().equals(language.getProperty("btnAddToRender")))
 						RenderQueue.btnStartRender.setEnabled(true);
@@ -674,18 +673,18 @@ public class ChooseFunction extends Main {
 
 								switch (NLE) {
 								case 0:
-									FFMPEG.mseSensibility = 150f;
+									FFmpeg.mseSensibility = 150f;
 									break;
 								case 1:
-									FFMPEG.mseSensibility = 150f;
+									FFmpeg.mseSensibility = 150f;
 									sourceFile = getClass().getResource("/resources/davinci.png");
 									break;
 								case 2:
-									FFMPEG.mseSensibility = 800f;
+									FFmpeg.mseSensibility = 800f;
 									sourceFile = getClass().getResource("/resources/premiere.png");
 									break;
 								case 3:
-									FFMPEG.mseSensibility = 800f;
+									FFmpeg.mseSensibility = 800f;
 									
 									SystemFileChooser fc = new SystemFileChooser();
 									fc.setCurrentDirectory(new File(list.elementAt(0).toString()).getParentFile());
@@ -798,7 +797,7 @@ public class ChooseFunction extends Main {
 						caseRunInBackground.setEnabled(false);
 						caseRunInBackground.setSelected(false);
 
-						FFMPEG.suspendProcess();
+						FFmpeg.suspendProcess();
 
 						btnStart.setText(language.getProperty("btnResumeFunction"));
 						lblRemainingTime.setText(language.getProperty("timePause"));
@@ -806,21 +805,21 @@ public class ChooseFunction extends Main {
 					} else if (btnStart.getText().equals(language.getProperty("btnResumeFunction"))) {
 						caseRunInBackground.setEnabled(true);
 
-						FFMPEG.resumeProcess();
+						FFmpeg.resumeProcess();
 
 						btnStart.setText(language.getProperty("btnPauseFunction"));
 					} else if (btnStart.getText().equals(language.getProperty("btnStopRecording"))) {
-						if (FFMPEG.runProcess != null) {
-							if (FFMPEG.runProcess.isAlive()) {
+						if (FFmpeg.runProcess != null) {
+							if (FFmpeg.runProcess.isAlive()) {
 
 								try {
-									FFMPEG.writer.write('q');
-									FFMPEG.writer.flush();
-									FFMPEG.writer.close();
+									FFmpeg.writer.write('q');
+									FFmpeg.writer.flush();
+									FFmpeg.writer.close();
 								} catch (IOException er) {}
 
 								try {
-									FFMPEG.runProcess.join();
+									FFmpeg.runProcess.join();
 								} catch (InterruptedException er) {
 								    Thread.currentThread().interrupt();
 								}

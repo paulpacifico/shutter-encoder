@@ -28,7 +28,7 @@ import java.awt.event.MouseWheelEvent;
 
 import javax.swing.JPanel;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Renamer;
@@ -204,7 +204,7 @@ public class HardwareListener extends Main {
 									if (isPlaying)
 								    	VideoPlayerCore.playerPause();
 									
-									VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS));
+									VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame - Math.ceil(FFprobe.accurateFPS));
 
 									if (isPlaying)
 								    	VideoPlayerUI.btnPlay.doClick();
@@ -216,7 +216,7 @@ public class HardwareListener extends Main {
 									if (isPlaying)
 								    	VideoPlayerCore.playerPause();
 									
-									VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame - Math.ceil(FFPROBE.accurateFPS) * 10));
+									VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame - Math.ceil(FFprobe.accurateFPS) * 10));
 
 									if (isPlaying)
 								    	VideoPlayerUI.btnPlay.doClick();
@@ -236,7 +236,7 @@ public class HardwareListener extends Main {
 									if (isPlaying)
 								    	VideoPlayerCore.playerPause();
 									
-									VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS));
+									VideoPlayerCore.playerSetTime((double) VideoPlayerCore.playerCurrentFrame + Math.ceil(FFprobe.accurateFPS));
 
 									if (isPlaying)
 								    	VideoPlayerUI.btnPlay.doClick();
@@ -248,7 +248,7 @@ public class HardwareListener extends Main {
 									if (isPlaying)
 								    	VideoPlayerCore.playerPause();
 									
-									VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame + Math.ceil(FFPROBE.accurateFPS) * 10));
+									VideoPlayerCore.playerSetTime((double) (VideoPlayerCore.playerCurrentFrame + Math.ceil(FFprobe.accurateFPS) * 10));
 
 									if (isPlaying)
 								    	VideoPlayerUI.btnPlay.doClick();

@@ -58,7 +58,7 @@ import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.library.SEVENZIP;
+import shutterencoder.library.Sevenzip;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
@@ -870,12 +870,12 @@ public boolean importData(JComponent comp, Transferable t) {
 	            {
 	            	Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	            	File droppedFile = new File(file.toString());
-	            	SEVENZIP.run("e " + '"' + droppedFile.toString() + '"' + " -y -o" + '"' + Functions.functionsFolder + '"', false);
+	            	Sevenzip.run("e " + '"' + droppedFile.toString() + '"' + " -y -o" + '"' + Functions.functionsFolder + '"', false);
 	            	
 	            	try {
 		            	do {
 		            		Thread.sleep(100);
-		            	} while (SEVENZIP.isRunning);
+		            	} while (Sevenzip.isRunning);
 	            	} catch (Exception e){}
 	            	
 	            	Functions.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));

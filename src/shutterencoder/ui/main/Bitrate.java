@@ -50,7 +50,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.ui.FlatLineBorder;
 
 import shutterencoder.functions.VideoEncoders;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -284,7 +284,7 @@ public class Bitrate extends Main {
 							
 							int audio = Integer.parseInt(debitAudio.getSelectedItem().toString());
 							float finalSize = Float.parseFloat(bitrateSize.getText().replace(",", "."));
-							float result = (float) finalSize / ((h * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFPROBE.currentFPS)));
+							float result = (float) finalSize / ((h * 3600) + (min * 60) + sec + (frames * ((float) 1 / FFprobe.currentFPS)));
 							float resultAudio = (float) audio / 8 / 1024;
 							float resultatdebit = (result - resultAudio) * 8 * 1024;
 							debitVideo.getModel().setSelectedItem((int) resultatdebit);
@@ -361,7 +361,7 @@ public class Bitrate extends Main {
 			public void keyReleased(KeyEvent e) {
 				try {
 					if (bitrateSize.isFocusOwner() == false)
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 				} catch (Exception e1) {
 				}
 			}
@@ -376,7 +376,7 @@ public class Bitrate extends Main {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if (bitrateSize.isFocusOwner() == false)
-						FFPROBE.setFilesize();
+						FFprobe.setFilesize();
 
 					if (debitVideo.getSelectedItem().toString().equals(language.getProperty("lblBest")))
 						debitVideo.setSelectedIndex(1);
@@ -625,7 +625,7 @@ public class Bitrate extends Main {
 									&& comboFonctions.getSelectedItem().toString().equals("VP9") == false
 									&& comboFonctions.getSelectedItem().toString().contains("H.26") == false)
 						case2pass.setEnabled(true);
-					FFPROBE.setLength();
+					FFprobe.setLength();
 				}
 
 				if (comboFonctions.getSelectedItem().toString().equals("AV1"))

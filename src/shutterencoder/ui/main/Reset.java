@@ -31,7 +31,7 @@ import javax.swing.JCheckBox;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
@@ -115,7 +115,7 @@ public class Reset extends Main {
 					h264lines.setVisible(true);
 
 					if (comboFonctions.getSelectedItem().toString().contains("Blu-ray"))
-						FFPROBE.setLength();
+						FFprobe.setLength();
 
 					case2pass.setSelected(false);
 					case2pass.setEnabled(true);

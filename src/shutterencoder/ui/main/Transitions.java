@@ -40,7 +40,7 @@ import javax.swing.SwingConstants;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.ui.FlatLineBorder;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
@@ -85,7 +85,7 @@ public class Transitions extends Main {
 
 					float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600
 							+ Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60
-							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS
+							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFprobe.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
 					VideoPlayerCore.playerCurrentFrame = timeIn;
@@ -172,7 +172,7 @@ public class Transitions extends Main {
 				{
 					float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600
 							+ Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60
-							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS
+							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFprobe.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
 					VideoPlayerCore.playerCurrentFrame = timeIn;
@@ -222,7 +222,7 @@ public class Transitions extends Main {
 
 					float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600
 							+ Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60
-							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS
+							+ Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFprobe.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
 					VideoPlayerCore.playerCurrentFrame = timeIn;
@@ -297,7 +297,7 @@ public class Transitions extends Main {
 
 					float timeOut = (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600
 							+ Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60
-							+ Integer.parseInt(VideoPlayerUI.caseOutS.getText())) * FFPROBE.currentFPS
+							+ Integer.parseInt(VideoPlayerUI.caseOutS.getText())) * FFprobe.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseOutF.getText());
 
 					int spinnerValue = Integer.parseInt(spinnerVideoFadeOut.getText());
@@ -390,7 +390,7 @@ public class Transitions extends Main {
 				if (caseVideoFadeOut.isSelected()) {
 					float timeOut = (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600
 							+ Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60
-							+ Integer.parseInt(VideoPlayerUI.caseOutS.getText())) * FFPROBE.currentFPS
+							+ Integer.parseInt(VideoPlayerUI.caseOutS.getText())) * FFprobe.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseOutF.getText());
 
 					int spinnerValue = Integer.parseInt(spinnerVideoFadeOut.getText());
@@ -465,7 +465,7 @@ public class Transitions extends Main {
 
 					float timeOut = (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600
 							+ Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60
-							+ Integer.parseInt(VideoPlayerUI.caseOutS.getText())) * FFPROBE.currentFPS
+							+ Integer.parseInt(VideoPlayerUI.caseOutS.getText())) * FFprobe.currentFPS
 							+ Integer.parseInt(VideoPlayerUI.caseOutF.getText());
 
 					int spinnerValue = Integer.parseInt(spinnerVideoFadeOut.getText());

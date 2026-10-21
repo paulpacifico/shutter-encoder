@@ -87,18 +87,18 @@ import com.formdev.flatlaf.util.SystemFileChooser;
 import shutterencoder.functions.Transcribe;
 import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.BMXTRANSWRAP;
-import shutterencoder.library.DCRAW;
-import shutterencoder.library.DEOLDIFY;
-import shutterencoder.library.DVDAUTHOR;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Bmxtranswrap;
+import shutterencoder.library.Dcraw;
+import shutterencoder.library.Deoldify;
+import shutterencoder.library.Dvdauthor;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.PYTHON;
-import shutterencoder.library.TSMUXER;
-import shutterencoder.library.WHISPER;
-import shutterencoder.library.XPDFREADER;
-import shutterencoder.library.YOUTUBEDL;
+import shutterencoder.library.Python;
+import shutterencoder.library.Tsmuxer;
+import shutterencoder.library.Whisper;
+import shutterencoder.library.Xpdfreader;
+import shutterencoder.library.Ytdlp;
 import shutterencoder.ui.main.SetAudio;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
@@ -1947,7 +1947,7 @@ public class Utils extends Main {
 																{
 																	do {
 																		Thread.sleep(100);
-																	} while (FFMPEG.isRunning);
+																	} while (FFmpeg.isRunning);
 																}
 															} catch (InterruptedException er) {}
 																		
@@ -2246,8 +2246,8 @@ public class Utils extends Main {
 							if (caseEnableCrop.isSelected())
 							{
 								selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / Main.playerRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / Main.playerRatio));
-								int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
-								int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
+								int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight()) / FFprobe.imageHeight);
+								int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getHeight()) / FFprobe.imageHeight);
 								
 								if (w > VideoPlayerUI.player.getWidth())
 									w = VideoPlayerUI.player.getWidth();
@@ -2284,14 +2284,14 @@ public class Utils extends Main {
 							//grpSubtitles
 							if (caseAddSubtitles.isSelected())
 							{						    		
-								if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth)
+								if (Integer.parseInt(textSubsWidth.getText()) >= FFprobe.imageWidth)
 								{
-									subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(), (int) (VideoPlayerUI.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
+									subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(), (int) (VideoPlayerUI.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));
 								}
 								else
 								{
-									subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
-								    		(int) (VideoPlayerUI.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));	
+									subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText()) / ( (float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())),
+								    		(int) (VideoPlayerUI.player.getHeight() + (float) Integer.parseInt(textSubtitlesPosition.getText()) / ( (float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));	
 									
 									subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
 								}			
@@ -2691,33 +2691,33 @@ public class Utils extends Main {
 		
 		try {
 			if (btnStart.getText().equals(Main.language.getProperty("btnResumeFunction")))
-				FFMPEG.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le
+				FFmpeg.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le
 										// détruire
-			FFMPEG.process.destroyForcibly();
+			FFmpeg.process.destroyForcibly();
 			
 			VideoPlayerUtils.stopWaveformCreation();
 			
 			VideoPlayerUtils.stopThumbnailsCreation();
 			
-			if (FFPROBE.isRunning)
-				FFPROBE.process.destroyForcibly();
+			if (FFprobe.isRunning)
+				FFprobe.process.destroyForcibly();
 			
-			if (BMXTRANSWRAP.isRunning)
-				BMXTRANSWRAP.process.destroyForcibly();
+			if (Bmxtranswrap.isRunning)
+				Bmxtranswrap.process.destroyForcibly();
 
-			if (DCRAW.isRunning)
-				DCRAW.process.destroyForcibly();
+			if (Dcraw.isRunning)
+				Dcraw.process.destroyForcibly();
 			
-			if (XPDFREADER.isRunning)
-				XPDFREADER.process.destroyForcibly();
+			if (Xpdfreader.isRunning)
+				Xpdfreader.process.destroyForcibly();
 
-			if (DVDAUTHOR.isRunning)
-				DVDAUTHOR.process.destroyForcibly();
+			if (Dvdauthor.isRunning)
+				Dvdauthor.process.destroyForcibly();
 			
-			if (TSMUXER.isRunning)
-				TSMUXER.process.destroyForcibly();
+			if (Tsmuxer.isRunning)
+				Tsmuxer.process.destroyForcibly();
 			
-			if (YOUTUBEDL.isRunning)
+			if (Ytdlp.isRunning)
 			{
 				if (System.getProperty("os.name").contains("Windows"))
 				{						
@@ -2728,15 +2728,15 @@ public class Utils extends Main {
 				}
 				else
 				{
-					YOUTUBEDL.process.destroyForcibly();
+					Ytdlp.process.destroyForcibly();
 				}
 			}
 			
-			if (PYTHON.runProcess != null && PYTHON.runProcess.isAlive())
-				PYTHON.process.destroyForcibly();
+			if (Python.runProcess != null && Python.runProcess.isAlive())
+				Python.process.destroyForcibly();
 			
-			if (WHISPER.runProcess != null && WHISPER.runProcess.isAlive())
-				WHISPER.process.destroyForcibly();
+			if (Whisper.runProcess != null && Whisper.runProcess.isAlive())
+				Whisper.process.destroyForcibly();
 			
 		} catch (Exception er) {}
 
@@ -2858,16 +2858,16 @@ public class Utils extends Main {
 			Transcribe.transcriptionFolder.delete();
 		}
 		
-		if (Main.lblCurrentEncoding.getText().equals(Main.language.getProperty("downloadingAIModel")) && WHISPER.checkIfModelExists() != null)
+		if (Main.lblCurrentEncoding.getText().equals(Main.language.getProperty("downloadingAIModel")) && Whisper.checkIfModelExists() != null)
 		{
 			try {
-				FileUtils.deleteDirectory(WHISPER.checkIfModelExists());
+				FileUtils.deleteDirectory(Whisper.checkIfModelExists());
 			} catch (IOException e1) {}	
 		}
 		
 		//Delete Colorize video folder
 		try {
-			FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
+			FileUtils.deleteDirectory(new File(Deoldify.deoldifyFolder + "/video"));
 		} catch (Exception er) {}
 
 		if (FunctionUtils.deleteSRT && subtitlesFilePath != null)

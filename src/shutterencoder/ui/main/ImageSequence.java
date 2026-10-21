@@ -35,7 +35,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
@@ -95,7 +95,7 @@ public class ImageSequence extends Main {
 
 				if (list.size() > 0)
 				{
-					FFPROBE.analyzedMedia = null;
+					FFprobe.analyzedMedia = null;
 					
 					if (caseEnableSequence.isSelected())
 					{

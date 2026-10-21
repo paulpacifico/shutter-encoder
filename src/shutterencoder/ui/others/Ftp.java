@@ -61,7 +61,7 @@ import org.apache.commons.net.io.CopyStreamAdapter;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.library.FFMPEG;
+import shutterencoder.library.FFmpeg;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
@@ -354,8 +354,8 @@ public class Ftp {
 		if (btnOK.isEnabled() == false && Main.cancelled == false)
 		{			
 				UIController.disableAll();
-				FFMPEG.btnStart.setEnabled(false);
-				FFMPEG.btnCancel.setEnabled(true);
+				FFmpeg.btnStart.setEnabled(false);
+				FFmpeg.btnCancel.setEnabled(true);
 			
 				Main.cancelled = false;
 				boolean uploaded = false;

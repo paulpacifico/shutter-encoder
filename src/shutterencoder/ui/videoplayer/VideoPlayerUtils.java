@@ -52,12 +52,12 @@ import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.DCRAW;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Dcraw;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.NCNN;
-import shutterencoder.library.XPDFREADER;
+import shutterencoder.library.Ncnn;
+import shutterencoder.library.Xpdfreader;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
@@ -94,7 +94,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 			@Override
 			public void run()
 			{    			
-				if (FFMPEG.isRunning == false
+				if (FFmpeg.isRunning == false
 		    	|| (Main.btnStart.getText().equals(Main.language.getProperty("btnPauseFunction")) == false
 		    	&& Main.btnStart.getText().equals(Main.language.getProperty("resume")) == false
 		    	&& Main.btnStart.getText().equals(Main.language.getProperty("btnStopRecording")) == false))
@@ -164,10 +164,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							}
 							
 							//IMPORTANT
-							if (FFPROBE.isRunning)
+							if (FFprobe.isRunning)
 							{
 								try {
-									FFPROBE.processData.join();
+									FFprobe.processData.join();
 								} catch (InterruptedException er) {
 								    Thread.currentThread().interrupt();
 								}
@@ -226,7 +226,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								case ".srw":
 								case ".x3f":
 									isRaw = true;
-									FFPROBE.totalLength = 0;
+									FFprobe.totalLength = 0;
 							}
 				
 							try {
@@ -236,7 +236,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							//IMPORTANT							
 							btnStop.doClick();							
 							Main.fileList.repaint();							
-							fileDuration = FFPROBE.totalLength; //Avoid a bug when totalLength is loader somewhere else
+							fileDuration = FFprobe.totalLength; //Avoid a bug when totalLength is loader somewhere else
 
 							if (isRaw)
 							{
@@ -275,30 +275,30 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 														
 							//Get GOP size
 							seekOnKeyFrames = false;
-							if (FFPROBE.audioOnly == false)
+							if (FFprobe.audioOnly == false)
 							{							
-								FFPROBE.AnalyzeGOP(videoPath, false);
+								FFprobe.AnalyzeGOP(videoPath, false);
 								do {
 									//Slow down the loop
 									try {
 										Thread.sleep(1);
 									} catch (InterruptedException e) {}
 									
-									if (FFPROBE.gopCount > 2)
+									if (FFprobe.gopCount > 2)
 									{										
-										FFPROBE.process.destroyForcibly();
+										FFprobe.process.destroyForcibly();
 										break;
 									}
-								} while (FFPROBE.processGOP.isAlive());								
+								} while (FFprobe.processGOP.isAlive());								
 							}
 							
 							//Jump on key frames only
-							if (FFPROBE.audioOnly == false
+							if (FFprobe.audioOnly == false
 							&& (Main.comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionCut"))
 							|| Main.comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionRewrap"))
 							|| Main.comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionConform"))))
 							{
-								if (FFPROBE.gopCount > 2)
+								if (FFprobe.gopCount > 2)
 								{
 									seekOnKeyFrames = true;
 								}
@@ -345,7 +345,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								Main.autoEmbed = false;
 								
 								try {
-									FFMPEG.runProcess.join();
+									FFmpeg.runProcess.join();
 								} catch (InterruptedException e) {
 								    Thread.currentThread().interrupt();
 								}
@@ -353,11 +353,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 														
 							if ((System.getProperty("os.name").contains("Mac") && Main.arch.equals("x86_64")) || System.getProperty("os.name").contains("Linux"))
 							{
-								if (FFPROBE.subtitleStreams != Main.comboSubsSource.getItemCount() - 1)
+								if (FFprobe.subtitleStreams != Main.comboSubsSource.getItemCount() - 1)
 								{
 									Main.comboSubsSource.removeAllItems();
 									Main.comboSubsSource.addItem(Main.language.getProperty("file"));
-									for (int i = 0 ; i < FFPROBE.subtitleStreams ; i++)
+									for (int i = 0 ; i < FFprobe.subtitleStreams ; i++)
 									{
 										Main.comboSubsSource.addItem(Main.language.getProperty("source") + " #" + (i + 1));
 									}
@@ -365,11 +365,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							}
 							else
 							{
-								if (FFPROBE.subtitleStreams != Main.comboSubsSource.getItemCount() - 2)
+								if (FFprobe.subtitleStreams != Main.comboSubsSource.getItemCount() - 2)
 								{
 									Main.comboSubsSource.removeAllItems();
 									Main.comboSubsSource.addItem(Main.language.getProperty("file"));								
-									for (int i = 0 ; i < FFPROBE.subtitleStreams ; i++)
+									for (int i = 0 ; i < FFprobe.subtitleStreams ; i++)
 									{
 										Main.comboSubsSource.addItem(Main.language.getProperty("source") + " #" + (i + 1));
 									}
@@ -385,7 +385,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								inputFramerateMS = Float.parseFloat(Main.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
 							}
 							else					
-								inputFramerateMS = (double) (1000 / FFPROBE.accurateFPS);		
+								inputFramerateMS = (double) (1000 / FFprobe.accurateFPS);		
 									
 							bufferCurrentFrame = 0;
 							playerCurrentFrame = 0;
@@ -393,7 +393,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							caseInternalTc.setEnabled(true);	
 							Main.caseShowTimecode.setEnabled(true);
 							
-							Main.textSubsWidth.setText(String.valueOf(FFPROBE.imageWidth));
+							Main.textSubsWidth.setText(String.valueOf(FFprobe.imageWidth));
 							
 							setInfo();
 							
@@ -424,7 +424,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 								lblDuration.setVisible(true);
 							}
 																					
-							totalFrames = Math.round((double) fileDuration / 1000 * FFPROBE.accurateFPS);
+							totalFrames = Math.round((double) fileDuration / 1000 * FFprobe.accurateFPS);
 							
 							//Reset boxes
 							if (caseApplyCutToAll.isVisible() && caseApplyCutToAll.isSelected())
@@ -453,9 +453,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							
 							//Scaling text & logo
 							double scale = 0.0f;
-							if (FFPROBE.previousImageWidth > 0)	
+							if (FFprobe.previousImageWidth > 0)	
 							{
-								scale = ((double) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+								scale = ((double) FFprobe.imageWidth / FFprobe.previousImageWidth);
 								
 								if (scale != 0.0f)
 								{
@@ -472,7 +472,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 									}
 									
 									//Watermark
-									if (Main.caseAddWatermark.isSelected() && (FFPROBE.imageWidth != FFPROBE.previousImageWidth || FFPROBE.imageHeight != FFPROBE.previousImageHeight))				
+									if (Main.caseAddWatermark.isSelected() && (FFprobe.imageWidth != FFprobe.previousImageWidth || FFprobe.imageHeight != FFprobe.previousImageHeight))				
 									{	
 										Main.textWatermarkSize.setText(String.valueOf(Math.round(Integer.parseInt(Main.textWatermarkSize.getText()) * scale)));	
 									}
@@ -635,9 +635,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	public static void setInfo() {
 		    	
 		String tff = "";
-		if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
+		if (FFprobe.interlaced != null && FFprobe.interlaced.equals("1"))
 		{
-			if (FFPROBE.fieldOrder.equals("0"))
+			if (FFprobe.fieldOrder.equals("0"))
 			{
 				tff = " TFF";
 			}
@@ -645,10 +645,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				tff = " BFF";
 		}
 	
-		if (FFPROBE.videoCodec != null && FFPROBE.imageResolution != null
+		if (FFprobe.videoCodec != null && FFprobe.imageResolution != null
 		&& fileDuration > 40 && Main.inputDeviceIsRunning == false)
 		{
-			String vcodec = FFPROBE.videoCodec.replace("video", "");
+			String vcodec = FFprobe.videoCodec.replace("video", "");
 			for (String s : Main.functionsList)
 			{
 				if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
@@ -661,11 +661,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					vcodec = vcodec.toUpperCase();
 			}
 
-			showScale.setText(FFPROBE.imageResolution + " " + vcodec + tff + " " + FFPROBE.imageDepth + "-bit");
+			showScale.setText(FFprobe.imageResolution + " " + vcodec + tff + " " + FFprobe.imageDepth + "-bit");
 		}
-		else if (FFPROBE.imageResolution != null)
+		else if (FFprobe.imageResolution != null)
 		{
-			showScale.setText(FFPROBE.imageResolution + tff);
+			showScale.setText(FFprobe.imageResolution + tff);
 		}
 		
 		showScale.repaint();
@@ -676,17 +676,17 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		
 		if (Timecode.isDropFrame())
 		{		
-			if (FFPROBE.currentFPS == 29.97f)
+			if (FFprobe.currentFPS == 29.97f)
 			{
 				return 30;
 			}
-			else if (FFPROBE.currentFPS == 59.94f)
+			else if (FFprobe.currentFPS == 59.94f)
 			{
 				return 60;
 			}
 		}
 		
-		return FFPROBE.accurateFPS;
+		return FFprobe.accurateFPS;
 	}
 
 	public static boolean getFileList(String file, double fileDuration) {
@@ -708,7 +708,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					String in[] = s[1].split(":");
 					String out[] = s[2].split(":");					
 					
-					totalFrames = Math.round((double) fileDuration / 1000 * FFPROBE.accurateFPS);
+					totalFrames = Math.round((double) fileDuration / 1000 * FFprobe.accurateFPS);
 					
 					if (s[0].equals(file))
 					{											
@@ -791,7 +791,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					inputFramerateMS = Float.parseFloat(Main.caseSequenceFPS.getSelectedItem().toString().replace(",", "."));
 				}
 				else			
-					inputFramerateMS = (double) (1000 / FFPROBE.accurateFPS);	
+					inputFramerateMS = (double) (1000 / FFprobe.accurateFPS);	
 																			
 				setMarkers();	
 				totalDuration();
@@ -1250,7 +1250,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					case "Xvid":
 					case "Blu-ray":
 	
-			    	    FFPROBE.setFilesize();
+			    	    FFprobe.setFilesize();
 			    	    
 		    	     break;
 	    		}
@@ -1261,10 +1261,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 
 	public static void addWaveform(boolean newWaveform) {
 
-		if (FFMPEG.isRunning == false
+		if (FFmpeg.isRunning == false
 		&& waveformContainer.isVisible()
 		&& caseShowWaveform.isSelected()
-		&& FFPROBE.hasAudio
+		&& FFprobe.hasAudio
 		&& addWaveformIsRunning == false
 		&& Settings.btnDisableVideoPlayer.isSelected() == false)
 		{		
@@ -1318,11 +1318,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						if (size > 549944)
 							size = 549944;
 						
-						if (FFPROBE.channels > 1 && comboAudioTrack.isVisible())
+						if (FFprobe.channels > 1 && comboAudioTrack.isVisible())
 						{		
 							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
 							{
-								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFPROBE.channels + ",aresample=" + size +"," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFprobe.channels + ",aresample=" + size +"," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 							else
 							{
@@ -1444,7 +1444,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						isRaw = true;
 				}
 				
-				if (Main.caseShowTimecode.isSelected() && FFPROBE.timecode1.equals(""))
+				if (Main.caseShowTimecode.isSelected() && FFprobe.timecode1.equals(""))
 				{
 					Main.caseShowTimecode.setSelected(false);
 					Main.caseShowTimecode.setEnabled(false);
@@ -1463,10 +1463,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				String deinterlace = "";
 				
 				//Format
-				String colorFormat = FFPROBE.hasAlpha ? "bgra64le" : "bgr48le";
+				String colorFormat = FFprobe.hasAlpha ? "bgra64le" : "bgr48le";
 				
-				if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1"))
-					deinterlace = " -vf bwdif=0:" + FFPROBE.fieldOrder + ":0";		
+				if (isRaw == false && extension.toLowerCase().equals(".pdf") == false && FFprobe.interlaced != null && FFprobe.interlaced.equals("1"))
+					deinterlace = " -vf bwdif=0:" + FFprobe.fieldOrder + ":0";		
 	
 				//Input point
 				String inputPoint = " -ss " + (long) ((double) playerCurrentFrame * inputFramerateMS) + "ms";
@@ -1482,10 +1482,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					if (extension.toLowerCase().equals(".pdf"))
 					{
 						Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-						XPDFREADER.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+						Xpdfreader.run(" -r 300 -f 1 -l 1 " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 					
 						try {
-							XPDFREADER.runProcess.join();
+							Xpdfreader.runProcess.join();
 						} catch (InterruptedException ie) {
 							Thread.currentThread().interrupt();
 						}
@@ -1493,10 +1493,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					else if (isRaw)
 					{									
 						Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-						DCRAW.run(" -v -w -q 0 -o 1 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
+						Dcraw.run(" -v -w -q 0 -o 1 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + cmd + " -c:v rawvideo -pix_fmt " + colorFormat + " -f rawvideo -");
 						
 						try {
-							DCRAW.runProcess.join();
+							Dcraw.runProcess.join();
 						} catch (InterruptedException ie) {
 							Thread.currentThread().interrupt();
 						}
@@ -1507,9 +1507,9 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						
 						File preview = new File(Main.dirTemp + "preview.png");
 						
-						FFMPEG.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + deinterlace + " -frames:v 1 -an -sn -y " + '"' + preview + '"');		
+						FFmpeg.run(Colorimetry.setInputCodec(extension) + inputPoint + " -v quiet -hide_banner -i " + '"' + file.toString() + '"' + deinterlace + " -frames:v 1 -an -sn -y " + '"' + preview + '"');		
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
@@ -1527,10 +1527,10 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						Main.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 						Main.lblCurrentEncoding.setText(new File(videoPath).getName());
 																						
-						NCNN.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"', true);
+						Ncnn.run(" -v -i " + '"' + preview + '"' + " -m " + '"' + Ncnn.modelsPath + '"' + " -n " + model + " -o " + '"' + preview + '"', true);
 	
 						try {
-							NCNN.runProcess.join();
+							Ncnn.runProcess.join();
 						} catch (InterruptedException ie) {
 							Thread.currentThread().interrupt();
 						}
@@ -1565,7 +1565,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				if (preview != null || Main.caseAddSubtitles.isSelected())
 				{
 					//Format
-					String outputFormat = FFPROBE.hasAlpha ? "abgr" : "rgb565le";
+					String outputFormat = FFprobe.hasAlpha ? "abgr" : "rgb565le";
 					
 					//Subtitles are visible only from a video file
 					if (Main.caseAddSubtitles.isSelected())
@@ -1655,7 +1655,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	        {
 	            if (preview == null && Main.caseAddSubtitles.isSelected() == false)
 	            {
-	                int bpp = FFPROBE.hasAlpha ? 8 : 6;
+	                int bpp = FFprobe.hasAlpha ? 8 : 6;
 					int frameSize = playerWidth * playerHeight * bpp;
 					preview = inputStream.readNBytes(frameSize);
 	            }
@@ -1696,7 +1696,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	    int numThreads = 4;
 	    
 	    //Format gpu
-  		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+  		String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";
 
 	    thumbnailExecutor = Executors.newFixedThreadPool(numThreads);
 
@@ -1706,7 +1706,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 
 	        BufferedImage[] images = new BufferedImage[numberOfThumbnails];
 
-	        String ffmpeg = FFMPEG.PathToFFMPEG;
+	        String ffmpeg = FFmpeg.PathToFFMPEG;
 	        if (!System.getProperty("os.name").contains("Windows")) {
 	            ffmpeg = ffmpeg.replace("\\", "");
 	        }
@@ -1725,7 +1725,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 
 	                double seekTime = index * intervalSeconds;
 	                String formattedSeek = String.format("%.3f", seekTime);
-	                String crop = FFPROBE.imageRatio >= 1.7 ? ",crop=34:in_h" : "";
+	                String crop = FFprobe.imageRatio >= 1.7 ? ",crop=34:in_h" : "";
 
 	        	    //Get GPU decoding and scaling
 	                String gpuDecoding = "-hwaccel none";

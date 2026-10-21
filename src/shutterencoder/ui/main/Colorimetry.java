@@ -37,7 +37,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.utils.Utils;
@@ -371,7 +371,7 @@ public class Colorimetry extends Main {
 					lblHDR.setVisible(false);
 				}
 
-				FFPROBE.setFilesize();
+				FFprobe.setFilesize();
 				
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
 			}
@@ -502,7 +502,7 @@ public class Colorimetry extends Main {
 					lblHDR.setVisible(false);
 				}
 
-				FFPROBE.setFilesize();
+				FFprobe.setFilesize();
 			}
 
 		});

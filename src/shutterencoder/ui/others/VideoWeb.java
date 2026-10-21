@@ -68,8 +68,8 @@ import javax.swing.event.PopupMenuListener;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.YOUTUBEDL;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.Ytdlp;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
@@ -202,9 +202,9 @@ public class VideoWeb {
 				
 				if (accept)		
 				{
-					if (YOUTUBEDL.runProcess != null)
+					if (Ytdlp.runProcess != null)
 					{
-						if (YOUTUBEDL.runProcess.isAlive())
+						if (Ytdlp.runProcess.isAlive())
 						{
 							if (System.getProperty("os.name").contains("Windows"))
 							{						
@@ -215,7 +215,7 @@ public class VideoWeb {
 							}
 							else
 							{
-								YOUTUBEDL.process.destroy();
+								Ytdlp.process.destroy();
 							}
 						}
 					}
@@ -457,9 +457,9 @@ public class VideoWeb {
 				
 				if (caseAuto.isSelected())
 				{
-					if (YOUTUBEDL.runProcess != null)
+					if (Ytdlp.runProcess != null)
 					{
-						if (YOUTUBEDL.runProcess.isAlive())
+						if (Ytdlp.runProcess.isAlive())
 						{
 							if (System.getProperty("os.name").contains("Windows"))
 							{						
@@ -470,7 +470,7 @@ public class VideoWeb {
 							}
 							else
 							{
-								YOUTUBEDL.process.destroy();
+								Ytdlp.process.destroy();
 							}
 						}
 						
@@ -505,21 +505,21 @@ public class VideoWeb {
 							btnOK.setEnabled(false);
 							comboFormats.addItem(Main.language.getProperty("getAvailableFormats") + "...");
 							
-							YOUTUBEDL.getAvailableFormats(textURL.getText(), options());
+							Ytdlp.getAvailableFormats(textURL.getText(), options());
 							
 							do {
 								try {
 									Thread.sleep(100);
 								} catch (Exception er){}
-							} while (YOUTUBEDL.runProcess.isAlive() && Main.cancelled == false);
+							} while (Ytdlp.runProcess.isAlive() && Main.cancelled == false);
 							
 							if (caseAuto.isSelected() == false && frame.isVisible())
 							{
-								if (YOUTUBEDL.error == false)
+								if (Ytdlp.error == false)
 								{
 									comboFormats.removeAllItems();
 									
-									String allFormats = YOUTUBEDL.formatsOutput.substring(YOUTUBEDL.formatsOutput.lastIndexOf(":") + 2).replace("null", "").replace("DASH audio", "").replace("DASH video", "");
+									String allFormats = Ytdlp.formatsOutput.substring(Ytdlp.formatsOutput.lastIndexOf(":") + 2).replace("null", "").replace("DASH audio", "").replace("DASH video", "");
 									
 									for (String format : allFormats.split(System.lineSeparator()))
 									{
@@ -932,18 +932,18 @@ public class VideoWeb {
 						
 		        try {
 		        	
-	        		if (textURL.getText().toLowerCase().equals("update") || YOUTUBEDL.isRunning) //isRunning is used for install
+	        		if (textURL.getText().toLowerCase().equals("update") || Ytdlp.isRunning) //isRunning is used for install
 	        		{
 	        			UIController.disableAll();
 	        			Main.btnStart.setEnabled(false);
 	        			Main.btnCancel.setEnabled(false);
 	        			Main.lblCurrentEncoding.setText(Main.language.getProperty("update"));
-	        			YOUTUBEDL.update();
+	        			Ytdlp.update();
 	        			Main.progressBar.setIndeterminate(true);
 	        			        			
 	        			do {
 	        				Thread.sleep(100);
-	        			} while(YOUTUBEDL.isRunning);
+	        			} while(Ytdlp.isRunning);
 	        			
 	        			SwingUtilities.invokeLater(new Runnable()
 	        			{
@@ -967,65 +967,65 @@ public class VideoWeb {
 						{				
 							if (comboFormats.getSelectedItem().toString().equals("default"))
 							{
-								YOUTUBEDL.format = "";
+								Ytdlp.format = "";
 							}
 							else if (comboFormats.getSelectedItem().toString().contains("up to "))
 							{
 								switch (comboFormats.getSelectedItem().toString().replace("up to ", ""))
 								{
-									case "4K": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?4096][height<=?2160]+bestaudio/best[width<=?4096][height<=?2160]" + '"'; break;
-									case "1440p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?2560][height<=?1440]+bestaudio/best[width<=?2560][height<=?1440]" + '"'; break;
-									case "1080p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?1920][height<=?1080]+bestaudio/best[width<=?1920][height<=?1080]" + '"'; break;
-									case "720p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?1280][height<=?720]+bestaudio/best[width<=?1280][height<=?720]" + '"'; break;
-									case "480p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?854][height<=?480]+bestaudio/best[width<=?854][height<=?480]" + '"'; break;
-									case "360p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?640][height<=?360]+bestaudio/best[width<=?640][height<=?360]" + '"'; break;
-									case "240p": YOUTUBEDL.format = "-f " + '"' + "bestvideo[width<=?426][height<=?240]+bestaudio/best[width<=?426][height<=?240]" + '"'; break;
+									case "4K": Ytdlp.format = "-f " + '"' + "bestvideo[width<=?4096][height<=?2160]+bestaudio/best[width<=?4096][height<=?2160]" + '"'; break;
+									case "1440p": Ytdlp.format = "-f " + '"' + "bestvideo[width<=?2560][height<=?1440]+bestaudio/best[width<=?2560][height<=?1440]" + '"'; break;
+									case "1080p": Ytdlp.format = "-f " + '"' + "bestvideo[width<=?1920][height<=?1080]+bestaudio/best[width<=?1920][height<=?1080]" + '"'; break;
+									case "720p": Ytdlp.format = "-f " + '"' + "bestvideo[width<=?1280][height<=?720]+bestaudio/best[width<=?1280][height<=?720]" + '"'; break;
+									case "480p": Ytdlp.format = "-f " + '"' + "bestvideo[width<=?854][height<=?480]+bestaudio/best[width<=?854][height<=?480]" + '"'; break;
+									case "360p": Ytdlp.format = "-f " + '"' + "bestvideo[width<=?640][height<=?360]+bestaudio/best[width<=?640][height<=?360]" + '"'; break;
+									case "240p": Ytdlp.format = "-f " + '"' + "bestvideo[width<=?426][height<=?240]+bestaudio/best[width<=?426][height<=?240]" + '"'; break;
 								}
 							}	
 							else
-								YOUTUBEDL.format = "-f " + comboFormats.getSelectedItem().toString();
+								Ytdlp.format = "-f " + comboFormats.getSelectedItem().toString();
 							
 						}							
 						else
 						{
 							String[] f = comboFormats.getSelectedItem().toString().split(" ");		
 							
-							YOUTUBEDL.format = "-f " + f[0];								
+							Ytdlp.format = "-f " + f[0];								
 						}
 	
 						UIController.disableAll();
 						Main.btnStart.setEnabled(false);
 					
 					    //Download	    
-						YOUTUBEDL.run('"' + line + '"', options());
+						Ytdlp.run('"' + line + '"', options());
 						
 						do { 
 							Thread.sleep(100);		
-						} while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
+						} while (Ytdlp.runProcess.isAlive() && FFmpeg.cancelled == false);
 				       
 						if (Main.cancelled)
 						{
-					    	 if (YOUTUBEDL.outputFile.exists()) 
-					    		 YOUTUBEDL.outputFile.delete();
+					    	 if (Ytdlp.outputFile.exists()) 
+					    		 Ytdlp.outputFile.delete();
 						}
 						else //Audio conversion
 						{
 				    	   Main.lblRemainingTime.setVisible(false);
-				    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
+				    	   String ext = Ytdlp.outputFile.toString().substring(Ytdlp.outputFile.toString().lastIndexOf("."));
 				    	   if (caseWAV.isSelected())
 				    	   {		
 				    		   	Main.lblCurrentEncoding.setText(Main.language.getProperty("convertToWAV")); 
 								String cmd = " -vn -y ";
-								FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".wav") + '"');	
+								FFmpeg.run(" -i " + '"' + Ytdlp.outputFile.toString() + '"' + cmd + '"'  + Ytdlp.outputFile.toString().replace(ext, ".wav") + '"');	
 							
 								do { 
 									Thread.sleep(100);		
-								} while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+								} while (FFmpeg.isRunning && FFmpeg.cancelled == false);			
 								
 						       //Suppression du fichier audio si processus annulé
 						       if (Main.cancelled)
 						       {
-						    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".wav"));
+						    	   File audioFile = new File (Ytdlp.outputFile.toString().replace(ext, ".wav"));
 						    	   audioFile.delete();
 						       }
 				    	   }
@@ -1033,16 +1033,16 @@ public class VideoWeb {
 				    	   {
 				    		   Main.lblCurrentEncoding.setText(Main.language.getProperty("convertToMP3"));  
 				    		   String cmd = " -vn -c:a mp3 -b:a 256k -y ";
-				    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".mp3") + '"');	
+				    		   FFmpeg.run(" -i " + '"' + Ytdlp.outputFile.toString() + '"' + cmd + '"'  + Ytdlp.outputFile.toString().replace(ext, ".mp3") + '"');	
 							
 						       do { 
 						    	   Thread.sleep(100);		
-						       } while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
+						       } while (FFmpeg.isRunning && FFmpeg.cancelled == false);			
 						       
 						       //Suppression du fichier audio si processus annulé
 						       if (Main.cancelled)
 						       {
-						    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".mp3"));
+						    	   File audioFile = new File (Ytdlp.outputFile.toString().replace(ext, ".mp3"));
 						    	   audioFile.delete();
 						       }
 				    	   }		    	   			       
@@ -1061,7 +1061,7 @@ public class VideoWeb {
 						}
 						UIController.enableAll();
 						UIController.endOfFunction();							
-	        			FunctionUtils.addFileForMail(YOUTUBEDL.outputFile.toString());		       
+	        			FunctionUtils.addFileForMail(Ytdlp.outputFile.toString());		       
 					}
 					       				        
 				} catch (InterruptedException e1) {}

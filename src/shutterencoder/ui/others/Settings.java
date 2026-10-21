@@ -92,8 +92,8 @@ import org.w3c.dom.NodeList;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
@@ -439,7 +439,7 @@ public class Settings {
 				UIController.changeWidth();				
 				
 
-				if (FFPROBE.totalLength <= 40 || Main.caseEnableSequence.isSelected() || btnDisableVideoPlayer.isSelected())
+				if (FFprobe.totalLength <= 40 || Main.caseEnableSequence.isSelected() || btnDisableVideoPlayer.isSelected())
 				{
 					VideoPlayerUI.setPlayerButtons(false);
 				}
@@ -520,14 +520,14 @@ public class Settings {
 					
 					if (Settings.txtCustomFFmpegPath.getText().equals("") == false)
 					{
-						FFMPEG.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
+						FFmpeg.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
 					}
 				}
 				else
 				{
 					txtCustomFFmpegPath.setEnabled(false);
 					
-					FFMPEG.getFFmpegPath();
+					FFmpeg.getFFmpegPath();
 				}	
 				
 				if (VideoPlayerCore.videoPath != null)
@@ -567,14 +567,14 @@ public class Settings {
 						
 						if (Settings.txtCustomFFmpegPath.getText().equals("") == false)
 						{
-							FFMPEG.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
+							FFmpeg.PathToFFMPEG = Settings.txtCustomFFmpegPath.getText();
 						}
 					}
 					else
 					{
 						txtCustomFFmpegPath.setEnabled(false);
 						
-						FFMPEG.getFFmpegPath();
+						FFmpeg.getFFmpegPath();
 					}	
 					
 					if (VideoPlayerCore.videoPath != null)
@@ -713,10 +713,10 @@ public class Settings {
 					
 					saveSettings();
 					
-					if (FFMPEG.isRunning)
+					if (FFmpeg.isRunning)
 						Main.btnCancel.doClick();
 					
-					if (FFMPEG.isRunning == false)
+					if (FFmpeg.isRunning == false)
 					{
 						int reply = JOptionPane.showConfirmDialog(frame, Main.language.getProperty("restart"), Main.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
 						
@@ -795,10 +795,10 @@ public class Settings {
 				{
 					saveSettings();
 					
-					if (FFMPEG.isRunning)
+					if (FFmpeg.isRunning)
 						Main.btnCancel.doClick();
 					
-					if (FFMPEG.isRunning == false)
+					if (FFmpeg.isRunning == false)
 					{
 						int reply = JOptionPane.showConfirmDialog(frame, Main.language.getProperty("restart"), Main.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
 						
@@ -1722,7 +1722,7 @@ public class Settings {
 						//CustomFFmpeg
 						if (btnCustomFFmpegPath.isSelected() && txtCustomFFmpegPath.getText().equals("") == false)
 						{
-							FFMPEG.PathToFFMPEG = txtCustomFFmpegPath.getText();
+							FFmpeg.PathToFFMPEG = txtCustomFFmpegPath.getText();
 						}
 						
 						//Warning values						

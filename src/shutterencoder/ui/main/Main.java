@@ -78,18 +78,18 @@ import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 
-import shutterencoder.library.ANONYMIZER;
-import shutterencoder.library.BACKGROUNDREMOVER;
-import shutterencoder.library.DEMUCS;
-import shutterencoder.library.DEOLDIFY;
-import shutterencoder.library.EXIFTOOL;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Anonymizer;
+import shutterencoder.library.BackgroundRemover;
+import shutterencoder.library.Demucs;
+import shutterencoder.library.Deoldify;
+import shutterencoder.library.Exiftool;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.NCNN;
-import shutterencoder.library.PYTHON;
-import shutterencoder.library.WHISPER;
-import shutterencoder.library.YOUTUBEDL;
+import shutterencoder.library.Ncnn;
+import shutterencoder.library.Python;
+import shutterencoder.library.Whisper;
+import shutterencoder.library.Ytdlp;
 import shutterencoder.ui.handlers.HardwareListener;
 import shutterencoder.ui.others.Functions;
 import shutterencoder.ui.others.ReducedWindow;
@@ -692,13 +692,13 @@ public class Main {
 		System.setProperty("swing.aatext", "true");		
 		
 		// Path for AI models
-		NCNN.modelsPath = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		Ncnn.modelsPath = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (System.getProperty("os.name").contains("Windows")) {
-			NCNN.modelsPath = NCNN.modelsPath.substring(1, NCNN.modelsPath.length() - 1);
+			Ncnn.modelsPath = Ncnn.modelsPath.substring(1, Ncnn.modelsPath.length() - 1);
 		} else {
-			NCNN.modelsPath = NCNN.modelsPath.substring(0, NCNN.modelsPath.length() - 1);
+			Ncnn.modelsPath = Ncnn.modelsPath.substring(0, Ncnn.modelsPath.length() - 1);
 		}
-		NCNN.modelsPath = NCNN.modelsPath.substring(0, (int) (NCNN.modelsPath.lastIndexOf("/"))).replace("%20", " ") + "/Library/models";
+		Ncnn.modelsPath = Ncnn.modelsPath.substring(0, (int) (Ncnn.modelsPath.lastIndexOf("/"))).replace("%20", " ") + "/Library/models";
 
 		// Checking java x86 or arm version
 		Utils.getJavaArch();
@@ -839,10 +839,10 @@ public class Main {
 		Settings.txtImageDuration.setText("10");
 
 		//Initialize FFmpeg path
-		FFMPEG.getFFmpegPath();
+		FFmpeg.getFFmpegPath();
 		
 		//Initialize Python path
-		PYTHON.getPythonPath();
+		Python.getPythonPath();
 				
 		//Check CPU
 		LibraryUtils.checkCPUInfo();
@@ -1122,31 +1122,31 @@ public class Main {
 					//Install demucs
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionSeparation")))
 					{
-						DEMUCS.checkDemucs();						
+						Demucs.checkDemucs();						
 					}
 						
 					//Whisper model
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")))
 					{		
-						new WHISPER();
+						new Whisper();
 					}
 					
 					//Shutter Anonymizer
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionBlurFaces")))
 					{		
-						new ANONYMIZER();
+						new Anonymizer();
 					}
 					
 					//Install deoldify
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionColorize")))
 					{
-						DEOLDIFY.checkDeoldify();						
+						Deoldify.checkDeoldify();						
 					}
 					
 					//Install Background Remover
 					if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionBackgroundRemover")))
 					{
-						BACKGROUNDREMOVER.checkBackgroundRemover();
+						BackgroundRemover.checkBackgroundRemover();
 					}
 				}
 			}
@@ -1222,8 +1222,8 @@ public class Main {
 		new Settings();
 		SplashRenderer.increment();
 
-		YOUTUBEDL.update();
-		EXIFTOOL.run('"' + "" + '"'); // Preload the binary
+		Ytdlp.update();
+		Exiftool.run('"' + "" + '"'); // Preload the binary
 
 		// Right_to_left
 		if (getLanguage.contains(Locale.of("ar").getDisplayLanguage())) {
@@ -1279,7 +1279,7 @@ public class Main {
 						if (Settings.btnLoadPreset.isSelected() == false)
 							break;
 						
-					} while (list.getSize() == 0 || FFMPEG.isRunning || FFPROBE.isRunning);
+					} while (list.getSize() == 0 || FFmpeg.isRunning || FFprobe.isRunning);
 
 					if (Settings.btnLoadPreset.isSelected())
 					{

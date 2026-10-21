@@ -62,8 +62,8 @@ import com.formdev.flatlaf.ui.FlatLineBorder;
 
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFPROBE;
-import shutterencoder.library.MEDIAINFO;
+import shutterencoder.library.FFprobe;
+import shutterencoder.library.Mediainfo;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.renderers.ComboRendererOverlay;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -394,17 +394,17 @@ public class Overlay extends Main {
 							tcS = Integer.valueOf(TC3.getText());
 							tcF = Integer.valueOf(TC4.getText());
 						}
-						else if (caseShowTimecode.isSelected() && FFPROBE.timecode1 == "" == false)
+						else if (caseShowTimecode.isSelected() && FFprobe.timecode1 == "" == false)
 						{
-							tcH = Integer.valueOf(FFPROBE.timecode1);
-							tcM = Integer.valueOf(FFPROBE.timecode2);
-							tcS = Integer.valueOf(FFPROBE.timecode3);
-							tcF = Integer.valueOf(FFPROBE.timecode4);			
+							tcH = Integer.valueOf(FFprobe.timecode1);
+							tcM = Integer.valueOf(FFprobe.timecode2);
+							tcS = Integer.valueOf(FFprobe.timecode3);
+							tcF = Integer.valueOf(FFprobe.timecode4);			
 						}
 
-						tcH = (double) (tcH * 3600 * FFPROBE.accurateFPS);
-						tcM = (double) (tcM * 60 * FFPROBE.accurateFPS);
-						tcS = (double) (tcS * FFPROBE.accurateFPS);
+						tcH = (double) (tcH * 3600 * FFprobe.accurateFPS);
+						tcM = (double) (tcM * 60 * FFprobe.accurateFPS);
+						tcS = (double) (tcS * FFprobe.accurateFPS);
 
 						double timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600
 								+ Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60
@@ -414,7 +414,7 @@ public class Overlay extends Main {
 						if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 						{
 							VideoPlayerMultiCuts.CutSegment seg = VideoPlayerMultiCuts.cutSegments.get(0);
-							timeIn = (seg.inH * 3600 + seg.inM * 60 + seg.inS) * FFPROBE.currentFPS + seg.inF;
+							timeIn = (seg.inH * 3600 + seg.inM * 60 + seg.inS) * FFprobe.currentFPS + seg.inF;
 						}
 						
 						if (caseShowTimecode.isSelected())
@@ -435,11 +435,11 @@ public class Overlay extends Main {
 						{
 							offset = Timecode.setDropFrameTimecode(offset);
 											
-							if (FFPROBE.currentFPS == 29.97f)
+							if (FFprobe.currentFPS == 29.97f)
 							{
 								fps = 30;
 							}
-							else if (FFPROBE.currentFPS == 59.94f)
+							else if (FFprobe.currentFPS == 59.94f)
 							{
 								fps = 60;
 							}
@@ -1956,10 +1956,10 @@ public class Overlay extends Main {
 					textTcOpacity.setEnabled(false);
 					percent2.setEnabled(false);
 
-					FFPROBE.timecode1 = "";
-					FFPROBE.timecode2 = "";
-					FFPROBE.timecode3 = "";
-					FFPROBE.timecode4 = "";
+					FFprobe.timecode1 = "";
+					FFprobe.timecode2 = "";
+					FFprobe.timecode3 = "";
+					FFprobe.timecode4 = "";
 					TC1.setEnabled(false);
 					TC2.setEnabled(false);
 					TC3.setEnabled(false);
@@ -1998,26 +1998,26 @@ public class Overlay extends Main {
 
 					// Timecode info
 					if (Utils.inputDeviceIsRunning == false) {
-						FFPROBE.analyzedMedia = null;
-						FFPROBE.Data(VideoPlayerCore.videoPath);
+						FFprobe.analyzedMedia = null;
+						FFprobe.Data(VideoPlayerCore.videoPath);
 						try {
-							FFPROBE.processData.join();
+							FFprobe.processData.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
 
-						if (FFPROBE.timecode1 == "") {
-							MEDIAINFO.run(VideoPlayerCore.videoPath, false);
+						if (FFprobe.timecode1 == "") {
+							Mediainfo.run(VideoPlayerCore.videoPath, false);
 
 							do {
 								try {
 									Thread.sleep(100);
 								} catch (InterruptedException e1) {
 								}
-							} while (MEDIAINFO.isRunning);
+							} while (Mediainfo.isRunning);
 						}
 
-						if (FFPROBE.timecode1 == "") {
+						if (FFprobe.timecode1 == "") {
 							caseShowTimecode.setSelected(false);
 							caseAddTimecode.doClick();
 						} else {

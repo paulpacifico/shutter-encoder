@@ -91,7 +91,7 @@ import org.apache.commons.io.FileUtils;
 
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -203,7 +203,7 @@ public class SubtitlesTimeline {
 				Utils.changeFrameVisibility(frame, true);
 				
 	    		if (Main.comboFonctions.getSelectedItem().equals("H.264") || Main.comboFonctions.getSelectedItem().equals("H.265"))
-	    			FFPROBE.setLength();
+	    			FFprobe.setLength();
 	    		
 	    		if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")))
 	    		{
@@ -866,7 +866,7 @@ public class SubtitlesTimeline {
 					{
 						if (c instanceof JTextPane)
 						{
-							c.setLocation((int) (c.getX() + Math.ceil((float) Integer.parseInt(textOffset.getText()) * ((float) (1000 / FFPROBE.currentFPS))*zoom)), c.getY());					
+							c.setLocation((int) (c.getX() + Math.ceil((float) Integer.parseInt(textOffset.getText()) * ((float) (1000 / FFprobe.currentFPS))*zoom)), c.getY());					
 						}
 					}
 					
@@ -933,7 +933,7 @@ public class SubtitlesTimeline {
 					{
 						if (c instanceof JTextPane)
 						{
-							c.setLocation((int) (c.getX() + Math.ceil((float) Integer.parseInt(textOffset.getText()) * ((float) (1000 / FFPROBE.currentFPS))*zoom)), c.getY());					
+							c.setLocation((int) (c.getX() + Math.ceil((float) Integer.parseInt(textOffset.getText()) * ((float) (1000 / FFprobe.currentFPS))*zoom)), c.getY());					
 						}
 					}
 					
@@ -1131,12 +1131,12 @@ public class SubtitlesTimeline {
 	
 					if (e.getKeyCode() == KeyEvent.VK_J)
 					{
-						setVideoPosition((int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS - ((1000 /FFPROBE.currentFPS) * 11)));
+						setVideoPosition((int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS - ((1000 /FFprobe.currentFPS) * 11)));
 	  				}
 						
 					if (e.getKeyCode() == KeyEvent.VK_L)
 					{
-						setVideoPosition((int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS + ((1000 /FFPROBE.currentFPS) * 9)));
+						setVideoPosition((int) (VideoPlayerCore.playerCurrentFrame * VideoPlayerUI.inputFramerateMS + ((1000 /FFprobe.currentFPS) * 9)));
 					}
 					
 					if (e.getKeyCode() == KeyEvent.VK_ENTER)
@@ -2491,13 +2491,13 @@ public class SubtitlesTimeline {
 	    				int inM = (int) (((float) inPoint / 60000) % 60);
 	    				int inS = (int) (((float) inPoint / 1000) % 60);
 	    				int inF = inPoint % 1000;
-	    				inF = (int) (Math.ceil((float) inF / (1000 / FFPROBE.currentFPS)) * (1000 / FFPROBE.currentFPS)); //IMPORTANT arrondi à la bonne frame
+	    				inF = (int) (Math.ceil((float) inF / (1000 / FFprobe.currentFPS)) * (1000 / FFprobe.currentFPS)); //IMPORTANT arrondi à la bonne frame
 	    						            				    				
 	    				int outH = (int) (((float) outPoint / 3600000) % 60);
 	    				int outM = (int) (((float) outPoint / 60000) % 60);
 	    				int outS = (int) (((float) outPoint / 1000) % 60);
 	    				int outF = outPoint % 1000;
-	    				outF = (int) (Math.ceil((float) outF / (1000 / FFPROBE.currentFPS)) * (1000 / FFPROBE.currentFPS)); //IMPORTANT arrondi à la bonne frame
+	    				outF = (int) (Math.ceil((float) outF / (1000 / FFprobe.currentFPS)) * (1000 / FFprobe.currentFPS)); //IMPORTANT arrondi à la bonne frame
 	
 						writer.write(//In
 								f.format(inH) + ":" + f.format(inM) + ":" + f.format(inS) + "," + f2.format(inF) 
@@ -2537,7 +2537,7 @@ public class SubtitlesTimeline {
 		//IMPORTANT arrondi à la bonne frame				
 		int frames = rawTime % 1000; 
 		int time = rawTime - frames;
-		int F = (int) (Math.ceil((float) frames / (1000 / FFPROBE.currentFPS)) * (1000 / FFPROBE.currentFPS)); 
+		int F = (int) (Math.ceil((float) frames / (1000 / FFprobe.currentFPS)) * (1000 / FFprobe.currentFPS)); 
 		return (time+F);
 	}
 	
@@ -2546,7 +2546,7 @@ public class SubtitlesTimeline {
 		//IMPORTANT arrondi à la bonne frame				
 		int frames = rawTime % 1000; 
 		int time = rawTime - frames;
-		int F = (int) (Math.floor((float) frames / (1000 / FFPROBE.currentFPS)) * (1000 / FFPROBE.currentFPS)); 
+		int F = (int) (Math.floor((float) frames / (1000 / FFprobe.currentFPS)) * (1000 / FFprobe.currentFPS)); 
 		return (time+F);
 	}
 	

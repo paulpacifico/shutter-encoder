@@ -62,8 +62,8 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.settings.Transitions;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.RecordInputDevice;
@@ -135,12 +135,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	        ProcessBuilder pb1 = new ProcessBuilder(formatCommand(firstPart));
 	        pb1.redirectError(ProcessBuilder.Redirect.DISCARD);
 	        if (workingDir != null) pb1.directory(workingDir);
-	        else if (LibraryUtils.libplaceboAvailable) FFMPEG.setEnvironment(pb1);
+	        else if (LibraryUtils.libplaceboAvailable) FFmpeg.setEnvironment(pb1);
 
 	        ProcessBuilder pb2 = new ProcessBuilder(tokenize(secondPart));
 	        pb2.redirectError(ProcessBuilder.Redirect.DISCARD);
 	        if (workingDir != null) pb2.directory(workingDir);
-	        else if (LibraryUtils.libplaceboAvailable) FFMPEG.setEnvironment(pb2);
+	        else if (LibraryUtils.libplaceboAvailable) FFmpeg.setEnvironment(pb2);
 
 	        List<Process> processes = ProcessBuilder.startPipeline(List.of(pb1, pb2));
 	        return processes.get(processes.size() - 1);
@@ -150,7 +150,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	        ProcessBuilder pb = new ProcessBuilder(formatCommand(args));
 	        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
 	        if (workingDir != null) pb.directory(workingDir);
-	        else if (LibraryUtils.libplaceboAvailable) FFMPEG.setEnvironment(pb);
+	        else if (LibraryUtils.libplaceboAvailable) FFmpeg.setEnvironment(pb);
 
 	        return pb.start();
 	    }
@@ -172,7 +172,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	        videoInputStream = new BufferedInputStream(video);
 	        
 	        //AUDIO STREAM
-			if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
+			if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFprobe.audioOnly)) || mouseIsPressed == false)						       
 			{					
 				ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, false)));	
 				pba.redirectError(ProcessBuilder.Redirect.DISCARD);
@@ -226,7 +226,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									{		
 										if (Main.inputDeviceIsRunning)
 										{
-											readFrame(videoInputStream, FFPROBE.imageWidth, FFPROBE.imageHeight, false);	
+											readFrame(videoInputStream, FFprobe.imageWidth, FFprobe.imageHeight, false);	
 										}
 										else
 										{
@@ -317,7 +317,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				playerThread.start();	
 				
 				//Audio thread
-				if (mouseIsPressed == false && FFPROBE.hasAudio)
+				if (mouseIsPressed == false && FFprobe.hasAudio)
 				{
 					playerAudiothread = new Thread(new Runnable() {
 						
@@ -337,7 +337,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 								offsetAudio = (long) inputTime + Integer.parseInt(Main.txtAudioOffset.getText());
 							}	
 							
-							double inputVideoFrameToSeconds = (double) inputTime / FFPROBE.accurateFPS;
+							double inputVideoFrameToSeconds = (double) inputTime / FFprobe.accurateFPS;
 								
 							do {
 								
@@ -373,7 +373,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 									}
 									
 									//Audio volume	
-									if (audioInputStream != null && audioSetTimeIsRunning == false && ((casePlaySound.isSelected() || playerIsPlaying()) && (mouseIsPressed == false || FFPROBE.audioOnly)))					       
+									if (audioInputStream != null && audioSetTimeIsRunning == false && ((casePlaySound.isSelected() || playerIsPlaying()) && (mouseIsPressed == false || FFprobe.audioOnly)))					       
 									{										
 										closeAudioStream = true;
 				
@@ -389,12 +389,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 													if (playerIsPlaying() || inputTime > 0)
 														line.write(buffer, 0, bytesRead);
 									        		
-													if (playerPlayVideo && FFPROBE.audioOnly == false)
+													if (playerPlayVideo && FFprobe.audioOnly == false)
 													{
 														if (audioSetTimeIsRunning)
-															inputVideoFrameToSeconds = (double) playerCurrentFrame / FFPROBE.accurateFPS - (double) line.getLongFramePosition() / 48000;
+															inputVideoFrameToSeconds = (double) playerCurrentFrame / FFprobe.accurateFPS - (double) line.getLongFramePosition() / 48000;
 														
-														double videoClock = (double) ((double) playerCurrentFrame / FFPROBE.accurateFPS) * 1000;
+														double videoClock = (double) ((double) playerCurrentFrame / FFprobe.accurateFPS) * 1000;
 														double audioClock = (double) ((double) line.getLongFramePosition() / 48000 + inputVideoFrameToSeconds) * 1000;
 														double delay = (audioClock - videoClock);
 																									
@@ -505,7 +505,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			height = dim.height;
 		}
 				
-		if (FFPROBE.hasAlpha && FFPROBE.audioOnly == false) //Attached pic from audio can contains alpha
+		if (FFprobe.hasAlpha && FFprobe.audioOnly == false) //Attached pic from audio can contains alpha
 		{
 		    int frameSize = width * height * 4; // BGRA
 	
@@ -560,7 +560,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 	private static void playerPlayAudioOnly(double inputTime) {
 
-		if (casePlaySound.isSelected() && FFPROBE.hasAudio && mouseIsPressed == false)
+		if (casePlaySound.isSelected() && FFprobe.hasAudio && mouseIsPressed == false)
 		{		
 			if (line != null)
 				line.flush();
@@ -742,7 +742,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						{
 							VideoPlayerUtils.preview = null;
 						}					
-						else if (FFPROBE.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != requestedFrame && freezeFrame == "" && Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false)
+						else if (FFprobe.audioOnly == false && (mouseIsPressed || frameControl) && playerIsPlaying() == false && playerCurrentFrame != requestedFrame && freezeFrame == "" && Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false)
 						{
 							useBuffer = true;
 						}			
@@ -972,7 +972,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 						
 			try {
 
-				if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFPROBE.audioOnly)) || mouseIsPressed == false)						       
+				if ((casePlaySound.isSelected() && (mouseIsPressed == false || FFprobe.audioOnly)) || mouseIsPressed == false)						       
 				{	
 					//AUDIO STREAM
 					ProcessBuilder pba = new ProcessBuilder(formatCommand(setAudioCommand(inputTime, false)));	
@@ -1020,7 +1020,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 	public static void playerFreeze() {
 
-		if (FFMPEG.isRunning || Main.doNotLoadImage
+		if (FFmpeg.isRunning || Main.doNotLoadImage
 		|| playerThread != null && playerThread.isAlive())
 		{
 			return;
@@ -1091,10 +1091,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 	public static String setVideoCommand(double inputTime, int width, int height, boolean isPlaying) throws InterruptedException {
 				
-		if (FFPROBE.audioOnly)
+		if (FFprobe.audioOnly)
 		{			
 			//Important
-			FFPROBE.accurateFPS = 25.0f;
+			FFprobe.accurateFPS = 25.0f;
 			
 			String filter = "";
 			
@@ -1115,12 +1115,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				String channels = "";
 				String audioOutput = "";
 				int i;
-				for (i = 0; i < FFPROBE.channels; i++) {
+				for (i = 0; i < FFprobe.channels; i++) {
 					channels += "[0:a:" + i + "]" + aspeed + "showvolume=f=0:w=" + width + ":h=" + (int) Math.round(height / 30) + ":b=4:s=0[a" + i + "];";
 					audioOutput += "[a" + i + "]";
 				}
 				
-				if (FFPROBE.channels > 1)
+				if (FFprobe.channels > 1)
 				{
 					audioOutput += "vstack=" + i + "[volume];";
 					filter = " -filter_complex " + '"' + channels + audioOutput + "[1:v][volume]overlay=W*0.5-w*0.5:H*0.5-h*0.5" + '"';
@@ -1162,8 +1162,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			if (mouseIsPressed && (framesToSkip > maximumSeek || framesToSkip < 0))
 			{					
 				String format = "";
-				if (FFPROBE.videoFormat != null)
-					format = " -f " + FFPROBE.videoFormat;
+				if (FFprobe.videoFormat != null)
+					format = " -f " + FFprobe.videoFormat;
 					
 				String keyFrames = "";
 				
@@ -1180,12 +1180,12 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			
 			//Format
 			String colorFormat = "rgb565le";
-			if (FFPROBE.hasAlpha)
+			if (FFprobe.hasAlpha)
 			{
 				colorFormat = "abgr";
 			}
 
-			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) +" -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner" + decodingOptions + " -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(false, false) + " -r " + FFPROBE.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -";
+			String cmd = gpuDecoding + Colorimetry.setInputCodec(extension) +" -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner" + decodingOptions + " -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + setFilter(false, false) + " -r " + FFprobe.currentFPS + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -";
 			
 			String codec = "";
 			if (Settings.btnPreviewOutput.isSelected() && VideoEncoders.setCodec() != ""
@@ -1275,14 +1275,14 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				
 				if (System.getProperty("os.name").contains("Windows"))
 				{	
-					codec += '"' + FFMPEG.PathToFFMPEG + '"';
+					codec += '"' + FFmpeg.PathToFFMPEG + '"';
 				}
 				else
-					codec += '"' + FFMPEG.PathToFFMPEG.replace("\\", "") + '"';
+					codec += '"' + FFmpeg.PathToFFMPEG.replace("\\", "") + '"';
 				
 				codec += " -v quiet -hide_banner -i pipe:0" + setFilter(false, true);
 								
-				cmd = device + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFPROBE.currentFPS +  codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -";
+				cmd = device + Colorimetry.setInputCodec(extension) + " -strict " + Settings.comboStrict.getSelectedItem() + " -v quiet -hide_banner -ss " + (long) ((double) inputTime * inputFramerateMS) + "ms" + concat + " -i " + '"' + video + '"' + " -r " + FFprobe.currentFPS +  codec + freezeFrame + " -c:v rawvideo -pix_fmt " + colorFormat + " -an -sn -f rawvideo -";
 			}
 									
 			if (Main.inputDeviceIsRunning)
@@ -1311,7 +1311,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			playTransition = false;
 		}
 		
-		if (FFPROBE.hasAudio == false && (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) == false || Main.list.getSize() == 1))
+		if (FFprobe.hasAudio == false && (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) == false || Main.list.getSize() == 1))
 		{
 			return " -v quiet -hide_banner -f lavfi -i " + '"' + "anullsrc=channel_layout=stereo:sample_rate=48000" + '"' + setAudioFilter() + duration +  " -vn -c:a pcm_s16le -ar 48k -ac 2 -f wav -";				
 		}
@@ -1333,11 +1333,11 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			}
 			else
 			{	
-				if (FFPROBE.channels > 0 && comboAudioTrack.isVisible())
+				if (FFprobe.channels > 0 && comboAudioTrack.isVisible())
 				{
 					if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
 					{						
-						mapping = " -filter_complex amerge=inputs=" + FFPROBE.channels + setAudioFilter().replace(" -filter:a ", ",");
+						mapping = " -filter_complex amerge=inputs=" + FFprobe.channels + setAudioFilter().replace(" -filter:a ", ",");
 					}
 					else
 						mapping = " -map a:" + comboAudioTrack.getSelectedIndex() + setAudioFilter();
@@ -1353,7 +1353,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 	public static List<String> formatCommand(String args) {
 	    List<String> command = new ArrayList<>();
-	    command.add(System.getProperty("os.name").contains("Windows") ? FFMPEG.PathToFFMPEG : FFMPEG.PathToFFMPEG.replace("\\", ""));
+	    command.add(System.getProperty("os.name").contains("Windows") ? FFmpeg.PathToFFMPEG : FFmpeg.PathToFFMPEG.replace("\\", ""));
 	    command.addAll(tokenize(args));
 	    return command;
 	}
@@ -1493,7 +1493,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		int height = player.getHeight();
 		
 		//Format
-		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";	
+		String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";	
 
 		//Crop & Pad
 		if (Main.comboResolution.getSelectedItem().toString().equals(Main.language.getProperty("source")) == false && Main.comboResolution.getSelectedItem().toString().contains("AI") == false && noGPU == false && Main.inputDeviceIsRunning == false)
@@ -1552,7 +1552,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		{
 			filter += "null";
 		}
-		else if (filterGPU && noGPU == false && FFPROBE.isRotated == false
+		else if (filterGPU && noGPU == false && FFprobe.isRotated == false
 		&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false
 		&& Main.comboGPUFilter.getSelectedItem().toString().equals(Main.language.getProperty("aucun")) == false)
 		{
@@ -1662,7 +1662,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			{
 				if (filter.contains("scale"))
 				{
-					filter = filter.replace("scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight,  "scale=" + player.getWidth() + ":" + player.getHeight());
+					filter = filter.replace("scale=" + FFprobe.imageWidth + ":" + FFprobe.imageHeight,  "scale=" + player.getWidth() + ":" + player.getHeight());
 				}
 				else
 				{
@@ -1727,7 +1727,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		//Add filters
 		filter = " -vf " + '"' + filter;
 		
-		if (caseVuMeter.isSelected() && FFPROBE.hasAudio && Main.caseAddSubtitles.isSelected() == false && VideoPlayerUtils.preview == null)
+		if (caseVuMeter.isSelected() && FFprobe.hasAudio && Main.caseAddSubtitles.isSelected() == false && VideoPlayerUtils.preview == null)
 		{
 			String aspeed = "";
 						
@@ -1771,9 +1771,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				w = 80;
 			
 			int i = 0;
-			for (int a = 0; a < FFPROBE.channels; a++)
+			for (int a = 0; a < FFprobe.channels; a++)
 			{
-				if (FFPROBE.audioCodecs[a].equals("none") == false)
+				if (FFprobe.audioCodecs[a].equals("none") == false)
 				{
 					channels += "[0:a:" + a + "]" + aspeed + "showvolume=f=0:w=" + w + ":h=" + h + ":t=0:b=0:v=0:o=v:s=0:p=0.5[a" + a + "];";
 					audioOutput += "[a" + a + "]";
@@ -1795,7 +1795,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		}	
 				
 		//Avoid an inverted colors issue because of rgb565le output
-		if (filter.contains("libplacebo") && FFPROBE.hasAlpha == false)	
+		if (filter.contains("libplacebo") && FFprobe.hasAlpha == false)	
 		{
 			filter += ",format=rgb24";
 		}
@@ -1818,7 +1818,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				int playerWidth = player.getWidth();
 				int playerHeight = player.getHeight();
 				
-				if (comboPlayerQuality.isVisible() && comboPlayerQuality.getSelectedIndex()!= 0 && FFPROBE.hasAlpha == false && VideoPlayerUtils.preview == null && Settings.btnPreviewOutput.isSelected() == false)
+				if (comboPlayerQuality.isVisible() && comboPlayerQuality.getSelectedIndex()!= 0 && FFprobe.hasAlpha == false && VideoPlayerUtils.preview == null && Settings.btnPreviewOutput.isSelected() == false)
 				{
 					Dimension dim = getDimension(subsWidth, subsPosY, comboPlayerQuality.getSelectedIndex());
 					subsWidth = dim.width;

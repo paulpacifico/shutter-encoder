@@ -46,7 +46,7 @@ import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.library.FFMPEG;
+import shutterencoder.library.FFmpeg;
 import shutterencoder.ui.others.ReducedWindow;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
@@ -130,7 +130,7 @@ public class TopBar extends Main{
 				    return Color.getHSBColor(hsb[0], hsb[1], newBrightness);
 				})));
 
-				if (FFMPEG.isRunning && btnCancel.isEnabled()) {
+				if (FFmpeg.isRunning && btnCancel.isEnabled()) {
 					btnCancel.doClick();
 				} else
 					accept = true;
@@ -470,7 +470,7 @@ public class TopBar extends Main{
 						shape1.add(shape2);
 						frame.setShape(shape1);
 
-						if (FFMPEG.isRunning) {
+						if (FFmpeg.isRunning) {
 							VideoPlayerUI.setPlayerButtons(false);
 						}
 					}

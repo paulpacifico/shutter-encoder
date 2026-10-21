@@ -46,8 +46,8 @@ import javax.swing.SwingConstants;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
@@ -228,7 +228,7 @@ public class RecordInputDevice {
 					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
-					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
+					FFmpeg.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
 														
 					Main.list.removeAllElements();					
 					UIController.enableAll();
@@ -325,9 +325,9 @@ public class RecordInputDevice {
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					
 					if (comboInputVideo.getSelectedIndex() == 0 && comboInputAudio.getSelectedIndex() > 0) 
-						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice().replace("video=" + '"' + "No video" + '"' + ":", "") + cmd);
+						FFmpeg.toFFPLAY(RecordInputDevice.setOverlayDevice().replace("video=" + '"' + "No video" + '"' + ":", "") + cmd);
 					else
-						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice() + cmd);
+						FFmpeg.toFFPLAY(RecordInputDevice.setOverlayDevice() + cmd);
 					
 					Main.list.removeAllElements();					
 					UIController.enableAll();
@@ -482,9 +482,9 @@ public class RecordInputDevice {
 				{	
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
 										
-					FFPROBE.Data("Capture.input.device");	
+					FFprobe.Data("Capture.input.device");	
 					try {
-						FFPROBE.processData.join();
+						FFprobe.processData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}
@@ -493,9 +493,9 @@ public class RecordInputDevice {
 				}
 				
 				//Important
-				inputDeviceResolution = FFPROBE.imageResolution;	
-				if (FFPROBE.interlaced == null)
-				  	FFPROBE.interlaced = "0";
+				inputDeviceResolution = FFprobe.imageResolution;	
+				if (FFprobe.interlaced == null)
+				  	FFprobe.interlaced = "0";
 												
 				//Set options
 				Main.addToList.setVisible(false);
@@ -571,25 +571,25 @@ public class RecordInputDevice {
 		
 		if (Main.list.getElementAt(0).equals("Capture.current.screen"))
 		{
-	        FFPROBE.imageWidth = screenWidth;
-	        FFPROBE.imageHeight = screenHeigth;
+	        FFprobe.imageWidth = screenWidth;
+	        FFprobe.imageHeight = screenHeigth;
 	        	
-			FFPROBE.imageResolution = screenWidth + "x" + screenHeigth;
-			FFPROBE.interlaced = "0";
+			FFprobe.imageResolution = screenWidth + "x" + screenHeigth;
+			FFprobe.interlaced = "0";
 		}
 		
-		FFPROBE.currentFPS = Float.parseFloat(txtScreenRecord.getText());
+		FFprobe.currentFPS = Float.parseFloat(txtScreenRecord.getText());
 			
-		FFPROBE.audioOnly = false;
+		FFprobe.audioOnly = false;
 		
 		if (System.getProperty("os.name").contains("Mac"))
 		{			
 			if (Main.list.getElementAt(0).equals("Capture.current.screen"))
 			{
 				if (setAudio != "") //Audio needs to be first for sync
-					return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
+					return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + txtScreenRecord.getText() + " -i " + '"' + (int) ( FFmpeg.firstScreenIndex + screenIndex) + '"';
 				else
-					return "-thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
+					return "-thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + txtScreenRecord.getText() + " -i " + '"' + (int) ( FFmpeg.firstScreenIndex + screenIndex) + '"';
 			}
 			else
 			{				
@@ -627,18 +627,18 @@ public class RecordInputDevice {
 		
 		if (inputDeviceResolution != "")
 		{
-			FFPROBE.imageResolution = inputDeviceResolution;
+			FFprobe.imageResolution = inputDeviceResolution;
 					
 	        String splitx[]= inputDeviceResolution.split("x");
 	
 	        int deviceWidth = Integer.parseInt(splitx[0]);
 	        int deviceHeight = Integer.parseInt(splitx[1]);
 			        
-	        FFPROBE.imageWidth = deviceWidth;
-	        FFPROBE.imageHeight = deviceHeight;
+	        FFprobe.imageWidth = deviceWidth;
+	        FFprobe.imageHeight = deviceHeight;
 		}		
 		
-		FFPROBE.audioOnly = false;
+		FFprobe.audioOnly = false;
 		    	
 		if (System.getProperty("os.name").contains("Mac"))
 		{
@@ -660,8 +660,8 @@ public class RecordInputDevice {
 	public static String setAudioDevice() {
 		
 		String setAudio = "";
-		FFPROBE.channels = 0;
-		FFPROBE.stereo = false;
+		FFprobe.channels = 0;
+		FFprobe.stereo = false;
 		
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Windows"))
 		{
@@ -680,8 +680,8 @@ public class RecordInputDevice {
 					setAudio = "audio=" + '"' + audioDevice + '"';	
 				}
 				
-				FFPROBE.channels = 1;
-				FFPROBE.stereo = true;
+				FFprobe.channels = 1;
+				FFprobe.stereo = true;
 			}				
 		}
 		
@@ -691,8 +691,8 @@ public class RecordInputDevice {
 	public static String setOverlayAudioDevice() {
 				
 		String setAudio = "";
-		FFPROBE.channels = 0;
-		FFPROBE.stereo = false;
+		FFprobe.channels = 0;
+		FFprobe.stereo = false;
 		String getAudioDevices[] = LibraryUtils.audioDevices.toString().split(":");
 
 		if (overlayAudioDeviceIndex > 0)
@@ -705,17 +705,17 @@ public class RecordInputDevice {
 			}
 			
 			if (audioDeviceIndex > 0)
-				FFPROBE.channels = 2;
+				FFprobe.channels = 2;
 			else
-				FFPROBE.channels = 1;
+				FFprobe.channels = 1;
 		}
 		else if (audioDeviceIndex > 0)
-			FFPROBE.channels = 1;			
+			FFprobe.channels = 1;			
 		
-		if (FFPROBE.channels == 1)
-			FFPROBE.stereo = true;	
+		if (FFprobe.channels == 1)
+			FFprobe.stereo = true;	
 		else
-			FFPROBE.stereo = false;
+			FFprobe.stereo = false;
 			
 		
 		return setAudio;

@@ -56,8 +56,8 @@ import javax.swing.table.DefaultTableModel;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
@@ -331,7 +331,7 @@ import javax.swing.JScrollPane;
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{		  
-					if (FFMPEG.runProcess.isAlive())
+					if (FFmpeg.runProcess.isAlive())
 						Main.btnCancel.doClick();
 					
 					if (Main.btnCancel.isEnabled() == false)
@@ -500,20 +500,20 @@ import javax.swing.JScrollPane;
 				    			
 				    			//Timecode offset
 				    			long offset; 
-				    			if (tcStart[0] != "" && FFPROBE.timecode2 != "" && FFPROBE.timecode3 != "" && FFPROBE.timecode4 != "" )
+				    			if (tcStart[0] != "" && FFprobe.timecode2 != "" && FFprobe.timecode3 != "" && FFprobe.timecode4 != "" )
 				    			{    			
-			    					offset = Math.round(Integer.parseInt(FFPROBE.timecode1) * 3600 * Math.round(FFPROBE.currentFPS))
-		    							+ Math.round(Integer.parseInt(FFPROBE.timecode2) * 60 * Math.round(FFPROBE.currentFPS))
-		    							+ Math.round(Integer.parseInt(FFPROBE.timecode3) * Math.round(FFPROBE.currentFPS))
-		    							+ Integer.parseInt(FFPROBE.timecode4);
+			    					offset = Math.round(Integer.parseInt(FFprobe.timecode1) * 3600 * Math.round(FFprobe.currentFPS))
+		    							+ Math.round(Integer.parseInt(FFprobe.timecode2) * 60 * Math.round(FFprobe.currentFPS))
+		    							+ Math.round(Integer.parseInt(FFprobe.timecode3) * Math.round(FFprobe.currentFPS))
+		    							+ Integer.parseInt(FFprobe.timecode4);
 				    			}
 				    			else
 				    				offset = 0;
 				    			
 				    			//Timecode of start point	
-				    			long totalFramesIn = Math.round(Integer.parseInt(tcStart[0]) * 3600 * Math.round(FFPROBE.currentFPS))
-				    					+ Math.round(Integer.parseInt(tcStart[1]) * 60 * Math.round(FFPROBE.currentFPS))
-				    					+ Math.round(Integer.parseInt(tcStart[2]) * Math.round(FFPROBE.currentFPS))
+				    			long totalFramesIn = Math.round(Integer.parseInt(tcStart[0]) * 3600 * Math.round(FFprobe.currentFPS))
+				    					+ Math.round(Integer.parseInt(tcStart[1]) * 60 * Math.round(FFprobe.currentFPS))
+				    					+ Math.round(Integer.parseInt(tcStart[2]) * Math.round(FFprobe.currentFPS))
 				    					+ Integer.parseInt(tcStart[3]);
 				    			
 				    			//Total
@@ -522,10 +522,10 @@ import javax.swing.JScrollPane;
 				    			NumberFormat formatter = new DecimalFormat("00");
 				    			
 				    			//Convert total frames to timecode	        
-				    			String tcInVideo = formatter.format(Math.round(totalFramesIn / Math.round(FFPROBE.currentFPS)) / 3600)
-				    					+ ":" + formatter.format(Math.round((totalFramesIn / Math.round(FFPROBE.currentFPS)) / 60) % 60)
-			    						+ ":" + formatter.format(Math.round((totalFramesIn / Math.round(FFPROBE.currentFPS)) % 60))        
-		    							+ ":" + formatter.format(totalFramesIn % Math.round(FFPROBE.currentFPS));
+				    			String tcInVideo = formatter.format(Math.round(totalFramesIn / Math.round(FFprobe.currentFPS)) / 3600)
+				    					+ ":" + formatter.format(Math.round((totalFramesIn / Math.round(FFprobe.currentFPS)) / 60) % 60)
+			    						+ ":" + formatter.format(Math.round((totalFramesIn / Math.round(FFprobe.currentFPS)) % 60))        
+		    							+ ":" + formatter.format(totalFramesIn % Math.round(FFprobe.currentFPS));
 				    			
 				    			///////////////////////////////////OUT POINT
 				    			
@@ -536,35 +536,35 @@ import javax.swing.JScrollPane;
 									String tcEnd[] = timecodeEnd.split(":");
 	
 					    			//Timecode of the cut
-									totalFramesOut = Math.round(Integer.parseInt(tcEnd[0]) * 3600 * Math.round(FFPROBE.currentFPS))
-					    					+ Math.round(Integer.parseInt(tcEnd[1]) * 60 * Math.round(FFPROBE.currentFPS))
-					    					+ Math.round(Integer.parseInt(tcEnd[2]) * Math.round(FFPROBE.currentFPS))
+									totalFramesOut = Math.round(Integer.parseInt(tcEnd[0]) * 3600 * Math.round(FFprobe.currentFPS))
+					    					+ Math.round(Integer.parseInt(tcEnd[1]) * 60 * Math.round(FFprobe.currentFPS))
+					    					+ Math.round(Integer.parseInt(tcEnd[2]) * Math.round(FFprobe.currentFPS))
 					    					+ Integer.parseInt(tcEnd[3]);
 				    			}
 				    			else //On last the cut we take the length of the video
 								{								
-									String tc[] = FFPROBE.getVideoLengthTC.split(":");		
+									String tc[] = FFprobe.getVideoLengthTC.split(":");		
 	
-									totalFramesOut = Math.round(Integer.parseInt(tc[0]) * 3600 * Math.round(FFPROBE.currentFPS))
-				    					+ Math.round(Integer.parseInt(tc[1]) * 60 * Math.round(FFPROBE.currentFPS))
-				    					+ Math.round(Integer.parseInt(tc[2]) * Math.round(FFPROBE.currentFPS))
-				    					+ (int) (Integer.parseInt(tc[3]) * 10) / (1000 / Math.round(FFPROBE.currentFPS));	
+									totalFramesOut = Math.round(Integer.parseInt(tc[0]) * 3600 * Math.round(FFprobe.currentFPS))
+				    					+ Math.round(Integer.parseInt(tc[1]) * 60 * Math.round(FFprobe.currentFPS))
+				    					+ Math.round(Integer.parseInt(tc[2]) * Math.round(FFprobe.currentFPS))
+				    					+ (int) (Integer.parseInt(tc[3]) * 10) / (1000 / Math.round(FFprobe.currentFPS));	
 								}							
 								
 				    			//Set timeline outpoint = no offset
-				    			String tcOutTimeLine = formatter.format(Math.round(totalFramesOut / Math.round(FFPROBE.currentFPS)) / 3600)
-				    					+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFPROBE.currentFPS)) / 60) % 60)
-			    						+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFPROBE.currentFPS)) % 60))        
-		    							+ ":" + formatter.format(totalFramesOut % Math.round(FFPROBE.currentFPS));
+				    			String tcOutTimeLine = formatter.format(Math.round(totalFramesOut / Math.round(FFprobe.currentFPS)) / 3600)
+				    					+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFprobe.currentFPS)) / 60) % 60)
+			    						+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFprobe.currentFPS)) % 60))        
+		    							+ ":" + formatter.format(totalFramesOut % Math.round(FFprobe.currentFPS));
 				    			
 				    			//Adding the offset for tcOutVideo
 				    			totalFramesOut = (offset + totalFramesOut);
 				    			
 				    			//Convert total frames to timecode	        
-				    			String tcOutVideo = formatter.format(Math.round(totalFramesOut / Math.round(FFPROBE.currentFPS)) / 3600)
-				    					+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFPROBE.currentFPS)) / 60) % 60)
-			    						+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFPROBE.currentFPS)) % 60))        
-		    							+ ":" + formatter.format(totalFramesOut % Math.round(FFPROBE.currentFPS));
+				    			String tcOutVideo = formatter.format(Math.round(totalFramesOut / Math.round(FFprobe.currentFPS)) / 3600)
+				    					+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFprobe.currentFPS)) / 60) % 60)
+			    						+ ":" + formatter.format(Math.round((totalFramesOut / Math.round(FFprobe.currentFPS)) % 60))        
+		    							+ ":" + formatter.format(totalFramesOut % Math.round(FFprobe.currentFPS));
 	
 								String cutName;
 								String ext = outputFile.toString().substring(outputFile.toString().lastIndexOf("."));
@@ -643,7 +643,7 @@ import javax.swing.JScrollPane;
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if ((e.getKeyCode() == KeyEvent.VK_DELETE || e.getKeyCode() == KeyEvent.VK_BACK_SPACE) && FFMPEG.isRunning == false && table.getSelectedRowCount() > 0)
+				if ((e.getKeyCode() == KeyEvent.VK_DELETE || e.getKeyCode() == KeyEvent.VK_BACK_SPACE) && FFmpeg.isRunning == false && table.getSelectedRowCount() > 0)
 				{	
 					File imageToDelete = new File(outputFolder.toString() + "/" + (table.getSelectedRow()) + ".png");
 					imageToDelete.delete();
@@ -753,9 +753,9 @@ import javax.swing.JScrollPane;
 			            
 					try {
 						// Analyse des données					 
-						 FFPROBE.Data(file.toString());						 
+						 FFprobe.Data(file.toString());						 
 						 try {
-							FFPROBE.processData.join();
+							FFprobe.processData.join();
 						 } catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						 }
@@ -773,10 +773,10 @@ import javax.swing.JScrollPane;
 						//Command
 						String cmd;
 						cmd = " -f image2 -frames:v 1 ";
-						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/0.png" + '"');
+						FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/0.png" + '"');
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}								
@@ -787,10 +787,10 @@ import javax.swing.JScrollPane;
 						//Command
 						String tol = String.valueOf((float) (100 - Integer.valueOf(shutterencoder.ui.others.SceneDetection.tolerance.getValue().toString())) / 100);
 						cmd = " -vf select=" + '"' + "gt(scene\\," + tol  + ")" + '"' + ",showinfo -fps_mode vfr -f image2 ";
-						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/%01d.png" + '"');		
+						FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd + "-y " + '"'  + outputFolder.toString() + "/%01d.png" + '"');		
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}		
@@ -798,7 +798,7 @@ import javax.swing.JScrollPane;
 						lastAction();
 						
 					} catch (Exception e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}
 				
@@ -821,13 +821,13 @@ import javax.swing.JScrollPane;
 	private static void lastAction() {
 		
 		//Erros
-		if (FFMPEG.error)
+		if (FFmpeg.error)
 		{
 		    errorList.append(System.lineSeparator());
 		}
 
 		//Ended files
-		if (FFMPEG.cancelled == false && FFMPEG.error == false)
+		if (FFmpeg.cancelled == false && FFmpeg.error == false)
 		{
 			complete++;
 			Main.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));

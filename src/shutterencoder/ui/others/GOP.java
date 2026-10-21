@@ -35,7 +35,7 @@ import javax.swing.JLabel;
 import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.utils.Utils;
 
@@ -93,25 +93,25 @@ public class GOP {
 		
 		File fichier = new File(Main.fileList.getSelectedValue());
 		
-		FFPROBE.AnalyzeGOP(fichier.toString(), true);
+		FFprobe.AnalyzeGOP(fichier.toString(), true);
 		try {
-			FFPROBE.processGOP.join();
+			FFprobe.processGOP.join();
 		} catch (InterruptedException er) {
 		    Thread.currentThread().interrupt();
 		}
 		
-		frame.setTitle(Main.language.getProperty("analyzeOf") + " " + fichier.getName() + " | GOP " + Main.language.getProperty("of") + " " + FFPROBE.gopCount);
+		frame.setTitle(Main.language.getProperty("analyzeOf") + " " + fichier.getName() + " | GOP " + Main.language.getProperty("of") + " " + FFprobe.gopCount);
 		
-		if (FFPROBE.gopCount <= 12)
+		if (FFprobe.gopCount <= 12)
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-				frame.setSize(FFPROBE.gopSpace + 8, 154);
+				frame.setSize(FFprobe.gopSpace + 8, 154);
 			else
-				frame.setSize(FFPROBE.gopSpace + 8 + 10, 164);
+				frame.setSize(FFprobe.gopSpace + 8 + 10, 164);
 			
 			scrollBar.setVisible(false);
 		}
-		else if (FFPROBE.gopSpace + 8 > 1476)
+		else if (FFprobe.gopSpace + 8 > 1476)
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
 				frame.setSize(1476, 171);
@@ -123,16 +123,16 @@ public class GOP {
 		else
 		{
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-				frame.setSize(FFPROBE.gopSpace + 8, 171);
+				frame.setSize(FFprobe.gopSpace + 8, 171);
 			else
-				frame.setSize(FFPROBE.gopSpace + 8 + 10, 181);
+				frame.setSize(FFprobe.gopSpace + 8 + 10, 181);
 			scrollBar.setVisible(true);
 		}
 		
 		frame.setLocation(Main.frame.getLocation().x + (Main.frame.getSize().width / 2) - (frame.getSize().width / 2), Main.frame.getLocation().y + 150);
 		
 		scrollBar.setBounds(0, 125, frame.getSize().width - 6, 17);
-		scrollBar.setMaximum((112 * (FFPROBE.gopCount - 12) + 8)); 
+		scrollBar.setMaximum((112 * (FFprobe.gopCount - 12) + 8)); 
 		
 		frame.addWindowListener(new WindowListener(){
 

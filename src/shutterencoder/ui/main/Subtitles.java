@@ -53,7 +53,7 @@ import javax.swing.SwingConstants;
 import com.formdev.flatlaf.ui.FlatLineBorder;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.renderers.ComboRenderer;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -406,7 +406,7 @@ public class Subtitles extends Main {
 		grpSubtitles.add(lblWidth);
 
 		textSubsWidth = new JTextField();
-		textSubsWidth.setText(String.valueOf(FFPROBE.imageWidth));
+		textSubsWidth.setText(String.valueOf(FFprobe.imageWidth));
 		textSubsWidth.setName("textSubsWidth");
 		textSubsWidth.setHorizontalAlignment(SwingConstants.RIGHT);
 		textSubsWidth.setBounds(lblWidth.getX() + lblWidth.getWidth() + 5, lblWidth.getLocation().y, 34, 16);
@@ -424,19 +424,19 @@ public class Subtitles extends Main {
 			public void keyReleased(KeyEvent e) {
 
 				if (textSubsWidth.getText().length() > 0 && e.getKeyCode() == KeyEvent.VK_ENTER) {
-					if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth) {
-						textSubsWidth.setText(String.valueOf(FFPROBE.imageWidth));
+					if (Integer.parseInt(textSubsWidth.getText()) >= FFprobe.imageWidth) {
+						textSubsWidth.setText(String.valueOf(FFprobe.imageWidth));
 						subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(),
 								(int) (VideoPlayerUI.player.getHeight()
 										+ (float) Integer.parseInt(textSubtitlesPosition.getText())
-												/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
+												/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));
 					} else {
 						subsCanvas.setSize(
 								(int) ((float) Integer.parseInt(textSubsWidth.getText())
-										/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
+										/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())),
 								(int) (VideoPlayerUI.player.getHeight()
 										+ (float) Integer.parseInt(textSubtitlesPosition.getText())
-												/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
+												/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));
 
 						subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
 					}
@@ -518,19 +518,19 @@ public class Subtitles extends Main {
 				if (textSubsWidth.getCursor() == Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 					textSubsWidth.setText(String.valueOf(MouseSubSize.offsetX + (e.getX() - MouseSubSize.mouseX)));
 
-				if (Integer.parseInt(textSubsWidth.getText()) >= FFPROBE.imageWidth) {
-					textSubsWidth.setText(String.valueOf(FFPROBE.imageWidth));
+				if (Integer.parseInt(textSubsWidth.getText()) >= FFprobe.imageWidth) {
+					textSubsWidth.setText(String.valueOf(FFprobe.imageWidth));
 					subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(),
 							(int) (VideoPlayerUI.player.getHeight()
 									+ (float) Integer.parseInt(textSubtitlesPosition.getText())
-											/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
+											/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));
 				} else {
 					subsCanvas.setSize(
 							(int) ((float) Integer.parseInt(textSubsWidth.getText())
-									/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
+									/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())),
 							(int) (VideoPlayerUI.player.getHeight()
 									+ (float) Integer.parseInt(textSubtitlesPosition.getText())
-											/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
+											/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));
 
 					subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
 				}
