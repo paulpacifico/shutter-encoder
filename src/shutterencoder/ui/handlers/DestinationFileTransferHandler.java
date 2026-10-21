@@ -34,7 +34,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.TransferHandler;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.utils.Utils;
 
@@ -48,7 +48,7 @@ public class DestinationFileTransferHandler extends TransferHandler {
 			DataFlavor flavor = arg1[i];
 
 			if (flavor.equals(DataFlavor.javaFileListFlavor)) {
-				if (comp.getName().equals("lblDestination3") && Shutter.caseChangeFolder2.isSelected() == false) {
+				if (comp.getName().equals("lblDestination3") && Main.caseChangeFolder2.isSelected() == false) {
 					return false;
 				} else {
 					comp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
@@ -86,85 +86,85 @@ public class DestinationFileTransferHandler extends TransferHandler {
 
 						if (comp.getName().equals("lblDestination1")) {
 							// Si destination identique à l'une des autres
-							if (Shutter.lblDestination1.getText().equals(Shutter.lblDestination2.getText())
-									|| Shutter.lblDestination1.getText().equals(Shutter.lblDestination3.getText())) {
-								JOptionPane.showMessageDialog(Shutter.frame,
-										Shutter.language.getProperty("ChooseDifferentFolder"),
-										Shutter.language.getProperty("chooseDestinationFolder"),
+							if (Main.lblDestination1.getText().equals(Main.lblDestination2.getText())
+									|| Main.lblDestination1.getText().equals(Main.lblDestination3.getText())) {
+								JOptionPane.showMessageDialog(Main.frame,
+										Main.language.getProperty("ChooseDifferentFolder"),
+										Main.language.getProperty("chooseDestinationFolder"),
 										JOptionPane.ERROR_MESSAGE);
-								Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
-								Shutter.caseChangeFolder1.setSelected(false);
+								Main.lblDestination1.setText(Main.language.getProperty("sameAsSource"));
+								Main.caseChangeFolder1.setSelected(false);
 							} else {
-								Shutter.caseChangeFolder1.setSelected(true);
-								Shutter.caseOpenFolderAtEnd1.setSelected(false);
+								Main.caseChangeFolder1.setSelected(true);
+								Main.caseOpenFolderAtEnd1.setSelected(false);
 							}
 
-							if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan"))) {
+							if (Main.scan.getText().equals(Main.language.getProperty("menuItemStopScan"))) {
 								// Si le dossier d'entrée et de sortie est identique
-								if (Shutter.list.firstElement().substring(0, Shutter.list.firstElement().length() - 1)
-										.equals(Shutter.lblDestination1.getText())) {
-									JOptionPane.showMessageDialog(Shutter.frame,
-											Shutter.language.getProperty("ChooseDifferentFolder"),
-											Shutter.language.getProperty("sameFolder"), JOptionPane.ERROR_MESSAGE);
-									Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
-									Shutter.caseChangeFolder1.setSelected(false);
+								if (Main.list.firstElement().substring(0, Main.list.firstElement().length() - 1)
+										.equals(Main.lblDestination1.getText())) {
+									JOptionPane.showMessageDialog(Main.frame,
+											Main.language.getProperty("ChooseDifferentFolder"),
+											Main.language.getProperty("sameFolder"), JOptionPane.ERROR_MESSAGE);
+									Main.lblDestination1.setText(Main.language.getProperty("sameAsSource"));
+									Main.caseChangeFolder1.setSelected(false);
 								} else {
-									Shutter.scanIsRunning = true;
+									Main.scanIsRunning = true;
 								}
 							}
 
-							if (Shutter.lblDestination1.getText() != Shutter.language.getProperty("sameAsSource")
+							if (Main.lblDestination1.getText() != Main.language.getProperty("sameAsSource")
 									&& Settings.lastUsedOutput1.isSelected())
-								Settings.lblDestination1.setText(Shutter.lblDestination1.getText());
+								Settings.lblDestination1.setText(Main.lblDestination1.getText());
 						} else if (comp.getName().equals("lblDestination2")) {
 							// Si destination identique à l'une des autres
-							if (Shutter.lblDestination2.getText().equals(Shutter.lblDestination1.getText())
-									|| Shutter.lblDestination2.getText().equals(Shutter.lblDestination3.getText())) {
-								JOptionPane.showMessageDialog(Shutter.frame,
-										Shutter.language.getProperty("ChooseDifferentFolder"),
-										Shutter.language.getProperty("chooseDestinationFolder"),
+							if (Main.lblDestination2.getText().equals(Main.lblDestination1.getText())
+									|| Main.lblDestination2.getText().equals(Main.lblDestination3.getText())) {
+								JOptionPane.showMessageDialog(Main.frame,
+										Main.language.getProperty("ChooseDifferentFolder"),
+										Main.language.getProperty("chooseDestinationFolder"),
 										JOptionPane.ERROR_MESSAGE);
-								Shutter.lblDestination2.setText(Shutter.language.getProperty("aucune"));
-								Shutter.caseChangeFolder2.setSelected(false);
-								Shutter.caseOpenFolderAtEnd2.setSelected(false);
-								Shutter.caseOpenFolderAtEnd2.setEnabled(false);
+								Main.lblDestination2.setText(Main.language.getProperty("aucune"));
+								Main.caseChangeFolder2.setSelected(false);
+								Main.caseOpenFolderAtEnd2.setSelected(false);
+								Main.caseOpenFolderAtEnd2.setEnabled(false);
 							} else {
-								Shutter.caseChangeFolder2.setSelected(true);
-								Shutter.caseOpenFolderAtEnd2.setSelected(false);
-								Shutter.caseOpenFolderAtEnd2.setEnabled(true);
-								Shutter.caseChangeFolder3.setEnabled(true);
+								Main.caseChangeFolder2.setSelected(true);
+								Main.caseOpenFolderAtEnd2.setSelected(false);
+								Main.caseOpenFolderAtEnd2.setEnabled(true);
+								Main.caseChangeFolder3.setEnabled(true);
 							}
 
-							if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
-								Shutter.scanIsRunning = true;
+							if (Main.scan.getText().equals(Main.language.getProperty("menuItemStopScan")))
+								Main.scanIsRunning = true;
 
-							if (Shutter.lblDestination2.getText() != Shutter.language.getProperty("sameAsSource")
+							if (Main.lblDestination2.getText() != Main.language.getProperty("sameAsSource")
 									&& Settings.lastUsedOutput2.isSelected())
-								Settings.lblDestination2.setText(Shutter.lblDestination2.getText());
+								Settings.lblDestination2.setText(Main.lblDestination2.getText());
 						} else if (comp.getName().equals("lblDestination3")) {
 							// Si destination identique à l'une des autres
-							if (Shutter.lblDestination3.getText().equals(Shutter.lblDestination1.getText())
-									|| Shutter.lblDestination3.getText().equals(Shutter.lblDestination2.getText())) {
-								JOptionPane.showMessageDialog(Shutter.frame,
-										Shutter.language.getProperty("ChooseDifferentFolder"),
-										Shutter.language.getProperty("chooseDestinationFolder"),
+							if (Main.lblDestination3.getText().equals(Main.lblDestination1.getText())
+									|| Main.lblDestination3.getText().equals(Main.lblDestination2.getText())) {
+								JOptionPane.showMessageDialog(Main.frame,
+										Main.language.getProperty("ChooseDifferentFolder"),
+										Main.language.getProperty("chooseDestinationFolder"),
 										JOptionPane.ERROR_MESSAGE);
-								Shutter.lblDestination3.setText(Shutter.language.getProperty("aucune"));
-								Shutter.caseChangeFolder3.setSelected(false);
-								Shutter.caseOpenFolderAtEnd3.setSelected(false);
-								Shutter.caseOpenFolderAtEnd3.setEnabled(false);
+								Main.lblDestination3.setText(Main.language.getProperty("aucune"));
+								Main.caseChangeFolder3.setSelected(false);
+								Main.caseOpenFolderAtEnd3.setSelected(false);
+								Main.caseOpenFolderAtEnd3.setEnabled(false);
 							} else {
-								Shutter.caseChangeFolder3.setSelected(true);
-								Shutter.caseOpenFolderAtEnd3.setSelected(false);
-								Shutter.caseOpenFolderAtEnd3.setEnabled(true);
+								Main.caseChangeFolder3.setSelected(true);
+								Main.caseOpenFolderAtEnd3.setSelected(false);
+								Main.caseOpenFolderAtEnd3.setEnabled(true);
 							}
 
-							if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan")))
-								Shutter.scanIsRunning = true;
+							if (Main.scan.getText().equals(Main.language.getProperty("menuItemStopScan")))
+								Main.scanIsRunning = true;
 
-							if (Shutter.lblDestination3.getText() != Shutter.language.getProperty("sameAsSource")
+							if (Main.lblDestination3.getText() != Main.language.getProperty("sameAsSource")
 									&& Settings.lastUsedOutput3.isSelected())
-								Settings.lblDestination3.setText(Shutter.lblDestination3.getText());
+								Settings.lblDestination3.setText(Main.lblDestination3.getText());
 						}
 					}
 

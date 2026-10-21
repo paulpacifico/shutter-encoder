@@ -70,7 +70,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.YOUTUBEDL;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.renderers.CollapsiblePanel;
@@ -119,7 +119,7 @@ public class VideoWeb {
 		frame = new JDialog();
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		frame.setTitle(Shutter.language.getProperty("frameVideoWeb"));
+		frame.setTitle(Main.language.getProperty("frameVideoWeb"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
 		frame.setSize(420, 338 + 22);
@@ -139,14 +139,14 @@ public class VideoWeb {
 			if (System.getProperty("os.name").contains("Mac") == false)
 				frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("resources/icon.png"))).getImage());
 			
-			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+			frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 		}
 							
 		topPanel();
 		grpURL();
 					
 		//Right_to_left
-		if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		if (Main.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
 		{
 			//Frame
 			for (Component c : frame.getContentPane().getComponents())
@@ -220,9 +220,9 @@ public class VideoWeb {
 						}
 					}
 					
-					Shutter.lblCurrentEncoding.setForeground(Utils.red);
-					Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("processCancelled"));
-					Shutter.progressBar.setValue(0);		        
+					Main.lblCurrentEncoding.setForeground(Utils.red);
+					Main.lblCurrentEncoding.setText(Main.language.getProperty("processCancelled"));
+					Main.progressBar.setValue(0);		        
 					
 					Utils.changeDialogVisibility(frame, true);
 				}
@@ -297,10 +297,10 @@ public class VideoWeb {
 		
 	});
 		
-		JLabel title = new JLabel(Shutter.language.getProperty("panelWebVideo"));
+		JLabel title = new JLabel(Main.language.getProperty("panelWebVideo"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -356,27 +356,27 @@ public class VideoWeb {
 	
 	private void grpURL() {
 		
-		grpURL = new CollapsiblePanel(Shutter.language.getProperty("videoUrl"), false);
+		grpURL = new CollapsiblePanel(Main.language.getProperty("videoUrl"), false);
 		grpURL.setLayout(null);
 		grpURL.setLocation(6, 28);
 		grpURL.setSize(408, frame.getHeight() - 34);
 		grpURL.setBackground(Utils.c30);
 		grpURL.setOpaque(false);
 		
-		lblURL = new JLabel(Shutter.language.getProperty("lblURL"));
+		lblURL = new JLabel(Main.language.getProperty("lblURL"));
 		lblURL.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblURL.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblURL.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblURL.setBounds(26, 25, 35, 16);			
 		grpURL.add(lblURL);
 		
 		textURL = new JTextArea();
 		textURL.setForeground(Color.LIGHT_GRAY);
 		textURL.setFont(new Font("SansSerif", Font.ITALIC, 12));
-		textURL.setText(Shutter.language.getProperty("textURL"));
+		textURL.setText(Main.language.getProperty("textURL"));
 		textURL.setBounds(66, 22, grpURL.getSize().width - (lblURL.getLocation().x + lblURL.getSize().width) - 17, 80);
 				
         final JPopupMenu menu = new JPopupMenu();
-        JMenuItem coller = new JMenuItem(Shutter.language.getProperty("MenuItemPaste"));
+        JMenuItem coller = new JMenuItem(Main.language.getProperty("MenuItemPaste"));
         coller.addActionListener(new ActionListener(){
 
 			@Override
@@ -394,7 +394,7 @@ public class VideoWeb {
 			@Override
 			public void keyTyped(KeyEvent e) {
 				
-				if (textURL.getText().equals("") || textURL.getText().equals(Shutter.language.getProperty("textURL")))
+				if (textURL.getText().equals("") || textURL.getText().equals(Main.language.getProperty("textURL")))
 				{
 					btnOK.setEnabled(false);
 					if (caseAuto.isSelected() == false)
@@ -443,7 +443,7 @@ public class VideoWeb {
 								
 		caseAuto = new JCheckBox("Auto");
 		caseAuto.setSelected(true);
-		caseAuto.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseAuto.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseAuto.setBounds(66, 111, caseAuto.getPreferredSize().width, 16);	
 		caseAuto.setEnabled(false);
 		grpURL.add(caseAuto);
@@ -474,9 +474,9 @@ public class VideoWeb {
 							}
 						}
 						
-						Shutter.lblCurrentEncoding.setForeground(Utils.red);
-						Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("processCancelled"));
-						Shutter.progressBar.setValue(0);	
+						Main.lblCurrentEncoding.setForeground(Utils.red);
+						Main.lblCurrentEncoding.setText(Main.language.getProperty("processCancelled"));
+						Main.progressBar.setValue(0);	
 					}
 															
 					comboFormats.addItem("default");
@@ -503,7 +503,7 @@ public class VideoWeb {
 						public void run() {
 							
 							btnOK.setEnabled(false);
-							comboFormats.addItem(Shutter.language.getProperty("getAvailableFormats") + "...");
+							comboFormats.addItem(Main.language.getProperty("getAvailableFormats") + "...");
 							
 							YOUTUBEDL.getAvailableFormats(textURL.getText(), options());
 							
@@ -511,7 +511,7 @@ public class VideoWeb {
 								try {
 									Thread.sleep(100);
 								} catch (Exception er){}
-							} while (YOUTUBEDL.runProcess.isAlive() && Shutter.cancelled == false);
+							} while (YOUTUBEDL.runProcess.isAlive() && Main.cancelled == false);
 							
 							if (caseAuto.isSelected() == false && frame.isVisible())
 							{
@@ -532,7 +532,7 @@ public class VideoWeb {
 									if (caseAuto.isSelected() == false)
 										caseAuto.doClick();
 									
-									JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("invalidUrl"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);
+									JOptionPane.showMessageDialog(frame, Main.language.getProperty("invalidUrl"), Main.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);
 								}
 							}
 												
@@ -547,7 +547,7 @@ public class VideoWeb {
 			
 		});
 			
-		caseMetadata = new JCheckBox(Shutter.language.getProperty("casePreserveMetadata"));
+		caseMetadata = new JCheckBox(Main.language.getProperty("casePreserveMetadata"));
 		caseMetadata.setName("caseMetadata");
 		if (Settings.videoWebCaseMetadata)
 		{
@@ -557,13 +557,13 @@ public class VideoWeb {
 		{
 			caseMetadata.setSelected(false);
 		}
-		caseMetadata.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseMetadata.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseMetadata.setBounds(66, caseAuto.getY() + 22, caseMetadata.getPreferredSize().width, 16);	
 		grpURL.add(caseMetadata);
 		
-		caseTimecode = new JCheckBox(Shutter.language.getProperty("caseSetTimecode"));
+		caseTimecode = new JCheckBox(Main.language.getProperty("caseSetTimecode"));
 		caseTimecode.setName("caseTimecode");
-		caseTimecode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseTimecode.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseTimecode.setBounds(66, caseMetadata.getY() + 22, caseTimecode.getPreferredSize().width, 16);	
 		grpURL.add(caseTimecode);
 		
@@ -644,9 +644,9 @@ public class VideoWeb {
 
 		});
 		
-		caseCookies = new JCheckBox(Shutter.language.getProperty("caseCookies"));
+		caseCookies = new JCheckBox(Main.language.getProperty("caseCookies"));
 		caseCookies.setName("caseCookies");
-		caseCookies.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseCookies.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseCookies.setBounds(66, caseTimecode.getY() + 22, caseCookies.getPreferredSize().width, 16);	
 		grpURL.add(caseCookies);
 		
@@ -722,15 +722,15 @@ public class VideoWeb {
 			
 		});
 		
-		lblQualit = new JLabel(Shutter.language.getProperty("lblQualit"));
+		lblQualit = new JLabel(Main.language.getProperty("lblQualit"));
 		lblQualit.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblQualit.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblQualit.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblQualit.setSize(lblQualit.getPreferredSize().width, 16);
 		lblQualit.setLocation(textURL.getX() - lblQualit.getWidth() - 5, 110);		
 		grpURL.add(lblQualit);
 		
-		btnOK = new JButton(Shutter.language.getProperty("btnStartFunction"));
-		btnOK.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnOK = new JButton(Main.language.getProperty("btnStartFunction"));
+		btnOK.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnOK.setBounds(comboFormats.getX(), comboFormats.getY() + comboFormats.getHeight() + 4, comboFormats.getWidth(), 21);		
 		btnOK.setEnabled(false);
 		grpURL.add(btnOK);
@@ -744,8 +744,8 @@ public class VideoWeb {
 			}
 		});
 		
-		caseMP3 = new JCheckBox(Shutter.language.getProperty("caseMP3"));
-		caseMP3.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseMP3 = new JCheckBox(Main.language.getProperty("caseMP3"));
+		caseMP3.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseMP3.setBounds(121, caseAuto.getY(), caseMP3.getPreferredSize().width + 4, 16);		
 		grpURL.add(caseMP3);
 		
@@ -770,8 +770,8 @@ public class VideoWeb {
 			
 		});
 		
-		caseWAV = new JCheckBox(Shutter.language.getProperty("caseWAV"));
-		caseWAV.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseWAV = new JCheckBox(Main.language.getProperty("caseWAV"));
+		caseWAV.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseWAV.setBounds(caseMP3.getX() + caseMP3.getWidth(), caseAuto.getY(), caseWAV.getPreferredSize().width + 4, 16);		
 		grpURL.add(caseWAV);
 		
@@ -797,8 +797,8 @@ public class VideoWeb {
 		
 		frame.getContentPane().add(grpURL);			
 		
-		caseVideoPass = new JCheckBox(Shutter.language.getProperty("caseVideoPass"));
-		caseVideoPass.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseVideoPass = new JCheckBox(Main.language.getProperty("caseVideoPass"));
+		caseVideoPass.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseVideoPass.setSize(caseVideoPass.getPreferredSize().width, 16);	
 		caseVideoPass.setLocation(66, 221 + 22);
 		grpURL.add(caseVideoPass);
@@ -825,8 +825,8 @@ public class VideoWeb {
 		textVideoPass.setColumns(10);	
 		grpURL.add(textVideoPass);
 				
-		caseUser = new JCheckBox(Shutter.language.getProperty("caseUser"));
-		caseUser.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseUser = new JCheckBox(Main.language.getProperty("caseUser"));
+		caseUser.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseUser.setBounds(caseVideoPass.getX(), caseCookies.getY() + 22, caseUser.getPreferredSize().width, 16);
 		grpURL.add(caseUser);
 		
@@ -853,8 +853,8 @@ public class VideoWeb {
 		textUser.setBounds(caseVideoPass.getLocation().x + caseVideoPass.getWidth() + 4, caseUser.getY() - 3, grpURL.getSize().width - (caseVideoPass.getLocation().x + caseVideoPass.getSize().width) - 17, 21);
 		grpURL.add(textUser);
 				
-		casePass = new JCheckBox(Shutter.language.getProperty("casePass"));
-		casePass.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		casePass = new JCheckBox(Main.language.getProperty("casePass"));
+		casePass.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		casePass.setBounds(caseVideoPass.getX(), caseUser.getY() + 22, casePass.getPreferredSize().width, 16);
 		grpURL.add(casePass);
 		
@@ -928,18 +928,18 @@ public class VideoWeb {
 			public void run() { 
 					
 				complete = 0;
-				Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
+				Main.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 						
 		        try {
 		        	
 	        		if (textURL.getText().toLowerCase().equals("update") || YOUTUBEDL.isRunning) //isRunning is used for install
 	        		{
 	        			UIController.disableAll();
-	        			Shutter.btnStart.setEnabled(false);
-	        			Shutter.btnCancel.setEnabled(false);
-	        			Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("update"));
+	        			Main.btnStart.setEnabled(false);
+	        			Main.btnCancel.setEnabled(false);
+	        			Main.lblCurrentEncoding.setText(Main.language.getProperty("update"));
 	        			YOUTUBEDL.update();
-	        			Shutter.progressBar.setIndeterminate(true);
+	        			Main.progressBar.setIndeterminate(true);
 	        			        			
 	        			do {
 	        				Thread.sleep(100);
@@ -949,7 +949,7 @@ public class VideoWeb {
 	        			{
 	        	           @Override
 	        	           public void run() {
-	        	        	   Shutter.progressBar.setIndeterminate(false);
+	        	        	   Main.progressBar.setIndeterminate(false);
 	        	           }
 	        			});
 	        			UIController.enableAll();	 
@@ -994,7 +994,7 @@ public class VideoWeb {
 						}
 	
 						UIController.disableAll();
-						Shutter.btnStart.setEnabled(false);
+						Main.btnStart.setEnabled(false);
 					
 					    //Download	    
 						YOUTUBEDL.run('"' + line + '"', options());
@@ -1003,18 +1003,18 @@ public class VideoWeb {
 							Thread.sleep(100);		
 						} while (YOUTUBEDL.runProcess.isAlive() && FFMPEG.cancelled == false);
 				       
-						if (Shutter.cancelled)
+						if (Main.cancelled)
 						{
 					    	 if (YOUTUBEDL.outputFile.exists()) 
 					    		 YOUTUBEDL.outputFile.delete();
 						}
 						else //Audio conversion
 						{
-				    	   Shutter.lblRemainingTime.setVisible(false);
+				    	   Main.lblRemainingTime.setVisible(false);
 				    	   String ext = YOUTUBEDL.outputFile.toString().substring(YOUTUBEDL.outputFile.toString().lastIndexOf("."));
 				    	   if (caseWAV.isSelected())
 				    	   {		
-				    		   	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToWAV")); 
+				    		   	Main.lblCurrentEncoding.setText(Main.language.getProperty("convertToWAV")); 
 								String cmd = " -vn -y ";
 								FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".wav") + '"');	
 							
@@ -1023,7 +1023,7 @@ public class VideoWeb {
 								} while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 								
 						       //Suppression du fichier audio si processus annulé
-						       if (Shutter.cancelled)
+						       if (Main.cancelled)
 						       {
 						    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".wav"));
 						    	   audioFile.delete();
@@ -1031,7 +1031,7 @@ public class VideoWeb {
 				    	   }
 				    	   else if (caseMP3.isSelected())
 				    	   {
-				    		   Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("convertToMP3"));  
+				    		   Main.lblCurrentEncoding.setText(Main.language.getProperty("convertToMP3"));  
 				    		   String cmd = " -vn -c:a mp3 -b:a 256k -y ";
 				    		   FFMPEG.run(" -i " + '"' + YOUTUBEDL.outputFile.toString() + '"' + cmd + '"'  + YOUTUBEDL.outputFile.toString().replace(ext, ".mp3") + '"');	
 							
@@ -1040,7 +1040,7 @@ public class VideoWeb {
 						       } while (FFMPEG.isRunning && FFMPEG.cancelled == false);			
 						       
 						       //Suppression du fichier audio si processus annulé
-						       if (Shutter.cancelled)
+						       if (Main.cancelled)
 						       {
 						    	   File audioFile = new File (YOUTUBEDL.outputFile.toString().replace(ext, ".mp3"));
 						    	   audioFile.delete();
@@ -1048,15 +1048,15 @@ public class VideoWeb {
 				    	   }		    	   			       
 						}
 				       					       
-						if (Shutter.cancelled == false)
+						if (Main.cancelled == false)
 						{
 							complete++;
-							Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
+							Main.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 							
 							//Ouverture du dossier
-							if (Shutter.caseOpenFolderAtEnd1.isSelected())
+							if (Main.caseOpenFolderAtEnd1.isSelected())
 							{
-								Utils.openFile(new File(Shutter.lblDestination1.getText()));
+								Utils.openFile(new File(Main.lblDestination1.getText()));
 							}
 						}
 						UIController.enableAll();
@@ -1074,7 +1074,7 @@ public class VideoWeb {
 
 	private void PasteFromClipBoard(boolean mouse){
 		
-		if (textURL.getText().equals(Shutter.language.getProperty("textURL")))
+		if (textURL.getText().equals(Main.language.getProperty("textURL")))
 			textURL.setText("");
 		
 		textURL.setFont(new Font("SansSerif", Font.PLAIN, 12));

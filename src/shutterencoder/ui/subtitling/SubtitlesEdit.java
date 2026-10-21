@@ -56,7 +56,7 @@ import javax.swing.SwingConstants;
 
 import com.formdev.flatlaf.ui.FlatLineBorder;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
@@ -91,8 +91,8 @@ public class SubtitlesEdit {
 		
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setTitle(Shutter.language.getProperty("frameSubtitlesEdit"));
-		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+		frame.setTitle(Main.language.getProperty("frameSubtitlesEdit"));
+		frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 		
 		scrollBar = new JScrollBar();
 		scrollBar.setBackground(Utils.c30);
@@ -419,7 +419,7 @@ public class SubtitlesEdit {
 		in.setText(subIn);
 		in.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 5));
 		in.setForeground(Utils.themeColor);
-		in.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		in.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		in.setBounds(77, textPosition - 2, 94, 25);	
 		in.setBackground(Utils.c30);
 		in.setHorizontalAlignment(SwingConstants.CENTER);
@@ -485,7 +485,7 @@ public class SubtitlesEdit {
 		out.setText(subOut);
 		out.setBorder(new FlatLineBorder(new Insets(0,0,0,0), new Color(45,45,45), 1, 10));
 		out.setForeground(Utils.themeColor);
-		out.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		out.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		out.setBounds(77, textPosition + 24, 94, 25);	
 		out.setBackground(Utils.c30);
 		out.setHorizontalAlignment(SwingConstants.CENTER);
@@ -548,7 +548,7 @@ public class SubtitlesEdit {
 	private static JLabel addNumber(int number) {
 		
 		JLabel nb = new JLabel(String.valueOf(number));
-		nb.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		nb.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		nb.setHorizontalAlignment(SwingConstants.CENTER);
 		nb.setBounds(9, textPosition + 16, 61, 16);
 		

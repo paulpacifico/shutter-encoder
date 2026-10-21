@@ -58,7 +58,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
@@ -102,7 +102,7 @@ import javax.swing.JScrollPane;
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setTitle(Shutter.language.getProperty("frameDetectionCoupe"));
+		frame.setTitle(Main.language.getProperty("frameDetectionCoupe"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(400, 584);
@@ -122,7 +122,7 @@ import javax.swing.JScrollPane;
 			if (System.getProperty("os.name").contains("Mac") == false)
 				frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("resources/icon.png"))).getImage());
 			
-			frame.setLocation(Shutter.frame.getLocation().x - frame.getSize().width -20, Shutter.frame.getLocation().y);
+			frame.setLocation(Main.frame.getLocation().x - frame.getSize().width -20, Main.frame.getLocation().y);
 		}
 				
 		topPanel();
@@ -242,10 +242,10 @@ import javax.swing.JScrollPane;
 		quit = new JLabel(new FlatSVGIcon("resources/quit.svg", 15, 15));
 		quit.setBounds(frame.getSize().width - 20, 4, 15, 15);
 
-		JLabel title = new JLabel(Shutter.language.getProperty("frameDetectionCoupe"));
+		JLabel title = new JLabel(Main.language.getProperty("frameDetectionCoupe"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -332,9 +332,9 @@ import javax.swing.JScrollPane;
 				if (accept)		
 				{		  
 					if (FFMPEG.runProcess.isAlive())
-						Shutter.btnCancel.doClick();
+						Main.btnCancel.doClick();
 					
-					if (Shutter.btnCancel.isEnabled() == false)
+					if (Main.btnCancel.isEnabled() == false)
 					{
 						if (outputFolder.exists())
 							deleteDirectory(outputFolder);
@@ -414,8 +414,8 @@ import javax.swing.JScrollPane;
 		scrollPane.setBounds(9, 65, 380, frame.getSize().height - 136);
 		frame.getContentPane().add(scrollPane);
 			
-		JLabel lblSensibility = new JLabel(Shutter.language.getProperty("lblSensibility"));
-		lblSensibility.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		JLabel lblSensibility = new JLabel(Main.language.getProperty("lblSensibility"));
+		lblSensibility.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblSensibility.setBounds(10, 38, lblSensibility.getPreferredSize().width, 15);
 		frame.getContentPane().add(lblSensibility);
 		
@@ -424,12 +424,12 @@ import javax.swing.JScrollPane;
 		frame.getContentPane().add(tolerance);	
 		
 		JLabel lblPourcentage = new JLabel("%");
-		lblPourcentage.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblPourcentage.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblPourcentage.setBounds(tolerance.getX() + tolerance.getWidth() + 4, lblSensibility.getY(), 15, 15);
 		frame.getContentPane().add(lblPourcentage);
 		
-		btnAnalyze = new JButton(Shutter.language.getProperty("btnAnalyse"));
-		btnAnalyze.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnAnalyze = new JButton(Main.language.getProperty("btnAnalyse"));
+		btnAnalyze.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnAnalyze.setLocation(lblPourcentage.getX() + lblPourcentage.getWidth() + 7, lblSensibility.getY() - 3);
 		btnAnalyze.setSize(frame.getWidth() - (tolerance.getX() + tolerance.getWidth()) - 34, 21);
 		frame.getContentPane().add(btnAnalyze);
@@ -456,14 +456,14 @@ import javax.swing.JScrollPane;
 				
 		lblBottomArrow = new JLabel("▲▼");
 		lblBottomArrow.setHorizontalAlignment(SwingConstants.CENTER);
-		lblBottomArrow.setFont(new Font(Shutter.mainFont, Font.PLAIN, 20));
+		lblBottomArrow.setFont(new Font(Main.mainFont, Font.PLAIN, 20));
 		lblBottomArrow.setSize(new Dimension(frame.getSize().width, 20));
 		lblBottomArrow.setLocation(0, frame.getSize().height - lblBottomArrow.getSize().height);
 		lblBottomArrow.setVisible(true);		
 		frame.getContentPane().add(lblBottomArrow);
 		
-		btnEDL = new JButton(Shutter.language.getProperty("btnEDL"));
-		btnEDL.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnEDL = new JButton(Main.language.getProperty("btnEDL"));
+		btnEDL.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnEDL.setEnabled(false);
 		btnEDL.setBounds(9, 65 + scrollPane.getHeight() + 6, scrollPane.getWidth(), 21);
 		frame.getContentPane().add(btnEDL);
@@ -571,7 +571,7 @@ import javax.swing.JScrollPane;
 								if (i % 2 == 0)
 									cutName = outputFile.toString().replace(" ", "_");
 								else
-									cutName = outputFile.toString().replace(" ", "_").replace(ext, "_" + Shutter.language.getProperty("cut") + ext);
+									cutName = outputFile.toString().replace(" ", "_").replace(ext, "_" + Main.language.getProperty("cut") + ext);
 				    																	
 								writer.println(formatEDL.format(countItemsEDL + 1) + "  " + cutName + " V     C        " + tcInVideo + " " + tcOutVideo + " " + tcIn + " " + tcOutTimeLine);
 								writer.println(formatEDL.format(countItemsEDL + 2) + "  " + cutName + " A     C        " + tcInVideo + " " + tcOutVideo + " " + tcIn + " " + tcOutTimeLine);
@@ -585,7 +585,7 @@ import javax.swing.JScrollPane;
 					    }
 					    				    
 						writer.close();	
-						JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("fileCreated"), "EDL", JOptionPane.INFORMATION_MESSAGE);
+						JOptionPane.showMessageDialog(frame, Main.language.getProperty("fileCreated"), "EDL", JOptionPane.INFORMATION_MESSAGE);
 							
 						}			
 		    		}
@@ -593,10 +593,10 @@ import javax.swing.JScrollPane;
 			}			
 		});
 		
-		lblEdit = new JLabel(Shutter.language.getProperty("lblEdit"));
+		lblEdit = new JLabel(Main.language.getProperty("lblEdit"));
 		lblEdit.setForeground(Utils.themeColor);
 		lblEdit.setHorizontalAlignment(SwingConstants.CENTER);
-		lblEdit.setFont(new Font(Shutter.boldFont, Font.PLAIN, 13));
+		lblEdit.setFont(new Font(Main.boldFont, Font.PLAIN, 13));
 		lblEdit.setSize(lblEdit.getPreferredSize().width, 15);
 		lblEdit.setLocation(frame.getWidth() / 2 - lblEdit.getWidth() / 2, 65 + scrollPane.getHeight() + 31);
 		lblEdit.setVisible(false);
@@ -610,7 +610,7 @@ import javax.swing.JScrollPane;
 		ImageIcon icon = new ImageIcon(imageIcon.getImage().getScaledInstance(142, 80, Image.SCALE_DEFAULT));			
 		Object[][] firstImage = {{"1", icon, "00:00:00:00"}};
 
-		tableRow = new DefaultTableModel(firstImage, new String[] {"N\u00B0", Shutter.language.getProperty("cut"), Shutter.language.getProperty("lblTimecode")});
+		tableRow = new DefaultTableModel(firstImage, new String[] {"N\u00B0", Main.language.getProperty("cut"), Main.language.getProperty("lblTimecode")});
 		DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
 		dtcr.setHorizontalAlignment(SwingConstants.CENTER);
         table = new JTable(tableRow)
@@ -681,9 +681,9 @@ import javax.swing.JScrollPane;
 		});
 				
 		final JPopupMenu popupListe = new JPopupMenu();
-		JMenuItem visualiser = new JMenuItem(Shutter.language.getProperty("menuItemVisualiser"));
-		JMenuItem ouvrirDossier = new JMenuItem(Shutter.language.getProperty("menuItemOuvrirDossier"));
-		JMenuItem copieTimeCode = new JMenuItem(Shutter.language.getProperty("menuItemCopyTimecode"));
+		JMenuItem visualiser = new JMenuItem(Main.language.getProperty("menuItemVisualiser"));
+		JMenuItem ouvrirDossier = new JMenuItem(Main.language.getProperty("menuItemOuvrirDossier"));
+		JMenuItem copieTimeCode = new JMenuItem(Main.language.getProperty("menuItemCopyTimecode"));
 		
 		visualiser.addActionListener(new ActionListener(){
 			@Override
@@ -739,12 +739,12 @@ import javax.swing.JScrollPane;
 			public void run() {				
 				complete = 0;
 			
-				Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
+				Main.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 
 					
-				for (int i = 0 ; i < Shutter.list.getSize() ; i++)
+				for (int i = 0 ; i < Main.list.getSize() ; i++)
 				{
-					File file = new File(Shutter.list.getElementAt(i));
+					File file = new File(Main.list.getElementAt(i));
 					
 					if (i > 0)
 					{
@@ -761,7 +761,7 @@ import javax.swing.JScrollPane;
 						 }
 							 																	
 						String filename = file.getName();
-						Shutter.lblCurrentEncoding.setText(filename);
+						Main.lblCurrentEncoding.setText(filename);
 						
 						String sortie = file.getParent();					
 						final String extension =  filename.substring(filename.lastIndexOf("."));
@@ -805,7 +805,7 @@ import javax.swing.JScrollPane;
 				//Errors
 				if (errorList.length() != 0)
 				{
-					JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("notProcessedFiles") + " " + '\n' + '\n' + errorList.toString() ,Shutter.language.getProperty("encodingError"), JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(Main.frame, Main.language.getProperty("notProcessedFiles") + " " + '\n' + '\n' + errorList.toString() ,Main.language.getProperty("encodingError"), JOptionPane.ERROR_MESSAGE);
 				}
 				
 				errorList.setLength(0);
@@ -830,7 +830,7 @@ import javax.swing.JScrollPane;
 		if (FFMPEG.cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
+			Main.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 		}
 		
 		tolerance.setEnabled(true);

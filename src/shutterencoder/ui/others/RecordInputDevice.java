@@ -49,7 +49,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
@@ -69,9 +69,9 @@ public class RecordInputDevice {
 	public static Integer screenHeigth = 0;
 	public static String inputDeviceResolution = "";
 	
-	private static JLabel lblScreenRecord = new JLabel(Shutter.language.getProperty("lblInputDevice"));
+	private static JLabel lblScreenRecord = new JLabel(Main.language.getProperty("lblInputDevice"));
 	public static JTextField txtScreenRecord = new JTextField();
-	private static JLabel lblInputDevice = new JLabel(Shutter.language.getProperty("lblInputDevice"));
+	private static JLabel lblInputDevice = new JLabel(Main.language.getProperty("lblInputDevice"));
 	public static JTextField txtInputDevice = new JTextField();
 
 	public RecordInputDevice() {
@@ -84,7 +84,7 @@ public class RecordInputDevice {
 			frame.setSize(350, 160);
 		else
 			frame.setSize(330, 150);
-		frame.setTitle( Shutter.language.getProperty("menuItemInputDevice"));
+		frame.setTitle( Main.language.getProperty("menuItemInputDevice"));
 		
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setBackground(Utils.background);
@@ -94,7 +94,7 @@ public class RecordInputDevice {
 		
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
-		frame.setLocation((Shutter.frame.getLocation().x + Shutter.frame.getWidth() / 2) - frame.getWidth() / 2, (Shutter.frame.getLocation().y + Shutter.frame.getHeight() / 3) - frame.getHeight() / 2);
+		frame.setLocation((Main.frame.getLocation().x + Main.frame.getWidth() / 2) - frame.getWidth() / 2, (Main.frame.getLocation().y + Main.frame.getHeight() / 3) - frame.getHeight() / 2);
 		
 		devices();
 						
@@ -103,8 +103,8 @@ public class RecordInputDevice {
 	
 	private static void devices()
 	{
-		JLabel screenVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
-		screenVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		JLabel screenVideo = new JLabel(Main.language.getProperty("video") + Main.language.getProperty("colon"));
+		screenVideo.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		screenVideo.setBounds(12, 12, 40, 14);
 		frame.getContentPane().add(screenVideo);		
 						
@@ -112,12 +112,12 @@ public class RecordInputDevice {
 		int i = 0;
 		for (String videoDevice : LibraryUtils.videoDevices.toString().split(":"))
 		{		
-			firstInput[i] = videoDevice.replace(Shutter.language.getProperty("noVideo"), "Capture.current.screen");
+			firstInput[i] = videoDevice.replace(Main.language.getProperty("noVideo"), "Capture.current.screen");
 			i++;
 		}
 			
 		comboScreenVideo = new JComboBox<String>(firstInput);	
-		comboScreenVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboScreenVideo.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboScreenVideo.setEditable(false);
 		comboScreenVideo.setMaximumRowCount(20);
 		comboScreenVideo.setLocation(screenVideo.getX() + screenVideo.getWidth() + 4, screenVideo.getLocation().y - 3);
@@ -149,13 +149,13 @@ public class RecordInputDevice {
 			
 		});
 		
-		JLabel screenAudio = new JLabel(Shutter.language.getProperty("audio") + Shutter.language.getProperty("colon"));
-		screenAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		JLabel screenAudio = new JLabel(Main.language.getProperty("audio") + Main.language.getProperty("colon"));
+		screenAudio.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		screenAudio.setBounds(12, screenVideo.getY() + screenVideo.getHeight() + 14, 40, 14);
 		frame.getContentPane().add(screenAudio);
 		
 		comboScreenAudio = new JComboBox<String>(LibraryUtils.audioDevices.toString().split(":"));
-		comboScreenAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboScreenAudio.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboScreenAudio.setEditable(false);
 		comboScreenAudio.setMaximumRowCount(20);
 		comboScreenAudio.setBounds(comboScreenVideo.getX(), screenAudio.getLocation().y - 3, comboScreenVideo.getWidth(), 22);
@@ -191,24 +191,24 @@ public class RecordInputDevice {
 		JLabel iconScreenPreview = new JLabel(new FlatSVGIcon("resources/preview.svg", 16, 16));
 		iconScreenPreview.setHorizontalAlignment(SwingConstants.CENTER);
 		iconScreenPreview.setBounds(comboScreenVideo.getX() + comboScreenVideo.getWidth() + 8, comboScreenVideo.getLocation().y + 3, 16, 16);
-		iconScreenPreview.setToolTipText(Shutter.language.getProperty("preview"));
+		iconScreenPreview.setToolTipText(Main.language.getProperty("preview"));
 		frame.getContentPane().add(iconScreenPreview);
 		
 		iconScreenPreview.addMouseListener(new MouseListener() {
 
 			public void mouseClicked(MouseEvent e) {
 					
-					Shutter.list.removeAllElements();
+					Main.list.removeAllElements();
 					
 					if (comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen"))
 					{
-						Shutter.list.addElement("Capture.current.screen");
+						Main.list.addElement("Capture.current.screen");
 						if (comboInputVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
 							videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
 					}
 					else
 					{
-						Shutter.list.addElement("Capture.input.device");
+						Main.list.addElement("Capture.input.device");
 						if (System.getProperty("os.name").contains("Windows"))
 							videoDeviceIndex = (comboScreenVideo.getSelectedIndex());
 						else
@@ -230,9 +230,9 @@ public class RecordInputDevice {
 					
 					FFMPEG.toFFPLAY(RecordInputDevice.setInputDevices() + cmd);
 														
-					Shutter.list.removeAllElements();					
+					Main.list.removeAllElements();					
 					UIController.enableAll();
-					Shutter.progressBar.setValue(0);
+					Main.progressBar.setValue(0);
 			}
 
 			@Override
@@ -262,14 +262,14 @@ public class RecordInputDevice {
 			
 		});
 		
-		JLabel inputVideo = new JLabel(Shutter.language.getProperty("video") + Shutter.language.getProperty("colon"));
-		inputVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		JLabel inputVideo = new JLabel(Main.language.getProperty("video") + Main.language.getProperty("colon"));
+		inputVideo.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		inputVideo.setBounds(12, screenAudio.getY() + screenAudio.getHeight() + 25, 40, 14);
 		//if (System.getProperty("os.name").contains("Windows"))
 		//	frame.getContentPane().add(inputVideo);
 		
 		comboInputVideo = new JComboBox<String>(LibraryUtils.videoDevices.toString().split(":"));
-		comboInputVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboInputVideo.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboInputVideo.setEditable(false);
 		comboInputVideo.setEnabled(true);
 		comboInputVideo.setMaximumRowCount(20);
@@ -277,14 +277,14 @@ public class RecordInputDevice {
 		//if (System.getProperty("os.name").contains("Windows"))
 		//	frame.getContentPane().add(comboInputVideo);
 		
-		JLabel inputAudio = new JLabel(Shutter.language.getProperty("audio") + Shutter.language.getProperty("colon"));
-		inputAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		JLabel inputAudio = new JLabel(Main.language.getProperty("audio") + Main.language.getProperty("colon"));
+		inputAudio.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		inputAudio.setBounds(12, inputVideo.getY() + inputVideo.getHeight() + 14, 40, 14);
 		//if (System.getProperty("os.name").contains("Windows"))
 		//	frame.getContentPane().add(inputAudio);
 		
 		comboInputAudio = new JComboBox<String>(LibraryUtils.audioDevices.toString().split(":"));
-		comboInputAudio.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboInputAudio.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboInputAudio.setEditable(false);
 		comboInputAudio.setEnabled(false);
 		comboInputAudio.setMaximumRowCount(20);
@@ -295,7 +295,7 @@ public class RecordInputDevice {
 		JLabel iconDevicePreview = new JLabel(new FlatSVGIcon("resources/preview.svg", 16, 16));
 		iconDevicePreview.setHorizontalAlignment(SwingConstants.CENTER);
 		iconDevicePreview.setBounds(comboInputVideo.getX() + comboInputVideo.getWidth() + 8, comboInputVideo.getLocation().y + 3, 16, 16);
-		iconDevicePreview.setToolTipText(Shutter.language.getProperty("preview"));
+		iconDevicePreview.setToolTipText(Main.language.getProperty("preview"));
 		
 		//if (System.getProperty("os.name").contains("Windows"))
 		//	frame.getContentPane().add(iconDevicePreview);
@@ -306,9 +306,9 @@ public class RecordInputDevice {
 
 				if (comboInputVideo.getSelectedIndex() > 0 || comboInputAudio.getSelectedIndex() > 0)
 				{					
-					Shutter.list.removeAllElements();
+					Main.list.removeAllElements();
 					
-					Shutter.list.addElement("Capture.input.device");
+					Main.list.addElement("Capture.input.device");
 					videoDeviceIndex = comboInputVideo.getSelectedIndex();
 					
 					//Second audio
@@ -329,9 +329,9 @@ public class RecordInputDevice {
 					else
 						FFMPEG.toFFPLAY(RecordInputDevice.setOverlayDevice() + cmd);
 					
-					Shutter.list.removeAllElements();					
+					Main.list.removeAllElements();					
 					UIController.enableAll();
-					Shutter.progressBar.setValue(0);
+					Main.progressBar.setValue(0);
 				}
 			}
 
@@ -362,7 +362,7 @@ public class RecordInputDevice {
 			
 		});
 		
-		lblScreenRecord.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblScreenRecord.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblScreenRecord.setSize(lblScreenRecord.getPreferredSize().width, lblScreenRecord.getPreferredSize().height);
 		/*if (System.getProperty("os.name").contains("Windows"))
 		{
@@ -374,7 +374,7 @@ public class RecordInputDevice {
 		
 		txtScreenRecord.setName("txtScreenRecord");
 		txtScreenRecord.setHorizontalAlignment(SwingConstants.CENTER);
-		txtScreenRecord.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		txtScreenRecord.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		txtScreenRecord.setText("30");
 		txtScreenRecord.setColumns(10);
 		txtScreenRecord.setBounds(lblScreenRecord.getLocation().x + lblScreenRecord.getWidth() + 6, lblScreenRecord.getLocation().y - 4, 40, 21);
@@ -393,14 +393,14 @@ public class RecordInputDevice {
 			
 		});
 		
-		lblInputDevice.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblInputDevice.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblInputDevice.setBounds(12, lblScreenRecord.getLocation().y + lblScreenRecord.getHeight() + 10, lblInputDevice.getPreferredSize().width, lblInputDevice.getPreferredSize().height);
 		//if (System.getProperty("os.name").contains("Windows"))
 		//	frame.getContentPane().add(lblInputDevice);
 		
 		txtInputDevice.setName("txtInputDevice");
 		txtInputDevice.setHorizontalAlignment(SwingConstants.CENTER);
-		txtInputDevice.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		txtInputDevice.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		txtInputDevice.setText("30");
 		txtInputDevice.setColumns(10);
 		txtInputDevice.setBounds(lblInputDevice.getLocation().x + lblInputDevice.getWidth() + 6, lblInputDevice.getLocation().y - 4, 40, 21);
@@ -421,7 +421,7 @@ public class RecordInputDevice {
 		});				
 		
 		JButton btnOK = new JButton("OK");
-		btnOK.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnOK.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnOK.setSize(screenVideo.getWidth() + comboScreenVideo.getWidth() + 24, 21);	
 		btnOK.setLocation(12, lblScreenRecord.getY() + lblScreenRecord.getHeight() + 6);	
 		frame.getContentPane().add(btnOK);
@@ -431,17 +431,17 @@ public class RecordInputDevice {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 
-				Shutter.list.removeAllElements();
+				Main.list.removeAllElements();
 				
 				if (comboScreenVideo.getSelectedItem().toString().equals("Capture.current.screen"))
 				{
-					Shutter.list.addElement("Capture.current.screen");
+					Main.list.addElement("Capture.current.screen");
 					if (comboInputVideo.getSelectedIndex() > 0 && System.getProperty("os.name").contains("Windows"))
 						videoDeviceIndex = (comboInputVideo.getSelectedIndex());						
 				}
 				else
 				{
-					Shutter.list.addElement("Capture.input.device");
+					Main.list.addElement("Capture.input.device");
 					if (System.getProperty("os.name").contains("Windows"))
 						videoDeviceIndex = (comboScreenVideo.getSelectedIndex());
 					else
@@ -450,7 +450,7 @@ public class RecordInputDevice {
 				
 				//Overlay
 				if (comboInputVideo.getSelectedIndex() > 0)
-					Shutter.overlayDeviceIsRunning = true;
+					Main.overlayDeviceIsRunning = true;
 				
 				//Main audio
 				if (comboScreenAudio.getSelectedIndex() > 0)
@@ -468,9 +468,9 @@ public class RecordInputDevice {
 				setInputDevices();
 				
 				//Important
-				Shutter.inputDeviceIsRunning = true;
-				Shutter.grpImageAdjustement.setEnabled(false);
-				Component[] components = Shutter.grpImageAdjustement.getComponents();
+				Main.inputDeviceIsRunning = true;
+				Main.grpImageAdjustement.setEnabled(false);
+				Component[] components = Main.grpImageAdjustement.getComponents();
 				for (int i = 0; i < components.length; i++) {
 					components[i].setEnabled(false);
 				}
@@ -498,20 +498,20 @@ public class RecordInputDevice {
 				  	FFPROBE.interlaced = "0";
 												
 				//Set options
-				Shutter.addToList.setVisible(false);
-				Shutter.case2pass.setSelected(false);
+				Main.addToList.setVisible(false);
+				Main.case2pass.setSelected(false);
 				
-				Shutter.caseDisplay.setSelected(true);
+				Main.caseDisplay.setSelected(true);
 				
-				if (Shutter.caseChangeFolder1.isSelected() == false)
+				if (Main.caseChangeFolder1.isSelected() == false)
 				{
 					if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-						Shutter.lblDestination1.setText(System.getProperty("user.home") + "/Desktop");
+						Main.lblDestination1.setText(System.getProperty("user.home") + "/Desktop");
 					else
-						Shutter.lblDestination1.setText(System.getProperty("user.home") + "\\Desktop");
+						Main.lblDestination1.setText(System.getProperty("user.home") + "\\Desktop");
 				}
 				
-				Shutter.caseChangeFolder1.setSelected(true);
+				Main.caseChangeFolder1.setSelected(true);
 				
 				UIController.changeFilters();
 				
@@ -526,7 +526,7 @@ public class RecordInputDevice {
 	public static String setInputDevices() {
 		
 		String videoDevice = "";
-		if (Shutter.list.getElementAt(0).equals("Capture.input.device"))
+		if (Main.list.getElementAt(0).equals("Capture.input.device"))
 		{
 			String getVideoDevices[] = LibraryUtils.videoDevices.toString().split(":");
 			videoDevice = getVideoDevices[videoDeviceIndex];
@@ -569,7 +569,7 @@ public class RecordInputDevice {
 		Integer screenPositionX = allScreens[screenIndex].getDefaultConfiguration().getBounds().x;
 		Integer screenPositionY = allScreens[screenIndex].getDefaultConfiguration().getBounds().y;	
 		
-		if (Shutter.list.getElementAt(0).equals("Capture.current.screen"))
+		if (Main.list.getElementAt(0).equals("Capture.current.screen"))
 		{
 	        FFPROBE.imageWidth = screenWidth;
 	        FFPROBE.imageHeight = screenHeigth;
@@ -584,7 +584,7 @@ public class RecordInputDevice {
 		
 		if (System.getProperty("os.name").contains("Mac"))
 		{			
-			if (Shutter.list.getElementAt(0).equals("Capture.current.screen"))
+			if (Main.list.getElementAt(0).equals("Capture.current.screen"))
 			{
 				if (setAudio != "") //Audio needs to be first for sync
 					return setAudio + " -thread_queue_size 4096 -f avfoundation -pix_fmt uyvy422 -probesize 100M -rtbufsize 100M -capture_cursor 1 -framerate " + txtScreenRecord.getText() + " -i " + '"' + (int) ( FFMPEG.firstScreenIndex + screenIndex) + '"';
@@ -598,7 +598,7 @@ public class RecordInputDevice {
 		}
 		else if (System.getProperty("os.name").contains("Windows"))
 		{
-			if (Shutter.list.getElementAt(0).equals("Capture.current.screen"))
+			if (Main.list.getElementAt(0).equals("Capture.current.screen"))
 			{				
 				if (setAudio != "") //Audio needs to be first for sync
 					return "-thread_queue_size 4096 -f dshow -i " + setAudio + " -thread_queue_size 4096 -f gdigrab -draw_mouse 1 -framerate " + txtScreenRecord.getText() + " -offset_x " + screenPositionX + " -offset_y " + screenPositionY + " -video_size " + screenWidth + "x" + screenHeigth + " -probesize 100M -rtbufsize 100M -i " + '"' + "desktop" + '"' + setSecondAudio;

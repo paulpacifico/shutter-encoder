@@ -47,7 +47,7 @@ import javax.swing.border.MatteBorder;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.library.MEDIAINFO;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
 
@@ -76,7 +76,7 @@ import shutterencoder.utils.Utils;
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setTitle(Shutter.language.getProperty("frameInformations"));
+		frame.setTitle(Main.language.getProperty("frameInformations"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(450, 670);
@@ -91,10 +91,10 @@ import shutterencoder.utils.Utils;
 		if (System.getProperty("os.name").contains("Mac") == false)
 			frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("resources/icon.png"))).getImage());
 		
-		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);;		
+		frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);;		
 				
-		lblWait = new JLabel(Shutter.language.getProperty("lblWait"));
-		lblWait.setFont(new Font(Shutter.mainFont, Font.PLAIN, 20));
+		lblWait = new JLabel(Main.language.getProperty("lblWait"));
+		lblWait.setFont(new Font(Main.mainFont, Font.PLAIN, 20));
 		lblWait.setForeground(Color.WHITE);
 		lblWait.setSize(lblWait.getPreferredSize().width, 40);
 		lblWait.setLocation(frame.getSize().width / 2 - lblWait.getSize().width / 2, frame.getSize().height / 2);
@@ -103,7 +103,7 @@ import shutterencoder.utils.Utils;
 		
 		lblArrows = new JLabel("▲▼");
 		lblArrows.setHorizontalAlignment(SwingConstants.CENTER);
-		lblArrows.setFont(new Font(Shutter.mainFont, Font.PLAIN, 20));
+		lblArrows.setFont(new Font(Main.mainFont, Font.PLAIN, 20));
 		lblArrows.setSize(new Dimension(frame.getSize().width, 20));
 		lblArrows.setLocation(0, frame.getSize().height - lblArrows.getSize().height);
 		lblArrows.setVisible(false);
@@ -321,10 +321,10 @@ import shutterencoder.utils.Utils;
 		bottomImage.setBorder(new MatteBorder(1, 0, 1, 0, new Color(65, 65, 65)));
 		bottomImage.setBounds(0 , 1, frame.getSize().width, 24);
 			
-		JLabel title = new JLabel(Shutter.language.getProperty("frameInformations"));
+		JLabel title = new JLabel(Main.language.getProperty("frameInformations"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();

@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import shutterencoder.functions.settings.Timecode;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 
 public class VideoPlayerMultiCuts extends VideoPlayerCore {
 
@@ -302,15 +302,15 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
 				playerMarkIn = seg.inMark;
 				playerMarkOut = seg.outMark;
 				
-				caseInH.setText(Shutter.formatter.format(seg.inH));
-            	caseInM.setText(Shutter.formatter.format(seg.inM));
-            	caseInS.setText(Shutter.formatter.format(seg.inS));
-            	caseInF.setText(Shutter.formatter.format(seg.inF));
+				caseInH.setText(Main.formatter.format(seg.inH));
+            	caseInM.setText(Main.formatter.format(seg.inM));
+            	caseInS.setText(Main.formatter.format(seg.inS));
+            	caseInF.setText(Main.formatter.format(seg.inF));
             	
-            	caseOutH.setText(Shutter.formatter.format(seg.outH));
-            	caseOutM.setText(Shutter.formatter.format(seg.outM));
-            	caseOutS.setText(Shutter.formatter.format(seg.outS));
-            	caseOutF.setText(Shutter.formatter.format(seg.outF));
+            	caseOutH.setText(Main.formatter.format(seg.outH));
+            	caseOutM.setText(Main.formatter.format(seg.outM));
+            	caseOutS.setText(Main.formatter.format(seg.outS));
+            	caseOutF.setText(Main.formatter.format(seg.outF));
 				
 				cutSegments.clear();
 				
@@ -351,15 +351,15 @@ public class VideoPlayerMultiCuts extends VideoPlayerCore {
             	playerMarkIn = seg.inMark;
             	playerMarkOut = seg.outMark;
             	
-            	caseInH.setText(Shutter.formatter.format(seg.inH));
-            	caseInM.setText(Shutter.formatter.format(seg.inM));
-            	caseInS.setText(Shutter.formatter.format(seg.inS));
-            	caseInF.setText(Shutter.formatter.format(seg.inF));
+            	caseInH.setText(Main.formatter.format(seg.inH));
+            	caseInM.setText(Main.formatter.format(seg.inM));
+            	caseInS.setText(Main.formatter.format(seg.inS));
+            	caseInF.setText(Main.formatter.format(seg.inF));
             	
-            	caseOutH.setText(Shutter.formatter.format(seg.outH));
-            	caseOutM.setText(Shutter.formatter.format(seg.outM));
-            	caseOutS.setText(Shutter.formatter.format(seg.outS));
-            	caseOutF.setText(Shutter.formatter.format(seg.outF));            	
+            	caseOutH.setText(Main.formatter.format(seg.outH));
+            	caseOutM.setText(Main.formatter.format(seg.outM));
+            	caseOutS.setText(Main.formatter.format(seg.outS));
+            	caseOutF.setText(Main.formatter.format(seg.outF));            	
             }
         }
 	}

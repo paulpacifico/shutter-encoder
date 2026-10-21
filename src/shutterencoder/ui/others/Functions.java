@@ -59,7 +59,7 @@ import javax.swing.border.MatteBorder;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.library.SEVENZIP;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
 
@@ -94,7 +94,7 @@ public class Functions {
 	private static int MousePositionX;
 	private static int MousePositionY;
 	
-	public static File functionsFolder = new File(Shutter.documents + "/Functions");
+	public static File functionsFolder = new File(Main.documents + "/Functions");
 
 	public Functions() {
 		
@@ -102,7 +102,7 @@ public class Functions {
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setSize(333,317);
 		frame.setBackground(Utils.background);
-		frame.setTitle(Shutter.language.getProperty("frameFonctions"));
+		frame.setTitle(Main.language.getProperty("frameFonctions"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
@@ -118,8 +118,8 @@ public class Functions {
 		
 		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
 		Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
-		Shutter.taskBarHeight = (int) (dim.getHeight() - winSize.height);
-		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+		Main.taskBarHeight = (int) (dim.getHeight() - winSize.height);
+		frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 		
 		frame.addWindowListener(new WindowListener(){
 			
@@ -129,16 +129,16 @@ public class Functions {
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Shutter.iconPresets.setVisible(true);
-				if (Shutter.iconList.isVisible())
+				Main.iconPresets.setVisible(true);
+				if (Main.iconList.isVisible())
 				{
-					Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
-					Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
+					Main.iconPresets.setLocation(Main.iconList.getX() + Main.iconList.getWidth() + 2, 45);
+					Main.btnCancel.setBounds(207 + Main.iconList.getWidth(), 46, 101 - Main.iconList.getWidth() -  4, 21);
 				}
 				else
 				{
-					Shutter.iconPresets.setBounds(180, 45, 21, 21);
-					Shutter.btnCancel.setBounds(207, 46, 97, 21);
+					Main.iconPresets.setBounds(180, 45, 21, 21);
+					Main.btnCancel.setBounds(207, 46, 97, 21);
 				}
 				
 				Utils.changeFrameVisibility(frame, true);				
@@ -166,22 +166,22 @@ public class Functions {
 			
 		});
 		
-		lblSave = new JLabel(Shutter.language.getProperty("lblSaveMac"));
+		lblSave = new JLabel(Main.language.getProperty("lblSaveMac"));
 		
 		if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-			lblSave = new JLabel(Shutter.language.getProperty("lblSaveMac"));
+			lblSave = new JLabel(Main.language.getProperty("lblSaveMac"));
 		else
-			lblSave = new JLabel(Shutter.language.getProperty("lblSavePC"));
+			lblSave = new JLabel(Main.language.getProperty("lblSavePC"));
 				
 		lblSave.setHorizontalAlignment(SwingConstants.CENTER);
-		lblSave.setFont(new Font(Shutter.mainFont, Font.PLAIN, 16));
+		lblSave.setFont(new Font(Main.mainFont, Font.PLAIN, 16));
 		lblSave.setBounds(10, 112, 313, 45);
 		lblSave.setVisible(false);
 		frame.getContentPane().add(lblSave);
 		
-		lblDrop = new JLabel(Shutter.language.getProperty("lblDrop"));
+		lblDrop = new JLabel(Main.language.getProperty("lblDrop"));
 		lblDrop.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDrop.setFont(new Font(Shutter.mainFont, Font.PLAIN, 16));
+		lblDrop.setFont(new Font(Main.mainFont, Font.PLAIN, 16));
 		lblDrop.setBounds(10, 136, 313, 45);
 		lblDrop.setVisible(false);
 		frame.getContentPane().add(lblDrop);
@@ -190,7 +190,7 @@ public class Functions {
 		presetsList.setBackground(Utils.c35);
 		presetsList.setForeground(Color.LIGHT_GRAY);
 		presetsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		presetsList.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
+		presetsList.setFont(new Font(Main.mainFont, Font.PLAIN, 11));
 		presetsList.setCellRenderer(new FonctionsRenderer());
 		presetsList.setFixedCellHeight(17);
 		presetsList.setBounds(0, 28, 333, 269);
@@ -226,11 +226,11 @@ public class Functions {
 		frame.getContentPane().add(scrollPane);
 		
 		popupListe = new JPopupMenu();
-		final JMenuItem load = new JMenuItem(Shutter.language.getProperty("menuItemLoad"));
-		final JMenuItem addToQueue = new JMenuItem(Shutter.language.getProperty("btnAddToRender"));
-		final JMenuItem update = new JMenuItem(Shutter.language.getProperty("menuItemUpdate"));
-		final JMenuItem delete = new JMenuItem(Shutter.language.getProperty("menuItemDelete"));
-		final JMenuItem openFolder = new JMenuItem(Shutter.language.getProperty("menuItemOpenFolder"));
+		final JMenuItem load = new JMenuItem(Main.language.getProperty("menuItemLoad"));
+		final JMenuItem addToQueue = new JMenuItem(Main.language.getProperty("btnAddToRender"));
+		final JMenuItem update = new JMenuItem(Main.language.getProperty("menuItemUpdate"));
+		final JMenuItem delete = new JMenuItem(Main.language.getProperty("menuItemDelete"));
+		final JMenuItem openFolder = new JMenuItem(Main.language.getProperty("menuItemOpenFolder"));
 		
 		popupListe.add(load);
 		popupListe.add(addToQueue);
@@ -243,7 +243,7 @@ public class Functions {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				Shutter.btnReset.doClick();
+				Main.btnReset.doClick();
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				Utils.loadSettings(new File(functionsFolder + "/" + presetsList.getSelectedValue()));
 			}
@@ -268,7 +268,7 @@ public class Functions {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("areYouSure"), Shutter.language.getProperty("menuItemUpdate"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);					
+				int reply = JOptionPane.showConfirmDialog(frame, Main.language.getProperty("areYouSure"), Main.language.getProperty("menuItemUpdate"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);					
 				
 				if (reply == JOptionPane.YES_OPTION)
 				{
@@ -283,7 +283,7 @@ public class Functions {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("areYouSure"), Shutter.language.getProperty("menuItemDelete"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);					
+				int reply = JOptionPane.showConfirmDialog(frame, Main.language.getProperty("areYouSure"), Main.language.getProperty("menuItemDelete"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);					
 				
 				if (list.getSize() > 0 && presetsList.getSelectedIndices().length == 1 && reply == JOptionPane.YES_OPTION)
 				{
@@ -308,16 +308,16 @@ public class Functions {
 				Utils.openFile(functionsFolder);
 				Utils.changeFrameVisibility(frame, true);
 				
-				Shutter.iconPresets.setVisible(true);
-				if (Shutter.iconList.isVisible())
+				Main.iconPresets.setVisible(true);
+				if (Main.iconList.isVisible())
 				{
-					Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
-					Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
+					Main.iconPresets.setLocation(Main.iconList.getX() + Main.iconList.getWidth() + 2, 45);
+					Main.btnCancel.setBounds(207 + Main.iconList.getWidth(), 46, 101 - Main.iconList.getWidth() -  4, 21);
 				}
 				else
 				{
-					Shutter.iconPresets.setBounds(180, 45, 21, 21);
-					Shutter.btnCancel.setBounds(207, 46, 97, 21);
+					Main.iconPresets.setBounds(180, 45, 21, 21);
+					Main.btnCancel.setBounds(207, 46, 97, 21);
 				}
 			}
 	
@@ -342,7 +342,7 @@ public class Functions {
 				{
 					if (presetsList.getSelectedIndices().length > 0 && e.getClickCount() == 2)
 					{					
-						Shutter.btnReset.doClick();
+						Main.btnReset.doClick();
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						Utils.loadSettings(new File(functionsFolder + "/" + presetsList.getSelectedValue()));
 					}
@@ -369,7 +369,7 @@ public class Functions {
 
 		lblFlecheBas = new JLabel("▲▼");
 		lblFlecheBas.setHorizontalAlignment(SwingConstants.CENTER);
-		lblFlecheBas.setFont(new Font(Shutter.mainFont, Font.PLAIN, 20));
+		lblFlecheBas.setFont(new Font(Main.mainFont, Font.PLAIN, 20));
 		lblFlecheBas.setSize(new Dimension(frame.getSize().width, 20));
 		lblFlecheBas.setLocation(0, frame.getSize().height - lblFlecheBas.getSize().height);
 		
@@ -510,16 +510,16 @@ public class Functions {
 				
 				if (accept)
 				{
-					Shutter.iconPresets.setVisible(true);
-					if (Shutter.iconList.isVisible())
+					Main.iconPresets.setVisible(true);
+					if (Main.iconList.isVisible())
 					{
-						Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
-						Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
+						Main.iconPresets.setLocation(Main.iconList.getX() + Main.iconList.getWidth() + 2, 45);
+						Main.btnCancel.setBounds(207 + Main.iconList.getWidth(), 46, 101 - Main.iconList.getWidth() -  4, 21);
 					}
 					else
 					{
-						Shutter.iconPresets.setBounds(180, 45, 21, 21);
-						Shutter.btnCancel.setBounds(207, 46, 97, 21);
+						Main.iconPresets.setBounds(180, 45, 21, 21);
+						Main.btnCancel.setBounds(207, 46, 97, 21);
 					}
 					
 					Utils.changeFrameVisibility(frame, true);
@@ -597,7 +597,7 @@ public class Functions {
 		newInstance = new JLabel(new FlatSVGIcon("resources/new.svg", 15, 15));
 		newInstance.setHorizontalAlignment(SwingConstants.CENTER);
 		newInstance.setBounds(reduce.getLocation().x - 20, 4, 15, 15);
-		newInstance.setToolTipText(Shutter.language.getProperty("btnSave"));
+		newInstance.setToolTipText(Main.language.getProperty("btnSave"));
 		topPanel.add(newInstance);
 
 		newInstance.addMouseListener(new MouseListener() {	
@@ -622,7 +622,7 @@ public class Functions {
 			public void mouseReleased(MouseEvent e) {
 				if (accept) 
 				{
-					if ((Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction")) || Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender"))) && Shutter.comboFonctions.getSelectedItem() != "") 
+					if ((Main.btnStart.getText().equals(Main.language.getProperty("btnStartFunction")) || Main.btnStart.getText().equals(Main.language.getProperty("btnAddToRender"))) && Main.comboFonctions.getSelectedItem() != "") 
 					{
 						if (Renamer.frame == null || Renamer.frame != null && Renamer.frame.isVisible() == false)
 						{
@@ -649,10 +649,10 @@ public class Functions {
 
 		});
 				
-		JLabel title = new JLabel(Shutter.language.getProperty("frameFonctions"));
+		JLabel title = new JLabel(Main.language.getProperty("frameFonctions"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -708,9 +708,9 @@ public class Functions {
 	}
 
 	private static void queuePresets(List<File> presets, int index) {
-		if (Shutter.list.getSize() == 0) {
-			JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("addFileToList"),
-					Shutter.language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);
+		if (Main.list.getSize() == 0) {
+			JOptionPane.showMessageDialog(frame, Main.language.getProperty("addFileToList"),
+					Main.language.getProperty("noFile"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 
@@ -725,13 +725,13 @@ public class Functions {
 			new RenderQueue();
 		}
 
-		Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
-		Shutter.btnReset.doClick();
+		Main.btnStart.setText(Main.language.getProperty("btnAddToRender"));
+		Main.btnReset.doClick();
 		frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 		Utils.loadSettings(presets.get(index), () -> {
 			RenderQueue.setQueueBuildCompletion(() -> queuePresets(presets, index + 1));
-			Shutter.btnStart.doClick();
+			Main.btnStart.doClick();
 		});
 	}
 

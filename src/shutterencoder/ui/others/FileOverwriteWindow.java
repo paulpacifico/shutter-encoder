@@ -9,11 +9,11 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 
 public class FileOverwriteWindow  {
 
-	public static JCheckBox caseApplyToAll = new JCheckBox(Shutter.language.getProperty("caseApplyToAll"));
+	public static JCheckBox caseApplyToAll = new JCheckBox(Main.language.getProperty("caseApplyToAll"));
 	public static String value;
 	
 	public FileOverwriteWindow(String file) {
@@ -21,7 +21,7 @@ public class FileOverwriteWindow  {
 		value = "cancel";
 				
 		JDialog frame = new JDialog();
-		frame.setTitle(file + " " + Shutter.language.getProperty("alreadyExist").toLowerCase());
+		frame.setTitle(file + " " + Main.language.getProperty("alreadyExist").toLowerCase());
 		frame.setLayout(null);
 		
 		if (System.getProperty("os.name").contains("Mac") == false)
@@ -33,8 +33,8 @@ public class FileOverwriteWindow  {
 		
 		System.setProperty("apple.laf.useScreenMenuBar", "false");
 
-		JButton btnKeep = new JButton(Shutter.language.getProperty("btnKeep"));
-		btnKeep.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		JButton btnKeep = new JButton(Main.language.getProperty("btnKeep"));
+		btnKeep.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnKeep.setBounds(7, 7, btnKeep.getPreferredSize().width, 21);
 		frame.getContentPane().add(btnKeep);
 		
@@ -50,8 +50,8 @@ public class FileOverwriteWindow  {
 			
 		});
 		
-		JButton btnOverwrite = new JButton(Shutter.language.getProperty("btnOverwrite"));
-		btnOverwrite.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		JButton btnOverwrite = new JButton(Main.language.getProperty("btnOverwrite"));
+		btnOverwrite.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnOverwrite.setBounds(btnKeep.getX() + btnKeep.getWidth() + 4, 7, btnOverwrite.getPreferredSize().width, 21);
 		frame.getContentPane().add(btnOverwrite);
 		
@@ -67,8 +67,8 @@ public class FileOverwriteWindow  {
 			
 		});
 		
-		JButton btnSkip = new JButton(Shutter.language.getProperty("btnSkip"));
-		btnSkip.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		JButton btnSkip = new JButton(Main.language.getProperty("btnSkip"));
+		btnSkip.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnSkip.setBounds(btnOverwrite.getX() + btnOverwrite.getWidth() + 4, 7, btnSkip.getPreferredSize().width, 21);
 		frame.getContentPane().add(btnSkip);
 		
@@ -84,8 +84,8 @@ public class FileOverwriteWindow  {
 			
 		});
 		
-		JButton btnCancel = new JButton(Shutter.language.getProperty("btnCancel"));
-		btnCancel.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		JButton btnCancel = new JButton(Main.language.getProperty("btnCancel"));
+		btnCancel.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnCancel.setBounds(btnSkip.getX() + btnSkip.getWidth() + 4, 7, btnCancel.getPreferredSize().width, 21);
 		frame.getContentPane().add(btnCancel);
 
@@ -102,7 +102,7 @@ public class FileOverwriteWindow  {
 		
 		caseApplyToAll.setSelected(false);
 		caseApplyToAll.setEnabled(true);
-		caseApplyToAll.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseApplyToAll.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseApplyToAll.setBounds((btnCancel.getX() + btnCancel.getWidth() + 7 - caseApplyToAll.getPreferredSize().width) / 2, btnCancel.getY() + btnCancel.getHeight() + 4, caseApplyToAll.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseApplyToAll);
 		
@@ -113,7 +113,7 @@ public class FileOverwriteWindow  {
 		else
 			frame.setSize(btnCancel.getX() + btnCancel.getWidth() + 25, 100);
 			
-		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight()- frame.getHeight()) / 2);
+		frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight()- frame.getHeight()) / 2);
 		frame.setVisible(true);
 	}
 }

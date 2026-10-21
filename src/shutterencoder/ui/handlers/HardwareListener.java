@@ -29,7 +29,7 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.JPanel;
 
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Renamer;
 import shutterencoder.ui.others.Settings;
@@ -39,7 +39,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class HardwareListener extends Shutter {
+public class HardwareListener extends Main {
 
 	// Keyboard shortcuts
 	public static void keyboardListener() {
@@ -61,7 +61,7 @@ public class HardwareListener extends Shutter {
 
 			public void eventDispatched(AWTEvent event) {
 
-				if (comboFonctions.hasFocus() == false && comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false) {
+				if (comboFonctions.hasFocus() == false && comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false) {
 					
 					KeyEvent ke = (KeyEvent) event;
 
@@ -80,7 +80,7 @@ public class HardwareListener extends Shutter {
 								VideoPlayerUI.btnPlay.doClick();
 							}
 							
-							if (Shutter.shift)
+							if (Main.shift)
 							{				
 								int key = ke.getKeyCode();
 
@@ -197,7 +197,7 @@ public class HardwareListener extends Shutter {
 							
 							if (ke.getKeyCode() == KeyEvent.VK_LEFT)
 							{					
-								if (Shutter.shift)
+								if (Main.shift)
 								{
 									VideoPlayerUI.previousFrame = true;
 
@@ -209,7 +209,7 @@ public class HardwareListener extends Shutter {
 									if (isPlaying)
 								    	VideoPlayerUI.btnPlay.doClick();
 								}
-								else if (Shutter.alt)
+								else if (Main.alt)
 								{
 									VideoPlayerUI.previousFrame = true;
 
@@ -229,7 +229,7 @@ public class HardwareListener extends Shutter {
 							
 							if (ke.getKeyCode() == KeyEvent.VK_RIGHT)
 							{						
-								if (Shutter.shift)
+								if (Main.shift)
 								{
 									VideoPlayerUI.previousFrame = true;
 
@@ -241,7 +241,7 @@ public class HardwareListener extends Shutter {
 									if (isPlaying)
 								    	VideoPlayerUI.btnPlay.doClick();
 								}
-								else if (Shutter.alt)
+								else if (Main.alt)
 								{
 									VideoPlayerUI.previousFrame = true;
 
@@ -283,8 +283,8 @@ public class HardwareListener extends Shutter {
 						// Save settings
 						if ((ke.getKeyCode() == KeyEvent.VK_S) && ((ke.getModifiersEx() & KeyEvent.META_DOWN_MASK) != 0) || (ke.getKeyCode() == KeyEvent.VK_S) && ((ke.getModifiersEx() & KeyEvent.CTRL_DOWN_MASK) != 0))
 						{
-							if ((btnStart.getText().equals(Shutter.language.getProperty("btnStartFunction"))
-							|| btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+							if ((btnStart.getText().equals(Main.language.getProperty("btnStartFunction"))
+							|| btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 							&& comboFonctions.getSelectedItem() != "")
 							{
 								if (Renamer.frame == null || Renamer.frame != null && Renamer.frame.isVisible() == false) {
@@ -344,9 +344,9 @@ public class HardwareListener extends Shutter {
 					return;
 				}
 				
-				if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
+				if (comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false
 				&& frame.getSize().getHeight() - (btnReset.getLocation().y + btnReset.getHeight()) <= 31
-				|| comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
+				|| comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false
 				&& Settings.btnDisableAnimations.isSelected() && top.getY() < 30)
 				{	
 					int i = (0 - me.getWheelRotation()) * 20;

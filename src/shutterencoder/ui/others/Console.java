@@ -52,7 +52,7 @@ import javax.swing.event.ChangeListener;
 
 import com.formdev.flatlaf.util.SystemFileChooser;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.utils.Utils;
 
 @SuppressWarnings("serial")
@@ -110,21 +110,21 @@ public class Console extends JFrame {
 		{
 			frmConsole.setSize(1200, 800);
 			frmConsole.getContentPane().setLayout(null);
-			frmConsole.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frmConsole.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frmConsole.getHeight()) / 2);
+			frmConsole.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frmConsole.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frmConsole.getHeight()) / 2);
 		}
 		
 		System.setProperty("apple.laf.useScreenMenuBar", "false");
 		
 		JMenu menu = new JMenu("Console");
 		menu.setLayout(null);
-		menu.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		menu.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		menu.setMnemonic(KeyEvent.VK_ALT);
 
 		menuBar = new JMenuBar();
 		menuBar.setLayout(null);
 		menuBar.add(menu);
 		
-		JMenuItem clear = new JMenuItem(Shutter.language.getProperty("btnEmptyList"), KeyEvent.VK_V);
+		JMenuItem clear = new JMenuItem(Main.language.getProperty("btnEmptyList"), KeyEvent.VK_V);
 		clear.addActionListener(new ActionListener(){
 
 			@Override
@@ -172,7 +172,7 @@ public class Console extends JFrame {
 			
 		});
 		
-		JMenuItem save = new JMenuItem(Shutter.language.getProperty("btnSave"), KeyEvent.VK_S);
+		JMenuItem save = new JMenuItem(Main.language.getProperty("btnSave"), KeyEvent.VK_S);
 		save.addActionListener(new ActionListener(){
 
 			@Override
@@ -182,7 +182,7 @@ public class Console extends JFrame {
 				fc.setCurrentDirectory(new File(System.getProperty("user.home") + "/Desktop"));
 				fc.setSelectedFile(new File(tabbedPane.getTitleAt(tabbedPane.getSelectedIndex())));
 				
-				if (fc.showSaveDialog(Shutter.frame) == SystemFileChooser.APPROVE_OPTION)
+				if (fc.showSaveDialog(Main.frame) == SystemFileChooser.APPROVE_OPTION)
 				{
 					try {
 						PrintWriter writer = new PrintWriter(fc.getSelectedFile().toString().replace(".txt", "") + ".txt", "UTF-8");
@@ -232,7 +232,7 @@ public class Console extends JFrame {
 			
 		});
 		
-		followLine = new JCheckBoxMenuItem(Shutter.language.getProperty("followLine"));	
+		followLine = new JCheckBoxMenuItem(Main.language.getProperty("followLine"));	
 		followLine.setSelected(true);
 		menu.add(clear);
 		menu.add(save);
@@ -241,7 +241,7 @@ public class Console extends JFrame {
 		frmConsole.setJMenuBar(menuBar);
 		
 		spinner = new JSpinner( new SpinnerNumberModel(12, 1 , 100 ,1));	
-		spinner.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));				
+		spinner.setFont(new Font(Main.boldFont, Font.PLAIN, 12));				
 		menuBar.add(spinner);
 		
 		consoleAll();
@@ -310,78 +310,78 @@ public class Console extends JFrame {
 
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				consoleFFMPEG.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
-				consoleFFPROBE.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
-				consoleBMXTRANSWRAP.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
-				consoleDVDAUTHOR.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
-				consoleTSMUXER.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
-				consoleMEDIAINFO.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));	
-				consoleYOUTUBEDL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
-				consoleDCRAW.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
-				consoleEXIFTOOL.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
-				consoleXPDFREADER.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
-				consoleNCNN.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
-				consolePYTHON.setFont(new Font(Shutter.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleFFMPEG.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleFFPROBE.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));	
+				consoleBMXTRANSWRAP.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));	
+				consoleDVDAUTHOR.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));	
+				consoleTSMUXER.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));	
+				consoleMEDIAINFO.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));	
+				consoleYOUTUBEDL.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleDCRAW.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleEXIFTOOL.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleXPDFREADER.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consoleNCNN.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));
+				consolePYTHON.setFont(new Font(Main.mainFont, Font.PLAIN, (int) spinner.getValue()));
 			}
 			
 		});
 		
-		consoleFFMPEG.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleFFMPEG.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleFFMPEG.setBackground(Utils.c30);
 		consoleFFMPEG.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleFFMPEG.setWrapStyleWord(true);
 		consoleFFMPEG.addKeyListener(kl);
-		consoleFFPROBE.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleFFPROBE.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleFFPROBE.setBackground(Utils.c30);
 		consoleFFPROBE.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleFFPROBE.setWrapStyleWord(true);
 		consoleFFPROBE.addKeyListener(kl);
-		consoleBMXTRANSWRAP.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleBMXTRANSWRAP.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleBMXTRANSWRAP.setBackground(Utils.c30);
 		consoleBMXTRANSWRAP.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleBMXTRANSWRAP.setWrapStyleWord(true);
 		consoleBMXTRANSWRAP.addKeyListener(kl);
-		consoleDVDAUTHOR.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleDVDAUTHOR.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleDVDAUTHOR.setBackground(Utils.c30);
 		consoleDVDAUTHOR.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleDVDAUTHOR.setWrapStyleWord(true);
 		consoleDVDAUTHOR.addKeyListener(kl);
-		consoleTSMUXER.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleTSMUXER.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleTSMUXER.setBackground(Utils.c30);
 		consoleTSMUXER.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleTSMUXER.setWrapStyleWord(true);
 		consoleTSMUXER.addKeyListener(kl);
-		consoleMEDIAINFO.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleMEDIAINFO.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleMEDIAINFO.setBackground(Utils.c30);
 		consoleMEDIAINFO.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleMEDIAINFO.setWrapStyleWord(true);
 		consoleMEDIAINFO.addKeyListener(kl);
-		consoleYOUTUBEDL.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleYOUTUBEDL.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleYOUTUBEDL.setBackground(Utils.c30);
 		consoleYOUTUBEDL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleYOUTUBEDL.setWrapStyleWord(true);
 		consoleYOUTUBEDL.addKeyListener(kl);		
-		consoleDCRAW.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleDCRAW.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleDCRAW.setBackground(Utils.c30);
 		consoleDCRAW.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleDCRAW.setWrapStyleWord(true);
 		consoleDCRAW.addKeyListener(kl);		
-		consoleEXIFTOOL.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleEXIFTOOL.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleEXIFTOOL.setBackground(Utils.c30);
 		consoleEXIFTOOL.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleEXIFTOOL.setWrapStyleWord(true);
 		consoleEXIFTOOL.addKeyListener(kl);
-		consoleXPDFREADER.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleXPDFREADER.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleXPDFREADER.setBackground(Utils.c30);
 		consoleXPDFREADER.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleXPDFREADER.setWrapStyleWord(true);
 		consoleXPDFREADER.addKeyListener(kl);
-		consoleNCNN.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consoleNCNN.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consoleNCNN.setBackground(Utils.c30);
 		consoleNCNN.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consoleNCNN.setWrapStyleWord(true);
 		consoleNCNN.addKeyListener(kl);
-		consolePYTHON.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));	
+		consolePYTHON.setFont(new Font(Main.mainFont, Font.PLAIN, 12));	
 		consolePYTHON.setBackground(Utils.c30);
 		consolePYTHON.setBounds(0, 0, frmConsole.getContentPane().getSize().width, frmConsole.getContentPane().getSize().height);
 		consolePYTHON.setWrapStyleWord(true);

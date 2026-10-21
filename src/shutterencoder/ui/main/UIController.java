@@ -77,7 +77,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
 import shutterencoder.utils.Utils;
 
-public class UIController extends Shutter {
+public class UIController extends Main {
 
 	public static Thread setSections;
 	private static boolean noSections = false;
@@ -114,8 +114,8 @@ public class UIController extends Shutter {
 			iconList.setVisible(true);
 
 			if (iconPresets.isVisible()) {
-				iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
-				btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() - 4, 21);
+				iconPresets.setLocation(Main.iconList.getX() + Main.iconList.getWidth() + 2, 45);
+				btnCancel.setBounds(207 + Main.iconList.getWidth(), 46, 101 - Main.iconList.getWidth() - 4, 21);
 			} else {
 				iconPresets.setBounds(180, 45, 21, 21);
 				btnCancel.setBounds(207, 46, 97, 21);
@@ -529,11 +529,11 @@ public class UIController extends Shutter {
 
 			// grpWatermark
 			if (caseAddWatermark.isSelected()
-			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnPauseFunction")) == false
-			&& Shutter.btnStart.getText().equals(Shutter.language.getProperty("btnStopRecording")) == false)
+			&& Main.btnStart.getText().equals(Main.language.getProperty("btnPauseFunction")) == false
+			&& Main.btnStart.getText().equals(Main.language.getProperty("btnStopRecording")) == false)
 			{
-				VideoPlayerOverlay.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
-				Shutter.logo.setLocation((int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(Shutter.textWatermarkPosY.getText()) / Shutter.playerRatio));
+				VideoPlayerOverlay.loadWatermark(Integer.parseInt(Main.textWatermarkSize.getText()));
+				Main.logo.setLocation((int) Math.floor(Integer.valueOf(Main.textWatermarkPosX.getText()) / Main.playerRatio), (int) Math.floor(Integer.valueOf(Main.textWatermarkPosY.getText()) / Main.playerRatio));
 			}
 		}
 	}
@@ -562,13 +562,13 @@ public class UIController extends Shutter {
 				VideoPlayerUI.sliderSpeed.setVisible(false);
 				VideoPlayerUI.sliderVolume.setVisible(false);
 			}
-			else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
+			else if (Main.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Main.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
 			{
 				VideoPlayerUI.sliderSpeed.setVisible(true);
 				VideoPlayerUI.sliderVolume.setVisible(true);
 			}
 		}
-		else if (Shutter.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Shutter.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
+		else if (Main.frame.getSize().width > 654 && FFPROBE.totalLength > 40 && Main.caseEnableSequence.isSelected() == false && VideoPlayerUI.isPiping == false && inputDeviceIsRunning == false)
 		{
 			VideoPlayerUI.lblSpeed.setVisible(true);
 			VideoPlayerUI.lblVolume.setVisible(true);
@@ -686,7 +686,7 @@ public class UIController extends Shutter {
 		settingsScrollBar.setBounds(frame.getWidth() - settingsScrollBar.getWidth() - 2, topPanel.getHeight() - 4, 11, frame.getHeight() - topPanel.getHeight() - statusBar.getHeight() + 4);
 
 		// grpFileInformation
-		labelFileInfo.setLocation((312 - labelFileInfo.getPreferredSize().width) / 2, (frame.getHeight() - grpChooseFiles.getY() - statusBar.getHeight() - 10 - labelFileInfo.getPreferredSize().height) / 2);
+		labelFileInfo.setLocation(0, (frame.getHeight() - grpChooseFiles.getY() - statusBar.getHeight() - 10 - labelFileInfo.getPreferredSize().height) / 2);
 		if (grpFileInformation.isVisible())
 		{
 			if (grpFileInformation.getHeight() == 17)
@@ -3936,7 +3936,7 @@ public class UIController extends Shutter {
 						grpAdvanced.repaint();
 						
 						//Add language to grpSetAudio
-						advancedAudioSettings();
+						SetAudio.advancedAudioSettings();
 				
 						// Right_to_left
 						if (getLanguage.contains(Locale.of("ar").getDisplayLanguage())) {
@@ -4246,11 +4246,11 @@ public class UIController extends Shutter {
 				lblFilter.setLocation(165, 23);
 				lblFilter.setIcon(new FlatSVGIcon("resources/arrow.svg", 30, 30));
 
-				final String types[] = { "23,98 " + Shutter.language.getProperty("fps"),
-						"24 " + Shutter.language.getProperty("fps"), "25 " + Shutter.language.getProperty("fps"),
-						"29,97 " + Shutter.language.getProperty("fps"), "30 " + Shutter.language.getProperty("fps"),
-						"48 " + Shutter.language.getProperty("fps"), "50 " + Shutter.language.getProperty("fps"),
-						"59,94 " + Shutter.language.getProperty("fps"), "60 " + Shutter.language.getProperty("fps") };
+				final String types[] = { "23,98 " + Main.language.getProperty("fps"),
+						"24 " + Main.language.getProperty("fps"), "25 " + Main.language.getProperty("fps"),
+						"29,97 " + Main.language.getProperty("fps"), "30 " + Main.language.getProperty("fps"),
+						"48 " + Main.language.getProperty("fps"), "50 " + Main.language.getProperty("fps"),
+						"59,94 " + Main.language.getProperty("fps"), "60 " + Main.language.getProperty("fps") };
 				final DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<Object>(types);
 				comboFilter.setModel(model);
 				comboFilter.setSelectedIndex(2);
@@ -4271,7 +4271,7 @@ public class UIController extends Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 
-			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionRewrap"))) {
+			} else if (comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionRewrap"))) {
 
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
@@ -4287,7 +4287,7 @@ public class UIController extends Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 
-			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionExtract"))) {
+			} else if (comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionExtract"))) {
 
 				String value = comboFilter.getSelectedItem().toString();
 								
@@ -4344,7 +4344,7 @@ public class UIController extends Shutter {
 					}
 				}
 				
-			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionSeparation"))) {
+			} else if (comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionSeparation"))) {
 					
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
@@ -4359,7 +4359,7 @@ public class UIController extends Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 				
-			} else if (comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionTranscribe")))	{
+			} else if (comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionTranscribe")))	{
 				
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
@@ -4374,7 +4374,7 @@ public class UIController extends Shutter {
 					comboFilter.setSelectedIndex(0);
 				}
 				
-			} else if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranslate"))) {
+			} else if (comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionTranslate"))) {
 				
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
@@ -4813,8 +4813,8 @@ public class UIController extends Shutter {
 			}
 			else if (comboFonctions.getSelectedItem().toString().equals("Loudness & True Peak")
 			|| comboFonctions.getSelectedItem().toString().equals("VMAF")
-			|| comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionBlackDetection"))
-			|| comboFonctions.getSelectedItem().toString().equals(Shutter.language.getProperty("functionOfflineDetection")))
+			|| comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionBlackDetection"))
+			|| comboFonctions.getSelectedItem().toString().equals(Main.language.getProperty("functionOfflineDetection")))
 			{
 				lblFilter.setText(" ");
 				lblFilter.setVisible(true);
@@ -4909,22 +4909,22 @@ public class UIController extends Shutter {
 			} else if (comboFilter.getSelectedItem().toString().equals(".gif")
 					|| comboFilter.getSelectedItem().toString().equals(".apng")) {
 				if (comboImageOption.getItemAt(0)
-						.equals("15 " + Shutter.language.getProperty("fps")) == false) {
+						.equals("15 " + Main.language.getProperty("fps")) == false) {
 					String fps[] = new String[17];
 					int a = 0;
 					for (int f = 15; f < 24; f++) {
-						fps[a] = f + " " + Shutter.language.getProperty("fps");
+						fps[a] = f + " " + Main.language.getProperty("fps");
 						a++;
 					}
 
-					fps[a] = "23,98 " + Shutter.language.getProperty("fps");
-					fps[a + 1] = "24 " + Shutter.language.getProperty("fps");
-					fps[a + 2] = "25 " + Shutter.language.getProperty("fps");
-					fps[a + 3] = "29,97 " + Shutter.language.getProperty("fps");
-					fps[a + 4] = "30 " + Shutter.language.getProperty("fps");
-					fps[a + 5] = "50 " + Shutter.language.getProperty("fps");
-					fps[a + 6] = "59,94 " + Shutter.language.getProperty("fps");
-					fps[a + 7] = "60 " + Shutter.language.getProperty("fps");
+					fps[a] = "23,98 " + Main.language.getProperty("fps");
+					fps[a + 1] = "24 " + Main.language.getProperty("fps");
+					fps[a + 2] = "25 " + Main.language.getProperty("fps");
+					fps[a + 3] = "29,97 " + Main.language.getProperty("fps");
+					fps[a + 4] = "30 " + Main.language.getProperty("fps");
+					fps[a + 5] = "50 " + Main.language.getProperty("fps");
+					fps[a + 6] = "59,94 " + Main.language.getProperty("fps");
+					fps[a + 7] = "60 " + Main.language.getProperty("fps");
 
 					comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
 				}
@@ -5676,8 +5676,8 @@ public class UIController extends Shutter {
 			if (scanIsRunning == false) {
 				Object[] moreInfo = { "OK", language.getProperty("menuItemConsole") };
 
-				int result = JOptionPane.showOptionDialog(Shutter.frame, scrollPane,
-						Shutter.language.getProperty("notProcessedFiles"), JOptionPane.YES_NO_OPTION,
+				int result = JOptionPane.showOptionDialog(Main.frame, scrollPane,
+						Main.language.getProperty("notProcessedFiles"), JOptionPane.YES_NO_OPTION,
 						JOptionPane.ERROR_MESSAGE, null, moreInfo, null);
 
 				if (result == JOptionPane.NO_OPTION) {
@@ -5700,9 +5700,9 @@ public class UIController extends Shutter {
 
 				for (String line : s)
 				{
-					if (line.contains(Shutter.language.getProperty("file") + " N°")) {
+					if (line.contains(Main.language.getProperty("file") + " N°")) {
 						String item[] = line.split("-");
-						String clearItemNumber = item[0].replace(Shutter.language.getProperty("file") + " N°", "");
+						String clearItemNumber = item[0].replace(Main.language.getProperty("file") + " N°", "");
 						Integer getItemNumber = (int) (Integer.parseInt(clearItemNumber.replace(" ", "")) - removedRows
 								- 1);
 
@@ -5731,7 +5731,7 @@ public class UIController extends Shutter {
 
 			FFMPEG.errorLog.setLength(0);
 			errorList.setLength(0);
-		} else if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && Shutter.cancelled == false) {
+		} else if (RenderQueue.frame != null && RenderQueue.frame.isVisible() && Main.cancelled == false) {
 			RenderQueue.tableRow.setRowCount(0);
 		}
 
@@ -5758,7 +5758,7 @@ public class UIController extends Shutter {
 
 			VideoPlayerUI.resizeAll();
 
-			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Shutter.frame.getWidth(), Shutter.frame.getHeight(), 15, 15));
+			Area shape1 = new Area(new AntiAliasedRoundRectangle(0, 0, Main.frame.getWidth(), Main.frame.getHeight(), 15, 15));
 			Area shape2 = new Area(new AntiAliasedRoundRectangle(0, frame.getHeight() - 15, frame.getWidth(), 15, 15, 15));
 			shape1.add(shape2);
 			frame.setShape(shape1);

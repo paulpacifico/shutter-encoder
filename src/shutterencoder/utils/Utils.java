@@ -94,24 +94,25 @@ import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.XPDFREADER;
 import shutterencoder.library.PYTHON;
 import shutterencoder.library.TSMUXER;
 import shutterencoder.library.WHISPER;
+import shutterencoder.library.XPDFREADER;
 import shutterencoder.library.YOUTUBEDL;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.SetAudio;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Donate;
 import shutterencoder.ui.others.Equalizer;
 import shutterencoder.ui.others.Functions;
 import shutterencoder.ui.others.SceneDetection;
 import shutterencoder.ui.others.Settings;
-import shutterencoder.ui.videoplayer.VideoPlayerUI;
-import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerOverlay;
+import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
-public class Utils extends Shutter {
+public class Utils extends Main {
 	
 	public static String pathToLanguages;
 	public static Color themeColor = new Color(102, 158, 204);
@@ -226,7 +227,7 @@ public class Utils extends Shutter {
 	        : "runtime/bin/" + bin;                // Windows & Linux
 
 	    try {
-	        Path jar = Paths.get(Shutter.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+	        Path jar = Paths.get(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 	        
 	        for (Path p = jar; p != null; p = p.getParent())
 	        {
@@ -260,7 +261,7 @@ public class Utils extends Shutter {
 	
 	public static String getLibraryPath() {
 		
-		String LIBRARY_PATH = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String LIBRARY_PATH = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (System.getProperty("os.name").contains("Windows"))
 		{							
 			LIBRARY_PATH = LIBRARY_PATH.substring(1,LIBRARY_PATH.length()-1);
@@ -301,7 +302,7 @@ public class Utils extends Shutter {
 		InputStream input = null;
 		try {
 			
-			pathToLanguages = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+			pathToLanguages = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 			if (System.getProperty("os.name").contains("Windows"))
 			{
 				pathToLanguages = pathToLanguages.substring(1, pathToLanguages.length() - 1);
@@ -332,30 +333,30 @@ public class Utils extends Shutter {
 				{					
 					if (new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder").exists())
 					{
-						Shutter.documents = new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder");
-						Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");;
+						Main.documents = new File(System.getProperty("user.home") + "/Library/Preferences/Shutter Encoder");
+						Main.settingsXML = new File(Main.documents + "/settings.xml");;
 					}
 					else if (new File("/Library/Preferences/Shutter Encoder").exists())
 					{
-						Shutter.documents = new File("/Library/Preferences/Shutter Encoder");
-						Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+						Main.documents = new File("/Library/Preferences/Shutter Encoder");
+						Main.settingsXML = new File(Main.documents + "/settings.xml");
 					}	
 					else if (new File("/Library/Application Support/Shutter Encoder").exists())
 					{
-						Shutter.documents = new File("/Library/Application Support/Shutter Encoder");
-						Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+						Main.documents = new File("/Library/Application Support/Shutter Encoder");
+						Main.settingsXML = new File(Main.documents + "/settings.xml");
 					}
 					else if (oldDocumentsPath.exists()) //old path
 					{
 						try {
-							FileUtils.moveDirectory(oldDocumentsPath, Shutter.documents);
+							FileUtils.moveDirectory(oldDocumentsPath, Main.documents);
 						} 
 						catch (IOException e)
 						{
-							if (Shutter.documents.exists() == false)
+							if (Main.documents.exists() == false)
 							{
-								Shutter.documents = oldDocumentsPath;
-								Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+								Main.documents = oldDocumentsPath;
+								Main.settingsXML = new File(Main.documents + "/settings.xml");
 							}
 						}
 					}
@@ -365,14 +366,14 @@ public class Utils extends Shutter {
 					if (oldDocumentsPath.exists()) //old path
 					{
 						try {
-							FileUtils.moveDirectory(oldDocumentsPath, Shutter.documents);
+							FileUtils.moveDirectory(oldDocumentsPath, Main.documents);
 						} 
 						catch (IOException e)
 						{
-							if (Shutter.documents.exists() == false)
+							if (Main.documents.exists() == false)
 							{
-								Shutter.documents = oldDocumentsPath;
-								Shutter.settingsXML = new File(Shutter.documents + "/settings.xml");
+								Main.documents = oldDocumentsPath;
+								Main.settingsXML = new File(Main.documents + "/settings.xml");
 							}							
 						}
 					}
@@ -386,10 +387,10 @@ public class Utils extends Shutter {
 				dirTemp += "/";
 			}
 			
-			if (Shutter.settingsXML.exists())
+			if (Main.settingsXML.exists())
 			{				
 				try {
-					File fXmlFile = Shutter.settingsXML;
+					File fXmlFile = Main.settingsXML;
 					DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 					DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 					Document doc = dBuilder.parse(fXmlFile);
@@ -475,9 +476,9 @@ public class Utils extends Shutter {
 			
 			if (getLanguage.contains(Locale.of("zh").getDisplayLanguage()))
 			{				
-				Shutter.magnetoFont = "Noto Sans SC Medium";
-				Shutter.boldFont = "Noto Sans SC Medium";
-				Shutter.mainFont = "Noto Sans SC Medium";
+				Main.magnetoFont = "Noto Sans SC Medium";
+				Main.boldFont = "Noto Sans SC Medium";
+				Main.mainFont = "Noto Sans SC Medium";
 			}
 			else if (getLanguage.contains(Locale.of("ja").getDisplayLanguage())
 			|| getLanguage.equals(Locale.of("ru").getDisplayLanguage())
@@ -485,21 +486,21 @@ public class Utils extends Shutter {
 			|| getLanguage.contains(Locale.of("ar").getDisplayLanguage())
 			|| getLanguage.contains(Locale.of("ko").getDisplayLanguage())) //use system default font
 			{
-				Shutter.magnetoFont = "";
-				Shutter.boldFont = "";
-				Shutter.mainFont = "";
+				Main.magnetoFont = "";
+				Main.boldFont = "";
+				Main.mainFont = "";
 			}
 			else if (getLanguage.contains(Locale.of("bg").getDisplayLanguage())
 			|| getLanguage.contains(Locale.of("vi").getDisplayLanguage())
 			|| getLanguage.contains(Locale.of("pl").getDisplayLanguage())
 			|| getLanguage.contains(Locale.of("ro").getDisplayLanguage())) //use system default font
 			{
-				Shutter.magnetoFont = "";
-				Shutter.boldFont = "FreeSans";
+				Main.magnetoFont = "";
+				Main.boldFont = "FreeSans";
 			}
 			else if (getLanguage.equals(Locale.of("sl").getDisplayLanguage()) || getLanguage.equals(Locale.of("cs").getDisplayLanguage())) //Keep header font
 			{
-				Shutter.boldFont = "FreeSans";
+				Main.boldFont = "FreeSans";
 			}
 						
 			language.load(input);	
@@ -678,12 +679,6 @@ public class Utils extends Shutter {
 		return labelName;
 	}
 
-	/**
-	 * Adds a path to the list unless it is already present. Returns true if it was added.
-	 * Wildcard match on a file name: * = any characters, ? = one character.
-	 * Case-insensitive; the pattern must match the whole name
-	 * ("*.srt" = extension, "*_AV1*" = contains _AV1, "AV1" = exact name).
-	 */
 	public static boolean matchesWildcard(String fileName, String pattern) {
 
 		String p = pattern.trim();
@@ -703,20 +698,17 @@ public class Utils extends Shutter {
 		return fileName.toLowerCase().matches(regex.toString());
 	}
 
-	/**
-	 * Adds a path to the list unless it is already present. Returns true if it was added.
-	 */
 	public static boolean addToFileList(String path) {
 
-		for (int i = 0; i < Shutter.list.getSize(); i++) {
-			String entry = Shutter.list.getElementAt(i).toString();
+		for (int i = 0; i < Main.list.getSize(); i++) {
+			String entry = Main.list.getElementAt(i).toString();
 			if (System.getProperty("os.name").contains("Windows") ? entry.equalsIgnoreCase(path) : entry.equals(path))
 				return false;
 		}
 
-		Shutter.list.addElement(path);
-		Shutter.addToList.setVisible(false);
-		Shutter.lblFiles.setText(Utils.filesNumber());
+		Main.list.addElement(path);
+		Main.addToList.setVisible(false);
+		Main.lblFiles.setText(Utils.filesNumber());
 		return true;
 	}
 	
@@ -791,9 +783,9 @@ public class Utils extends Shutter {
 			
 			if (f.isDirectory()) 
 			{
-				Shutter.list.addElement(f.getAbsoluteFile().toString());
-				Shutter.addToList.setVisible(false);
-				Shutter.lblFiles.setText(Utils.filesNumber());
+				Main.list.addElement(f.getAbsoluteFile().toString());
+				Main.addToList.setVisible(false);
+				Main.lblFiles.setText(Utils.filesNumber());
 				
 				findDirectories(f.getAbsolutePath());
 			}
@@ -868,12 +860,12 @@ public class Utils extends Shutter {
 				
 				//Name
 				Element cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode(Shutter.casePrefix.getName()));
+				cName.appendChild(document.createTextNode(Main.casePrefix.getName()));
 				component.appendChild(cName);
 				
 				//Value
 				Element cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.casePrefix.isSelected())));
+				cValue.appendChild(document.createTextNode(String.valueOf(Main.casePrefix.isSelected())));
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
@@ -894,7 +886,7 @@ public class Utils extends Shutter {
 				
 				//Value
 				cValue = document.createElement("Value");				
-				cValue.appendChild(document.createTextNode(Shutter.txtPrefix.getText().toString()));
+				cValue.appendChild(document.createTextNode(Main.txtPrefix.getText().toString()));
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
@@ -910,12 +902,12 @@ public class Utils extends Shutter {
 				
 				//Name
 				cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode(Shutter.btnExtension.getName()));
+				cName.appendChild(document.createTextNode(Main.btnExtension.getName()));
 				component.appendChild(cName);
 				
 				//Value
 				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.btnExtension.isSelected())));
+				cValue.appendChild(document.createTextNode(String.valueOf(Main.btnExtension.isSelected())));
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
@@ -936,7 +928,7 @@ public class Utils extends Shutter {
 				
 				//Value
 				cValue = document.createElement("Value");				
-				cValue.appendChild(document.createTextNode(Shutter.txtExtension.getText().toString()));
+				cValue.appendChild(document.createTextNode(Main.txtExtension.getText().toString()));
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
@@ -952,12 +944,12 @@ public class Utils extends Shutter {
 				
 				//Name
 				cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode(Shutter.caseSubFolder.getName()));
+				cName.appendChild(document.createTextNode(Main.caseSubFolder.getName()));
 				component.appendChild(cName);
 				
 				//Value
 				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseSubFolder.isSelected())));
+				cValue.appendChild(document.createTextNode(String.valueOf(Main.caseSubFolder.isSelected())));
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
@@ -978,13 +970,13 @@ public class Utils extends Shutter {
 				
 				//Value
 				cValue = document.createElement("Value");				
-				cValue.appendChild(document.createTextNode(Shutter.txtSubFolder.getText().toString()));
+				cValue.appendChild(document.createTextNode(Main.txtSubFolder.getText().toString()));
 				component.appendChild(cValue);
 				
 				settings.appendChild(component);
 				
 				//Destination 1
-				if (Shutter.caseChangeFolder1.isSelected())
+				if (Main.caseChangeFolder1.isSelected())
 				{
 					//Component
 					component = document.createElement("Component");
@@ -996,19 +988,19 @@ public class Utils extends Shutter {
 					
 					//Name
 					cName = document.createElement("Name");
-					cName.appendChild(document.createTextNode(Shutter.lblDestination1.getName()));
+					cName.appendChild(document.createTextNode(Main.lblDestination1.getName()));
 					component.appendChild(cName);
 					
 					//Value
 					cValue = document.createElement("Value");
-					cValue.appendChild(document.createTextNode(Shutter.lblDestination1.getText()));
+					cValue.appendChild(document.createTextNode(Main.lblDestination1.getText()));
 					component.appendChild(cValue);
 					
 					settings.appendChild(component);
 				}
 				
 				//Destination 2
-				if (Shutter.caseChangeFolder2.isSelected())
+				if (Main.caseChangeFolder2.isSelected())
 				{
 					//Component
 					component = document.createElement("Component");
@@ -1020,19 +1012,19 @@ public class Utils extends Shutter {
 					
 					//Name
 					cName = document.createElement("Name");
-					cName.appendChild(document.createTextNode(Shutter.lblDestination2.getName()));
+					cName.appendChild(document.createTextNode(Main.lblDestination2.getName()));
 					component.appendChild(cName);
 					
 					//Value
 					cValue = document.createElement("Value");
-					cValue.appendChild(document.createTextNode(Shutter.lblDestination2.getText()));
+					cValue.appendChild(document.createTextNode(Main.lblDestination2.getText()));
 					component.appendChild(cValue);
 					
 					settings.appendChild(component);
 				}
 				
 				//Destination 3
-				if (Shutter.caseChangeFolder3.isSelected())
+				if (Main.caseChangeFolder3.isSelected())
 				{
 					//Component
 					component = document.createElement("Component");
@@ -1044,12 +1036,12 @@ public class Utils extends Shutter {
 					
 					//Name
 					cName = document.createElement("Name");
-					cName.appendChild(document.createTextNode(Shutter.lblDestination3.getName()));
+					cName.appendChild(document.createTextNode(Main.lblDestination3.getName()));
 					component.appendChild(cName);
 					
 					//Value
 					cValue = document.createElement("Value");
-					cValue.appendChild(document.createTextNode(Shutter.lblDestination3.getText()));
+					cValue.appendChild(document.createTextNode(Main.lblDestination3.getText()));
 					component.appendChild(cValue);
 					
 					settings.appendChild(component);
@@ -1387,7 +1379,7 @@ public class Utils extends Shutter {
 				//Saving grpAdjustement values	
 				Element color = document.createElement("Color");
 				
-				if (Shutter.caseEnableColorimetry.isSelected())
+				if (Main.caseEnableColorimetry.isSelected())
 				{											
 					//allR
 					Element componentallR = document.createElement("Component");
@@ -1715,7 +1707,7 @@ public class Utils extends Shutter {
 				//Saving equalizer values	
 				Element equalizer = document.createElement("Equalizer");
 				
-				if (Shutter.caseEqualizer.isSelected())
+				if (Main.caseEqualizer.isSelected())
 				{			
 					for (Component c : Equalizer.frame.getContentPane().getComponents())
 					{
@@ -2033,7 +2025,7 @@ public class Utils extends Shutter {
 																grpSetAudio.remove(comboAudio8);
 															}
 															
-															advancedAudioSettings();
+															SetAudio.advancedAudioSettings();
 														}
 													}
 													else if (p instanceof JTextField)
@@ -2052,16 +2044,16 @@ public class Utils extends Shutter {
 														
 															//Elements position
 															if (p.getName().equals("textNamePosX"))
-																fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), fileName.getLocation().y);	
+																fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Main.playerRatio), fileName.getLocation().y);	
 															
 															if (p.getName().equals("textNamePosY"))
-																fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
+																fileName.setLocation(fileName.getLocation().x, (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Main.playerRatio));
 																								
 															if (p.getName().equals("textTcPosY"))
-																timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
+																timecode.setLocation(timecode.getLocation().x, (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Main.playerRatio));
 															
 															if (p.getName().equals("textTcPosX"))
-																timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), timecode.getLocation().y);												
+																timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Main.playerRatio), timecode.getLocation().y);												
 															}
 														}
 													else if (p instanceof JSlider)
@@ -2253,7 +2245,7 @@ public class Utils extends Shutter {
 							//grpCrop
 							if (caseEnableCrop.isSelected())
 							{
-								selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / Shutter.playerRatio));
+								selection.setLocation((int) Math.round(Integer.valueOf(textCropPosX.getText()) / Main.playerRatio), (int) Math.round(Integer.valueOf(textCropPosY.getText()) / Main.playerRatio));
 								int w = (int) Math.round((float)  (Integer.valueOf(textCropWidth.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
 								int h = (int) Math.round((float)  (Integer.valueOf(textCropHeight.getText()) * VideoPlayerUI.player.getHeight()) / FFPROBE.imageHeight);
 								
@@ -2275,14 +2267,14 @@ public class Utils extends Shutter {
 							//grpOverlay
 							if (caseAddTimecode.isSelected() || caseShowTimecode.isSelected())
 							{
-								timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Shutter.playerRatio));
+								timecode.setLocation((int) Math.round(Integer.valueOf(textTcPosX.getText()) / Main.playerRatio), (int) Math.round(Integer.valueOf(textTcPosY.getText()) / Main.playerRatio));
 								tcLocX = timecode.getLocation().x;
 								tcLocY = timecode.getLocation().y;	
 								timecode.setSize(10,10); //Workaround to not reset the location
 							}
 							if (caseAddText.isSelected() || caseShowFileName.isSelected())
 							{
-								fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Shutter.playerRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Shutter.playerRatio));
+								fileName.setLocation((int) Math.round(Integer.valueOf(textNamePosX.getText()) / Main.playerRatio), (int) Math.round(Integer.valueOf(textNamePosY.getText()) / Main.playerRatio));
 								fileLocX = fileName.getLocation().x;
 								fileLocY = fileName.getLocation().y;
 								fileName.setSize(10,10); //Workaround to not reset the location								
@@ -2345,22 +2337,22 @@ public class Utils extends Shutter {
 							frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 							
 							//IMPORTANT
-							UIController.resizeAll(Shutter.frame.getWidth(), 0); 
-							Shutter.frame.repaint();		
+							UIController.resizeAll(Main.frame.getWidth(), 0); 
+							Main.frame.repaint();		
 							
 							//grpWatermark
 							if (caseAddWatermark.isSelected())
 							{
 								if (watermarkPreset != null)
 								{
-									VideoPlayerOverlay.loadWatermark(Integer.parseInt(Shutter.textWatermarkSize.getText()));
+									VideoPlayerOverlay.loadWatermark(Integer.parseInt(Main.textWatermarkSize.getText()));
 								}
 								else
 								{
 									textWatermarkPosX.setText(watermarkPosX);
 									textWatermarkPosY.setText(watermarkPosY);
 									
-									logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / Shutter.playerRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / Shutter.playerRatio));
+									logo.setLocation((int) Math.floor(Integer.valueOf(textWatermarkPosX.getText()) / Main.playerRatio), (int) Math.floor(Integer.valueOf(textWatermarkPosY.getText()) / Main.playerRatio));
 								}							
 								
 								//Saving location
@@ -2369,9 +2361,9 @@ public class Utils extends Shutter {
 							}
 							
 							//Reload comboPreset value
-							if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
+							if (Main.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
 							{
-								Shutter.comboPreset.setSelectedItem(Shutter.comboPreset.getSelectedItem());
+								Main.comboPreset.setSelectedItem(Main.comboPreset.getSelectedItem());
 							}	
 						}				
 					}
@@ -2403,10 +2395,10 @@ public class Utils extends Shutter {
 	public static void loadThemes() {
 								
 		//Theme
-		if (Shutter.settingsXML.exists())
+		if (Main.settingsXML.exists())
 		{				
 			try {
-				File fXmlFile = Shutter.settingsXML;
+				File fXmlFile = Main.settingsXML;
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(fXmlFile);
@@ -2698,7 +2690,7 @@ public class Utils extends Shutter {
 	public static void killProcesses() {
 		
 		try {
-			if (btnStart.getText().equals(Shutter.language.getProperty("btnResumeFunction")))
+			if (btnStart.getText().equals(Main.language.getProperty("btnResumeFunction")))
 				FFMPEG.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le
 										// détruire
 			FFMPEG.process.destroyForcibly();
@@ -2780,7 +2772,7 @@ public class Utils extends Shutter {
 			vidstab = new File(new File(Utils.getLibraryPath()).getParent() + "\\vidstab.trf");
 		}
 		else							    		
-			vidstab = new File(Shutter.dirTemp + "vidstab.trf");
+			vidstab = new File(Main.dirTemp + "vidstab.trf");
 		
 		if (vidstab.exists())
 			vidstab.delete();
@@ -2791,14 +2783,14 @@ public class Utils extends Shutter {
 			file.delete();
 				
 		//Stats_file
-		File stats_file = new File(Shutter.dirTemp + "stats_file");					
+		File stats_file = new File(Main.dirTemp + "stats_file");					
 		if (System.getProperty("os.name").contains("Windows"))
 			stats_file = new File("stats_file");					
 		if (stats_file.exists())
 			stats_file.delete();
 		
 		//Image sequence
-		File concat = new File(Shutter.dirTemp + "concat.txt");					
+		File concat = new File(Main.dirTemp + "concat.txt");					
 		if (concat.exists())
 			concat.delete();
 		
@@ -2866,7 +2858,7 @@ public class Utils extends Shutter {
 			Transcribe.transcriptionFolder.delete();
 		}
 		
-		if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")) && WHISPER.checkIfModelExists() != null)
+		if (Main.lblCurrentEncoding.getText().equals(Main.language.getProperty("downloadingAIModel")) && WHISPER.checkIfModelExists() != null)
 		{
 			try {
 				FileUtils.deleteDirectory(WHISPER.checkIfModelExists());

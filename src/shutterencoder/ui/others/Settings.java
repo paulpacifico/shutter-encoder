@@ -94,7 +94,7 @@ import com.formdev.flatlaf.util.SystemFileChooser;
 
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -111,45 +111,45 @@ public class Settings {
 	private JLabel help;
 	private JPanel topPanel;
 	private JLabel topImage;
-	private JLabel lblThreads = new JLabel(Shutter.language.getProperty("lblThreads"));
+	private JLabel lblThreads = new JLabel(Main.language.getProperty("lblThreads"));
 	public static JTextField txtThreads = new JTextField();
-	private JLabel lblImageToVideo = new JLabel(Shutter.language.getProperty("lblImageToVideo"));
+	private JLabel lblImageToVideo = new JLabel(Main.language.getProperty("lblImageToVideo"));
 	public static JTextField txtImageDuration = new JTextField();
-	private JLabel lblStrictMode = new JLabel(Shutter.language.getProperty("lblStrictMode"));
+	private JLabel lblStrictMode = new JLabel(Main.language.getProperty("lblStrictMode"));
 	public static JComboBox<String> comboStrict = new JComboBox<String>(new String [] {"experimental", "unofficial", "normal"});	
-	private JLabel lblScaleMode = new JLabel(Shutter.language.getProperty("lblScaleMode"));
+	private JLabel lblScaleMode = new JLabel(Main.language.getProperty("lblScaleMode"));
 	public static JComboBox<String> comboScale = new JComboBox<String>(new String [] {"bilinear", "bicubic", "neighbor", "area", "gaussian", "sinc", "lanczos", "spline"});	
-	public static JCheckBox btnPreviewOutput = new JCheckBox(Shutter.language.getProperty("btnPreviewOutput"));
-	private JLabel lblSyncMode = new JLabel(Shutter.language.getProperty("lblSyncMode"));
+	public static JCheckBox btnPreviewOutput = new JCheckBox(Main.language.getProperty("btnPreviewOutput"));
+	private JLabel lblSyncMode = new JLabel(Main.language.getProperty("lblSyncMode"));
 	public static JComboBox<String> comboSync = new JComboBox<String>(new String [] {"auto", "passthrough", "cfr", "vfr", "drop"});	
-	private JLabel lblLanguage = new JLabel(Shutter.language.getProperty("lblLanguage"));
-	private JLabel lblTheme = new JLabel(Shutter.language.getProperty("lblTheme"));
+	private JLabel lblLanguage = new JLabel(Main.language.getProperty("lblLanguage"));
+	private JLabel lblTheme = new JLabel(Main.language.getProperty("lblTheme"));
 	private static JPanel accentColor = new JPanel();
 	public static JComboBox<String> comboLanguage = new JComboBox<String>();
-	public static JCheckBox btnSetBab = new JCheckBox(Shutter.language.getProperty("btnSetBab"));
-	public static JCheckBox btnExclude = new JCheckBox(Shutter.language.getProperty("btnExclude"));
-	public static JCheckBox btnHidePath = new JCheckBox(Shutter.language.getProperty("btnHidePath"));
-	public static JCheckBox btnLoadPreset = new JCheckBox(Shutter.language.getProperty("btnLoadPreset"));
+	public static JCheckBox btnSetBab = new JCheckBox(Main.language.getProperty("btnSetBab"));
+	public static JCheckBox btnExclude = new JCheckBox(Main.language.getProperty("btnExclude"));
+	public static JCheckBox btnHidePath = new JCheckBox(Main.language.getProperty("btnHidePath"));
+	public static JCheckBox btnLoadPreset = new JCheckBox(Main.language.getProperty("btnLoadPreset"));
 	public static JComboBox<String> comboLoadPreset = new JComboBox<String>();
-	public static JCheckBox btnWaitFileComplete = new JCheckBox(Shutter.language.getProperty("btnWaitFileComplete"));
-	public static JCheckBox btnEmptyListAtEnd = new JCheckBox(Shutter.language.getProperty("btnEmptyListAtEnd"));
-	public static JCheckBox btnEndingAction = new JCheckBox(Shutter.language.getProperty("btnEndingAction"));
+	public static JCheckBox btnWaitFileComplete = new JCheckBox(Main.language.getProperty("btnWaitFileComplete"));
+	public static JCheckBox btnEmptyListAtEnd = new JCheckBox(Main.language.getProperty("btnEmptyListAtEnd"));
+	public static JCheckBox btnEndingAction = new JCheckBox(Main.language.getProperty("btnEndingAction"));
 	public static JComboBox<String> comboAction = new JComboBox<String>();
-	public static JCheckBox btnDisableAnimations = new JCheckBox(Shutter.language.getProperty("btnDisableAnimations"));
-	public static JCheckBox btnDisableSound = new JCheckBox(Shutter.language.getProperty("btnDisableSound"));
-	public static JCheckBox btnDisableUpdate = new JCheckBox(Shutter.language.getProperty("btnDisableUpdate"));
-	public static JCheckBox btnDisableVideoPlayer = new JCheckBox(Shutter.language.getProperty("btnDisableVideoPlayer"));	
-	public static JCheckBox btnDisableMinimizedWindow = new JCheckBox(Shutter.language.getProperty("btnDisableMinimizedWindow"));	
-	public static JCheckBox btnPreventSleepMode = new JCheckBox(Shutter.language.getProperty("btnPreventSleepMode"));
+	public static JCheckBox btnDisableAnimations = new JCheckBox(Main.language.getProperty("btnDisableAnimations"));
+	public static JCheckBox btnDisableSound = new JCheckBox(Main.language.getProperty("btnDisableSound"));
+	public static JCheckBox btnDisableUpdate = new JCheckBox(Main.language.getProperty("btnDisableUpdate"));
+	public static JCheckBox btnDisableVideoPlayer = new JCheckBox(Main.language.getProperty("btnDisableVideoPlayer"));	
+	public static JCheckBox btnDisableMinimizedWindow = new JCheckBox(Main.language.getProperty("btnDisableMinimizedWindow"));	
+	public static JCheckBox btnPreventSleepMode = new JCheckBox(Main.language.getProperty("btnPreventSleepMode"));
 	public static JTextField txtExclude = new JTextField();
-	public static JCheckBox btnCustomFFmpegPath = new JCheckBox(Shutter.language.getProperty("btnCustomFFmpegPath"));
+	public static JCheckBox btnCustomFFmpegPath = new JCheckBox(Main.language.getProperty("btnCustomFFmpegPath"));
 	public static JTextField txtCustomFFmpegPath = new JTextField();
-	private JLabel defaultOutput1 = new JLabel(Shutter.language.getProperty("output") + "1 " + Shutter.language.getProperty("toDefault"));
-	private JLabel defaultOutput2 = new JLabel(Shutter.language.getProperty("output") + "2 " + Shutter.language.getProperty("toDefault"));
-	private JLabel defaultOutput3 = new JLabel(Shutter.language.getProperty("output") + "3 " + Shutter.language.getProperty("toDefault"));
-	public static JCheckBox lastUsedOutput1 = new JCheckBox(Shutter.language.getProperty("lastUsed"));
-	public static JCheckBox lastUsedOutput2 = new JCheckBox(Shutter.language.getProperty("lastUsed"));
-	public static JCheckBox lastUsedOutput3 = new JCheckBox(Shutter.language.getProperty("lastUsed"));
+	private JLabel defaultOutput1 = new JLabel(Main.language.getProperty("output") + "1 " + Main.language.getProperty("toDefault"));
+	private JLabel defaultOutput2 = new JLabel(Main.language.getProperty("output") + "2 " + Main.language.getProperty("toDefault"));
+	private JLabel defaultOutput3 = new JLabel(Main.language.getProperty("output") + "3 " + Main.language.getProperty("toDefault"));
+	public static JCheckBox lastUsedOutput1 = new JCheckBox(Main.language.getProperty("lastUsed"));
+	public static JCheckBox lastUsedOutput2 = new JCheckBox(Main.language.getProperty("lastUsed"));
+	public static JCheckBox lastUsedOutput3 = new JCheckBox(Main.language.getProperty("lastUsed"));
 	public static JLabel lblDestination1 = new JLabel(); 
 	public static JLabel lblDestination2 = new JLabel(); 
 	public static JLabel lblDestination3 = new JLabel(); 
@@ -193,8 +193,8 @@ public class Settings {
 		txtImageDuration.setName("txtImageDuration");
 		comboLanguage.setName("comboLanguage");
 
-		frame.setSize(370, Shutter.frame.getHeight());		
-		if (Shutter.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Shutter.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
+		frame.setSize(370, Main.frame.getHeight());		
+		if (Main.getLanguage.equals(Locale.of("ru").getDisplayLanguage()) || Main.getLanguage.equals(Locale.of("uk").getDisplayLanguage()))
 		{
 			frame.setSize(frame.getWidth() + 50, frame.getHeight());
 		}
@@ -205,7 +205,7 @@ public class Settings {
 		if (System.getProperty("os.name").contains("Mac") == false)
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("resources/icon.png")).getImage());
 		
-		frame.setTitle(Shutter.language.getProperty("frameSettings"));
+		frame.setTitle(Main.language.getProperty("frameSettings"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
 		frame.setResizable(false);			
@@ -261,7 +261,7 @@ public class Settings {
 		backgroundPanel.setLocation(0, frame.getHeight() - backgroundPanel.getHeight());	
 		frame.getContentPane().add(backgroundPanel);
 		
-		btnHidePath.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnHidePath.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnHidePath.setBounds(12, 34, btnHidePath.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnHidePath);
 		
@@ -270,12 +270,12 @@ public class Settings {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				Shutter.fileList.repaint();
+				Main.fileList.repaint();
 			}
 			
 		});
 		
-		btnLoadPreset.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnLoadPreset.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnLoadPreset.setBounds(12, btnHidePath.getLocation().y + btnHidePath.getHeight() + 10, btnLoadPreset.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnLoadPreset);
 		
@@ -342,17 +342,17 @@ public class Settings {
 		} catch (Exception e) {}
 		
 		comboLoadPreset.setEnabled(false);
-		comboLoadPreset.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboLoadPreset.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboLoadPreset.setEditable(false);
 		comboLoadPreset.setBounds(btnLoadPreset.getX() + btnLoadPreset.getWidth() + 6, btnLoadPreset.getLocation().y - 4,  frame.getWidth() - (btnLoadPreset.getLocation().x + btnLoadPreset.getWidth()) - 32, 22);
 		comboLoadPreset.setMaximumRowCount(10);	
 		frame.getContentPane().add(comboLoadPreset);
 		
-		btnWaitFileComplete.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnWaitFileComplete.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnWaitFileComplete.setBounds(12, btnLoadPreset.getLocation().y + btnLoadPreset.getHeight() + 10, btnWaitFileComplete.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnWaitFileComplete);
 				
-		btnExclude.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnExclude.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnExclude.setBounds(12, btnWaitFileComplete.getLocation().y + btnWaitFileComplete.getHeight() + 10, btnExclude.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnExclude);
 		
@@ -385,23 +385,23 @@ public class Settings {
 		txtExclude.setBounds(btnExclude.getLocation().x + btnExclude.getWidth() + 6, btnExclude.getLocation().y - 2, frame.getWidth() - (btnExclude.getLocation().x + btnExclude.getWidth()) - 32, 21);
 		frame.getContentPane().add(txtExclude);	
 				
-		btnSetBab.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnSetBab.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnSetBab.setBounds(12, btnExclude.getLocation().y + btnExclude.getHeight() + 10, btnSetBab.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnSetBab);
 		
-		btnDisableAnimations.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnDisableAnimations.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnDisableAnimations.setBounds(12, btnSetBab.getLocation().y + btnSetBab.getHeight() + 10, btnDisableAnimations.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableAnimations);
 		
-		btnDisableSound.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnDisableSound.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnDisableSound.setBounds(12, btnDisableAnimations.getLocation().y + btnDisableAnimations.getHeight() + 10, btnDisableSound.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableSound);
 
-		btnDisableUpdate.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnDisableUpdate.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnDisableUpdate.setBounds(12, btnDisableSound.getLocation().y + btnDisableSound.getHeight() + 10, btnDisableUpdate.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableUpdate);
 		
-		btnDisableVideoPlayer.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnDisableVideoPlayer.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnDisableVideoPlayer.setBounds(12, btnDisableUpdate.getLocation().y + btnDisableUpdate.getHeight() + 10, btnDisableVideoPlayer.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableVideoPlayer);
 		
@@ -412,10 +412,10 @@ public class Settings {
 
 				if (btnDisableVideoPlayer.isSelected())
 				{
-					Shutter.caseDisplay.setVisible(false);
-					Shutter.caseDisplay.setSelected(false);
+					Main.caseDisplay.setVisible(false);
+					Main.caseDisplay.setSelected(false);
 					
-					Shutter.frame.setBounds(Shutter.frame.getX() + (Shutter.frame.getWidth() - 664) / 2, Shutter.frame.getY(), 664, Shutter.frame.getHeight());
+					Main.frame.setBounds(Main.frame.getX() + (Main.frame.getWidth() - 664) / 2, Main.frame.getY(), 664, Main.frame.getHeight());
 					
 					// Waveform
 					if (VideoPlayerUtils.addWaveformIsRunning)
@@ -431,15 +431,15 @@ public class Settings {
 				}
 				else
 				{
-					Shutter.caseDisplay.setVisible(true);
+					Main.caseDisplay.setVisible(true);
 					
-					Shutter.frame.setBounds(Shutter.frame.getX() - 332, Shutter.frame.getY(), 1350, Shutter.frame.getHeight());
+					Main.frame.setBounds(Main.frame.getX() - 332, Main.frame.getY(), 1350, Main.frame.getHeight());
 				}
 				
 				UIController.changeWidth();				
 				
 
-				if (FFPROBE.totalLength <= 40 || Shutter.caseEnableSequence.isSelected() || btnDisableVideoPlayer.isSelected())
+				if (FFPROBE.totalLength <= 40 || Main.caseEnableSequence.isSelected() || btnDisableVideoPlayer.isSelected())
 				{
 					VideoPlayerUI.setPlayerButtons(false);
 				}
@@ -462,19 +462,19 @@ public class Settings {
 			
 		});
 		
-		btnDisableMinimizedWindow.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnDisableMinimizedWindow.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnDisableMinimizedWindow.setBounds(12, btnDisableVideoPlayer.getLocation().y + btnDisableVideoPlayer.getHeight() + 10, btnDisableMinimizedWindow.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnDisableMinimizedWindow);
 		
-		btnPreventSleepMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnPreventSleepMode.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnPreventSleepMode.setBounds(12, btnDisableMinimizedWindow.getLocation().y + btnDisableMinimizedWindow.getHeight() + 10, btnPreventSleepMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnPreventSleepMode);
 		
-		btnEmptyListAtEnd.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnEmptyListAtEnd.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnEmptyListAtEnd.setBounds(12, btnPreventSleepMode.getLocation().y + btnPreventSleepMode.getHeight() + 10, btnEmptyListAtEnd.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnEmptyListAtEnd);
 		
-		btnEndingAction.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnEndingAction.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnEndingAction.setBounds(12, btnEmptyListAtEnd.getLocation().y + btnEmptyListAtEnd.getHeight() + 10, btnEndingAction.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnEndingAction);
 		
@@ -493,11 +493,11 @@ public class Settings {
 		if (comboAction.getModel().getSize() == 0)
 		{
 			comboAction.setModel(new DefaultComboBoxModel<String>(new String [] {
-					Shutter.language.getProperty("lblActionClose"), 
-					Shutter.language.getProperty("lblActionShutdown")
+					Main.language.getProperty("lblActionClose"), 
+					Main.language.getProperty("lblActionShutdown")
 					}));
 			comboAction.setSelectedIndex(1);	
-			comboAction.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+			comboAction.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 			comboAction.setEditable(false);
 			comboAction.setBounds(btnEndingAction.getX() + btnEndingAction.getWidth() + 6, btnEndingAction.getLocation().y - 4,  frame.getWidth() - (btnEndingAction.getLocation().x + btnEndingAction.getWidth()) - 32, 22);
 			comboAction.setMaximumRowCount(10);
@@ -505,7 +505,7 @@ public class Settings {
 		comboAction.setEnabled(false);
 		frame.getContentPane().add(comboAction);
 			
-		btnCustomFFmpegPath.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnCustomFFmpegPath.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnCustomFFmpegPath.setBounds(12, btnEndingAction.getLocation().y + btnEndingAction.getHeight() + 10, btnCustomFFmpegPath.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnCustomFFmpegPath);
 		
@@ -537,7 +537,7 @@ public class Settings {
 			}
 		});
 
-		txtCustomFFmpegPath.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		txtCustomFFmpegPath.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		
 		if (btnCustomFFmpegPath.isSelected())
 		{
@@ -591,7 +591,7 @@ public class Settings {
 			
 		});
 		
-		btnPreviewOutput.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnPreviewOutput.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnPreviewOutput.setBounds(12, btnCustomFFmpegPath.getLocation().y + btnCustomFFmpegPath.getHeight() + 10, btnPreviewOutput.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnPreviewOutput);
 			
@@ -606,44 +606,44 @@ public class Settings {
 			
 		});
 		
-		lblStrictMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblStrictMode.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblStrictMode.setBounds(12, btnPreviewOutput.getLocation().y + btnPreviewOutput.getHeight() + 10, lblStrictMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblStrictMode);
 		
-		comboStrict.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboStrict.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboStrict.setEditable(false);
 		comboStrict.setBounds(lblStrictMode.getX() + lblStrictMode.getWidth() + 6, lblStrictMode.getLocation().y - 4, comboStrict.getPreferredSize().width, 22);
 		comboStrict.setMaximumRowCount(10);
 		frame.getContentPane().add(comboStrict);
 		
-		lblScaleMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblScaleMode.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblScaleMode.setBounds(12, lblStrictMode.getLocation().y + lblStrictMode.getHeight() + 10, lblScaleMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblScaleMode);
 				
-		comboScale.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboScale.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboScale.setEditable(false);
 		comboScale.setSelectedItem("bicubic");
 		comboScale.setBounds(lblScaleMode.getX() + lblScaleMode.getWidth() + 6, lblScaleMode.getLocation().y - 4, comboScale.getPreferredSize().width, 22);
 		comboScale.setMaximumRowCount(10);
 		frame.getContentPane().add(comboScale);
 		
-		lblSyncMode.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblSyncMode.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblSyncMode.setBounds(12, lblScaleMode.getLocation().y + lblScaleMode.getHeight() + 10, lblSyncMode.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblSyncMode);
 		
-		comboSync.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboSync.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboSync.setEditable(false);
 		comboSync.setSelectedItem("auto");
 		comboSync.setBounds(lblSyncMode.getX() + lblSyncMode.getWidth() + 6, lblSyncMode.getLocation().y - 4, comboSync.getPreferredSize().width, 22);
 		comboSync.setMaximumRowCount(10);
 		frame.getContentPane().add(comboSync);
 		
-		lblThreads.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblThreads.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblThreads.setBounds(12, lblSyncMode.getLocation().y + lblSyncMode.getHeight() + 10, lblThreads.getPreferredSize().width, lblThreads.getPreferredSize().height);
 		frame.getContentPane().add(lblThreads);
 		
 		txtThreads.setHorizontalAlignment(SwingConstants.CENTER);
-		txtThreads.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		txtThreads.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		txtThreads.setColumns(10);
 		txtThreads.setBounds(lblThreads.getLocation().x + lblThreads.getWidth() + 6, lblThreads.getLocation().y - 4, 36, 21);
 		frame.getContentPane().add(txtThreads);
@@ -661,18 +661,18 @@ public class Settings {
 			
 		});
 		
-		lblImageToVideo.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblImageToVideo.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblImageToVideo.setBounds(12, lblThreads.getLocation().y + lblThreads.getHeight() + 10, lblImageToVideo.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblImageToVideo);
 		
 		txtImageDuration.setHorizontalAlignment(SwingConstants.CENTER);
-		txtImageDuration.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		txtImageDuration.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		txtImageDuration.setColumns(10);
 		txtImageDuration.setBounds(lblImageToVideo.getLocation().x + lblImageToVideo.getWidth() + 6, lblImageToVideo.getLocation().y - 4, 36, 21);
 		frame.getContentPane().add(txtImageDuration);
 		
 		JLabel lblSec = new JLabel("sec");
-		lblSec.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblSec.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblSec.setBounds(txtImageDuration.getLocation().x + txtImageDuration.getWidth() + 4, lblImageToVideo.getLocation().y, 34, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblSec);
 
@@ -689,7 +689,7 @@ public class Settings {
 			
 		});		
 		
-		lblTheme.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblTheme.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblTheme.setBounds(12, lblSec.getLocation().y + lblSec.getHeight() + 10, lblTheme.getPreferredSize().width + 4, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblTheme);
 
@@ -705,7 +705,7 @@ public class Settings {
 			@Override
 			public void mouseClicked(MouseEvent e)
 			{
-				Utils.themeColor = JColorChooser.showDialog(frame, Shutter.language.getProperty("chooseColor"), new Color(102, 158, 204));
+				Utils.themeColor = JColorChooser.showDialog(frame, Main.language.getProperty("chooseColor"), new Color(102, 158, 204));
 					
 				if (Utils.themeColor != null)
 				{
@@ -714,11 +714,11 @@ public class Settings {
 					saveSettings();
 					
 					if (FFMPEG.isRunning)
-						Shutter.btnCancel.doClick();
+						Main.btnCancel.doClick();
 					
 					if (FFMPEG.isRunning == false)
 					{
-						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("restart"), Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
+						int reply = JOptionPane.showConfirmDialog(frame, Main.language.getProperty("restart"), Main.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
 						
 						if (reply == JOptionPane.YES_OPTION) 
 						{													
@@ -730,11 +730,11 @@ public class Settings {
     		
     	});
 		
-		lblLanguage.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblLanguage.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblLanguage.setBounds(12, lblTheme.getLocation().y + lblTheme.getHeight() + 10, lblLanguage.getPreferredSize().width, lblImageToVideo.getPreferredSize().height);
 		frame.getContentPane().add(lblLanguage);
 			
-		comboLanguage.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+		comboLanguage.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 		comboLanguage.setEditable(false);		
 		
 		//load languages
@@ -782,7 +782,7 @@ public class Settings {
 	    }
 		
 		//Set comboItem
-		comboLanguage.setSelectedItem(Shutter.getLanguage);
+		comboLanguage.setSelectedItem(Main.getLanguage);
 		comboLanguage.setBounds(btnEndingAction.getX() + lblLanguage.getWidth() + 6, lblLanguage.getLocation().y - 4, comboLanguage.getPreferredSize().width, 22);
 		comboLanguage.setMaximumRowCount(30);
 		frame.getContentPane().add(comboLanguage);
@@ -796,11 +796,11 @@ public class Settings {
 					saveSettings();
 					
 					if (FFMPEG.isRunning)
-						Shutter.btnCancel.doClick();
+						Main.btnCancel.doClick();
 					
 					if (FFMPEG.isRunning == false)
 					{
-						int reply = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("restart"), Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
+						int reply = JOptionPane.showConfirmDialog(frame, Main.language.getProperty("restart"), Main.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);	
 						
 						if (reply == JOptionPane.YES_OPTION) 
 						{													
@@ -812,7 +812,7 @@ public class Settings {
 			
 		});
 					
-		defaultOutput1.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		defaultOutput1.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		defaultOutput1.setBounds(12,  lblLanguage.getLocation().y + lblLanguage.getHeight() + 10, defaultOutput1.getPreferredSize().width, defaultOutput1.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput1);
 
@@ -862,9 +862,9 @@ public class Settings {
 						if (destination.toString().equals(System.getProperty("user.home") + "/Desktop") == false
 						&& destination.toString().equals(System.getProperty("user.home") + "\\Desktop") == false)
 						{
-							Shutter.lblDestination1.setText(destination.toString());
-							Shutter.caseChangeFolder1.setSelected(true);
-							Shutter.caseOpenFolderAtEnd1.setSelected(false);
+							Main.lblDestination1.setText(destination.toString());
+							Main.caseChangeFolder1.setSelected(true);
+							Main.caseOpenFolderAtEnd1.setSelected(false);
 						}
 					}
 				}
@@ -890,7 +890,7 @@ public class Settings {
 			}
 		});
 			
-		lastUsedOutput1.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lastUsedOutput1.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lastUsedOutput1.setBounds(defaultOutput1.getX() + defaultOutput1.getWidth() + 10, defaultOutput1.getLocation().y, lastUsedOutput1.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput1);
 		
@@ -905,7 +905,7 @@ public class Settings {
 			}	
 		});
 		
-		defaultOutput2.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		defaultOutput2.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		defaultOutput2.setBounds(12,  lblDestination1.getLocation().y + lblDestination1.getHeight() + 10, defaultOutput2.getPreferredSize().width, defaultOutput2.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput2);
 		
@@ -975,7 +975,7 @@ public class Settings {
 			}
 		});
 		
-		lastUsedOutput2.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lastUsedOutput2.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lastUsedOutput2.setBounds(defaultOutput2.getX() + defaultOutput2.getWidth() + 10, defaultOutput2.getLocation().y, lastUsedOutput2.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput2);
 		
@@ -990,7 +990,7 @@ public class Settings {
 			}	
 		});
 		
-		defaultOutput3.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		defaultOutput3.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		defaultOutput3.setBounds(12,  lblDestination2.getLocation().y + lblDestination2.getHeight() + 10, defaultOutput3.getPreferredSize().width, defaultOutput3.getPreferredSize().height);
 		frame.getContentPane().add(defaultOutput3);
 		
@@ -1060,7 +1060,7 @@ public class Settings {
 			}
 		});
 		
-		lastUsedOutput3.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lastUsedOutput3.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lastUsedOutput3.setBounds(defaultOutput3.getX() + defaultOutput3.getWidth() + 10, defaultOutput3.getLocation().y, lastUsedOutput3.getPreferredSize().width, 16);
 		frame.getContentPane().add(lastUsedOutput3);
 		
@@ -1080,9 +1080,9 @@ public class Settings {
 		lblDestination2.setTransferHandler(new OutputTransferHandler());
 		lblDestination3.setTransferHandler(new OutputTransferHandler());
 		
-		JButton btnReset = new JButton(Shutter.language.getProperty("btnReset"));
+		JButton btnReset = new JButton(Main.language.getProperty("btnReset"));
 		btnReset.setName("btnReset");
-		btnReset.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnReset.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnReset.setSize(btnReset.getPreferredSize().width + 4, 21);
 		btnReset.setLocation(backgroundPanel.getWidth() / 2 - (btnReset.getWidth() + 14), backgroundPanel.getHeight() / 2 - btnReset.getHeight() / 2);
 		backgroundPanel.add(btnReset);
@@ -1093,13 +1093,13 @@ public class Settings {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				int reply = JOptionPane.showConfirmDialog(frame,
-						Shutter.language.getProperty("areYouSure"),
-						Shutter.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION,
+						Main.language.getProperty("areYouSure"),
+						Main.language.getProperty("frameSettings"), JOptionPane.YES_NO_OPTION,
 						JOptionPane.PLAIN_MESSAGE);					
 				if (reply == JOptionPane.YES_OPTION) 
 				{	
-					if (Shutter.settingsXML.exists())
-						Shutter.settingsXML.delete();
+					if (Main.settingsXML.exists())
+						Main.settingsXML.delete();
 					
 					Utils.restartApp(false);
 				
@@ -1111,13 +1111,13 @@ public class Settings {
 		});
 		
 		JButton donate;		
-		if (Shutter.getLanguage.equals(Locale.of("fr").getDisplayLanguage()))
+		if (Main.getLanguage.equals(Locale.of("fr").getDisplayLanguage()))
 			donate = new JButton("Faire un don");
 		else
 			donate = new JButton("Donate");
 		
 		donate.setName("donate");
-		donate.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		donate.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		donate.setSize(donate.getPreferredSize().width, donate.getPreferredSize().height);
 		donate.setLocation(backgroundPanel.getWidth() / 2 + 14, backgroundPanel.getHeight() / 2 - donate.getHeight() / 2);
 		backgroundPanel.add(donate);
@@ -1129,9 +1129,9 @@ public class Settings {
 				
 				try {
 					
-					if (Shutter.getLanguage.equals(Locale.of("fr").getDisplayLanguage())
-					|| Shutter.getLanguage.equals(Locale.of("it").getDisplayLanguage())
-					|| Shutter.getLanguage.equals(Locale.of("es").getDisplayLanguage()))
+					if (Main.getLanguage.equals(Locale.of("fr").getDisplayLanguage())
+					|| Main.getLanguage.equals(Locale.of("it").getDisplayLanguage())
+					|| Main.getLanguage.equals(Locale.of("es").getDisplayLanguage()))
 					{
 						Desktop.getDesktop().browse(new URI("https://www.paypal.com/donate/?cmd=_donations&business=paulpacifico974@gmail.com&item_name=Shutter+Encoder&currency_code=EUR"));
 					}
@@ -1379,10 +1379,10 @@ public class Settings {
 		topPanel.add(help);
 		topPanel.setBounds(0, 0, frame.getWidth(), 24);
 		
-		JLabel title = new JLabel(Shutter.language.getProperty("frameSettings"));
+		JLabel title = new JLabel(Main.language.getProperty("frameSettings"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -1440,9 +1440,9 @@ public class Settings {
 	public static void loadSettings() {	
 		
 		try {
-			if (Shutter.settingsXML.exists())
+			if (Main.settingsXML.exists())
 			{
-				File fXmlFile = Shutter.settingsXML;
+				File fXmlFile = Main.settingsXML;
 				DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 				DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
 				Document doc = dBuilder.parse(fXmlFile);
@@ -1511,9 +1511,9 @@ public class Settings {
 										&& eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(System.getProperty("user.home") + "/Desktop") == false
 										&& eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().equals(System.getProperty("user.home") + "\\Desktop") == false)
 									{
-										Shutter.lblDestination1.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
-										Shutter.caseChangeFolder1.setSelected(true);
-										Shutter.caseOpenFolderAtEnd1.setSelected(false);
+										Main.lblDestination1.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+										Main.caseChangeFolder1.setSelected(true);
+										Main.caseOpenFolderAtEnd1.setSelected(false);
 									}
 									
 								}
@@ -1545,7 +1545,7 @@ public class Settings {
 							}
 						}
 						
-						for (Component p : Shutter.statusBar.getComponents())
+						for (Component p : Main.statusBar.getComponents())
 						{
 							if (p.getName() != "" && p.getName() != null && p.getName().equals("comboAccel") == false && p.getName().equals(eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent()))
 							{
@@ -1565,9 +1565,9 @@ public class Settings {
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseOpenFolderAtEnd1"))
 						{
 							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
-								Shutter.caseOpenFolderAtEnd1.setSelected(true);
+								Main.caseOpenFolderAtEnd1.setSelected(true);
 							else
-								Shutter.caseOpenFolderAtEnd1.setSelected(false);
+								Main.caseOpenFolderAtEnd1.setSelected(false);
 						}
 						
 						//Change folder
@@ -1577,7 +1577,7 @@ public class Settings {
 								&& lblDestination1.getText().equals(System.getProperty("user.home") + "/Desktop") == false
 								&& lblDestination1.getText().equals(System.getProperty("user.home") + "\\Desktop") == false)
 							{
-								Shutter.caseChangeFolder1.doClick();
+								Main.caseChangeFolder1.doClick();
 							}
 						}
 						
@@ -1586,11 +1586,11 @@ public class Settings {
 						{
 							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
 							{
-								Shutter.casePrefix.setSelected(true);
-								Shutter.txtPrefix.setEnabled(true);
+								Main.casePrefix.setSelected(true);
+								Main.txtPrefix.setEnabled(true);
 							}
 							else
-								Shutter.casePrefix.setSelected(false);
+								Main.casePrefix.setSelected(false);
 						}
 						
 						//Prefix
@@ -1598,10 +1598,10 @@ public class Settings {
 						{
 							if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
 							{
-								Shutter.txtPrefix.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+								Main.txtPrefix.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 							}
 							else
-								Shutter.txtPrefix.setText("");
+								Main.txtPrefix.setText("");
 						}
 						
 						//btnExtension
@@ -1609,11 +1609,11 @@ public class Settings {
 						{
 							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
 							{
-								Shutter.btnExtension.setSelected(true);
-								Shutter.txtExtension.setEnabled(true);
+								Main.btnExtension.setSelected(true);
+								Main.txtExtension.setEnabled(true);
 							}
 							else
-								Shutter.btnExtension.setSelected(false);
+								Main.btnExtension.setSelected(false);
 						}
 							
 						//Suffix
@@ -1621,10 +1621,10 @@ public class Settings {
 						{
 							if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
 							{
-								Shutter.txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+								Main.txtExtension.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 							}
 							else
-								Shutter.txtExtension.setText("");
+								Main.txtExtension.setText("");
 						}
 						
 						//caseSubFolder
@@ -1632,11 +1632,11 @@ public class Settings {
 						{
 							if (Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent()) == true)
 							{
-								Shutter.caseSubFolder.setSelected(true);							
-								Shutter.txtSubFolder.setEnabled(true);
+								Main.caseSubFolder.setSelected(true);							
+								Main.txtSubFolder.setEnabled(true);
 							}
 							else
-								Shutter.caseSubFolder.setSelected(false);
+								Main.caseSubFolder.setSelected(false);
 						}
 						
 						//SubFolder
@@ -1644,10 +1644,10 @@ public class Settings {
 						{
 							if (eElement.getElementsByTagName("Value").item(0).getFirstChild() != null)
 							{
-								Shutter.txtSubFolder.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+								Main.txtSubFolder.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 							}
 							else
-								Shutter.txtSubFolder.setText("");
+								Main.txtSubFolder.setText("");
 						}
 						
 						//Volume video player
@@ -1703,14 +1703,14 @@ public class Settings {
 						if (eElement.getParentNode().getNodeName().equals("caseSendMail"))
 						{
 							//Value
-							Shutter.textMail.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							Main.textMail.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 						}
 						
 						//CaseStream
 						if (eElement.getParentNode().getNodeName().equals("caseStream"))
 						{
 							//Value
-							Shutter.textStream.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+							Main.textStream.setText(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 						}
 						
 						//caseMetadata
@@ -1728,15 +1728,15 @@ public class Settings {
 						//Warning values						
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("cutKeyframesIsDisplayed"))
 						{											
-							Shutter.cutKeyframesIsDisplayed = true;
+							Main.cutKeyframesIsDisplayed = true;
 						}
 						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("rewrapKeyframesIsDisplayed"))
 						{											
-							Shutter.rewrapKeyframesIsDisplayed = true;
+							Main.rewrapKeyframesIsDisplayed = true;
 						}
 						else if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("conformKeyframesIsDisplayed"))
 						{											
-							Shutter.conformKeyframesIsDisplayed = true;
+							Main.conformKeyframesIsDisplayed = true;
 						}
 						
 						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("dayOfYear"))
@@ -1766,15 +1766,15 @@ public class Settings {
 						        // Check if the saved coordinates fall within this specific monitor
 						        if (bounds.contains(x, y))
 						        {
-						            if (Shutter.minHeight == 731)
+						            if (Main.minHeight == 731)
 						            {
-						                int frameWidth = Shutter.extendedWidth;
+						                int frameWidth = Main.extendedWidth;
 						                int frameHeight = 731;
 
 						                int centeredX = bounds.x + (bounds.width - frameWidth) / 2;
 						                int centeredY = bounds.y + (bounds.height - frameHeight) / 2;
 
-						                Shutter.frame.setLocation(centeredX, centeredY);
+						                Main.frame.setLocation(centeredX, centeredY);
 						            }
 						            break;
 						        }
@@ -1815,14 +1815,14 @@ public class Settings {
 							String[] items = eElement.getElementsByTagName("Model").item(0).getFirstChild().getTextContent().split("\\|");
 							int savedItemCount = Integer.valueOf(eElement.getElementsByTagName("ItemsCount").item(0).getFirstChild().getTextContent());
 														
-							if (Shutter.functionsList.size() == savedItemCount)
+							if (Main.functionsList.size() == savedItemCount)
 							{
-								Shutter.comboFonctions.setModel(new DefaultComboBoxModel(items));
-								Shutter.comboFonctions.setSelectedItem("");
+								Main.comboFonctions.setModel(new DefaultComboBoxModel(items));
+								Main.comboFonctions.setSelectedItem("");
 								
 								ManageFunctions.selectedFunctions = items;
 								
-								if (Shutter.functionsList.size() != items.length)
+								if (Main.functionsList.size() != items.length)
 								{						
 									ManageFunctions.selectAll.setSelected(false);
 								}
@@ -1862,7 +1862,7 @@ public class Settings {
 			
 			//Value
 			Element cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf((int) Shutter.frame.getLocation().getX() + "," + (int) Shutter.frame.getLocation().getY() + "," + (int) Shutter.frame.getWidth() + "," + (int) Shutter.frame.getHeight())));
+			cValue.appendChild(document.createTextNode(String.valueOf((int) Main.frame.getLocation().getX() + "," + (int) Main.frame.getLocation().getY() + "," + (int) Main.frame.getWidth() + "," + (int) Main.frame.getHeight())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2063,7 +2063,7 @@ public class Settings {
 				}
 			}
 			
-			for (Component p : Shutter.statusBar.getComponents())
+			for (Component p : Main.statusBar.getComponents())
 			{
 				if (p.getName() != "" && p.getName() != null)
 				{
@@ -2108,12 +2108,12 @@ public class Settings {
 			
 			//Name
 			cName = document.createElement("Name");
-			cName.appendChild(document.createTextNode(Shutter.caseOpenFolderAtEnd1.getName()));
+			cName.appendChild(document.createTextNode(Main.caseOpenFolderAtEnd1.getName()));
 			component.appendChild(cName);
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseOpenFolderAtEnd1.isSelected())));
+			cValue.appendChild(document.createTextNode(String.valueOf(Main.caseOpenFolderAtEnd1.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2129,12 +2129,12 @@ public class Settings {
 			
 			//Name
 			cName = document.createElement("Name");
-			cName.appendChild(document.createTextNode(Shutter.caseChangeFolder1.getName()));
+			cName.appendChild(document.createTextNode(Main.caseChangeFolder1.getName()));
 			component.appendChild(cName);
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseChangeFolder1.isSelected())));
+			cValue.appendChild(document.createTextNode(String.valueOf(Main.caseChangeFolder1.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2150,12 +2150,12 @@ public class Settings {
 			
 			//Name
 			cName = document.createElement("Name");
-			cName.appendChild(document.createTextNode(Shutter.casePrefix.getName()));
+			cName.appendChild(document.createTextNode(Main.casePrefix.getName()));
 			component.appendChild(cName);
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.casePrefix.isSelected())));
+			cValue.appendChild(document.createTextNode(String.valueOf(Main.casePrefix.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2176,7 +2176,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");				
-			cValue.appendChild(document.createTextNode(Shutter.txtPrefix.getText().toString()));
+			cValue.appendChild(document.createTextNode(Main.txtPrefix.getText().toString()));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2192,12 +2192,12 @@ public class Settings {
 			
 			//Name
 			cName = document.createElement("Name");
-			cName.appendChild(document.createTextNode(Shutter.btnExtension.getName()));
+			cName.appendChild(document.createTextNode(Main.btnExtension.getName()));
 			component.appendChild(cName);
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.btnExtension.isSelected())));
+			cValue.appendChild(document.createTextNode(String.valueOf(Main.btnExtension.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2218,7 +2218,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");				
-			cValue.appendChild(document.createTextNode(Shutter.txtExtension.getText().toString()));
+			cValue.appendChild(document.createTextNode(Main.txtExtension.getText().toString()));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2234,12 +2234,12 @@ public class Settings {
 			
 			//Name
 			cName = document.createElement("Name");
-			cName.appendChild(document.createTextNode(Shutter.caseSubFolder.getName()));
+			cName.appendChild(document.createTextNode(Main.caseSubFolder.getName()));
 			component.appendChild(cName);
 			
 			//Value
 			cValue = document.createElement("Value");
-			cValue.appendChild(document.createTextNode(String.valueOf(Shutter.caseSubFolder.isSelected())));
+			cValue.appendChild(document.createTextNode(String.valueOf(Main.caseSubFolder.isSelected())));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2260,7 +2260,7 @@ public class Settings {
 			
 			//Value
 			cValue = document.createElement("Value");				
-			cValue.appendChild(document.createTextNode(Shutter.txtSubFolder.getText().toString()));
+			cValue.appendChild(document.createTextNode(Main.txtSubFolder.getText().toString()));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);
@@ -2470,7 +2470,7 @@ public class Settings {
 				root.appendChild(ftp);
 						
 			//CaseSendMail	
-			if (Shutter.textMail != null && Shutter.textMail.getText().length() > 0 && Shutter.textMail.getText().equals(Shutter.language.getProperty("textMail")) == false)
+			if (Main.textMail != null && Main.textMail.getText().length() > 0 && Main.textMail.getText().equals(Main.language.getProperty("textMail")) == false)
 			{
 				Element sendMail = document.createElement("caseSendMail");
 				
@@ -2489,7 +2489,7 @@ public class Settings {
 				
 				//Value
 				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(Shutter.textMail.getText().toString()));
+				cValue.appendChild(document.createTextNode(Main.textMail.getText().toString()));
 				component.appendChild(cValue);
 							
 				sendMail.appendChild(component);
@@ -2498,7 +2498,7 @@ public class Settings {
 			}
 			
 			//caseStream	
-			if (Shutter.textStream != null && Shutter.textStream.getText().length() > 0 && Shutter.textStream.getText().equals("rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx-xxxx-xxxx-xxxx") == false)
+			if (Main.textStream != null && Main.textStream.getText().length() > 0 && Main.textStream.getText().equals("rtmp://a.rtmp.youtube.com/live2/xxxx-xxxx-xxxx-xxxx-xxxx") == false)
 			{
 				Element stream = document.createElement("caseStream");
 				
@@ -2517,7 +2517,7 @@ public class Settings {
 				
 				//Value
 				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(Shutter.textStream.getText().toString()));
+				cValue.appendChild(document.createTextNode(Main.textStream.getText().toString()));
 				component.appendChild(cValue);
 							
 				stream.appendChild(component);
@@ -2552,7 +2552,7 @@ public class Settings {
 			//Saving warning values	
 			Element warning = document.createElement("Warning");
 						
-			if (Shutter.cutKeyframesIsDisplayed)
+			if (Main.cutKeyframesIsDisplayed)
 			{											
 				component = document.createElement("Component");
 				
@@ -2568,13 +2568,13 @@ public class Settings {
 				
 				//Value
 				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.cutKeyframesIsDisplayed)));
+				cValue.appendChild(document.createTextNode(String.valueOf(Main.cutKeyframesIsDisplayed)));
 				component.appendChild(cValue);
 
 				warning.appendChild(component);
 			}
 			
-			if (Shutter.rewrapKeyframesIsDisplayed)
+			if (Main.rewrapKeyframesIsDisplayed)
 			{											
 				component = document.createElement("Component");
 				
@@ -2590,13 +2590,13 @@ public class Settings {
 				
 				//Value
 				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.rewrapKeyframesIsDisplayed)));
+				cValue.appendChild(document.createTextNode(String.valueOf(Main.rewrapKeyframesIsDisplayed)));
 				component.appendChild(cValue);
 
 				warning.appendChild(component);
 			}
 			
-			if (Shutter.conformKeyframesIsDisplayed)
+			if (Main.conformKeyframesIsDisplayed)
 			{											
 				component = document.createElement("Component");
 				
@@ -2612,7 +2612,7 @@ public class Settings {
 				
 				//Value
 				cValue = document.createElement("Value");
-				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.conformKeyframesIsDisplayed)));
+				cValue.appendChild(document.createTextNode(String.valueOf(Main.conformKeyframesIsDisplayed)));
 				component.appendChild(cValue);
 
 				warning.appendChild(component);				
@@ -2641,7 +2641,7 @@ public class Settings {
 				cValue.appendChild(document.createTextNode(String.valueOf(currentDayOfYear)));
 				component.appendChild(cValue);
 				
-				Shutter.showDonateWindow = true;
+				Main.showDonateWindow = true;
 			}
 			else
 			{
@@ -2687,18 +2687,18 @@ public class Settings {
 			{			
 				modelIsSaving = true;
 				
-				Object selectedFunction = Shutter.comboFonctions.getSelectedItem();
+				Object selectedFunction = Main.comboFonctions.getSelectedItem();
 				
 				//Set Model before saving
 				if (ManageFunctions.selectedFunctions != null)
 				{
-					Shutter.comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
+					Main.comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
 				}
 				else
-					Shutter.comboFonctions.setModel(new DefaultComboBoxModel(Shutter.functionsList.toArray(new String[0])));
+					Main.comboFonctions.setModel(new DefaultComboBoxModel(Main.functionsList.toArray(new String[0])));
 				
 				if (selectedFunction != null)
-					Shutter.comboFonctions.setSelectedItem(selectedFunction);
+					Main.comboFonctions.setSelectedItem(selectedFunction);
 				
 				modelIsSaving = false;
 				
@@ -2717,11 +2717,11 @@ public class Settings {
 													
 				//Name
 				cName = document.createElement("Name");
-				cName.appendChild(document.createTextNode(Shutter.comboFonctions.getName()));
+				cName.appendChild(document.createTextNode(Main.comboFonctions.getName()));
 				component.appendChild(cName);
 				
 				//Model
-				ComboBoxModel<?> model = Shutter.comboFonctions.getModel();
+				ComboBoxModel<?> model = Main.comboFonctions.getModel();
 				StringBuilder items = new StringBuilder();
 				for (int i = 0; i < model.getSize(); i++) {
 				    if (i > 0) items.append("|");
@@ -2733,7 +2733,7 @@ public class Settings {
 				
 				//Count
 				cValue = document.createElement("ItemsCount");
-				cValue.appendChild(document.createTextNode(String.valueOf(Shutter.functionsList.size())));
+				cValue.appendChild(document.createTextNode(String.valueOf(Main.functionsList.size())));
 				component.appendChild(cValue);
 	
 				functions.appendChild(component);
@@ -2747,7 +2747,7 @@ public class Settings {
 			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 			DOMSource domSource = new DOMSource(document);
-			StreamResult streamResult = new StreamResult(Shutter.settingsXML);
+			StreamResult streamResult = new StreamResult(Main.settingsXML);
 
 			transformer.transform(domSource, streamResult);
 			

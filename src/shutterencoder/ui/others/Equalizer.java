@@ -46,7 +46,7 @@ import javax.swing.event.ChangeListener;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.utils.Utils;
@@ -101,7 +101,7 @@ public class Equalizer {
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		frame.setTitle(Shutter.language.getProperty("frameEqualizer"));
+		frame.setTitle(Main.language.getProperty("frameEqualizer"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(355, 240);
@@ -120,14 +120,14 @@ public class Equalizer {
 			if (System.getProperty("os.name").contains("Mac") == false)
 				frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("resources/icon.png"))).getImage());
 			
-			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+			frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 		}		
 		
 		topPanel();
 		addEQ();
 				
-		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
-		btnReset.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnReset = new JButton(Main.language.getProperty("btnReset"));
+		btnReset.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnReset.setBounds(7, frame.getHeight() - 21 - 7, frame.getWidth() / 2 - 7, 21);		
 		frame.getContentPane().add(btnReset);	
 		
@@ -149,8 +149,8 @@ public class Equalizer {
 			
 		});
 		
-		btnApply = new JButton(Shutter.language.getProperty("btnApply"));
-		btnApply.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnApply = new JButton(Main.language.getProperty("btnApply"));
+		btnApply.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnApply.setBounds(btnReset.getX() + btnReset.getWidth() + 4, btnReset.getY(), frame.getWidth() / 2 - 7 - 4, 21);
 		frame.getContentPane().add(btnApply);
 		
@@ -201,7 +201,7 @@ public class Equalizer {
 				
 				if (accept)		
 				{					
-					Shutter.caseEqualizer.setSelected(false);
+					Main.caseEqualizer.setSelected(false);
 		            
 		            Utils.changeFrameVisibility(frame, true);
 	            	VideoPlayerCore.playerAudioSetTime(VideoPlayerCore.playerCurrentFrame);
@@ -226,10 +226,10 @@ public class Equalizer {
 						
 		});
 	
-		JLabel title = new JLabel(Shutter.language.getProperty("frameEqualizer"));
+		JLabel title = new JLabel(Main.language.getProperty("frameEqualizer"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -345,7 +345,7 @@ public class Equalizer {
 		{			
 			if (c instanceof JLabel)
 			{
-				c.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+				c.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 				((JLabel) c).setHorizontalAlignment(SwingConstants.CENTER);
 				
 				if (c.getName() != null && c.getName().equals("sliderTextGain"))

@@ -26,7 +26,7 @@ import java.awt.Font;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.utils.Utils;
 
 //Edit functions list
@@ -39,7 +39,7 @@ public class ComboBoxRenderer extends DefaultListCellRenderer {
 
 		if (isSelected)
 		{
-			if (value.toString().contains(":") || value.toString().contains(Shutter.language.getProperty("btnManage").toUpperCase()))
+			if (value.toString().contains(":") || value.toString().contains(Main.language.getProperty("btnManage").toUpperCase()))
 			{
 				setBackground(Utils.c225);
 			}
@@ -50,13 +50,13 @@ public class ComboBoxRenderer extends DefaultListCellRenderer {
 			setBackground(new Color(Utils.c42.getRed(), Utils.c42.getGreen(), Utils.c42.getBlue(), 200));
 		}
 
-		if (value.toString().contains(":") || value.toString().contains(Shutter.language.getProperty("btnManage").toUpperCase()))
+		if (value.toString().contains(":") || value.toString().contains(Main.language.getProperty("btnManage").toUpperCase()))
 		{
 			setForeground(Utils.themeColor);
-			setFont(new Font(Shutter.boldFont, Font.BOLD, 12));
+			setFont(new Font(Main.boldFont, Font.BOLD, 12));
 		}
 		else
-			setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));		
+			setFont(new Font(Main.mainFont, Font.PLAIN, 12));		
 
 		list.setFixedCellHeight(18);
 

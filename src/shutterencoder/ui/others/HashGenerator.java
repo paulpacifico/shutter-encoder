@@ -61,7 +61,7 @@ import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
@@ -84,7 +84,7 @@ public class HashGenerator {
     	
     	frame = new JDialog();	
       	frame.getContentPane().setBackground(Utils.background);
-		frame.setTitle(Shutter.language.getProperty("menuItemHash"));
+		frame.setTitle(Main.language.getProperty("menuItemHash"));
 		frame.setModal(true);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
@@ -107,7 +107,7 @@ public class HashGenerator {
 				frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("resources/icon.png"))).getImage());	
 		}
 				
-		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() / 2 - frame.getHeight()));		
+		frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() / 2 - frame.getHeight()));		
 	        	
 		topPanel();
 		
@@ -115,21 +115,21 @@ public class HashGenerator {
 		
 		MD5 = new JRadioButton("MD5");
 		MD5.setSelected(true);
-		MD5.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		MD5.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		MD5.setForeground(new Color(235,235,240));
 		MD5.setBounds(0, 0, MD5.getPreferredSize().width + 4, 21);
 		panelHash.add(MD5);
 		
 		SHA1 = new JRadioButton("SHA-1");
 		SHA1.setSelected(false);
-		SHA1.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		SHA1.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		SHA1.setForeground(new Color(235,235,240));
 		SHA1.setBounds(MD5.getX() + MD5.getWidth() + 7, 0, SHA1.getPreferredSize().width + 4, 21);
 		panelHash.add(SHA1);
 		
 		SHA256 = new JRadioButton("SHA-256");
 		SHA256.setSelected(false);
-		SHA256.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		SHA256.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		SHA256.setForeground(new Color(235,235,240));
 		SHA256.setBounds(SHA1.getX() + SHA1.getWidth() + 7, 0, SHA256.getPreferredSize().width + 4, 21);
 		panelHash.add(SHA256);	
@@ -141,23 +141,23 @@ public class HashGenerator {
 		
         JLabel btnBrowse = new JLabel();
         btnBrowse.setIcon(new FlatSVGIcon("resources/drop.svg", 21, 21));
-        btnBrowse.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+        btnBrowse.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
         btnBrowse.setLocation(7, panelHash.getY() + panelHash.getHeight() + 5);
         btnBrowse.setSize(btnBrowse.getPreferredSize().width, 21);
         frame.getContentPane().add(btnBrowse);
 
         JTextField txtFile = new JTextField();
-        if (Shutter.fileList.getSelectedIndices().length > 0)
+        if (Main.fileList.getSelectedIndices().length > 0)
         {
         	txtFile.setFont(new Font("SansSerif", Font.PLAIN, 12));
         	txtFile.setForeground(new Color(235,235,240));
-        	txtFile.setText(Shutter.fileList.getSelectedValue());        
+        	txtFile.setText(Main.fileList.getSelectedValue());        
         }
         else
         {
         	txtFile.setFont(new Font("SansSerif", Font.ITALIC, 12));
         	txtFile.setForeground(Color.LIGHT_GRAY);
-        	txtFile.setText(Shutter.language.getProperty("dropFilesHere"));
+        	txtFile.setText(Main.language.getProperty("dropFilesHere"));
         }        
         txtFile.setLocation(btnBrowse.getX() + btnBrowse.getWidth() + 7, btnBrowse.getY());
         txtFile.setSize(frame.getWidth() -  txtFile.getX() - 9, 21);
@@ -169,7 +169,7 @@ public class HashGenerator {
         
         JLabel btnGenerate = new JLabel();
         btnGenerate.setIcon(new FlatSVGIcon("resources/generate.svg", 18, 18));
-        btnGenerate.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+        btnGenerate.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
         btnGenerate.setSize(80, btnBrowse.getPreferredSize().height);
         btnGenerate.setBounds(9, btnBrowse.getY() + btnBrowse.getHeight() + 7, btnBrowse.getWidth(), btnBrowse.getHeight());
         frame.getContentPane().add(btnGenerate);
@@ -184,7 +184,7 @@ public class HashGenerator {
                 
         JLabel btnCheck = new JLabel();
         btnCheck.setIcon(new FlatSVGIcon("resources/check.svg", 21, 21));
-        btnCheck.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+        btnCheck.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
         btnCheck.setBounds(7, btnGenerate.getY() + btnGenerate.getHeight() + 7, btnBrowse.getWidth(), btnBrowse.getHeight());
         frame.getContentPane().add(btnCheck);        
  
@@ -267,7 +267,7 @@ public class HashGenerator {
                 if (filePath.isEmpty() == false)
                 {         
                     File file = new File(filePath);
-                    Shutter.cancelled = false;
+                    Main.cancelled = false;
                     
                     Thread t = new Thread(new Runnable() {
 
@@ -279,7 +279,7 @@ public class HashGenerator {
 		                    	frame.setModal(false);
 		                        String hash = generateHash(file);
 		                        
-		                        if (Shutter.cancelled == false)
+		                        if (Main.cancelled == false)
 		                        {
 			                        txtGenerate.setText(hash);
 			                       			                        
@@ -308,12 +308,12 @@ public class HashGenerator {
 		                    finally {
 		                    	
 		                    	frame.setModal(true);
-		                        Shutter.progressBar.setValue(100);
+		                        Main.progressBar.setValue(100);
 		                        UIController.enableAll();	 
 		                        UIController.endOfFunction();	     
 		                		
 		                		try {
-		                			Shutter.frame.setOpacity(0.5f);
+		                			Main.frame.setOpacity(0.5f);
 		                		} catch (Exception er) {}
 		                        Utils.changeDialogVisibility(frame, false);   
 		                    }
@@ -348,7 +348,7 @@ public class HashGenerator {
                 if (filePath.isEmpty() == false && enteredHash.isEmpty() == false) 
                 {
                     File file = new File(filePath);
-                    Shutter.cancelled = false;
+                    Main.cancelled = false;
                                        	
                 	txtGenerate.setText("");
                 	txtGenerate.setForeground(new Color(235,235,240));
@@ -364,7 +364,7 @@ public class HashGenerator {
                 				frame.setModal(false);
 								String hash = generateHash(file);			
 								
-								if (Shutter.cancelled == false)
+								if (Main.cancelled == false)
 		                        {
 	                                txtGenerate.setText(hash);
 	                                 
@@ -389,12 +389,12 @@ public class HashGenerator {
                 			 finally {
  		                    	
  		                    	frame.setModal(true);
- 		                        Shutter.progressBar.setValue(100);
+ 		                        Main.progressBar.setValue(100);
  		                        UIController.enableAll();	 
  		                        UIController.endOfFunction();	     
  		                		
  		                		try {
- 		                			Shutter.frame.setOpacity(0.5f);
+ 		                			Main.frame.setOpacity(0.5f);
  		                		} catch (Exception er) {}
  		                        Utils.changeDialogVisibility(frame, false);   
  		                    }
@@ -456,7 +456,7 @@ public class HashGenerator {
 				
 				if (accept)		
 				{
-					Shutter.frame.setOpacity(1f);
+					Main.frame.setOpacity(1f);
 					frame.dispose();
 				}
 			}
@@ -479,10 +479,10 @@ public class HashGenerator {
 						
 		});
 	
-		JLabel title = new JLabel(Shutter.language.getProperty("menuItemHash"));
+		JLabel title = new JLabel(Main.language.getProperty("menuItemHash"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -541,11 +541,11 @@ public class HashGenerator {
     	Utils.changeDialogVisibility(frame, true);
     	
     	UIController.disableAll();
-		Shutter.btnStart.setEnabled(false);		
+		Main.btnStart.setEnabled(false);		
 		
-    	Shutter.frame.setOpacity(1f);
-    	Shutter.progressBar.setValue(0);
-    	Shutter.progressBar.setMaximum(100);
+    	Main.frame.setOpacity(1f);
+    	Main.progressBar.setValue(0);
+    	Main.progressBar.setMaximum(100);
     	
         MessageDigest digest;
         if (SHA1.isSelected())
@@ -561,14 +561,14 @@ public class HashGenerator {
                 
         if (file.isFile())
         {
-        	Shutter.lblCurrentEncoding.setText(file.getName());
+        	Main.lblCurrentEncoding.setText(file.getName());
             digestFile(file, digest);
         }
         else if (file.isDirectory())
         {
             Files.walk(file.toPath()).filter(Files::isRegularFile).forEach(path -> {
             	
-            	Shutter.lblCurrentEncoding.setText(path.toFile().getName());
+            	Main.lblCurrentEncoding.setText(path.toFile().getName());
             	
                 try {
                     digestFile(path.toFile(), digest);
@@ -594,9 +594,9 @@ public class HashGenerator {
         while (dis.read(buffer) != -1) {
         	
         	currentSize += 4096;
-        	Shutter.progressBar.setValue(Math.round((float) ((float) currentSize / fileSize) * 100));
+        	Main.progressBar.setValue(Math.round((float) ((float) currentSize / fileSize) * 100));
         	
-        	if (Shutter.cancelled)
+        	if (Main.cancelled)
         		break;
         }
         

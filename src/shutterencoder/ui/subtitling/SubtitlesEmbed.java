@@ -57,7 +57,7 @@ import javax.swing.border.MatteBorder;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
@@ -119,7 +119,7 @@ public class SubtitlesEmbed {
 		frame = new JDialog();
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		frame.setTitle(Shutter.language.getProperty("frameAddSubtitles"));
+		frame.setTitle(Main.language.getProperty("frameAddSubtitles"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(600, 366);
@@ -143,14 +143,14 @@ public class SubtitlesEmbed {
 			if (System.getProperty("os.name").contains("Mac") == false)
 				frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("resources/icon.png"))).getImage());
 			
-			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+			frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 		}		
 		
 		topPanel();
 		addSubtitles();
 				
-		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
-		btnReset.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnReset = new JButton(Main.language.getProperty("btnReset"));
+		btnReset.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnReset.setBounds(7, frame.getHeight() - 21 - 7, frame.getWidth() / 2 - 7, 21);		
 		frame.getContentPane().add(btnReset);	
 		
@@ -163,7 +163,7 @@ public class SubtitlesEmbed {
 				{			
 					if (c instanceof JTextField)
 					{
-						((JTextField) c).setText(Shutter.language.getProperty("aucun"));
+						((JTextField) c).setText(Main.language.getProperty("aucun"));
 						((JTextField) c).setHorizontalAlignment(SwingConstants.CENTER);
 					}
 				}
@@ -171,8 +171,8 @@ public class SubtitlesEmbed {
 			
 		});
 		
-		btnApply = new JButton(Shutter.language.getProperty("btnApply"));
-		btnApply.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnApply = new JButton(Main.language.getProperty("btnApply"));
+		btnApply.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnApply.setBounds(btnReset.getX() + btnReset.getWidth() + 4, btnReset.getY(), frame.getWidth() / 2 - 7 - 4, 21);
 		frame.getContentPane().add(btnApply);
 		
@@ -181,9 +181,9 @@ public class SubtitlesEmbed {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				if (subtitlesFile1.getText().equals(Shutter.language.getProperty("aucun")))
+				if (subtitlesFile1.getText().equals(Main.language.getProperty("aucun")))
 				{
-					Shutter.caseAddSubtitles.setSelected(false);
+					Main.caseAddSubtitles.setSelected(false);
 				}
 								
 				frame.dispose();
@@ -227,11 +227,11 @@ public class SubtitlesEmbed {
 			public void mouseReleased(MouseEvent e) {	
 				if (accept)		
 				{					
-					Shutter.caseAddSubtitles.setSelected(false);
+					Main.caseAddSubtitles.setSelected(false);
 		            
 		            Utils.changeDialogVisibility(frame, true);
-	            	Shutter.frame.setOpacity(1.0f);
-	            	Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	            	
+	            	Main.frame.setOpacity(1.0f);
+	            	Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));	            	
 				}
 			}
 
@@ -253,10 +253,10 @@ public class SubtitlesEmbed {
 						
 		});
 	
-		JLabel title = new JLabel(Shutter.language.getProperty("frameAddSubtitles"));
+		JLabel title = new JLabel(Main.language.getProperty("frameAddSubtitles"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 0, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -379,8 +379,8 @@ public class SubtitlesEmbed {
 			{
 				i++;
 				
-				((JLabel) c).setText(Shutter.language.getProperty("lblsubtitleNumber") + i + Shutter.language.getProperty("colon"));
-				c.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+				((JLabel) c).setText(Main.language.getProperty("lblsubtitleNumber") + i + Main.language.getProperty("colon"));
+				c.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 				((JLabel) c).setHorizontalAlignment(SwingConstants.LEFT);
 				c.setBounds(7, labelY, 100, 16);
 				frame.getContentPane().add(c);	
@@ -394,7 +394,7 @@ public class SubtitlesEmbed {
 				c.setBackground(Utils.c30);
 				if (((JTextField) c).getText() == null || ((JTextField) c).getText() == "" || ((JTextField) c).getText().isEmpty())
 				{
-					((JTextField) c).setText(Shutter.language.getProperty("aucun"));
+					((JTextField) c).setText(Main.language.getProperty("aucun"));
 				}
 				((JTextField) c).setHorizontalAlignment(SwingConstants.CENTER);
 				c.setBounds(7 + 100 + 7, labelY - 3, frame.getWidth() - 7 - 100 - 100 - 21, 22);
@@ -433,7 +433,7 @@ public class SubtitlesEmbed {
 			{
 				((JComboBox) c).setModel(new DefaultComboBoxModel<String>(allLanguages));				
 				((JComboBox) c).setSelectedItem(language);
-				c.setFont(new Font(Shutter.mainFont, Font.PLAIN, 10));
+				c.setFont(new Font(Main.mainFont, Font.PLAIN, 10));
 				((JComboBox) c).setEditable(false);
 				c.setBounds(7 + 100 + 7 + frame.getWidth() - 7 - 100 - 100 - 21 + 7, labelY - 1, 100, 18);
 				frame.getContentPane().add(c);
@@ -448,7 +448,7 @@ public class SubtitlesEmbed {
 		frame.setAlwaysOnTop(false);
 		
 		SystemFileChooser fc = new SystemFileChooser();
-        fc.setCurrentDirectory(new File(Shutter.list.elementAt(0).toString()).getParentFile());
+        fc.setCurrentDirectory(new File(Main.list.elementAt(0).toString()).getParentFile());
 
         if (fc.showOpenDialog(null) == SystemFileChooser.APPROVE_OPTION)
 		{
@@ -459,7 +459,7 @@ public class SubtitlesEmbed {
 			}
 			else 
 			{
-				JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("invalidSubtitles"), Shutter.language.getProperty("subtitlesFileError"), JOptionPane.PLAIN_MESSAGE);
+				JOptionPane.showConfirmDialog(frame, Main.language.getProperty("invalidSubtitles"), Main.language.getProperty("subtitlesFileError"), JOptionPane.PLAIN_MESSAGE);
 			}
 
 			if (((JTextField) c).getText().length() > 50)
@@ -471,7 +471,7 @@ public class SubtitlesEmbed {
 		}
 		else
 		{
-			((JTextField) c).setText(Shutter.language.getProperty("aucun"));
+			((JTextField) c).setText(Main.language.getProperty("aucun"));
 			((JTextField) c).setHorizontalAlignment(SwingConstants.CENTER);
 		}
 		
@@ -527,7 +527,7 @@ public class SubtitlesEmbed {
 							}
 							else
 							{
-								JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("invalidSubtitles"), Shutter.language.getProperty("subtitlesFileError"), JOptionPane.PLAIN_MESSAGE);
+								JOptionPane.showConfirmDialog(frame, Main.language.getProperty("invalidSubtitles"), Main.language.getProperty("subtitlesFileError"), JOptionPane.PLAIN_MESSAGE);
 							}
 
 						}

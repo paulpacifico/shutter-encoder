@@ -23,7 +23,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTextPane;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.utils.Utils;
 
 import java.awt.*;
@@ -37,7 +37,7 @@ public class SubtitlesHelp {
 		frame = new JFrame();
 		frame.getContentPane().setLayout(null);
 		frame.setResizable(false);
-		frame.setTitle(Shutter.language.getProperty("frameSubtitles"));
+		frame.setTitle(Main.language.getProperty("frameSubtitles"));
 		frame.getContentPane().setBackground(Utils.background);
 		
 		if (System.getProperty("os.name").contains("Mac") == false)
@@ -45,16 +45,16 @@ public class SubtitlesHelp {
 		
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			
-		frame.setLocation(Shutter.frame.getLocation().x + Shutter.frame.getSize().width/2 - 200, Shutter.frame.getLocation().y + Shutter.frame.getHeight() /2 - 150);
+		frame.setLocation(Main.frame.getLocation().x + Main.frame.getSize().width/2 - 200, Main.frame.getLocation().y + Main.frame.getHeight() /2 - 150);
 				
 		JTextPane lblHelp = new JTextPane();
 		lblHelp.setBackground(Utils.c30);
-		lblHelp.setText(Shutter.language.getProperty("txtShortcuts"));
+		lblHelp.setText(Main.language.getProperty("txtShortcuts"));
 		lblHelp.setForeground(Color.WHITE);
 		lblHelp.setHighlighter(null);
 		lblHelp.setFocusable(false);
 		lblHelp.setEditable(false);
-		lblHelp.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		lblHelp.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		lblHelp.setBounds(10, 12, 420, 320);
     	frame.getContentPane().add(lblHelp);	
 		

@@ -53,7 +53,7 @@ import java.awt.GraphicsEnvironment;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.utils.Utils;
 
@@ -112,9 +112,9 @@ public class ReducedWindow extends JDialog {
 		}
 		
 		if (System.getProperty("os.name").contains("Windows"))
-			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDefaultConfiguration().getBounds().width - frame.getSize().width, Shutter.MiniWindowY);	
+			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDefaultConfiguration().getBounds().width - frame.getSize().width, Main.MiniWindowY);	
 		else
-			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width, Shutter.MiniWindowY);	
+			frame.setLocation(allScreens[screenIndex].getDefaultConfiguration().getBounds().x + allScreens[screenIndex].getDisplayMode().getWidth() - frame.getSize().width, Main.MiniWindowY);	
 		
 		panel = new JPanel();	
 		panel.setLayout(null);
@@ -126,7 +126,7 @@ public class ReducedWindow extends JDialog {
 		pourcentage.setHorizontalAlignment(SwingConstants.RIGHT);
 		pourcentage.setBounds(29, 36, 33, 16);
 		pourcentage.setVisible(false);
-		pourcentage.setFont(new Font(Shutter.boldFont, Font.PLAIN, 13));
+		pourcentage.setFont(new Font(Main.boldFont, Font.PLAIN, 13));
 		pourcentage.setBackground(new Color(0,0,0));
 		panel.add(pourcentage);
 		
@@ -136,7 +136,7 @@ public class ReducedWindow extends JDialog {
         iconImage.setBounds(0, 0, 88,88);
 		panel.add(iconImage);		
 				
-		lblEnCours = new JLabel(Shutter.language.getProperty("lblEnCours"));
+		lblEnCours = new JLabel(Main.language.getProperty("lblEnCours"));
 		lblEnCours.setHorizontalAlignment(SwingConstants.CENTER);
 		lblEnCours.setForeground(Color.LIGHT_GRAY);
 		lblEnCours.setFont(new Font("SansSerif", Font.BOLD, 13));
@@ -147,19 +147,19 @@ public class ReducedWindow extends JDialog {
 		progressBar.setBounds(100, 24, 178, 24);
 		frame.getContentPane().add(progressBar);
 		
-		Shutter.caseRunInBackground.setBounds(100, 53, Shutter.caseRunInBackground.getPreferredSize().width, 16);	
-		frame.getContentPane().add(Shutter.caseRunInBackground);
+		Main.caseRunInBackground.setBounds(100, 53, Main.caseRunInBackground.getPreferredSize().width, 16);	
+		frame.getContentPane().add(Main.caseRunInBackground);
 						
-		lblTempsRestant = new JLabel(Shutter.language.getProperty("tempsRestant") + " ");
+		lblTempsRestant = new JLabel(Main.language.getProperty("tempsRestant") + " ");
 		lblTempsRestant.setVisible(false);
 		lblTempsRestant.setHorizontalAlignment(SwingConstants.LEFT);
 		lblTempsRestant.setForeground(Utils.themeColor);
-		lblTempsRestant.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		lblTempsRestant.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		lblTempsRestant.setBounds(100, 72, 178, 16);		
 		frame.getContentPane().add(lblTempsRestant);
 				
 		//Right_to_left
-		if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		if (Main.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
 		{
 			//Frame
 			for (Component c : frame.getContentPane().getComponents())
@@ -186,10 +186,10 @@ public class ReducedWindow extends JDialog {
 			public void run() 
 			{
 				//lblEncodage
-				if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("lblEncodageEnCours")) == false)
+				if (Main.lblCurrentEncoding.getText().equals(Main.language.getProperty("lblEncodageEnCours")) == false)
 				{
-					lblEnCours.setText(Shutter.lblCurrentEncoding.getText());
-					if (Shutter.progressBar.isIndeterminate() == false)
+					lblEnCours.setText(Main.lblCurrentEncoding.getText());
+					if (Main.progressBar.isIndeterminate() == false)
 						pourcentage.setVisible(true);
 					else
 						pourcentage.setVisible(false);
@@ -197,20 +197,20 @@ public class ReducedWindow extends JDialog {
 				else
 				{
 					pourcentage.setVisible(false);
-					lblEnCours.setText(Shutter.language.getProperty("lblEnCours"));
+					lblEnCours.setText(Main.language.getProperty("lblEnCours"));
 				}
-				lblEnCours.setForeground(Shutter.lblCurrentEncoding.getForeground());
+				lblEnCours.setForeground(Main.lblCurrentEncoding.getForeground());
 											
 				//TempsRestant
-				if (Shutter.lblRemainingTime.isVisible())
+				if (Main.lblRemainingTime.isVisible())
 					lblTempsRestant.setVisible(true);		
 				else
 					lblTempsRestant.setVisible(false);	
 				
-				lblTempsRestant.setText(Shutter.lblRemainingTime.getText());				
+				lblTempsRestant.setText(Main.lblRemainingTime.getText());				
 				
 				//ProgressBar
-				if (Shutter.progressBar.isIndeterminate())
+				if (Main.progressBar.isIndeterminate())
 					progressBar.setIndeterminate(true);
 				else
 				{
@@ -218,20 +218,20 @@ public class ReducedWindow extends JDialog {
 					{
 			           @Override
 			           public void run() {
-			        	   Shutter.progressBar.setIndeterminate(false);
+			        	   Main.progressBar.setIndeterminate(false);
 			           }
 					});
 				}
 				
-				progressBar.setMaximum(Shutter.progressBar.getMaximum());
-				progressBar.setValue(Shutter.progressBar.getValue());
+				progressBar.setMaximum(Main.progressBar.getMaximum());
+				progressBar.setValue(Main.progressBar.getValue());
 				
 				//RotateIcon
-				if (Shutter.progressBar.isIndeterminate() == false && progressBar.getValue() != 0)
+				if (Main.progressBar.isIndeterminate() == false && progressBar.getValue() != 0)
 					rotateIcon(( (long) progressBar.getValue() * 360) / ( (long) progressBar.getMaximum()));		
 				 
 				//Pourcentage
-				if (Shutter.progressBar.isIndeterminate() == false && progressBar.getValue() != 0)
+				if (Main.progressBar.isIndeterminate() == false && progressBar.getValue() != 0)
 					pourcentage.setText(String.valueOf(( (long) progressBar.getValue() * 100) / ( (long) progressBar.getMaximum()) + "%"));
 			}	
 		};    			
@@ -243,7 +243,7 @@ public class ReducedWindow extends JDialog {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				
-				GraphicsConfiguration config = Shutter.frame.getGraphicsConfiguration();
+				GraphicsConfiguration config = Main.frame.getGraphicsConfiguration();
 				GraphicsDevice myScreen = config.getDevice();
 				GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 				GraphicsDevice[] allScreens = env.getScreenDevices();
@@ -292,9 +292,9 @@ public class ReducedWindow extends JDialog {
 				{
 					frame.setVisible(false);
 					
-					Shutter.frame.setState(Shutter.frame.NORMAL);
-					Shutter.caseRunInBackground.setBounds(6, 64, Shutter.caseRunInBackground.getPreferredSize().width, 23);		
-					Shutter.grpProgression.add(Shutter.caseRunInBackground);	
+					Main.frame.setState(Main.frame.NORMAL);
+					Main.caseRunInBackground.setBounds(6, 64, Main.caseRunInBackground.getPreferredSize().width, 23);		
+					Main.grpProgression.add(Main.caseRunInBackground);	
 				}
 			}
 
@@ -307,7 +307,7 @@ public class ReducedWindow extends JDialog {
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				drag = false;
-				Shutter.MiniWindowY = frame.getLocation().y;
+				Main.MiniWindowY = frame.getLocation().y;
 			}
 
 			@Override

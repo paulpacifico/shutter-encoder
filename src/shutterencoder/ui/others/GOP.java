@@ -36,7 +36,7 @@ import javax.swing.JScrollBar;
 import javax.swing.SwingConstants;
 
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.utils.Utils;
 
 public class GOP {
@@ -83,7 +83,7 @@ public class GOP {
 		});
 		
 		JLabel image1 = new JLabel("I");
-		image1.setFont(new Font(Shutter.mainFont, Font.PLAIN, 40));
+		image1.setFont(new Font(Main.mainFont, Font.PLAIN, 40));
 		image1.setHorizontalAlignment(SwingConstants.CENTER);
 		image1.setBackground(new Color(232,67,67));
 		image1.setOpaque(true);
@@ -91,7 +91,7 @@ public class GOP {
 		image1.setBounds(12, 12, 100, 100);
 		frame.getContentPane().add(image1);
 		
-		File fichier = new File(Shutter.fileList.getSelectedValue());
+		File fichier = new File(Main.fileList.getSelectedValue());
 		
 		FFPROBE.AnalyzeGOP(fichier.toString(), true);
 		try {
@@ -100,7 +100,7 @@ public class GOP {
 		    Thread.currentThread().interrupt();
 		}
 		
-		frame.setTitle(Shutter.language.getProperty("analyzeOf") + " " + fichier.getName() + " | GOP " + Shutter.language.getProperty("of") + " " + FFPROBE.gopCount);
+		frame.setTitle(Main.language.getProperty("analyzeOf") + " " + fichier.getName() + " | GOP " + Main.language.getProperty("of") + " " + FFPROBE.gopCount);
 		
 		if (FFPROBE.gopCount <= 12)
 		{
@@ -129,7 +129,7 @@ public class GOP {
 			scrollBar.setVisible(true);
 		}
 		
-		frame.setLocation(Shutter.frame.getLocation().x + (Shutter.frame.getSize().width / 2) - (frame.getSize().width / 2), Shutter.frame.getLocation().y + 150);
+		frame.setLocation(Main.frame.getLocation().x + (Main.frame.getSize().width / 2) - (frame.getSize().width / 2), Main.frame.getLocation().y + 150);
 		
 		scrollBar.setBounds(0, 125, frame.getSize().width - 6, 17);
 		scrollBar.setMaximum((112 * (FFPROBE.gopCount - 12) + 8)); 
@@ -177,7 +177,7 @@ public class GOP {
 		if (type == 'I')
 		{
 			image = new JLabel("I");
-			image.setFont(new Font(Shutter.mainFont, Font.PLAIN, 40));
+			image.setFont(new Font(Main.mainFont, Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(232,67,67));
@@ -186,7 +186,7 @@ public class GOP {
 		else if (type == 'P')
 		{
 			image = new JLabel("P");
-			image.setFont(new Font(Shutter.mainFont, Font.PLAIN, 40));
+			image.setFont(new Font(Main.mainFont, Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(68,139,233));
@@ -195,7 +195,7 @@ public class GOP {
 		else
 		{
 			image = new JLabel("B");
-			image.setFont(new Font(Shutter.mainFont, Font.PLAIN, 40));
+			image.setFont(new Font(Main.mainFont, Font.PLAIN, 40));
 			image.setHorizontalAlignment(SwingConstants.CENTER);
 			image.setForeground(Color.BLACK);
 			image.setBackground(new Color(100,232,67));

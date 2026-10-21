@@ -52,7 +52,7 @@ import org.jsoup.nodes.Element;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
 
@@ -60,7 +60,7 @@ public class Update {
 
 	public static JDialog frame;
 	private final static JProgressBar progressBar = new JProgressBar();
-	public static JLabel lblNewVersion = new JLabel(Shutter.language.getProperty("lblNewVersion"));
+	public static JLabel lblNewVersion = new JLabel(Main.language.getProperty("lblNewVersion"));
 	
 	private static JPanel topPanel;
 	private static JLabel quit;
@@ -72,14 +72,14 @@ public class Update {
 	public Update() {
 		
 		frame = new JDialog();
-		frame.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		frame.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		frame.setResizable(false);
 		frame.setModal(false);
 		frame.setAlwaysOnTop(true);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setSize(346, 59);
 		frame.getContentPane().setBackground(Utils.background);
-		frame.setTitle(Shutter.language.getProperty("frameUpdate"));
+		frame.setTitle(Main.language.getProperty("frameUpdate"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		
@@ -94,7 +94,7 @@ public class Update {
 		
 		content();		
 				
-		GraphicsConfiguration config = Shutter.frame.getGraphicsConfiguration();
+		GraphicsConfiguration config = Main.frame.getGraphicsConfiguration();
 		GraphicsDevice myScreen = config.getDevice();
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] allScreens = env.getScreenDevices();
@@ -178,7 +178,7 @@ public class Update {
 		progressBar.setBounds(6, 29, 334, 23);		
 		topPanel.add(progressBar);
 		
-		lblNewVersion.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		lblNewVersion.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		lblNewVersion.setBounds(6, 11, 295, 16);		
 		topPanel.add(lblNewVersion);
 		
@@ -229,13 +229,13 @@ public class Update {
 		
 	        try {
 	        	
-	        	JLabel news = new JLabel(Shutter.language.getProperty("wantToDownload"));
+	        	JLabel news = new JLabel(Main.language.getProperty("wantToDownload"));
 	        	
 	        	try {
 		        	Document changelog = Jsoup.connect("https://www.shutterencoder.com/changelog.txt").get();
 		        	changelog.outputSettings().prettyPrint(false);
 		        	String[] versions = changelog.select("body").toString().split("Version");	        	
-	  				news = new JLabel("<html>Version" + versions[1].replace(System.lineSeparator(), "<br>") + Shutter.language.getProperty("wantToDownload") + "</html>");   
+	  				news = new JLabel("<html>Version" + versions[1].replace(System.lineSeparator(), "<br>") + Main.language.getProperty("wantToDownload") + "</html>");   
 	        	}
 	        	catch (Exception er){}
 	        	
@@ -253,10 +253,10 @@ public class Update {
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 		            			
 		            			//Checking new update
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 		            			{
 			            				
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {	    									
 			    							runProcess(file.attr("href"));	
@@ -272,7 +272,7 @@ public class Update {
 	            	{
 	            		try {
 	            			
-	            			if (Shutter.arch.equals("x86_64"))
+	            			if (Main.arch.equals("x86_64"))
 	            			{	            			
 			            		if (file.attr("href").contains("Shutter Encoder") && file.attr("href").contains("Mac 64bits."))
 			            		{
@@ -280,9 +280,9 @@ public class Update {
 			            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 			            			
 			            			//Checking new update
-			            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+			            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 			            			{
-			            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			    						 if (q == JOptionPane.YES_OPTION)
 			    						 {
 			    								runProcess(file.attr("href"));	   
@@ -300,9 +300,9 @@ public class Update {
 			            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 			            			
 			            			//Checking new update
-			            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+			            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 			            			{
-			            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			    						 if (q == JOptionPane.YES_OPTION)
 			    						 {
 			    								runProcess(file.attr("href"));	   
@@ -324,9 +324,9 @@ public class Update {
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 		            			
 		            			//Checking new update
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {
 		    								runProcess(file.attr("href"));	   
@@ -341,9 +341,9 @@ public class Update {
 		            			int newVersion = Integer.parseInt(s[2].replace(".", ""));
 		            			
 		            			//Checking new update
-		            			if (newVersion > Integer.parseInt(Shutter.actualVersion.replace(".", "")) )
+		            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Shutter.frame, news, Shutter.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {
 		    								runProcess(file.attr("href"));	   
@@ -398,7 +398,7 @@ public class Update {
 				{
 					if (new File(userFolder + "/Desktop").exists() == false)
 					{
-						appPath = new File(Shutter.dirTemp + newVersion);
+						appPath = new File(Main.dirTemp + newVersion);
 					}
 					else
 						appPath = new File(userFolder + "/Desktop/" + newVersion);						
@@ -409,7 +409,7 @@ public class Update {
 	
 				if (cancelled == false && new File(appPath.toString()).exists())
 				{
-					int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("installNewVersion"), Shutter.language.getProperty("downloadEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+					int q =  JOptionPane.showConfirmDialog(Main.frame, Main.language.getProperty("installNewVersion"), Main.language.getProperty("downloadEnded"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 			 
 					if (q == JOptionPane.YES_OPTION)
 					{
@@ -429,7 +429,7 @@ public class Update {
 					}	
 					else
 					{	    	
-						JOptionPane.showMessageDialog(Shutter.frame, '"' + appPath.toString() + '"', Shutter.language.getProperty("downloadEnded"), JOptionPane.INFORMATION_MESSAGE);	 
+						JOptionPane.showMessageDialog(Main.frame, '"' + appPath.toString() + '"', Main.language.getProperty("downloadEnded"), JOptionPane.INFORMATION_MESSAGE);	 
 					
 						frame.dispose();
 					}
@@ -438,7 +438,7 @@ public class Update {
 				{
 					if (new File(appPath.toString()).exists())
 					{
-						JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadStopped"), Shutter.language.getProperty("downloadCancelled"), JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(Main.frame, Main.language.getProperty("downloadStopped"), Main.language.getProperty("downloadCancelled"), JOptionPane.ERROR_MESSAGE);
 						
 						if (appPath.exists())
 							appPath.delete();
@@ -488,7 +488,7 @@ public class Update {
 		 	{ 
                 exception.printStackTrace();
                 
-				JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("downloadFailed"), Shutter.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);	 
+				JOptionPane.showMessageDialog(Main.frame, Main.language.getProperty("downloadFailed"), Main.language.getProperty("downloadError"), JOptionPane.ERROR_MESSAGE);	 
 				
 				try {
                     if (in != null)

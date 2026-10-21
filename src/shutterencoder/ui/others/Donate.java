@@ -59,7 +59,7 @@ import javax.swing.border.MatteBorder;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
 
@@ -98,7 +98,7 @@ public class Donate {
 		if (System.getProperty("os.name").contains("Mac") == false)
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("resources/icon.png")).getImage());
 
-		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+		frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 
 		JPanel topPanel = new JPanel();
 		topPanel.setLayout(null);
@@ -160,7 +160,7 @@ public class Donate {
 		JLabel title = new JLabel(frame.getTitle());
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 2, frame.getWidth(), 26);
-		title.setFont(new Font(Shutter.mainFont, Font.BOLD, 14));
+		title.setFont(new Font(Main.mainFont, Font.BOLD, 14));
 		title.setForeground(Color.WHITE);
 		topPanel.add(title);
 
@@ -299,7 +299,7 @@ public class Donate {
 		JLabel line1 = new JLabel("Hope you're enjoying the software!");
 		line1.setHorizontalAlignment(SwingConstants.CENTER);
 		line1.setSize(frame.getWidth() - 20, 18);
-		line1.setFont(new Font(Shutter.mainFont, Font.BOLD, 13));
+		line1.setFont(new Font(Main.mainFont, Font.BOLD, 13));
 		line1.setForeground(Color.WHITE);
 		line1.setLocation((frame.getWidth() - line1.getWidth()) / 2, qrCard.getY() + qrCard.getHeight() + 16);
 		frame.getContentPane().add(line1);
@@ -307,7 +307,7 @@ public class Donate {
 		JLabel line2 = new JLabel("Scan the QR code to support development");
 		line2.setHorizontalAlignment(SwingConstants.CENTER);
 		line2.setSize(frame.getWidth() - 20, 16);
-		line2.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
+		line2.setFont(new Font(Main.mainFont, Font.PLAIN, 11));
 		line2.setForeground(MUTED_TEXT);
 		line2.setLocation((frame.getWidth() - line2.getWidth()) / 2, line1.getY() + line1.getHeight() + 4);
 		frame.getContentPane().add(line2);
@@ -360,7 +360,7 @@ public class Donate {
 		boxMail = new JCheckBox("Don't show this window again");
 		boxMail.setName("boxMail");
 		boxMail.setSelected(false);
-		boxMail.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		boxMail.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		boxMail.setBounds(7 ,featuresLeft.getY() + featuresLeft.getHeight(), boxMail.getPreferredSize().width + 4, 23);
 		frame.getContentPane().add(boxMail);
 
@@ -376,9 +376,9 @@ public class Donate {
 					
 					if (textMailDonate.getText().length() <= 0)
 					{
-						textMailDonate.setText(Shutter.language.getProperty("textMail"));
+						textMailDonate.setText(Main.language.getProperty("textMail"));
 					}
-					else if (textMailDonate.getText().equals(Shutter.language.getProperty("textMail")) == false)
+					else if (textMailDonate.getText().equals(Main.language.getProperty("textMail")) == false)
 					{
 						textMailDonate.setFont(new Font("SansSerif", Font.PLAIN, 12));
 						textMailDonate.setForeground(Color.WHITE);
@@ -401,7 +401,7 @@ public class Donate {
 		textMailDonate.setColumns(1);
 		
 		if (textMailDonate.getText().isEmpty())
-			textMailDonate.setText(Shutter.language.getProperty("textMail"));
+			textMailDonate.setText(Main.language.getProperty("textMail"));
 		
 		frame.getContentPane().add(textMailDonate);
 
@@ -410,7 +410,7 @@ public class Donate {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				
-				if (textMailDonate.getText().equals(Shutter.language.getProperty("textMail"))) {
+				if (textMailDonate.getText().equals(Main.language.getProperty("textMail"))) {
 					textMailDonate.setText("");
 					textMailDonate.setFont(new Font("SansSerif", Font.PLAIN, 12));
 					textMailDonate.setForeground(Color.WHITE);
@@ -419,7 +419,7 @@ public class Donate {
 				if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 					textMailDonate.setFont(new Font("SansSerif", Font.ITALIC, 12));
 					textMailDonate.setForeground(Color.LIGHT_GRAY);
-					textMailDonate.setText(Shutter.language.getProperty("textMail"));
+					textMailDonate.setText(Main.language.getProperty("textMail"));
 					boxMail.setSelected(false);
 					textMailDonate.setEnabled(false);
 				}
@@ -437,7 +437,7 @@ public class Donate {
 		
 		btnCheckMail = new JButton("Check donation");
 		btnCheckMail.setEnabled(false);
-		btnCheckMail.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnCheckMail.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnCheckMail.setBounds(textMailDonate.getX(), textMailDonate.getY() + textMailDonate.getHeight() + 6, textMailDonate.getWidth(), 21);
 		frame.getContentPane().add(btnCheckMail);
 		

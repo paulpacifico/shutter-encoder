@@ -62,7 +62,7 @@ import org.apache.commons.net.io.CopyStreamAdapter;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import shutterencoder.library.FFMPEG;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.utils.Utils;
@@ -95,7 +95,7 @@ public class Ftp {
 		frame = new JDialog();
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		frame.setTitle(Shutter.language.getProperty("frameFtp"));
+		frame.setTitle(Main.language.getProperty("frameFtp"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null); 
 		frame.setSize(267, 165);
@@ -115,7 +115,7 @@ public class Ftp {
 			if (System.getProperty("os.name").contains("Mac") == false)
 				frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("resources/icon.png"))).getImage());
 			
-			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+			frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 		}
 						
 		topPanel();
@@ -182,10 +182,10 @@ public class Ftp {
 					
 		});
 
-		JLabel title = new JLabel(Shutter.language.getProperty("frameFtp"));
+		JLabel title = new JLabel(Main.language.getProperty("frameFtp"));
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, -1, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.boldFont, Font.PLAIN, 16));
+		title.setFont(new Font(Main.boldFont, Font.PLAIN, 16));
 		topPanel.add(title);
 		
 		topImage = new JLabel();	
@@ -241,10 +241,10 @@ public class Ftp {
 
 	private void grpFtp() {
 		
-		lblFtp = new JLabel(Shutter.language.getProperty("lblFtp"));
+		lblFtp = new JLabel(Main.language.getProperty("lblFtp"));
 		lblFtp.setBounds(10, 36, 90, 16);
 		lblFtp.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblFtp.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		lblFtp.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblFtp);		
 
 		textFtp.setBounds(101, lblFtp.getY() - 1, 154, 21);
@@ -253,10 +253,10 @@ public class Ftp {
 		textFtp.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textFtp.setColumns(10);		
 								
-		lblUtilisateur = new JLabel(Shutter.language.getProperty("lblUser"));
+		lblUtilisateur = new JLabel(Main.language.getProperty("lblUser"));
 		lblUtilisateur.setBounds(10, 69, 90, 16);
 		lblUtilisateur.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblUtilisateur.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		lblUtilisateur.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		frame.getContentPane().add(lblUtilisateur);		
 			
 		textUser.setBounds(101, lblUtilisateur.getY() - 1, 154, 21);
@@ -265,12 +265,12 @@ public class Ftp {
 		textUser.setColumns(10);
 		frame.getContentPane().add(textUser);
 		
-		lblMotDePasse = new JLabel(Shutter.language.getProperty("lblPassword"));
+		lblMotDePasse = new JLabel(Main.language.getProperty("lblPassword"));
 		lblMotDePasse.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblMotDePasse.setBounds(8, 103, 92, 16);
 		frame.getContentPane().add(lblMotDePasse);
 		
-		lblMotDePasse.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		lblMotDePasse.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		
 		textPassword.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		textPassword.setColumns(10);
@@ -278,8 +278,8 @@ public class Ftp {
 		textPassword.setBounds(101, lblMotDePasse.getY() - 1, 154, 21);
 		frame.getContentPane().add(textPassword);
 				
-		btnReset = new JButton(Shutter.language.getProperty("btnReset"));
-		btnReset.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnReset = new JButton(Main.language.getProperty("btnReset"));
+		btnReset.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnReset.setBounds(12, textPassword.getY() + textPassword.getHeight() + 12, frame.getWidth() / 2 - 12, 21);		
 		frame.getContentPane().add(btnReset);	
 		
@@ -298,8 +298,8 @@ public class Ftp {
 			
 		});
 		
-		btnOK = new JButton(Shutter.language.getProperty("btnApply"));
-		btnOK.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnOK = new JButton(Main.language.getProperty("btnApply"));
+		btnOK.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnOK.setBounds(btnReset.getX() + btnReset.getWidth() + 4, btnReset.getY(), frame.getWidth() / 2 - 12 - 4, 21);		
 		frame.getContentPane().add(btnOK);
 		
@@ -325,7 +325,7 @@ public class Ftp {
 						boolean login = ftp.login(textUser.getText(), new String(textPassword.getPassword()));		
 						if (login == false)
 						{
-							JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("checkIdentity"), Shutter.language.getProperty("wrongIdentity"), JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(frame, Main.language.getProperty("checkIdentity"), Main.language.getProperty("wrongIdentity"), JOptionPane.ERROR_MESSAGE);
 							for (Component component : frame.getContentPane().getComponents())
 							{
 								component.setEnabled(true);
@@ -334,7 +334,7 @@ public class Ftp {
 						else
 							Utils.changeDialogVisibility(frame, true);
 				} catch (IOException er) {
-					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("connectionRefused"), Shutter.language.getProperty("connectionError"), JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, Main.language.getProperty("connectionRefused"), Main.language.getProperty("connectionError"), JOptionPane.ERROR_MESSAGE);
 					for (Component component : frame.getContentPane().getComponents())
 					{
 						component.setEnabled(true);
@@ -351,13 +351,13 @@ public class Ftp {
 	public static void sendToFtp(final File fichier) {
 	if (btnOK != null) 
 	{
-		if (btnOK.isEnabled() == false && Shutter.cancelled == false)
+		if (btnOK.isEnabled() == false && Main.cancelled == false)
 		{			
 				UIController.disableAll();
 				FFMPEG.btnStart.setEnabled(false);
 				FFMPEG.btnCancel.setEnabled(true);
 			
-				Shutter.cancelled = false;
+				Main.cancelled = false;
 				boolean uploaded = false;
 				isRunning = true;
 				InputStream input = null;
@@ -375,17 +375,17 @@ public class Ftp {
 
 					 input = new FileInputStream(fichier);
 			        	
-				    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-			        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingFile") + " " + fichier.getName());
+				    Main.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+			        Main.lblCurrentEncoding.setText(Main.language.getProperty("sendingFile") + " " + fichier.getName());
 
-			        Shutter.progressBar.setMaximum((int) fichier.length());
+			        Main.progressBar.setMaximum((int) fichier.length());
 			        	
-					Shutter.btnCancel.setEnabled(true);
+					Main.btnCancel.setEnabled(true);
 						   
 			        ftp.setCopyStreamListener(new CopyStreamAdapter() {
 						 @Override
 						 public void bytesTransferred(long totalBytesTransferred, int bytesTransferred, long streamSize) {
-							 Shutter.progressBar.setValue((int)(totalBytesTransferred));
+							 Main.progressBar.setValue((int)(totalBytesTransferred));
 						 }		
 					 });
 				   
@@ -406,24 +406,24 @@ public class Ftp {
 			            
 					    if (uploaded)
 					    {
-				        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingSuccessful"));
-							Shutter.progressBar.setValue(Shutter.progressBar.getMaximum());
+				        	Main.lblCurrentEncoding.setText(Main.language.getProperty("sendingSuccessful"));
+							Main.progressBar.setValue(Main.progressBar.getMaximum());
 					    }
 					    else
 					    {
-					    	Shutter.lblCurrentEncoding.setForeground(Utils.red);
-				        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingFailed"));
-							Shutter.progressBar.setValue(0);
+					    	Main.lblCurrentEncoding.setForeground(Utils.red);
+				        	Main.lblCurrentEncoding.setText(Main.language.getProperty("sendingFailed"));
+							Main.progressBar.setValue(0);
 					    }
 					  
 					    isRunning = false;
 					    UIController.enableAll();
 						
-				    	  if (Shutter.cancelled)
+				    	  if (Main.cancelled)
 				    	  {
-						    	Shutter.lblCurrentEncoding.setForeground(Utils.red);
-					        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("sendingCancelled"));
-								Shutter.progressBar.setValue(0);
+						    	Main.lblCurrentEncoding.setForeground(Utils.red);
+					        	Main.lblCurrentEncoding.setText(Main.language.getProperty("sendingCancelled"));
+								Main.progressBar.setValue(0);
 				    	  }
 					    
 					  //Envoi du mail de confirmation
@@ -435,13 +435,13 @@ public class Ftp {
 	
 	public static void sendMailForFtp(final boolean uploaded, final String file) {
 		
-		if (Shutter.caseSendMail.isSelected())
+		if (Main.caseSendMail.isSelected())
 		{	       
 			Thread thread = new Thread(new Runnable()
 			{			
 				public void run() {
 					
-					Shutter.sendMailIsRunning = true;
+					Main.sendMailIsRunning = true;
 	
 					Properties props = new Properties();
 					props.put("mail.smtp.auth", "true");
@@ -459,28 +459,28 @@ public class Ftp {
 						Message message = new MimeMessage(session);
 						message.setFrom(new InternetAddress(Utils.username));
 						message.setRecipients(Message.RecipientType.TO,
-						InternetAddress.parse(Shutter.textMail.getText()));
+						InternetAddress.parse(Main.textMail.getText()));
 						if (uploaded == false)
 						{
-							message.setSubject(Shutter.language.getProperty("shutterMailFailed"));
-							message.setText(Shutter.language.getProperty("theFile") + " " + new File(file).getName() + " " + Shutter.language.getProperty("notSended") + " " + textFtp.getText());
+							message.setSubject(Main.language.getProperty("shutterMailFailed"));
+							message.setText(Main.language.getProperty("theFile") + " " + new File(file).getName() + " " + Main.language.getProperty("notSended") + " " + textFtp.getText());
 						}
 						else
 						{
-							message.setSubject(Shutter.language.getProperty("shutterMailSuccessful"));
-							message.setText(Shutter.language.getProperty("theFile") + " " + new File(file).getName() + " " + Shutter.language.getProperty("isSended") + " " + textFtp.getText());
+							message.setSubject(Main.language.getProperty("shutterMailSuccessful"));
+							message.setText(Main.language.getProperty("theFile") + " " + new File(file).getName() + " " + Main.language.getProperty("isSended") + " " + textFtp.getText());
 						}
 						
 						Transport.send(message);
 						
-						Shutter.sendMailIsRunning = false;
-					    Shutter.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
-				        Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailSuccessful"));
+						Main.sendMailIsRunning = false;
+					    Main.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
+				        Main.lblCurrentEncoding.setText(Main.language.getProperty("mailSuccessful"));
 				        
 					} catch (MessagingException e) {
 						
-						Shutter.lblCurrentEncoding.setForeground(Utils.red);
-			        	Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("mailFailed"));
+						Main.lblCurrentEncoding.setForeground(Utils.red);
+			        	Main.lblCurrentEncoding.setText(Main.language.getProperty("mailFailed"));
 					}		
 				}
 			});

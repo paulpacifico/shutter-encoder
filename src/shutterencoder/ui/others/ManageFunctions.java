@@ -22,7 +22,7 @@ package shutterencoder.ui.others;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.utils.Utils;
 
 import java.awt.*;
@@ -40,27 +40,27 @@ public class ManageFunctions {
     private final Map<String, List<JCheckBox>> sectionCheckboxes = new LinkedHashMap<>();
     private final List<JCheckBox> allCheckboxes = new ArrayList<>();
     public static String[] selectedFunctions;
-    public static JCheckBox selectAll = new JCheckBox(Shutter.language.getProperty("setAll"), true);
+    public static JCheckBox selectAll = new JCheckBox(Main.language.getProperty("setAll"), true);
 
     private JPanel listPanel;
 
     public ManageFunctions() {
     	
-        boolean[] markers = new boolean[Shutter.functionsList.size()];
-        for (int i = 0; i < Shutter.functionsList.size(); i++)
+        boolean[] markers = new boolean[Main.functionsList.size()];
+        for (int i = 0; i < Main.functionsList.size(); i++)
         {
-            String func = Shutter.functionsList.get(i);
+            String func = Main.functionsList.get(i);
             markers[i] = func != null && (func.contains(":") || func.contains("\uFF1A"));
         }
         
         sectionMarkers = markers;
        
-        frame = new JDialog(Shutter.frame, true);
-        frame.setTitle(Shutter.language.getProperty("grpChooseFunction"));
+        frame = new JDialog(Main.frame, true);
+        frame.setTitle(Main.language.getProperty("grpChooseFunction"));
         frame.setBackground(Utils.background);
         frame.setSize(420, 660);
         frame.setMinimumSize(new Dimension(420, 480));
-        frame.setLocationRelativeTo(Shutter.frame);
+        frame.setLocationRelativeTo(Main.frame);
         frame.setModal(true);
         
         if (System.getProperty("os.name").contains("Mac") == false)
@@ -97,8 +97,8 @@ public class ManageFunctions {
             listPanel.repaint();
         });
         
-        JButton apply = new JButton(Shutter.language.getProperty("btnApply"));
-        apply.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+        JButton apply = new JButton(Main.language.getProperty("btnApply"));
+        apply.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
         apply.addActionListener(e -> {
         	
             List<String> selected = new ArrayList<>();
@@ -109,7 +109,7 @@ public class ManageFunctions {
                 boolean anyChecked = group.stream().anyMatch(JCheckBox::isSelected);
                 
                 if (anyChecked && !entry.getKey().isEmpty())
-                	selected.add("- " + entry.getKey() + Shutter.language.getProperty("colon"));
+                	selected.add("- " + entry.getKey() + Main.language.getProperty("colon"));
                 
                 for (JCheckBox cb : group)
                 {
@@ -118,13 +118,13 @@ public class ManageFunctions {
                 }
             }
             
-            selected.add("- " + Shutter.language.getProperty("btnManage").toUpperCase() + " -");
+            selected.add("- " + Main.language.getProperty("btnManage").toUpperCase() + " -");
             
             selectedFunctions = selected.toArray(new String[0]);
             
             if (selectedFunctions != null)
             {
-            	Shutter.comboFonctions.setModel(new DefaultComboBoxModel(selectedFunctions));
+            	Main.comboFonctions.setModel(new DefaultComboBoxModel(selectedFunctions));
             	frame.dispose();
             }
             
@@ -149,14 +149,14 @@ public class ManageFunctions {
         sectionCheckboxes.put(currentSection, currentGroup);
         sectionStates.putIfAbsent(currentSection, false);
 
-        for (int i = 0; i < Shutter.functionsList.size(); i++)
+        for (int i = 0; i < Main.functionsList.size(); i++)
         {
-            String item = Shutter.functionsList.get(i);
+            String item = Main.functionsList.get(i);
             boolean isSection = sectionMarkers != null && i < sectionMarkers.length && sectionMarkers[i];
 
             if (isSection)
             {
-                currentSection = item.replace("- ", "").replace(Shutter.language.getProperty("colon"), "");
+                currentSection = item.replace("- ", "").replace(Main.language.getProperty("colon"), "");
                 currentGroup = new ArrayList<>();
                 sectionCheckboxes.put(currentSection, currentGroup);
                 sectionStates.putIfAbsent(currentSection, false);
@@ -164,11 +164,11 @@ public class ManageFunctions {
             }
             else
             {
-            	if (item.contains(Shutter.language.getProperty("btnManage").toUpperCase()) == false)
+            	if (item.contains(Main.language.getProperty("btnManage").toUpperCase()) == false)
             	{            		
             		boolean isSelected = selectedFunctions == null || Arrays.asList(selectedFunctions).contains(item);
             		JCheckBox cb = new JCheckBox(item, isSelected);            		
-                    cb.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+                    cb.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
                     
                     cb.addActionListener(e -> {
                         if (!cb.isSelected()) {
@@ -197,11 +197,11 @@ public class ManageFunctions {
     private JPanel setRow(String sectionLabel, List<JCheckBox> group) {
     	
         JLabel arrow = new JLabel(Boolean.TRUE.equals(sectionStates.get(sectionLabel)) ? "▶" : "▼");
-        arrow.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+        arrow.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 
         JLabel label = new JLabel(sectionLabel);
         label.setForeground(Utils.themeColor);
-        label.setFont(new Font(Shutter.mainFont, Font.BOLD, 13));
+        label.setFont(new Font(Main.mainFont, Font.BOLD, 13));
 
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 0));        
         left.setOpaque(false);

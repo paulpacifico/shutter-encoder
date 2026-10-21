@@ -72,7 +72,7 @@ import shutterencoder.library.DVDAUTHOR;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.XPDFREADER;
 import shutterencoder.library.TSMUXER;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -86,7 +86,7 @@ import shutterencoder.utils.Utils;
 	 * Composants
 	 */
 	private static JPanel topPanel;
-	private static JLabel title = new JLabel(Shutter.language.getProperty("frameFileDeRendus"));
+	private static JLabel title = new JLabel(Main.language.getProperty("frameFileDeRendus"));
 	private JLabel quit;
 	private JLabel fullscreen;
 	private JLabel reduce;
@@ -128,7 +128,7 @@ import shutterencoder.utils.Utils;
 		frame = new JFrame();
 		frame.getContentPane().setBackground(Utils.background);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		frame.setTitle(Shutter.language.getProperty("frameFileDeRendus"));
+		frame.setTitle(Main.language.getProperty("frameFileDeRendus"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setLayout(null);
 		frame.setSize(600, 332);
@@ -146,7 +146,7 @@ import shutterencoder.utils.Utils;
 			if (System.getProperty("os.name").contains("Mac") == false)
 				frame.setIconImage(new ImageIcon((getClass().getClassLoader().getResource("resources/icon.png"))).getImage());
 			
-			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+			frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 		}
 				
 		topPanel();
@@ -162,53 +162,53 @@ import shutterencoder.utils.Utils;
 			public void windowClosed(WindowEvent arg0) {
 				
 				if (FFMPEG.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
-					Shutter.btnCancel.doClick();
+					Main.btnCancel.doClick();
 				
-				if (Shutter.btnCancel.isEnabled() == false)		
+				if (Main.btnCancel.isEnabled() == false)		
 				{
 					//File de rendus
-					if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionMerge")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false
-							&& Shutter.comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionVideoLevels")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionNormalization")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlackDetection")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionOfflineDetection")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false
-							&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("itemMyFunctions")) == false)
+					if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionMerge")) == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionInsert")) == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false
+							&& Main.comboFonctions.getSelectedItem().equals("DVD Rip") == false
+							&& Main.comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionVideoLevels")) == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionNormalization")) == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSceneDetection")) == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionBlackDetection")) == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionOfflineDetection")) == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionWeb")) == false
+							&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("itemMyFunctions")) == false)
 					{
-						Shutter.iconList.setVisible(true);
-						if (Shutter.iconPresets.isVisible())
+						Main.iconList.setVisible(true);
+						if (Main.iconPresets.isVisible())
 						{
-							Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
-							Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
+							Main.iconPresets.setLocation(Main.iconList.getX() + Main.iconList.getWidth() + 2, 45);
+							Main.btnCancel.setBounds(207 + Main.iconList.getWidth(), 46, 101 - Main.iconList.getWidth() -  4, 21);
 						}
 						else
 						{
-							Shutter.iconPresets.setBounds(180, 45, 21, 21);
-							Shutter.btnCancel.setBounds(207, 46, 97, 21);
+							Main.iconPresets.setBounds(180, 45, 21, 21);
+							Main.btnCancel.setBounds(207, 46, 97, 21);
 						}						
 					}
 					else
 					{
-						Shutter.iconList.setVisible(false);
+						Main.iconList.setVisible(false);
 						
-						if (Shutter.iconPresets.isVisible())
+						if (Main.iconPresets.isVisible())
 						{
-							Shutter.iconPresets.setBounds(180, 45, 21, 21);
-							Shutter.btnCancel.setBounds(207, 46, 97, 21);
+							Main.iconPresets.setBounds(180, 45, 21, 21);
+							Main.btnCancel.setBounds(207, 46, 97, 21);
 						}
 						else
 						{
-							Shutter.btnCancel.setBounds(184, 46, 120, 21);
+							Main.btnCancel.setBounds(184, 46, 120, 21);
 						}
 					}
 					
 					Utils.changeFrameVisibility(frame, true);
-					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+					Main.btnStart.setText(Main.language.getProperty("btnStartFunction"));
 				}				
 			}
 		});
@@ -367,9 +367,9 @@ import shutterencoder.utils.Utils;
 			        int screenHeight = (int) (allScreens[screenIndex].getDisplayMode().getHeight() * dpiScaleFactor);	
 					int screenWidth = (int) (allScreens[screenIndex].getDisplayMode().getWidth() * dpiScaleFactor);			    				
 
-					if (accept && frame.getHeight() < screenHeight - Shutter.taskBarHeight)
+					if (accept && frame.getHeight() < screenHeight - Main.taskBarHeight)
 					{		
-						frame.setSize(screenWidth, screenHeight - Shutter.taskBarHeight);
+						frame.setSize(screenWidth, screenHeight - Main.taskBarHeight);
 						
 						if (System.getProperty("os.name").contains("Windows"))
 						{
@@ -385,7 +385,7 @@ import shutterencoder.utils.Utils;
 					else if (accept)
 					{
 						frame.setSize(600, 332);
-						frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+						frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 					}
 					
 					resizeAll();
@@ -412,7 +412,7 @@ import shutterencoder.utils.Utils;
 		
 		title.setHorizontalAlignment(JLabel.CENTER);
 		title.setBounds(0, 1, frame.getWidth(), 24);
-		title.setFont(new Font(Shutter.magnetoFont, Font.PLAIN, 17));
+		title.setFont(new Font(Main.magnetoFont, Font.PLAIN, 17));
 		topPanel.add(title);
 		
 		topImage = new JLabel();
@@ -501,55 +501,55 @@ import shutterencoder.utils.Utils;
 				if (accept)		
 				{		  
 					if (FFMPEG.isRunning || DCRAW.isRunning || XPDFREADER.isRunning || DVDAUTHOR.isRunning || TSMUXER.isRunning || BMXTRANSWRAP.isRunning)
-						Shutter.btnCancel.doClick();
+						Main.btnCancel.doClick();
 					
-					if (Shutter.btnCancel.isEnabled() == false)		
+					if (Main.btnCancel.isEnabled() == false)		
 					{						
 						//File de rendus
-						if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionMerge")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionInsert")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false
-								&& Shutter.comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionVideoLevels")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionNormalization")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSceneDetection")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlackDetection")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionOfflineDetection")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionWeb")) == false
-								&& Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("itemMyFunctions")) == false)
+						if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionMerge")) == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionInsert")) == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false
+								&& Main.comboFonctions.getSelectedItem().equals("DVD Rip") == false
+								&& Main.comboFonctions.getSelectedItem().equals("Loudness & True Peak") == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionVideoLevels")) == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionNormalization")) == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSceneDetection")) == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionBlackDetection")) == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionOfflineDetection")) == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionWeb")) == false
+								&& Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("itemMyFunctions")) == false)
 						{
-							Shutter.iconList.setVisible(true);
+							Main.iconList.setVisible(true);
 							
-							if (Shutter.iconPresets.isVisible())
+							if (Main.iconPresets.isVisible())
 							{
-								Shutter.iconPresets.setLocation(Shutter.iconList.getX() + Shutter.iconList.getWidth() + 2, 45);
-								Shutter.btnCancel.setBounds(207 + Shutter.iconList.getWidth(), 46, 101 - Shutter.iconList.getWidth() -  4, 21);
+								Main.iconPresets.setLocation(Main.iconList.getX() + Main.iconList.getWidth() + 2, 45);
+								Main.btnCancel.setBounds(207 + Main.iconList.getWidth(), 46, 101 - Main.iconList.getWidth() -  4, 21);
 							}
 							else
 							{
-								Shutter.iconPresets.setBounds(180, 45, 21, 21);
-								Shutter.btnCancel.setBounds(207, 46, 97, 21);
+								Main.iconPresets.setBounds(180, 45, 21, 21);
+								Main.btnCancel.setBounds(207, 46, 97, 21);
 							}
 							
 						}
 						else
 						{
-							Shutter.iconList.setVisible(false);
+							Main.iconList.setVisible(false);
 							
-							if (Shutter.iconPresets.isVisible())
+							if (Main.iconPresets.isVisible())
 							{
-								Shutter.iconPresets.setBounds(180, 45, 21, 21);
-								Shutter.btnCancel.setBounds(207, 46, 97, 21);
+								Main.iconPresets.setBounds(180, 45, 21, 21);
+								Main.btnCancel.setBounds(207, 46, 97, 21);
 							}
 							else
 							{
-								Shutter.btnCancel.setBounds(184, 46, 120, 21);
+								Main.btnCancel.setBounds(184, 46, 120, 21);
 							}
 						}
 						
 						Utils.changeFrameVisibility(frame, true);
-						Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+						Main.btnStart.setText(Main.language.getProperty("btnStartFunction"));
 					}
 				}
 			}
@@ -606,9 +606,9 @@ import shutterencoder.utils.Utils;
 			        int screenHeight = (int) (allScreens[screenIndex].getDisplayMode().getHeight() * dpiScaleFactor);	
 					int screenWidth = (int) (allScreens[screenIndex].getDisplayMode().getWidth() * dpiScaleFactor);		
 			        
-					if (frame.getHeight() < screenHeight - Shutter.taskBarHeight)
+					if (frame.getHeight() < screenHeight - Main.taskBarHeight)
 					{
-						frame.setSize(screenWidth, screenHeight - Shutter.taskBarHeight);
+						frame.setSize(screenWidth, screenHeight - Main.taskBarHeight);
 						
 						if (System.getProperty("os.name").contains("Windows"))
 						{
@@ -624,7 +624,7 @@ import shutterencoder.utils.Utils;
 					else
 					{
 						frame.setSize(600, 332);
-						frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);			
+						frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);			
 					}
 					
 					resizeAll();
@@ -671,10 +671,10 @@ import shutterencoder.utils.Utils;
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void table() {
 		
-		JLabel columnFile = new JLabel(Shutter.language.getProperty("columnFile"));
+		JLabel columnFile = new JLabel(Main.language.getProperty("columnFile"));
 		columnFile.setFont(new Font("SansSerif", Font.PLAIN, 11));
 		
-		tableRow = new DefaultTableModel(new Object[][] {}, new String[] {Shutter.language.getProperty("columnFile"), Shutter.language.getProperty("columnCommand"), Shutter.language.getProperty("destination")});
+		tableRow = new DefaultTableModel(new Object[][] {}, new String[] {Main.language.getProperty("columnFile"), Main.language.getProperty("columnCommand"), Main.language.getProperty("destination")});
 		
 		DefaultTableCellRenderer dtcr = new DefaultTableCellRenderer();
 		dtcr.setHorizontalAlignment(SwingConstants.CENTER);
@@ -733,9 +733,9 @@ import shutterencoder.utils.Utils;
 
 		      public void tableChanged(TableModelEvent e) {
 		    	  
-					Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));					
-					if (Shutter.caseChangeFolder1.isSelected() == false)
-						Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
+					Main.lblCurrentEncoding.setText(Main.language.getProperty("lblEncodageEnCours"));					
+					if (Main.caseChangeFolder1.isSelected() == false)
+						Main.lblDestination1.setText(Main.language.getProperty("sameAsSource"));
 		      }
 
 		    });
@@ -748,9 +748,9 @@ import shutterencoder.utils.Utils;
         scrollPane.getVerticalScrollBar().setValue(RenderQueue.scrollPane.getVerticalScrollBar().getMaximum());
 		frame.getContentPane().add(scrollPane);
 		
-		caseRunParallel = new JCheckBox(Shutter.language.getProperty("caseRunParallel"));
+		caseRunParallel = new JCheckBox(Main.language.getProperty("caseRunParallel"));
 		caseRunParallel.setName("caseRunParallel");
-		caseRunParallel.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		caseRunParallel.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		caseRunParallel.setSize(caseRunParallel.getPreferredSize().width, 23);
 		frame.getContentPane().add(caseRunParallel);
 		
@@ -774,13 +774,13 @@ import shutterencoder.utils.Utils;
 		parallelValue.setModel(new DefaultComboBoxModel<String>(new String[] { "2","3","4","5","6","7","8","9","10" }));
 		parallelValue.setSelectedIndex(0);
 		parallelValue.setMaximumRowCount(10);
-		parallelValue.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
+		parallelValue.setFont(new Font(Main.mainFont, Font.PLAIN, 11));
 		parallelValue.setEditable(false);	
 		parallelValue.setEnabled(false);
 		frame.getContentPane().add(parallelValue);
 		
-		btnStartRender = new JButton(Shutter.language.getProperty("btnStartRender"));
-		btnStartRender.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		btnStartRender = new JButton(Main.language.getProperty("btnStartRender"));
+		btnStartRender.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		btnStartRender.setEnabled(false);
 		frame.getContentPane().add(btnStartRender);
 				
@@ -825,10 +825,10 @@ import shutterencoder.utils.Utils;
 							
 							if (cmd.contains("pipe:1"))
 							{
-								Shutter.caseDisplay.setSelected(true);
+								Main.caseDisplay.setSelected(true);
 							}
 							else
-								Shutter.caseDisplay.setSelected(false);
+								Main.caseDisplay.setSelected(false);
 							
 							switch (cli[0].toString())
 							{
@@ -869,16 +869,16 @@ import shutterencoder.utils.Utils;
 							
 							if (caseRunParallel.isSelected())
 							{
-								Shutter.btnStart.setEnabled(false);
+								Main.btnStart.setEnabled(false);
 								table.setRowSelectionInterval(0, i);
-								Shutter.lblCurrentEncoding.setText(filesCompleted + "/" + tableRow.getRowCount() + " " + Shutter.language.getProperty("filesEnded")); 
-								Shutter.progressBar.setMaximum(tableRow.getRowCount());
-								Shutter.progressBar.setIndeterminate(true);
+								Main.lblCurrentEncoding.setText(filesCompleted + "/" + tableRow.getRowCount() + " " + Main.language.getProperty("filesEnded")); 
+								Main.progressBar.setMaximum(tableRow.getRowCount());
+								Main.progressBar.setIndeterminate(true);
 							}
 							else
 							{
 								table.setRowSelectionInterval(i, i);
-								Shutter.lblCurrentEncoding.setText(fileName); 	
+								Main.lblCurrentEncoding.setText(fileName); 	
 							}
 							
 							try {	
@@ -905,8 +905,8 @@ import shutterencoder.utils.Utils;
 										do {
 											
 											Thread.sleep(100);		
-											Shutter.lblCurrentEncoding.setText(RenderQueue.filesCompleted + "/" + RenderQueue.tableRow.getRowCount() + " " + Shutter.language.getProperty("filesEnded"));	
-											Shutter.progressBar.setValue(RenderQueue.filesCompleted);
+											Main.lblCurrentEncoding.setText(RenderQueue.filesCompleted + "/" + RenderQueue.tableRow.getRowCount() + " " + Main.language.getProperty("filesEnded"));	
+											Main.progressBar.setValue(RenderQueue.filesCompleted);
 											
 											if (FFMPEG.error || FFMPEG.cancelled)
 											{															
@@ -926,8 +926,8 @@ import shutterencoder.utils.Utils;
 										do {	
 											
 											Thread.sleep(100);	
-											Shutter.lblCurrentEncoding.setText(RenderQueue.filesCompleted + "/" + RenderQueue.tableRow.getRowCount() + " " + Shutter.language.getProperty("filesEnded"));	
-											Shutter.progressBar.setValue(RenderQueue.filesCompleted);
+											Main.lblCurrentEncoding.setText(RenderQueue.filesCompleted + "/" + RenderQueue.tableRow.getRowCount() + " " + Main.language.getProperty("filesEnded"));	
+											Main.progressBar.setValue(RenderQueue.filesCompleted);
 											
 											if (FFMPEG.error || FFMPEG.cancelled)
 											{
@@ -949,7 +949,7 @@ import shutterencoder.utils.Utils;
 								lastActions(i, fileName, fileInput, fileOut);
 							}
 							
-							if (Shutter.cancelled)
+							if (Main.cancelled)
 								break;							
 						}
 								
@@ -986,7 +986,7 @@ import shutterencoder.utils.Utils;
 							}
 						}
 						UIController.endOfFunction();
-						Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+						Main.btnStart.setText(Main.language.getProperty("btnAddToRender"));
 						
 						if (tableRow.getRowCount() > 0)
 							btnStartRender.setEnabled(true);
@@ -1020,13 +1020,13 @@ import shutterencoder.utils.Utils;
 		
 		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
 			
-		if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(Shutter.language.getProperty("splitMode")))
+		if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(Main.language.getProperty("splitMode")))
 			fileOut = new File(fileOut.toString().replace("%03d", "000"));
 		
 		//Erreurs
-		if (FFMPEG.error || fileOut.length() == 0 && Shutter.caseCreateSequence.isSelected() == false)
+		if (FFMPEG.error || fileOut.length() == 0 && Main.caseCreateSequence.isSelected() == false)
 		{
-			FFMPEG.errorList.append(Shutter.language.getProperty("file") + " N°" + (item + 1) + " - " + fileName);
+			FFMPEG.errorList.append(Main.language.getProperty("file") + " N°" + (item + 1) + " - " + fileName);
 		    FFMPEG.errorList.append(System.lineSeparator());
 			try {
 				fileOut.delete();
@@ -1034,7 +1034,7 @@ import shutterencoder.utils.Utils;
 		}		
 		
 		//Delete file
-		if (Shutter.caseDeleteSourceFile.isSelected() && fileInput != null && Shutter.cancelled == false && FFMPEG.error == false)
+		if (Main.caseDeleteSourceFile.isSelected() && fileInput != null && Main.cancelled == false && FFMPEG.error == false)
 		{
 			if (item + 1 < tableRow.getRowCount() && fileName.equals(tableRow.getValueAt(item + 1, 0)))
 			{
@@ -1045,7 +1045,7 @@ import shutterencoder.utils.Utils;
 		}
 				
 		//Concat mode or Image sequence
-		if (Settings.btnSetBab.isSelected() || (Shutter.grpImageSequence.isVisible() && Shutter.caseEnableSequence.isSelected()))
+		if (Settings.btnSetBab.isSelected() || (Main.grpImageSequence.isVisible() && Main.caseEnableSequence.isSelected()))
 		{
 			String extension = fileName.substring(fileName.lastIndexOf("."));
 			
@@ -1055,7 +1055,7 @@ import shutterencoder.utils.Utils;
 		}
 		
 		//Annulation
-		if (Shutter.cancelled)
+		if (Main.cancelled)
 		{
 			try {
 				fileOut.delete();
@@ -1063,10 +1063,10 @@ import shutterencoder.utils.Utils;
 		}
 
 		//Fichiers terminés
-		if (Shutter.cancelled == false && FFMPEG.error == false)
+		if (Main.cancelled == false && FFMPEG.error == false)
 		{
 			complete++;
-			Shutter.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
+			Main.lblFilesEnded.setText(FunctionUtils.completedFiles(complete));
 		}
 		
 		//Suppression fichiers résiduels OP-Atom
@@ -1137,7 +1137,7 @@ import shutterencoder.utils.Utils;
 		//Suppression fihciers résiduels Conform
 		if (cli[0].toString().equals("ffmpeg"))
 		{					    		
-			File tempMKV = new File(Shutter.dirTemp + "fileToRewrap.mkv");
+			File tempMKV = new File(Main.dirTemp + "fileToRewrap.mkv");
 			if (tempMKV.exists())
 				tempMKV.delete();
 		}
@@ -1152,48 +1152,48 @@ import shutterencoder.utils.Utils;
 
 			if (s.length > 2)
 			{
-				Shutter.caseChangeFolder2.setSelected(true);
-				Shutter.lblDestination2.setText(s[1].substring(1, s[1].length() - 1));
-				Shutter.caseChangeFolder3.setSelected(true);
-				Shutter.lblDestination3.setText(s[2].substring(1, s[2].length()));
+				Main.caseChangeFolder2.setSelected(true);
+				Main.lblDestination2.setText(s[1].substring(1, s[1].length() - 1));
+				Main.caseChangeFolder3.setSelected(true);
+				Main.lblDestination3.setText(s[2].substring(1, s[2].length()));
 			}
 			else
 			{
-				Shutter.caseChangeFolder2.setSelected(true);
-				Shutter.lblDestination2.setText(s[1].substring(1, s[1].length()));
-				Shutter.caseChangeFolder3.setSelected(false);
-				Shutter.lblDestination3.setText(Shutter.language.getProperty("aucune"));
+				Main.caseChangeFolder2.setSelected(true);
+				Main.lblDestination2.setText(s[1].substring(1, s[1].length()));
+				Main.caseChangeFolder3.setSelected(false);
+				Main.lblDestination3.setText(Main.language.getProperty("aucune"));
 			}		
 			
-			if (s[0].substring(0, s[0].length() - 1).equals(Shutter.language.getProperty("sameAsSource")))
+			if (s[0].substring(0, s[0].length() - 1).equals(Main.language.getProperty("sameAsSource")))
 			{
-				Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
-				Shutter.caseChangeFolder1.setSelected(false);
+				Main.lblDestination1.setText(Main.language.getProperty("sameAsSource"));
+				Main.caseChangeFolder1.setSelected(false);
 			}
 			else
 			{
-				Shutter.lblDestination1.setText(s[0].substring(0, s[0].length() - 1));
-				Shutter.caseChangeFolder1.setSelected(true);
+				Main.lblDestination1.setText(s[0].substring(0, s[0].length() - 1));
+				Main.caseChangeFolder1.setSelected(true);
 			}			
 		}
 		else
 		{
-			if (tableRow.getValueAt(item, 2).toString().equals(Shutter.language.getProperty("sameAsSource")))
+			if (tableRow.getValueAt(item, 2).toString().equals(Main.language.getProperty("sameAsSource")))
 			{
-				Shutter.lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
-				Shutter.caseChangeFolder1.setSelected(false);
+				Main.lblDestination1.setText(Main.language.getProperty("sameAsSource"));
+				Main.caseChangeFolder1.setSelected(false);
 			}
 			else
 			{
-				Shutter.lblDestination1.setText(tableRow.getValueAt(item, 2).toString());
-				Shutter.caseChangeFolder1.setSelected(true);
+				Main.lblDestination1.setText(tableRow.getValueAt(item, 2).toString());
+				Main.caseChangeFolder1.setSelected(true);
 			}
 			
-			Shutter.caseChangeFolder2.setSelected(false);
-			Shutter.lblDestination2.setText(Shutter.language.getProperty("aucune"));
-			Shutter.caseChangeFolder3.setEnabled(false);
-			Shutter.caseChangeFolder3.setSelected(false);
-			Shutter.lblDestination3.setText(Shutter.language.getProperty("aucune"));
+			Main.caseChangeFolder2.setSelected(false);
+			Main.lblDestination2.setText(Main.language.getProperty("aucune"));
+			Main.caseChangeFolder3.setEnabled(false);
+			Main.caseChangeFolder3.setSelected(false);
+			Main.lblDestination3.setText(Main.language.getProperty("aucune"));
 		}
 		
 		if (cli[0].toString().equals("ffmpeg") && tableRow.getValueAt(item, 1).toString().contains("pass 1") == false)

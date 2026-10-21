@@ -32,7 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.TransferHandler;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
@@ -46,8 +46,8 @@ public class ListFileTransferHandler extends TransferHandler {
 
 		for (int i = 0; i < arg1.length; i++) {
 			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Shutter.inputDeviceIsRunning == false
-					&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false) {
+			if (flavor.equals(DataFlavor.javaFileListFlavor) && Main.inputDeviceIsRunning == false
+					&& Main.comboFonctions.getSelectedItem().equals("DVD Rip") == false) {
 				return true;
 			}
 		}
@@ -64,7 +64,7 @@ public class ListFileTransferHandler extends TransferHandler {
 			try {
 
 				if (flavor.equals(DataFlavor.javaFileListFlavor)
-						&& Shutter.comboFonctions.getSelectedItem().equals("DVD Rip") == false) {
+						&& Main.comboFonctions.getSelectedItem().equals("DVD Rip") == false) {
 					List<?> l = (List<?>) t.getTransferData(DataFlavor.javaFileListFlavor);
 					Iterator<?> iter = l.iterator();
 					while (iter.hasNext()) {
@@ -75,13 +75,13 @@ public class ListFileTransferHandler extends TransferHandler {
 								&& file.toString().substring(0, 2).equals("\\\\"))
 							file = Utils.UNCPath(file);
 
-						if (Shutter.scan.getText().equals(Shutter.language.getProperty("menuItemStopScan"))) {
+						if (Main.scan.getText().equals(Main.language.getProperty("menuItemStopScan"))) {
 							if (file.isDirectory()) {
 								if (file.toString().contains("completed") == false
 										&& file.toString().contains("error") == false) {
 									boolean folderExists = false;
-									for (int f = 0; f < Shutter.list.getSize(); f++) {
-										if (Shutter.list.getElementAt(f).equals(file.toString())) {
+									for (int f = 0; f < Main.list.getSize(); f++) {
+										if (Main.list.getElementAt(f).equals(file.toString())) {
 											folderExists = true;
 										}
 									}
@@ -95,21 +95,21 @@ public class ListFileTransferHandler extends TransferHandler {
 
 							if (System.getProperty("os.name").contains("Mac")
 									|| System.getProperty("os.name").contains("Linux"))
-								Shutter.list.addElement(file + "/");
+								Main.list.addElement(file + "/");
 							else
-								Shutter.list.addElement(file + "\\");
+								Main.list.addElement(file + "\\");
 
-							Shutter.addToList.setVisible(false);
-							Shutter.lblFiles.setText(Utils.filesNumber());
+							Main.addToList.setVisible(false);
+							Main.lblFiles.setText(Utils.filesNumber());
 
 							if (file != null) {
-								if (Shutter.caseChangeFolder1.isSelected()) {
-									Shutter.scanIsRunning = true;
+								if (Main.caseChangeFolder1.isSelected()) {
+									Main.scanIsRunning = true;
 									UIController.changeFilters();
 								} else
-									JOptionPane.showMessageDialog(Shutter.frame,
-											Shutter.language.getProperty("dragFolderToDestination"),
-											Shutter.language.getProperty("chooseDestinationFolder"),
+									JOptionPane.showMessageDialog(Main.frame,
+											Main.language.getProperty("dragFolderToDestination"),
+											Main.language.getProperty("chooseDestinationFolder"),
 											JOptionPane.INFORMATION_MESSAGE);
 							}
 
@@ -148,19 +148,19 @@ public class ListFileTransferHandler extends TransferHandler {
 												|| file.toString().contains("\'")
 												|| file.getName().contains("/") || file.getName().contains("\\")) {
 											if (FunctionUtils.allowsInvalidCharacters == false) {
-												JOptionPane.showConfirmDialog(Shutter.frame,
+												JOptionPane.showConfirmDialog(Main.frame,
 														file.getAbsoluteFile().toString() + System.lineSeparator()
-																+ Shutter.language.getProperty("invalidCharacter"),
-														Shutter.language.getProperty("import"),
+																+ Main.language.getProperty("invalidCharacter"),
+														Main.language.getProperty("import"),
 														JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE);
 
 												FunctionUtils.allowsInvalidCharacters = true;
 											}
 										}
 
-										Shutter.list.addElement(file.toString());
-										Shutter.addToList.setVisible(false);
-										Shutter.lblFiles.setText(Utils.filesNumber());
+										Main.list.addElement(file.toString());
+										Main.addToList.setVisible(false);
+										Main.lblFiles.setText(Utils.filesNumber());
 									}								
 							}
 							else
@@ -169,29 +169,29 @@ public class ListFileTransferHandler extends TransferHandler {
 					}
 
 					// CaseOPATOM
-					switch (Shutter.comboFonctions.getSelectedItem().toString()) {
+					switch (Main.comboFonctions.getSelectedItem().toString()) {
 					case "DNxHD":
 					case "DNxHR":
 					case "Apple ProRes":
 					case "GoPro CineForm":
 					case "QT Animation":
 					case "Uncompressed":
-						if (Shutter.caseOPATOM.isSelected()) {
-							for (int item = 0; item < Shutter.list.getSize(); item++) {
-								int s = Shutter.list.getElementAt(item).toString().lastIndexOf('.');
-								if (Shutter.list.getElementAt(item).toString().substring(s).toLowerCase()
+						if (Main.caseOPATOM.isSelected()) {
+							for (int item = 0; item < Main.list.getSize(); item++) {
+								int s = Main.list.getElementAt(item).toString().lastIndexOf('.');
+								if (Main.list.getElementAt(item).toString().substring(s).toLowerCase()
 										.equals(".mxf") == false) {
-									Shutter.list.remove(item);
+									Main.list.remove(item);
 									item = -1;
 								}
 							}
-							Shutter.lblFiles.setText(Utils.filesNumber());
+							Main.lblFiles.setText(Utils.filesNumber());
 						}
 						break;
 					}
 
 					// VideoPlayer.player
-					Shutter.fileList.setSelectedIndex(Shutter.list.getSize() - 1);
+					Main.fileList.setSelectedIndex(Main.list.getSize() - 1);
 
 					VideoPlayerUtils.setMedia();
 					

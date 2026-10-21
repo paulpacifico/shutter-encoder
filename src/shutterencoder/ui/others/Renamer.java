@@ -46,7 +46,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.utils.Utils;
 
 public class Renamer {
@@ -85,7 +85,7 @@ public class Renamer {
 			frame.setSize(541, 153);
 		else
 			frame.setSize(551, 163);
-		frame.setTitle(Shutter.language.getProperty("frameRenommage"));
+		frame.setTitle(Main.language.getProperty("frameRenommage"));
 		frame.setForeground(Color.WHITE);
 		frame.getContentPane().setBackground(Utils.background);	
 		
@@ -94,15 +94,15 @@ public class Renamer {
 		
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setBackground(Utils.c30);
-		frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() / 2 - frame.getHeight()));
+		frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() / 2 - frame.getHeight()));
 			
-		String fullName = new File(Shutter.fileList.getSelectedValuesList().get(0)).getName();
+		String fullName = new File(Main.fileList.getSelectedValuesList().get(0)).getName();
 		
 		ext = fullName.substring(fullName.lastIndexOf("."));	
 		fichier = new File(fullName).getName().replace(ext, "");
 		
-		btnLimit = new JCheckBox(Shutter.language.getProperty("btnLimit"));
-		btnLimit.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnLimit = new JCheckBox(Main.language.getProperty("btnLimit"));
+		btnLimit.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnLimit.setBounds(7, 12, 211, 16);
 		frame.getContentPane().add(btnLimit);
 		
@@ -120,13 +120,13 @@ public class Renamer {
 		});
 		
 		spinnerLimit = new JSpinner(new SpinnerNumberModel(fichier.length(), 1, fichier.length(), 1));
-		spinnerLimit.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
+		spinnerLimit.setFont(new Font(Main.mainFont, Font.PLAIN, 11));
 		spinnerLimit.setEnabled(false);
 		spinnerLimit.setBounds(226, 10, 46, 20);
 		frame.getContentPane().add(spinnerLimit);
 		
-		btnIncrement = new JCheckBox(Shutter.language.getProperty("btnIncrementer"));
-		btnIncrement.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnIncrement = new JCheckBox(Main.language.getProperty("btnIncrementer"));
+		btnIncrement.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnIncrement.setBounds(7, 34, btnIncrement.getPreferredSize().width, 16);
 		frame.getContentPane().add(btnIncrement);
 		
@@ -144,13 +144,13 @@ public class Renamer {
 		});
 		
 		spinnerIncrement = new JSpinner(new SpinnerNumberModel(0, 0, 99999999, 1));
-		spinnerIncrement.setFont(new Font(Shutter.mainFont, Font.PLAIN, 11));
+		spinnerIncrement.setFont(new Font(Main.mainFont, Font.PLAIN, 11));
 		spinnerIncrement.setEnabled(false);
 		spinnerIncrement.setBounds(166, 33, 106, 20);
 		frame.getContentPane().add(spinnerIncrement);
 		
-		lblReplace = new JLabel(Shutter.language.getProperty("lblRemplacer"));
-		lblReplace.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblReplace = new JLabel(Main.language.getProperty("lblRemplacer"));
+		lblReplace.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblReplace.setBounds(12, 80, 70, 14);
 		frame.getContentPane().add(lblReplace);
 		
@@ -160,8 +160,8 @@ public class Renamer {
 		txtReplace.setBounds(84, 77, 130, 21);
 		frame.getContentPane().add(txtReplace);;		
 				
-		lblBy = new JLabel(Shutter.language.getProperty("lblPar"));
-		lblBy.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		lblBy = new JLabel(Main.language.getProperty("lblPar"));
+		lblBy.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		lblBy.setBounds(226, 80, lblBy.getPreferredSize().width, 14);
 		frame.getContentPane().add(lblBy);
 		
@@ -171,20 +171,20 @@ public class Renamer {
 		txtBy.setBounds(267, 77, txtReplace.getWidth(), 21);
 		frame.getContentPane().add(txtBy);
 		
-		lblExample = new JLabel(Shutter.language.getProperty("lblExemple") + " " + fichier + ext);
+		lblExample = new JLabel(Main.language.getProperty("lblExemple") + " " + fichier + ext);
 		lblExample.setForeground(Utils.themeColor);
 		lblExample.setFont(new Font("SansSerif", Font.PLAIN, 12));
 		lblExample.setBounds(12, 104, 481, 14);
 		frame.getContentPane().add(lblExample);
 						
-		Rename = new JButton(Shutter.language.getProperty("renommer"));
+		Rename = new JButton(Main.language.getProperty("renommer"));
 		Rename.setBounds(410, 77, 108, 21);
 		Rename.setMargin(new Insets(0,0,0,0));
-		Rename.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+		Rename.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
 		frame.getContentPane().add(Rename);
 		
-		btnAddBefore = new JCheckBox(Shutter.language.getProperty("btnAjouterAvant"));
-		btnAddBefore.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnAddBefore = new JCheckBox(Main.language.getProperty("btnAjouterAvant"));
+		btnAddBefore.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnAddBefore.setBounds(280, 12, 130, 16);
 		frame.getContentPane().add(btnAddBefore);
 		
@@ -208,8 +208,8 @@ public class Renamer {
 		txtAddBefore.setBounds(410, 10, 108, 21);
 		frame.getContentPane().add(txtAddBefore);
 		
-		btnAddAfter = new JCheckBox(Shutter.language.getProperty("btnAjouterApres"));
-		btnAddAfter.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		btnAddAfter = new JCheckBox(Main.language.getProperty("btnAjouterApres"));
+		btnAddAfter.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		btnAddAfter.setBounds(280, 34, 130, 16);
 		frame.getContentPane().add(btnAddAfter);
 		
@@ -233,8 +233,8 @@ public class Renamer {
 		txtAddAfter.setBounds(410, 32, 108, 21);
 		frame.getContentPane().add(txtAddAfter);
 		
-		convertToLower = new JCheckBox(Shutter.language.getProperty("convertToLower"));
-		convertToLower.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		convertToLower = new JCheckBox(Main.language.getProperty("convertToLower"));
+		convertToLower.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		convertToLower.setBounds(7, 57, convertToLower.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToLower);
 		
@@ -250,8 +250,8 @@ public class Renamer {
 			
 		});
 		
-		convertToUpper = new JCheckBox(Shutter.language.getProperty("convertToUpper"));
-		convertToUpper.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		convertToUpper = new JCheckBox(Main.language.getProperty("convertToUpper"));
+		convertToUpper.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		convertToUpper.setBounds(convertToLower.getWidth() + convertToLower.getLocation().x + 7, 57, convertToUpper.getPreferredSize().width, 16);
 		frame.getContentPane().add(convertToUpper);
 		
@@ -267,8 +267,8 @@ public class Renamer {
 			
 		});
 		
-		removeSpecialCharacters = new JCheckBox(Shutter.language.getProperty("removeSpecialCharacters"));
-		removeSpecialCharacters.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		removeSpecialCharacters = new JCheckBox(Main.language.getProperty("removeSpecialCharacters"));
+		removeSpecialCharacters.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		removeSpecialCharacters.setBounds(convertToUpper.getWidth() + convertToUpper.getLocation().x + 7, 57, removeSpecialCharacters.getPreferredSize().width, 16);
 		frame.getContentPane().add(removeSpecialCharacters);
 		
@@ -329,7 +329,7 @@ public class Renamer {
 				
 				errorList = new StringBuilder();
 				
-				String count = String.valueOf(Shutter.fileList.getSelectedIndices().length); 		
+				String count = String.valueOf(Main.fileList.getSelectedIndices().length); 		
 				String format = "";
 				
 				for (int i = 0 ; i < count.length(); i++)
@@ -343,7 +343,7 @@ public class Renamer {
 					@Override
 					public void run() {				
 						int number = (int) spinnerIncrement.getValue();
-						for (String item : Shutter.fileList.getSelectedValuesList())
+						for (String item : Main.fileList.getSelectedValuesList())
 						{				
 							ext = item.substring(item.lastIndexOf("."));	
 							fichier = new File(item).getName().replace(ext, "");;
@@ -393,12 +393,12 @@ public class Renamer {
 								file.renameTo(newFile);
 								lblExample.setText(newFile.getName());
 								
-								for (int i = 0 ; i < Shutter.list.getSize() ; i++)				
+								for (int i = 0 ; i < Main.list.getSize() ; i++)				
 								{
-									if (Shutter.list.getElementAt(i).equals(item))
+									if (Main.list.getElementAt(i).equals(item))
 									{
-										Shutter.list.add(i, newFile.toString());
-										Shutter.list.remove(i + 1);
+										Main.list.add(i, newFile.toString());
+										Main.list.remove(i + 1);
 										break;
 									}
 								}
@@ -410,14 +410,14 @@ public class Renamer {
 						
 						//Affichage des erreurs
 						if (errorList.length() != 0)
-							JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("notProcessedFiles") + " " + '\n' + '\n' + errorList.toString() ,Shutter.language.getProperty("filesAlreadyExists"), JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(Main.frame, Main.language.getProperty("notProcessedFiles") + " " + '\n' + '\n' + errorList.toString() ,Main.language.getProperty("filesAlreadyExists"), JOptionPane.INFORMATION_MESSAGE);
 						errorList.setLength(0);
 									
-						Shutter.lblFiles.setText(Utils.filesNumber());
+						Main.lblFiles.setText(Utils.filesNumber());
 						
 						frame.dispose();
 						
-						Shutter.fileList.clearSelection();
+						Main.fileList.clearSelection();
 					}
 				});
 				rename.start();
@@ -426,7 +426,7 @@ public class Renamer {
 		});
 		
 		//Right_to_left
-		if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		if (Main.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
 		{
 			//Frame
 			for (Component c : frame.getContentPane().getComponents())
@@ -444,7 +444,7 @@ public class Renamer {
 
 	private void update() {	
 		
-		String count = String.valueOf(Shutter.fileList.getSelectedIndices().length); 		
+		String count = String.valueOf(Main.fileList.getSelectedIndices().length); 		
 		String format = "";
 		
 		for (int i = 0 ; i < count.length(); i++)
@@ -453,7 +453,7 @@ public class Renamer {
 		}
 		NumberFormat formatter = new DecimalFormat(format);
 		
-		String exemple = Shutter.language.getProperty("lblExemple") + " ";
+		String exemple = Main.language.getProperty("lblExemple") + " ";
 		
 		if (btnLimit.isSelected())
 			lblExample.setText(fichier.replace(txtReplace.getText(), txtBy.getText()).substring(0,(int) spinnerLimit.getValue()));

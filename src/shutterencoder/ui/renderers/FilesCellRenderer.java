@@ -33,7 +33,7 @@ import javax.swing.ListCellRenderer;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.utils.Utils;
 
@@ -48,7 +48,7 @@ public class FilesCellRenderer extends JLabel implements ListCellRenderer {
 	 public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
 		        boolean cellHasFocus) {
 	
-		    if (Settings.btnHidePath.isSelected() && Shutter.scanIsRunning == false)
+		    if (Settings.btnHidePath.isSelected() && Main.scanIsRunning == false)
 		    {
 		        setText(new File(value.toString()).getName());
 		    } else {

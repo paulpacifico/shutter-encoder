@@ -92,7 +92,7 @@ import org.apache.commons.io.FileUtils;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
@@ -133,13 +133,13 @@ public class SubtitlesTimeline {
 	public static JButton btnAdd;
 	public static JButton btnCut;
 	public static JButton btnDelete;	
-	private static JButton btnEditAll = new JButton(Shutter.language.getProperty("btnModify"));
+	private static JButton btnEditAll = new JButton(Main.language.getProperty("btnModify"));
 	public static JButton btnStart; 
 	public static JButton btnEnd;
 	private JButton btnI = new JButton("I");
-	private JButton btnG = new JButton(Shutter.language.getProperty("btnG"));
-	private static JCheckBox caseShowWaveform = new JCheckBox(Shutter.language.getProperty("caseShowWaveform"));
-	private static JLabel lblOffset = new JLabel(Shutter.language.getProperty("lblOffset"));
+	private JButton btnG = new JButton(Main.language.getProperty("btnG"));
+	private static JCheckBox caseShowWaveform = new JCheckBox(Main.language.getProperty("caseShowWaveform"));
+	private static JLabel lblOffset = new JLabel(Main.language.getProperty("lblOffset"));
 	public static JTextField textOffset = new JTextField("0");
 	public final static JPanel timeline = new JPanel();
 	private static boolean timelineMouseIsPressed = false;
@@ -147,7 +147,7 @@ public class SubtitlesTimeline {
 	public static JLabel waveform = null;
 	private static Thread waveformReload;
 	
-	private static File dirTemp = new File(Shutter.dirTemp + "subtitles");
+	private static File dirTemp = new File(Main.dirTemp + "subtitles");
 	
 	private static int MousePositionX;
 	private static int MouseTextWidth;
@@ -168,13 +168,13 @@ public class SubtitlesTimeline {
     	frame.setSize(1000, 270);
     	currentFrameHeight = 270;
     	frame.setMinimumSize(new Dimension (1000,270));
-    	frame.setLocation((Shutter.frame.getLocation().x + Shutter.frame.getWidth() / 2) - 500, Shutter.frame.getLocation().y + Shutter.frame.getHeight() + 7);
+    	frame.setLocation((Main.frame.getLocation().x + Main.frame.getWidth() / 2) - 500, Main.frame.getLocation().y + Main.frame.getHeight() + 7);
 		frame.setForeground(Color.WHITE);
 		
 		//IMPORTANT
 		Toolkit.getDefaultToolkit().setDynamicLayout(false);
     	    	
-    	frame.setTitle(Shutter.language.getProperty("frameSubtitles") + " - 0 " + Shutter.language.getProperty("subtitlesLower"));   
+    	frame.setTitle(Main.language.getProperty("frameSubtitles") + " - 0 " + Main.language.getProperty("subtitlesLower"));   
     	
     	frame.addMouseListener(new MouseAdapter() {
 
@@ -199,13 +199,13 @@ public class SubtitlesTimeline {
 			@Override
 			public void windowClosed(WindowEvent arg0) {				
 
-				Utils.changeFrameVisibility(Shutter.frame, false);						
+				Utils.changeFrameVisibility(Main.frame, false);						
 				Utils.changeFrameVisibility(frame, true);
 				
-	    		if (Shutter.comboFonctions.getSelectedItem().equals("H.264") || Shutter.comboFonctions.getSelectedItem().equals("H.265"))
+	    		if (Main.comboFonctions.getSelectedItem().equals("H.264") || Main.comboFonctions.getSelectedItem().equals("H.265"))
 	    			FFPROBE.setLength();
 	    		
-	    		if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+	    		if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")))
 	    		{
 	    			SubtitlesTimeline.frame.dispose();
 	    			
@@ -218,18 +218,18 @@ public class SubtitlesTimeline {
 	    		
 	    		if (srt.exists())
 				{
-					 int q = JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("integrateSRT"), Shutter.language.getProperty("subtitles"), JOptionPane.YES_NO_OPTION);
+					 int q = JOptionPane.showConfirmDialog(Main.frame, Main.language.getProperty("integrateSRT"), Main.language.getProperty("subtitles"), JOptionPane.YES_NO_OPTION);
 								 
 					 if (q == 0)
 					 {
-						 if (Shutter.caseAddSubtitles.isSelected())
+						 if (Main.caseAddSubtitles.isSelected())
 							 FunctionUtils.addSubtitles(false);
 						 
 						FunctionUtils.addSubtitles(true);
 					 }
 					 else
 					 {
-						if (Shutter.caseOpenFolderAtEnd1.isSelected())
+						if (Main.caseOpenFolderAtEnd1.isSelected())
 						{						
 							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux")) 
 							{
@@ -251,15 +251,15 @@ public class SubtitlesTimeline {
 					 }
 				}
 				
-    			Shutter.comboFonctions.setEnabled(true);
-    			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionSubtitles")))
+    			Main.comboFonctions.setEnabled(true);
+    			if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")))
     			{
-    				Shutter.comboFonctions.setSelectedItem("");
+    				Main.comboFonctions.setSelectedItem("");
     				UIController.changeWidth();
     			}
-    			Shutter.btnStart.setEnabled(true);
+    			Main.btnStart.setEnabled(true);
     			
-    			frame.setLocation(Shutter.frame.getX() + (Shutter.frame.getWidth() - frame.getWidth()) / 2, Shutter.frame.getY() + (Shutter.frame.getHeight() - frame.getHeight()) / 2);
+    			frame.setLocation(Main.frame.getX() + (Main.frame.getWidth() - frame.getWidth()) / 2, Main.frame.getY() + (Main.frame.getHeight() - frame.getHeight()) / 2);
 	    		
 				if (dirTemp.exists())
 				{
@@ -341,7 +341,7 @@ public class SubtitlesTimeline {
     	txtSubtitles.setCaretColor(Color.BLACK);
     	txtSubtitles.setParagraphAttributes(attribs,true);
     	txtSubtitles.setSelectionColor(new Color(71,163,236,127));
-    	txtSubtitles.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12)); 
+    	txtSubtitles.setFont(new Font(Main.boldFont, Font.PLAIN, 12)); 
     	
     	if (System.getProperty("os.name").contains("Windows"))
     	{
@@ -454,8 +454,8 @@ public class SubtitlesTimeline {
 
     	frame.getContentPane().add(txtSubtitles);
     	    	    	    	
-    	JLabel lblTexte = new JLabel(Shutter.language.getProperty("lblTexte"));
-    	lblTexte.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
+    	JLabel lblTexte = new JLabel(Main.language.getProperty("lblTexte"));
+    	lblTexte.setFont(new Font(Main.mainFont, Font.PLAIN, 13));
     	lblTexte.setBounds(10, 12, lblTexte.getPreferredSize().width, 14);
     	frame.getContentPane().add(lblTexte);	
     	
@@ -504,7 +504,7 @@ public class SubtitlesTimeline {
     		
     	});
     	
-    	btnG.setFont(new Font(Shutter.boldFont, Font.PLAIN, 13));
+    	btnG.setFont(new Font(Main.boldFont, Font.PLAIN, 13));
     	btnG.setBounds(btnI.getLocation().x + btnI.getWidth() + 4, 8, 22, 22);    	
     	frame.getContentPane().add(btnG);
     	
@@ -549,8 +549,8 @@ public class SubtitlesTimeline {
     		
     	});
     	    	
-    	lblHelp = new JButton(Shutter.language.getProperty("lblHelp"));
-    	lblHelp.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+    	lblHelp = new JButton(Main.language.getProperty("lblHelp"));
+    	lblHelp.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
     	lblHelp.setBounds(btnG.getX() + btnG.getWidth() + 4, 8, lblHelp.getPreferredSize().width, 22);
     	frame.getContentPane().add(lblHelp);    
     	
@@ -591,7 +591,7 @@ public class SubtitlesTimeline {
     		
     	});
     	
-    	btnEditAll.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+    	btnEditAll.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
     	btnEditAll.setSize(btnEditAll.getPreferredSize().width, 21);
     	if (System.getProperty("os.name").contains("Windows"))    		
     		btnEditAll.setLocation(frame.getWidth() - btnEditAll.getWidth() - 22, 8);
@@ -623,8 +623,8 @@ public class SubtitlesTimeline {
     		
     	});
     	  	
-    	btnAdd = new JButton(Shutter.language.getProperty("btnAdd"));
-    	btnAdd.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+    	btnAdd = new JButton(Main.language.getProperty("btnAdd"));
+    	btnAdd.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
     	btnAdd.setBounds(btnEditAll.getLocation().x - btnAdd.getWidth() - 2, 8, btnAdd.getPreferredSize().width, 21);
     	frame.getContentPane().add(btnAdd);
     	    	
@@ -637,8 +637,8 @@ public class SubtitlesTimeline {
     		
     	});
 
-    	btnDelete = new JButton(Shutter.language.getProperty("btnDelete"));
-    	btnDelete.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+    	btnDelete = new JButton(Main.language.getProperty("btnDelete"));
+    	btnDelete.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
     	btnDelete.setMargin(new Insets(0,0,0,0));
     	btnDelete.setBounds(btnAdd.getLocation().x - btnDelete.getWidth() - 2, 8, 80, 21);
     	btnDelete.setEnabled(false);
@@ -649,7 +649,7 @@ public class SubtitlesTimeline {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {	
 				
-				int q = JOptionPane.showConfirmDialog(frame, Shutter.language.getProperty("deleteConfirmation"), Shutter.language.getProperty("subtitlesDelete"), JOptionPane.YES_NO_OPTION);
+				int q = JOptionPane.showConfirmDialog(frame, Main.language.getProperty("deleteConfirmation"), Main.language.getProperty("subtitlesDelete"), JOptionPane.YES_NO_OPTION);
 				
 				if (q == 0)		
 				{
@@ -677,8 +677,8 @@ public class SubtitlesTimeline {
     		
     	});
      	    	
-    	btnCut = new JButton(Shutter.language.getProperty("cutUpper"));
-    	btnCut.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+    	btnCut = new JButton(Main.language.getProperty("cutUpper"));
+    	btnCut.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
     	btnCut.setBounds(btnDelete.getLocation().x - btnCut.getWidth() - 2, 8, btnCut.getPreferredSize().width, 21);
     	btnCut.setEnabled(false);    	
     	frame.getContentPane().add(btnCut);
@@ -726,8 +726,8 @@ public class SubtitlesTimeline {
     		
     	}); 	
     	
-    	btnEnd = new JButton(Shutter.language.getProperty("btnFin"));
-    	btnEnd.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+    	btnEnd = new JButton(Main.language.getProperty("btnFin"));
+    	btnEnd.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
     	btnEnd.setBounds(btnCut.getLocation().x - btnEnd.getWidth() - 2, 8, btnEnd.getPreferredSize().width, 21);
     	btnEnd.setEnabled(false);
     	frame.getContentPane().add(btnEnd);
@@ -765,8 +765,8 @@ public class SubtitlesTimeline {
     		
     	});
     	  	    	
-     	btnStart = new JButton(Shutter.language.getProperty("btnDebut"));
-    	btnStart.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+     	btnStart = new JButton(Main.language.getProperty("btnDebut"));
+    	btnStart.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
     	btnStart.setBounds(btnEnd.getLocation().x - btnStart.getWidth() - 2, 8, btnStart.getPreferredSize().width, 21);
     	btnStart.setEnabled(false);
     	frame.getContentPane().add(btnStart);
@@ -813,7 +813,7 @@ public class SubtitlesTimeline {
     	
     	caseShowWaveform.setSelected(true);
     	caseShowWaveform.setEnabled(false);
-    	caseShowWaveform.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+    	caseShowWaveform.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
     	caseShowWaveform.setBounds(btnStart.getX() - caseShowWaveform.getWidth() - 20, 6, caseShowWaveform.getPreferredSize().width, 23);
     	frame.getContentPane().add(caseShowWaveform);
     	
@@ -841,13 +841,13 @@ public class SubtitlesTimeline {
     	});
    					
     	JLabel images = new JLabel("i");
-    	images.setFont(new Font(Shutter.boldFont, Font.PLAIN, 12));
+    	images.setFont(new Font(Main.boldFont, Font.PLAIN, 12));
     	images.setBounds(caseShowWaveform.getX() - images.getWidth() - 7, 9, 10, 16);
     	frame.getContentPane().add(images);	
     	
 		textOffset.setBounds(images.getX() - images.getWidth() - 27, lblOffset.getLocation().y, 34, 16);
 		textOffset.setHorizontalAlignment(SwingConstants.RIGHT);
-		textOffset.setFont(new Font(Shutter.mainFont, Font.PLAIN, 12));
+		textOffset.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		frame.getContentPane().add(textOffset);
 		
 		textOffset.addKeyListener(new KeyListener(){
@@ -964,7 +964,7 @@ public class SubtitlesTimeline {
 		});	
 		
 		lblOffset.setHorizontalAlignment(SwingConstants.LEFT);
-		lblOffset.setFont(new Font(Shutter.mainFont, Font.PLAIN, 13));
+		lblOffset.setFont(new Font(Main.mainFont, Font.PLAIN, 13));
 		lblOffset.setAlignmentX(SwingConstants.RIGHT);
 		lblOffset.setBounds(textOffset.getX() - lblOffset.getWidth() - 7, 9, lblOffset.getPreferredSize().width, 16);
 		frame.getContentPane().add(lblOffset);
@@ -1297,7 +1297,7 @@ public class SubtitlesTimeline {
 	    }, AWTEvent.KEY_EVENT_MASK);	
 		
 		//Right_to_left
-		if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+		if (Main.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
 		{
 			//Frame
 			for (Component c : frame.getContentPane().getComponents())
@@ -1315,7 +1315,7 @@ public class SubtitlesTimeline {
 		timelineBackround.setBackground(Utils.c30);
 		timelineBackround.setLayout(null);
 		timelineBackround.setOpaque(false);
-		timelineBackround.setBorder(BorderFactory.createTitledBorder(new MatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY), Shutter.language.getProperty("lblTimeline") + " ", TitledBorder.CENTER, TitledBorder.TOP, new Font(Shutter.boldFont, Font.PLAIN, 13), new Color(235,235,240)));
+		timelineBackround.setBorder(BorderFactory.createTitledBorder(new MatteBorder(1, 0, 1, 0, Color.LIGHT_GRAY), Main.language.getProperty("lblTimeline") + " ", TitledBorder.CENTER, TitledBorder.TOP, new Font(Main.boldFont, Font.PLAIN, 13), new Color(235,235,240)));
 		timelineBackround.setBounds(0, 80, frame.getWidth(), frame.getContentPane().getHeight() - 97);
 		frame.getContentPane().add(timelineBackround);
 		
@@ -2575,7 +2575,7 @@ public class SubtitlesTimeline {
 						number = Integer.parseInt(line);					
 				}
 				
-				frame.setTitle(Shutter.language.getProperty("frameSubtitles") + " - " + number + " " + Shutter.language.getProperty("subtitlesLower"));			
+				frame.setTitle(Main.language.getProperty("frameSubtitles") + " - " + number + " " + Main.language.getProperty("subtitlesLower"));			
 			
 
 		}catch (Exception e){}

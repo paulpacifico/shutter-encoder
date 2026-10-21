@@ -39,127 +39,127 @@ import javax.swing.JOptionPane;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.RenderQueue;
 
-public class VideoPlayerOverlay extends Shutter {
+public class VideoPlayerOverlay extends Main {
 
 	public static void checkSelection() {
 		
 		double ratioW = (double) FFPROBE.imageWidth / VideoPlayerUI.player.getWidth();
 		double ratioH = (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight();
 				
-		int outW = (int) Math.round(Shutter.selection.getWidth() * ratioW);
-		int outH = (int) Math.round(Shutter.selection.getHeight() * ratioH);
+		int outW = (int) Math.round(Main.selection.getWidth() * ratioW);
+		int outH = (int) Math.round(Main.selection.getHeight() * ratioH);
 					
-		int Px = (int) Math.round(Shutter.selection.getLocation().x * ratioW);
-		int Py = (int) Math.round(Shutter.selection.getLocation().y * ratioH);
+		int Px = (int) Math.round(Main.selection.getLocation().x * ratioW);
+		int Py = (int) Math.round(Main.selection.getLocation().y * ratioH);
 					
-		if (Shutter.textCropWidth.getText().matches("[0-9]+") && Shutter.textCropHeight.getText().matches("[0-9]+"))
+		if (Main.textCropWidth.getText().matches("[0-9]+") && Main.textCropHeight.getText().matches("[0-9]+"))
 		{
-			if (Px + Integer.valueOf(Shutter.textCropWidth.getText()) > FFPROBE.imageWidth)
+			if (Px + Integer.valueOf(Main.textCropWidth.getText()) > FFPROBE.imageWidth)
 			{
-				Px = Px + (FFPROBE.imageWidth - (Px + Integer.valueOf(Shutter.textCropWidth.getText())));
+				Px = Px + (FFPROBE.imageWidth - (Px + Integer.valueOf(Main.textCropWidth.getText())));
 			}
 			
-			if (Py + Integer.valueOf(Shutter.textCropHeight.getText()) > FFPROBE.imageHeight)
+			if (Py + Integer.valueOf(Main.textCropHeight.getText()) > FFPROBE.imageHeight)
 			{
-				Py = Py + (FFPROBE.imageHeight - (Py + Integer.valueOf(Shutter.textCropHeight.getText())));
+				Py = Py + (FFPROBE.imageHeight - (Py + Integer.valueOf(Main.textCropHeight.getText())));
 			}
 						
-			if (Integer.valueOf(Shutter.textCropWidth.getText()) != FFPROBE.imageWidth)
+			if (Integer.valueOf(Main.textCropWidth.getText()) != FFPROBE.imageWidth)
 			{
-				Shutter.textCropPosX.setText(String.valueOf(Px));
+				Main.textCropPosX.setText(String.valueOf(Px));
 			}
-			if (Integer.valueOf(Shutter.textCropHeight.getText()) != FFPROBE.imageHeight)
+			if (Integer.valueOf(Main.textCropHeight.getText()) != FFPROBE.imageHeight)
 			{
-				Shutter.textCropPosY.setText(String.valueOf(Py));
+				Main.textCropPosY.setText(String.valueOf(Py));
 			}
 		}
 		else //First launch
 		{
-			Shutter.textCropPosX.setText(String.valueOf(Px));
-			Shutter.textCropPosY.setText(String.valueOf(Py));
+			Main.textCropPosX.setText(String.valueOf(Px));
+			Main.textCropPosY.setText(String.valueOf(Py));
 		}
 				
-		if (Shutter.frame.getCursor() != Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
+		if (Main.frame.getCursor() != Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR))
 		{
-			Shutter.textCropWidth.setText(String.valueOf(outW));
-			Shutter.textCropHeight.setText(String.valueOf(outH));
+			Main.textCropWidth.setText(String.valueOf(outW));
+			Main.textCropHeight.setText(String.valueOf(outH));
 		}
 	}
 	
 	public static void refreshTimecodeAndText() {
 						
 		//Colors	
-		if (Shutter.foregroundColor != null)
+		if (Main.foregroundColor != null)
 		{
-			 String c = Integer.toHexString(Shutter.foregroundColor.getRGB()).substring(2);
-			 Shutter.foregroundHex = c.substring(0, 2) + c.substring(2, 4) + c.substring(4, 6);
+			 String c = Integer.toHexString(Main.foregroundColor.getRGB()).substring(2);
+			 Main.foregroundHex = c.substring(0, 2) + c.substring(2, 4) + c.substring(4, 6);
 		}
 		else
-			Shutter.foregroundColor = new Color(255,255,255);
+			Main.foregroundColor = new Color(255,255,255);
 					
-		if (Shutter.backgroundColor != null)
+		if (Main.backgroundColor != null)
 		{
-			 String c = Integer.toHexString(Shutter.backgroundColor.getRGB()).substring(2);
-			 Shutter.backgroundHex = c.substring(0, 2) + c.substring(2, 4) + c.substring(4, 6);
+			 String c = Integer.toHexString(Main.backgroundColor.getRGB()).substring(2);
+			 Main.backgroundHex = c.substring(0, 2) + c.substring(2, 4) + c.substring(4, 6);
 		}	
 		else
-			Shutter.backgroundColor = new Color(0,0,0);
+			Main.backgroundColor = new Color(0,0,0);
 
-		if (Shutter.lblTcBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+		if (Main.lblTcBackground.getText().equals(Main.language.getProperty("lblBackgroundOn")))
 		{	
-			Shutter.backgroundTcAlpha = Integer.toHexString((int) (double) ((int) Integer.parseInt(Shutter.textTcOpacity.getText()) * 255) / 100);
-			Shutter.foregroundTcAlpha = "ff";
-			Shutter.backgroundNameAlpha = Integer.toHexString((int) (double) ((int) Integer.parseInt(Shutter.textNameOpacity.getText()) * 255) / 100);
-		 	Shutter.foregroundNameAlpha = "ff";
+			Main.backgroundTcAlpha = Integer.toHexString((int) (double) ((int) Integer.parseInt(Main.textTcOpacity.getText()) * 255) / 100);
+			Main.foregroundTcAlpha = "ff";
+			Main.backgroundNameAlpha = Integer.toHexString((int) (double) ((int) Integer.parseInt(Main.textNameOpacity.getText()) * 255) / 100);
+		 	Main.foregroundNameAlpha = "ff";
 		}
 		else
 		{
-			Shutter.backgroundTcAlpha = "0";
-			Shutter.foregroundTcAlpha = Integer.toHexString((int) (double) ((int) Integer.parseInt(Shutter.textTcOpacity.getText()) * 255) / 100);
-		 	Shutter.backgroundNameAlpha = "0";
-			Shutter.foregroundNameAlpha = Integer.toHexString((int) (double) ((int) Integer.parseInt(Shutter.textNameOpacity.getText()) * 255) / 100);
+			Main.backgroundTcAlpha = "0";
+			Main.foregroundTcAlpha = Integer.toHexString((int) (double) ((int) Integer.parseInt(Main.textTcOpacity.getText()) * 255) / 100);
+		 	Main.backgroundNameAlpha = "0";
+			Main.foregroundNameAlpha = Integer.toHexString((int) (double) ((int) Integer.parseInt(Main.textNameOpacity.getText()) * 255) / 100);
 		}	
 		
-		if (Shutter.backgroundTcAlpha.length() < 2)
+		if (Main.backgroundTcAlpha.length() < 2)
 		{
-			Shutter.backgroundTcAlpha = "0" + Shutter.backgroundTcAlpha;
+			Main.backgroundTcAlpha = "0" + Main.backgroundTcAlpha;
 		}
-		if (Shutter.foregroundTcAlpha.length() < 2)	
+		if (Main.foregroundTcAlpha.length() < 2)	
 		{
-			Shutter.foregroundTcAlpha = "0" + Shutter.foregroundTcAlpha;
+			Main.foregroundTcAlpha = "0" + Main.foregroundTcAlpha;
 		}
-		if (Shutter.backgroundNameAlpha.length() < 2)
+		if (Main.backgroundNameAlpha.length() < 2)
 		{
-			Shutter.backgroundNameAlpha = "0" + Shutter.backgroundNameAlpha;
+			Main.backgroundNameAlpha = "0" + Main.backgroundNameAlpha;
 		}		
-		if (Shutter.foregroundNameAlpha.length() < 2)
+		if (Main.foregroundNameAlpha.length() < 2)
 		{
-			Shutter.foregroundNameAlpha = "0" + Shutter.foregroundNameAlpha;	
+			Main.foregroundNameAlpha = "0" + Main.foregroundNameAlpha;	
 		}
 
-		if (Shutter.caseAddTimecode.isSelected() || Shutter.caseShowTimecode.isSelected())
+		if (Main.caseAddTimecode.isSelected() || Main.caseShowTimecode.isSelected())
 		{				
-			Shutter.textTcPosX.setText(String.valueOf((int) Math.round(Shutter.timecode.getLocation().x * Shutter.playerRatio)));
-			Shutter.textTcPosY.setText(String.valueOf((int) Math.round(Shutter.timecode.getLocation().y * Shutter.playerRatio)));  
+			Main.textTcPosX.setText(String.valueOf((int) Math.round(Main.timecode.getLocation().x * Main.playerRatio)));
+			Main.textTcPosY.setText(String.valueOf((int) Math.round(Main.timecode.getLocation().y * Main.playerRatio)));  
 		}
 		else
 		{
-			Shutter.textTcPosX.setText("0");
-			Shutter.textTcPosY.setText("0"); 
+			Main.textTcPosX.setText("0");
+			Main.textTcPosY.setText("0"); 
 		}
 		
-		if (Shutter.caseShowFileName.isSelected() || Shutter.caseAddText.isSelected())
+		if (Main.caseShowFileName.isSelected() || Main.caseAddText.isSelected())
 		{						
-			Shutter.textNamePosX.setText(String.valueOf((int) Math.round(Shutter.fileName.getLocation().x * Shutter.playerRatio)));
-			Shutter.textNamePosY.setText(String.valueOf((int) Math.round(Shutter.fileName.getLocation().y * Shutter.playerRatio)));  
+			Main.textNamePosX.setText(String.valueOf((int) Math.round(Main.fileName.getLocation().x * Main.playerRatio)));
+			Main.textNamePosY.setText(String.valueOf((int) Math.round(Main.fileName.getLocation().y * Main.playerRatio)));  
 		}
 		else
-		{	Shutter.textNamePosX.setText("0");
-			Shutter.textNamePosY.setText("0"); 
+		{	Main.textNamePosX.setText("0");
+			Main.textNamePosY.setText("0"); 
 
 		}			
 
@@ -168,30 +168,30 @@ public class VideoPlayerOverlay extends Shutter {
 	public static void refreshSubtitles() {
 		
 		//Initialisation
-		if (Shutter.alphaHeight == 0)
+		if (Main.alphaHeight == 0)
 		{
-			Shutter.alphaHeight = FFPROBE.imageHeight;
+			Main.alphaHeight = FFPROBE.imageHeight;
 		}
 		
-		int v = Integer.parseInt(Shutter.textSubtitlesPosition.getText());
-		int sz = Integer.parseInt(Shutter.textSubsSize.getText());
-		int newValue = (int) Math.round((double)sz*((double)Shutter.alphaHeight/(FFPROBE.imageHeight+v)));
+		int v = Integer.parseInt(Main.textSubtitlesPosition.getText());
+		int sz = Integer.parseInt(Main.textSubsSize.getText());
+		int newValue = (int) Math.round((double)sz*((double)Main.alphaHeight/(FFPROBE.imageHeight+v)));
 		
 		if (newValue > 0)
-			Shutter.textSubsSize.setText(String.valueOf(newValue));
+			Main.textSubsSize.setText(String.valueOf(newValue));
 		
-		Shutter.alphaHeight = (int) (FFPROBE.imageHeight + v);
+		Main.alphaHeight = (int) (FFPROBE.imageHeight + v);
 		
-		if (Integer.parseInt(Shutter.textSubsWidth.getText()) >= FFPROBE.imageWidth)
+		if (Integer.parseInt(Main.textSubsWidth.getText()) >= FFPROBE.imageWidth)
 		{
-			Shutter.subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(), (int) (VideoPlayerUI.player.getHeight() + (double) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
+			Main.subsCanvas.setBounds(0, 0, VideoPlayerUI.player.getWidth(), (int) (VideoPlayerUI.player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
 		}
 		else
 		{
-			Shutter.subsCanvas.setSize((int) ((double) Integer.parseInt(Shutter.textSubsWidth.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
-		    		(int) (VideoPlayerUI.player.getHeight() + (double) Integer.parseInt(Shutter.textSubtitlesPosition.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));	
+			Main.subsCanvas.setSize((int) ((double) Integer.parseInt(Main.textSubsWidth.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
+		    		(int) (VideoPlayerUI.player.getHeight() + (double) Integer.parseInt(Main.textSubtitlesPosition.getText()) / ( (double) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));	
 			
-			Shutter.subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - Shutter.subsCanvas.getWidth()) / 2, 0);
+			Main.subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - Main.subsCanvas.getWidth()) / 2, 0);
 		}	
 		
 		VideoPlayerUtils.loadImage();
@@ -211,20 +211,20 @@ public class VideoPlayerOverlay extends Shutter {
 			}
 			else					
 			{		
-				Shutter.caseAddSubtitles.setSelected(false);
-				VideoPlayerUI.player.remove(Shutter.subsCanvas);
+				Main.caseAddSubtitles.setSelected(false);
+				VideoPlayerUI.player.remove(Main.subsCanvas);
 			}
 		}
 	}
 	
 	public static void writeCurrentSubs(double inputTime, boolean firstSub) {	
 		
-		if (Shutter.caseAddSubtitles.isSelected() && Shutter.subtitlesFilePath != null && Shutter.subtitlesFilePath.exists() && Shutter.subtitlesFile.toString().substring(Shutter.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
+		if (Main.caseAddSubtitles.isSelected() && Main.subtitlesFilePath != null && Main.subtitlesFilePath.exists() && Main.subtitlesFile.toString().substring(Main.subtitlesFile.toString().lastIndexOf(".")).equals(".srt"))
 		{
 			try {
 	
-				BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(Shutter.subtitlesFilePath.toString()),  StandardCharsets.UTF_8);
-	            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(Shutter.subtitlesFile.toString()),  StandardCharsets.UTF_8);
+				BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(Main.subtitlesFilePath.toString()),  StandardCharsets.UTF_8);
+	            BufferedWriter bufferedWriter = Files.newBufferedWriter(Paths.get(Main.subtitlesFile.toString()),  StandardCharsets.UTF_8);
 	            
 	            String line;
 	            int subNumber = 0;
@@ -284,15 +284,15 @@ public class VideoPlayerOverlay extends Shutter {
 			             		bufferedWriter.write(String.valueOf(subNumber));
 			             		bufferedWriter.newLine();
 								
-								String iH = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 3600));
-								String iM = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 60) % 60);
-								String iS = Shutter.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS) % 60);    		
-								String iF = Shutter.formatterToMs.format(Math.floor(inOffset % FFPROBE.accurateFPS * VideoPlayerUI.inputFramerateMS));
+								String iH = Main.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 3600));
+								String iM = Main.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS / 60) % 60);
+								String iS = Main.formatter.format(Math.floor(inOffset / FFPROBE.accurateFPS) % 60);    		
+								String iF = Main.formatterToMs.format(Math.floor(inOffset % FFPROBE.accurateFPS * VideoPlayerUI.inputFramerateMS));
 								
-								String oH = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 3600));
-								String oM = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 60) % 60);
-								String oS = Shutter.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS) % 60);    		
-								String oF = Shutter.formatterToMs.format(Math.floor(outOffset % FFPROBE.accurateFPS * VideoPlayerUI.inputFramerateMS));
+								String oH = Main.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 3600));
+								String oM = Main.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS / 60) % 60);
+								String oS = Main.formatter.format(Math.floor(outOffset / FFPROBE.accurateFPS) % 60);    		
+								String oF = Main.formatterToMs.format(Math.floor(outOffset % FFPROBE.accurateFPS * VideoPlayerUI.inputFramerateMS));
 												
 								bufferedWriter.write(iH + ":" + iM + ":" + iS + "," + iF + " --> " + oH + ":" + oM + ":" + oS + "," + oF);
 			            		bufferedWriter.newLine();
@@ -301,7 +301,7 @@ public class VideoPlayerOverlay extends Shutter {
 	        		}
 	        		else if (firstSub == false && startWriting && line.contains("-->") == false && line.matches("[0-9]+") == false && line.isEmpty() == false)
 	        		{           			
-	        			if (Shutter.lblSubsBackground.getText().equals(Shutter.language.getProperty("lblBackgroundOn")))
+	        			if (Main.lblSubsBackground.getText().equals(Main.language.getProperty("lblBackgroundOn")))
 	    					bufferedWriter.write("\\h" + line + "\\h");
 	        			else
 	        				bufferedWriter.write(line);
@@ -326,11 +326,11 @@ public class VideoPlayerOverlay extends Shutter {
 		
 	public static boolean loadWatermark(int size) {
 				
-		if (FFPROBE.imageWidth != FFPROBE.previousImageWidth || FFPROBE.imageHeight != FFPROBE.previousImageHeight || Shutter.logoPNG == null)	
+		if (FFPROBE.imageWidth != FFPROBE.previousImageWidth || FFPROBE.imageHeight != FFPROBE.previousImageHeight || Main.logoPNG == null)	
 		{			
 			try {
 			
-				if (Shutter.logoPNG == null)
+				if (Main.logoPNG == null)
 				{				
 					int previousImageWidth = FFPROBE.previousImageWidth;
 					
@@ -347,13 +347,13 @@ public class VideoPlayerOverlay extends Shutter {
 					//Keep media size
 					FFPROBE.previousImageWidth = previousImageWidth;
 					
-					if (Shutter.overlayDeviceIsRunning)
+					if (Main.overlayDeviceIsRunning)
 					{
 						RecordInputDevice.setOverlayDevice();
 					}
 					else 
 					{
-						FFPROBE.Data(Shutter.logoFile);					
+						FFPROBE.Data(Main.logoFile);					
 						try {
 							FFPROBE.processData.join();
 						} catch (InterruptedException er) {
@@ -361,15 +361,15 @@ public class VideoPlayerOverlay extends Shutter {
 						}
 					}
 					
-					Shutter.logoWidth = FFPROBE.imageWidth;
-					Shutter.logoHeight = FFPROBE.imageHeight;
+					Main.logoWidth = FFPROBE.imageWidth;
+					Main.logoHeight = FFPROBE.imageHeight;
 					
 					//IMPORTANT keeps original source file data			
 					FunctionUtils.analyze(new File(VideoPlayerCore.videoPath), false, true);
 				}
 										
-				int logoFinalSizeWidth = (int) Math.floor((double) Shutter.logoWidth / Shutter.playerRatio);		
-				int logoFinalSizeHeight = (int) Math.floor((double) Shutter.logoHeight / Shutter.playerRatio);
+				int logoFinalSizeWidth = (int) Math.floor((double) Main.logoWidth / Main.playerRatio);		
+				int logoFinalSizeHeight = (int) Math.floor((double) Main.logoHeight / Main.playerRatio);
 						
 				//Adapt to size
 				logoFinalSizeWidth = (int) Math.floor((double) logoFinalSizeWidth * ((double) size / 100));
@@ -382,79 +382,79 @@ public class VideoPlayerOverlay extends Shutter {
 					logoFinalSizeHeight = 1;
 					
 				//Preserve location
-				int newPosX = (int) Math.floor((Shutter.logo.getWidth() - logoFinalSizeWidth) / 2);
-				int newPosY = (int) Math.floor((Shutter.logo.getHeight() - logoFinalSizeHeight) / 2);
+				int newPosX = (int) Math.floor((Main.logo.getWidth() - logoFinalSizeWidth) / 2);
+				int newPosY = (int) Math.floor((Main.logo.getHeight() - logoFinalSizeHeight) / 2);
 				
-				if (Shutter.logoPNG == null)
+				if (Main.logoPNG == null)
 				{
-					if (Shutter.overlayDeviceIsRunning)
+					if (Main.overlayDeviceIsRunning)
 					{
 						FFMPEG.run(" -v quiet -hide_banner " + RecordInputDevice.setOverlayDevice() + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
 					}
-					else if (Shutter.logoPNG == null)
+					else if (Main.logoPNG == null)
 					{
-						FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Shutter.logoFile + '"' + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
+						FFMPEG.run(" -v quiet -hide_banner -i " + '"' + Main.logoFile + '"' + " -frames:v 1 -an -sn -c:v rawvideo -pix_fmt rgba -scaler bilinear -f rawvideo -");
 					}
 					
 					do {
 						Thread.sleep(10);
 					} while (FFMPEG.process.isAlive() == false);
 					
-					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					
 					InputStream videoInput = FFMPEG.process.getInputStream(); 
 					InputStream is = new BufferedInputStream(videoInput);		
 					
-					int frameSize = Shutter.logoWidth * Shutter.logoHeight * 4;
+					int frameSize = Main.logoWidth * Main.logoHeight * 4;
 					byte[] frameData = new byte[frameSize];
 
 			        int read = is.readNBytes(frameData, 0, frameData.length);
 			        if (read == frameData.length)
 			        {
-			        	BufferedImage frame = new BufferedImage(Shutter.logoWidth, Shutter.logoHeight, BufferedImage.TYPE_4BYTE_ABGR);
-			            frame.getRaster().setDataElements(0, 0, Shutter.logoWidth, Shutter.logoHeight, frameData);
+			        	BufferedImage frame = new BufferedImage(Main.logoWidth, Main.logoHeight, BufferedImage.TYPE_4BYTE_ABGR);
+			            frame.getRaster().setDataElements(0, 0, Main.logoWidth, Main.logoHeight, frameData);
 			            
 			            VideoPlayerCore.fullSizeWatermark = frame;
 			        }       
 				}
 				
-				Shutter.logoPNG = new ImageIcon(VideoPlayerCore.fullSizeWatermark).getImage().getScaledInstance(logoFinalSizeWidth, logoFinalSizeHeight, Image.SCALE_AREA_AVERAGING);
+				Main.logoPNG = new ImageIcon(VideoPlayerCore.fullSizeWatermark).getImage().getScaledInstance(logoFinalSizeWidth, logoFinalSizeHeight, Image.SCALE_AREA_AVERAGING);
 							
-				if (Shutter.logo.getWidth() == 0)
+				if (Main.logo.getWidth() == 0)
 				{
-					Shutter.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() / 2 - logoFinalSizeWidth / 2), (int) Math.floor(VideoPlayerUI.player.getHeight() / 2 - logoFinalSizeHeight / 2));	
+					Main.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() / 2 - logoFinalSizeWidth / 2), (int) Math.floor(VideoPlayerUI.player.getHeight() / 2 - logoFinalSizeHeight / 2));	
 				}
 				else
-					Shutter.logo.setLocation(Shutter.logo.getLocation().x + newPosX, Shutter.logo.getLocation().y + newPosY);
+					Main.logo.setLocation(Main.logo.getLocation().x + newPosX, Main.logo.getLocation().y + newPosY);
 	
-				Shutter.logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);        
+				Main.logo.setSize(logoFinalSizeWidth, logoFinalSizeHeight);        
 	            			
-				Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
-				Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );  
+				Main.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Main.logo.getLocation().x * Main.playerRatio) ) ) );
+				Main.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Main.logo.getLocation().y * Main.playerRatio) ) ) );  
 				
 	            //Saving location
-				Shutter.logoLocX = Shutter.logo.getLocation().x;
-				Shutter.logoLocY = Shutter.logo.getLocation().y;	
-	            Shutter.logo.repaint();        
+				Main.logoLocX = Main.logo.getLocation().x;
+				Main.logoLocY = Main.logo.getLocation().y;	
+	            Main.logo.repaint();        
 			}
 			catch (Exception e) 
 			{
 				e.printStackTrace();
-				JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("cantLoadFile"), Shutter.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(Main.frame, Main.language.getProperty("cantLoadFile"), Main.language.getProperty("error"), JOptionPane.ERROR_MESSAGE);
 			} 
 			finally {
 				
-				if (Shutter.watermarkPreset != null)
+				if (Main.watermarkPreset != null)
 				{
-					watermarkPositions(Shutter.watermarkPreset);
+					watermarkPositions(Main.watermarkPreset);
 				}
 				
-				Shutter.btnStart.setEnabled(true);
+				Main.btnStart.setEnabled(true);
 				
 	        	if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
-					Shutter.btnStart.setText(Shutter.language.getProperty("btnAddToRender"));
+					Main.btnStart.setText(Main.language.getProperty("btnAddToRender"));
 				else
-					Shutter.btnStart.setText(Shutter.language.getProperty("btnStartFunction"));
+					Main.btnStart.setText(Main.language.getProperty("btnStartFunction"));
 	        }
 		}
 		return true;
@@ -462,52 +462,52 @@ public class VideoPlayerOverlay extends Shutter {
 	
 	public static void watermarkPositions(String preset) {
 
-		Shutter.watermarkPreset = preset;
+		Main.watermarkPreset = preset;
 		
 		int offsetX = (int) ((double) VideoPlayerUI.player.getWidth() * 0.036);
 		int offsetY = (int) ((double) VideoPlayerUI.player.getHeight() * 0.036);
 		
 		if (preset.equals("watermarkTopLeft"))
 		{
-			Shutter.logo.setLocation(offsetX, offsetY);	
+			Main.logo.setLocation(offsetX, offsetY);	
 		}
 		else if (preset.equals("watermarkLeft"))
 		{
-			Shutter.logo.setLocation(offsetX, (int) Math.floor(VideoPlayerUI.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));	
+			Main.logo.setLocation(offsetX, (int) Math.floor(VideoPlayerUI.player.getHeight() / 2 - Main.logo.getHeight() / 2));	
 		}
 		else if (preset.equals("watermarkBottomLeft"))
 		{
-			Shutter.logo.setLocation(offsetX, (int) Math.floor(VideoPlayerUI.player.getHeight() - Shutter.logo.getHeight()) - offsetY);	
+			Main.logo.setLocation(offsetX, (int) Math.floor(VideoPlayerUI.player.getHeight() - Main.logo.getHeight()) - offsetY);	
 		}
 		else if (preset.equals("watermarkTop"))
 		{
-			Shutter.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), offsetY);	
+			Main.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() / 2 - Main.logo.getWidth() / 2), offsetY);	
 		}
 		else if (preset.equals("watermarkCenter"))
 		{
-			Shutter.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), (int) Math.floor(VideoPlayerUI.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));
+			Main.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() / 2 - Main.logo.getWidth() / 2), (int) Math.floor(VideoPlayerUI.player.getHeight() / 2 - Main.logo.getHeight() / 2));
 		}
 		else if (preset.equals("watermarkBottom"))
 		{
-			Shutter.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() / 2 - Shutter.logo.getWidth() / 2), (int) Math.floor(VideoPlayerUI.player.getHeight() - Shutter.logo.getHeight()) - offsetY);
+			Main.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() / 2 - Main.logo.getWidth() / 2), (int) Math.floor(VideoPlayerUI.player.getHeight() - Main.logo.getHeight()) - offsetY);
 		}
 		else if (preset.equals("watermarkTopRight"))
 		{
-			Shutter.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() - Shutter.logo.getWidth()) - offsetX, offsetY);
+			Main.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() - Main.logo.getWidth()) - offsetX, offsetY);
 		}
 		else if (preset.equals("watermarkRight"))
 		{
-			Shutter.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() - Shutter.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayerUI.player.getHeight() / 2 - Shutter.logo.getHeight() / 2));
+			Main.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() - Main.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayerUI.player.getHeight() / 2 - Main.logo.getHeight() / 2));
 		}
 		else if (preset.equals("watermarkBottomRight"))
 		{
-			Shutter.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() - Shutter.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayerUI.player.getHeight() - Shutter.logo.getHeight()) - offsetY);
+			Main.logo.setLocation((int) Math.floor(VideoPlayerUI.player.getWidth() - Main.logo.getWidth()) - offsetX, (int) Math.floor(VideoPlayerUI.player.getHeight() - Main.logo.getHeight()) - offsetY);
 		}
 				
-		Shutter.logoLocX = Shutter.logo.getLocation().x;
-		Shutter.logoLocY = Shutter.logo.getLocation().y;
-		Shutter.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().x * Shutter.playerRatio) ) ) );
-		Shutter.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Shutter.logo.getLocation().y * Shutter.playerRatio) ) ) );
+		Main.logoLocX = Main.logo.getLocation().x;
+		Main.logoLocY = Main.logo.getLocation().y;
+		Main.textWatermarkPosX.setText(String.valueOf(Integer.valueOf((int) Math.floor(Main.logo.getLocation().x * Main.playerRatio) ) ) );
+		Main.textWatermarkPosY.setText(String.valueOf(Integer.valueOf((int) Math.floor(Main.logo.getLocation().y * Main.playerRatio) ) ) );
 	}
 	
 }

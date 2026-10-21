@@ -25,7 +25,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JWindow;
 import javax.swing.Timer;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.utils.Utils;
 
 @SuppressWarnings("serial")
@@ -87,7 +87,7 @@ public class SplashRenderer extends JWindow {
 	    // Setup Text
 	    bufferGraphics.setFont(font);
 	    FontMetrics fm = bufferGraphics.getFontMetrics();
-	    String versionText = "v" + Shutter.actualVersion;
+	    String versionText = "v" + Main.actualVersion;
 	    String years = "2013–2026";
 	    int xVersion = getWidth() - fm.stringWidth(versionText) - 15;
 	    int yVersion = getHeight() - 15;
