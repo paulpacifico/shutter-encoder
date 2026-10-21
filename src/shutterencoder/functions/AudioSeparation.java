@@ -27,13 +27,13 @@ import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.DEMUCS;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
-public class AudioSeparation extends Shutter {
+public class AudioSeparation extends Main {
 
 	public static Thread thread;
 	public static File separationFolder;

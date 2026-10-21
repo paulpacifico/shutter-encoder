@@ -24,7 +24,7 @@ import java.io.File;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
@@ -32,7 +32,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class Extract extends Shutter {
+public class Extract extends Main {
 	
 	private static int videoStream = 0;	
 	private static int audioStream = 0;
@@ -95,7 +95,7 @@ public class Extract extends Shutter {
 						
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
 						{
-							extensionName =  "_" + Shutter.language.getProperty("video") + "_" + (videoStream + 1);
+							extensionName =  "_" + Main.language.getProperty("video") + "_" + (videoStream + 1);
 							
 							if (btnExtension.isSelected())
 							{
@@ -104,7 +104,7 @@ public class Extract extends Shutter {
 						}
 						else if (comboFilter.getSelectedItem().toString().contains(language.getProperty("audio")))
 						{
-							extensionName =  "_" + Shutter.language.getProperty("audio") + "_" + (audioStream + 1);
+							extensionName =  "_" + Main.language.getProperty("audio") + "_" + (audioStream + 1);
 							
 							if (btnExtension.isSelected())
 							{
@@ -113,7 +113,7 @@ public class Extract extends Shutter {
 						}
 						else if (comboFilter.getSelectedItem().toString().contains(language.getProperty("subtitles")))
 						{
-							extensionName =  "_" + Shutter.language.getProperty("subtitles") + "_" + (subStream + 1);
+							extensionName =  "_" + Main.language.getProperty("subtitles") + "_" + (subStream + 1);
 							
 							if (btnExtension.isSelected())
 							{
@@ -215,7 +215,7 @@ public class Extract extends Shutter {
 						    Thread.currentThread().interrupt();
 						}
 																		
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -268,7 +268,7 @@ public class Extract extends Shutter {
 					}
 				}	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -418,7 +418,7 @@ public class Extract extends Shutter {
 		Utils.copyFile(fileOut);
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			Extract.main();

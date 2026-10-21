@@ -31,14 +31,14 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
-public class OfflineDetection extends Shutter {
+public class OfflineDetection extends Main {
 		
 	public static void main() {
 		
@@ -84,10 +84,10 @@ public class OfflineDetection extends Shutter {
 						if (System.getProperty("os.name").contains("Windows"))
 							stats_file = "stats_file";
 						else		    		
-							stats_file = Shutter.dirTemp + "stats_file";
+							stats_file = Main.dirTemp + "stats_file";
 						
 						//Command
-						String cmd =  " -i " + '"' + Shutter.dirTemp + "offline.png" + '"' + " -lavfi " + '"' + "[0:v]scale=1920x1080[source];[1:v]scale=1920x1080[reference];[source][reference]psnr=" + stats_file + '"' + " -an -f null -";
+						String cmd =  " -i " + '"' + Main.dirTemp + "offline.png" + '"' + " -lavfi " + '"' + "[0:v]scale=1920x1080[source];[1:v]scale=1920x1080[reference];[source][reference]psnr=" + stats_file + '"' + " -an -f null -";
 						
 						if (System.getProperty("os.name").contains("Windows"))						
 							cmd += '"';					
@@ -104,7 +104,7 @@ public class OfflineDetection extends Shutter {
 						if (cancelled == false)
 							showDetection(file);
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName))
 							break;
@@ -115,7 +115,7 @@ public class OfflineDetection extends Shutter {
 					}
 				}	
 								
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -142,16 +142,16 @@ public class OfflineDetection extends Shutter {
 	
 	private static void showDetection(File file) {
 		
-		if (Shutter.cancelled == false && FFMPEG.error == false)
+		if (Main.cancelled == false && FFMPEG.error == false)
 		{
 			if (comboFilter.getSelectedIndex() == 0) // Display
 			{
 				if (FFMPEG.mediaOfflineFrame.length() > 0)
 				{
-					JOptionPane.showMessageDialog(frame, FFMPEG.mediaOfflineFrame, Shutter.language.getProperty("functionOfflineDetection"), JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, FFMPEG.mediaOfflineFrame, Main.language.getProperty("functionOfflineDetection"), JOptionPane.ERROR_MESSAGE);
 				}
 				else
-					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionOfflineDetection"), JOptionPane.INFORMATION_MESSAGE);					
+					JOptionPane.showMessageDialog(frame, Main.language.getProperty("noErrorDetected"), Main.language.getProperty("functionOfflineDetection"), JOptionPane.INFORMATION_MESSAGE);					
 			}
 			else // Save
 			{
@@ -173,14 +173,14 @@ public class OfflineDetection extends Shutter {
 				
 				try {
 					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
-					writer.println(Shutter.language.getProperty("analyzeOf") + " " + file.getName());
+					writer.println(Main.language.getProperty("analyzeOf") + " " + file.getName());
 					writer.println("");
 					if (FFMPEG.mediaOfflineFrame.length() > 0)
 					{
 						writer.println(FFMPEG.mediaOfflineFrame);
 					}
 					else
-						writer.println(Shutter.language.getProperty("noErrorDetected"));
+						writer.println(Main.language.getProperty("noErrorDetected"));
 					writer.close();
 				} catch (FileNotFoundException | UnsupportedEncodingException e) {}
 			}
@@ -212,7 +212,7 @@ public class OfflineDetection extends Shutter {
 		FunctionUtils.addFileForMail(fileName);		
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			OfflineDetection.main();

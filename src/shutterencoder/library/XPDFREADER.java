@@ -32,7 +32,7 @@ import java.io.OutputStreamWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -40,7 +40,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class XPDFREADER extends Shutter {
+public class XPDFREADER extends Main {
 	
 public static boolean error = false;
 public static boolean isRunning = false;
@@ -60,10 +60,10 @@ public static int pagesCount = 1;
 	        RenderQueue.caseRunParallel.setEnabled(false);
 	        RenderQueue.parallelValue.setEnabled(false);
 	        
-	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
+	        lblCurrentEncoding.setText(Main.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
-				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
+				lblDestination1.setText(Main.language.getProperty("sameAsSource"));
 		}
 		else
 		{			
@@ -93,7 +93,7 @@ public static int pagesCount = 1;
 							process = processToXPDF.start();
 						}
 						
-						Console.consoleXPDFREADER.append(Shutter.language.getProperty("command") + " " + PathToXPDF + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG) + System.lineSeparator());
+						Console.consoleXPDFREADER.append(Main.language.getProperty("command") + " " + PathToXPDF + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG) + System.lineSeparator());
 						
 						isRunning = true;
 						
@@ -220,7 +220,7 @@ public static int pagesCount = 1;
 						process = processToXPDF.start();
 					}					
 									
-					Console.consoleFFPROBE.append(Shutter.language.getProperty("command") + " " + PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffprobe") + " -i -" +  System.lineSeparator());
+					Console.consoleFFPROBE.append(Main.language.getProperty("command") + " " + PathToXPDF + " -r 300 -f 1 -l 1 " + '"' + file + '"' + " - | " + PathToXPDF.replace("pdftoppm", "ffprobe") + " -i -" +  System.lineSeparator());
 						
 					isRunning = true;
 					

@@ -71,7 +71,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.utils.UnlockExternalApps;
@@ -122,7 +122,7 @@ public class ANONYMIZER {
 			}
 			else
 			{
-				Shutter.comboFonctions.setSelectedItem("");
+				Main.comboFonctions.setSelectedItem("");
 				Utils.openFile(anonymizerApp);
 			}
 		}
@@ -135,19 +135,19 @@ public class ANONYMIZER {
 	        JLabel background = new JLabel(icon);
 	        background.setLayout(new BorderLayout());
 	        
-	        JLabel text = new JLabel("<html>" + Shutter.language.getProperty("shutterAnonymizerRequired") + "<br>" + Shutter.language.getProperty("wantToDownload") + "</html>", SwingConstants.CENTER);
+	        JLabel text = new JLabel("<html>" + Main.language.getProperty("shutterAnonymizerRequired") + "<br>" + Main.language.getProperty("wantToDownload") + "</html>", SwingConstants.CENTER);
 	        Image anonymizer = new ImageIcon(getClass().getClassLoader().getResource("resources/icon_anonymizer.png")).getImage();
 	        Image newimg = anonymizer.getScaledInstance(40, 40, java.awt.Image.SCALE_SMOOTH);
 			ImageIcon logo = new ImageIcon(newimg);
 			text.setIcon(logo);
 	        text.setOpaque(false);
 	        text.setForeground(Color.WHITE);
-	        text.setFont(new Font(Shutter.mainFont, Font.BOLD, 14));
+	        text.setFont(new Font(Main.mainFont, Font.BOLD, 14));
 	        
 	        background.add(text, BorderLayout.CENTER);
 
-			int q = JOptionPane.showConfirmDialog(Shutter.frame, background,
-					Shutter.language.getProperty("functionBlurFaces"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+			int q = JOptionPane.showConfirmDialog(Main.frame, background,
+					Main.language.getProperty("functionBlurFaces"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 
 			if (q == JOptionPane.YES_OPTION)
 			{
@@ -185,13 +185,13 @@ public class ANONYMIZER {
 					} catch (IOException | URISyntaxException er) {}	
 				}															
 			}
-			else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlurFaces")))
+			else if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionBlurFaces")))
 			{
-				Shutter.comboFonctions.removeItem(Shutter.language.getProperty("functionBlurFaces"));
+				Main.comboFonctions.removeItem(Main.language.getProperty("functionBlurFaces"));
 			}
 			
-			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionBlurFaces")))
-				Shutter.comboFonctions.setSelectedItem("");
+			if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionBlurFaces")))
+				Main.comboFonctions.setSelectedItem("");
 		}
 	}
 	
@@ -378,14 +378,14 @@ public class ANONYMIZER {
 				
 				if (comboPreview.getSelectedIndex() == 0)
 				{
-					previewOriginal = javax.imageio.ImageIO.read(Shutter.class.getClassLoader().getResource("resources/female.jpg"));
+					previewOriginal = javax.imageio.ImageIO.read(Main.class.getClassLoader().getResource("resources/female.jpg"));
 				}
 				else if (comboPreview.getSelectedIndex() == 1)
 				{
-					previewOriginal = javax.imageio.ImageIO.read(Shutter.class.getClassLoader().getResource("resources/male.jpg"));
+					previewOriginal = javax.imageio.ImageIO.read(Main.class.getClassLoader().getResource("resources/male.jpg"));
 				}
 				else
-					previewOriginal = javax.imageio.ImageIO.read(Shutter.class.getClassLoader().getResource("resources/license_plate.jpg"));
+					previewOriginal = javax.imageio.ImageIO.read(Main.class.getClassLoader().getResource("resources/license_plate.jpg"));
 				
 				Preview.updatePreview();
 				
@@ -398,7 +398,7 @@ public class ANONYMIZER {
 		imgPreview.setMaximumSize(new Dimension(192, 192));
 
 		try {
-			previewOriginal = javax.imageio.ImageIO.read(Shutter.class.getClassLoader().getResource("resources/female.jpg"));
+			previewOriginal = javax.imageio.ImageIO.read(Main.class.getClassLoader().getResource("resources/female.jpg"));
 		} catch (Exception ignored) {}
 		Preview.updatePreview();
 
@@ -415,11 +415,11 @@ public class ANONYMIZER {
 	    mainPanel.add(centerPanel);
 	    mainPanel.add(rightPanel);
 
-	    Object[] options = { Shutter.language.getProperty("btnApply") };
+	    Object[] options = { Main.language.getProperty("btnApply") };
 	    JOptionPane.showOptionDialog(
-	        Shutter.frame, 
+	        Main.frame, 
 	        mainPanel, 
-	        Shutter.language.getProperty("functionBlurFaces"), 
+	        Main.language.getProperty("functionBlurFaces"), 
 	        JOptionPane.DEFAULT_OPTION, 
 	        JOptionPane.PLAIN_MESSAGE, 
 	        null, 
@@ -480,10 +480,10 @@ public class ANONYMIZER {
 	public static void run(String input, File output) {
 		
 		error = false;
-		Shutter.progressBar.setValue(0);	
-		Shutter.progressBar.setMaximum(100);
+		Main.progressBar.setValue(0);	
+		Main.progressBar.setMaximum(100);
 		UIController.disableAll();
-		Shutter.btnStart.setEnabled(false);
+		Main.btnStart.setEnabled(false);
 				
 		runProcess = new Thread(new Runnable()  {
 
@@ -615,7 +615,7 @@ public class ANONYMIZER {
 				
 				processBuilder.redirectErrorStream(true);
 
-				Console.consolePYTHON.append(Shutter.language.getProperty("command") + " " + String.join(" ", processBuilder.command()));	
+				Console.consolePYTHON.append(Main.language.getProperty("command") + " " + String.join(" ", processBuilder.command()));	
 				
 				isRunning = true;	
 				process = processBuilder.start();
@@ -639,11 +639,11 @@ public class ANONYMIZER {
 		                    String percentValue = matcher.group(1);
 		                    int percent = Integer.parseInt(percentValue);
 		                    
-							Shutter.progressBar.setValue(percent);
+							Main.progressBar.setValue(percent);
 	                    }
 					}
 	            	
-	            	if (Shutter.cancelled)
+	            	if (Main.cancelled)
 	            		break;	 
 	            }
 	            

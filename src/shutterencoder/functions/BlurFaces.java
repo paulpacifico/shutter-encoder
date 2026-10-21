@@ -26,12 +26,12 @@ import java.util.Set;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.ANONYMIZER;
 import shutterencoder.library.FFMPEG;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.utils.Utils;
 
-public class BlurFaces extends Shutter {
+public class BlurFaces extends Main {
 
 	public static Thread thread;
 

@@ -36,7 +36,7 @@ import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.BMXTRANSWRAP;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
@@ -48,7 +48,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class Rewrap extends Shutter {
+public class Rewrap extends Main {
 	
 	public static void main() {
 		
@@ -64,11 +64,11 @@ public class Rewrap extends Shutter {
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{
 					//Render queue only accept selected files
-					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
 						boolean isSelected = false;
 						
-						for (String input : Shutter.fileList.getSelectedValuesList())
+						for (String input : Main.fileList.getSelectedValuesList())
 						{
 							if (list.getElementAt(i).equals(input))
 							{
@@ -111,7 +111,7 @@ public class Rewrap extends Shutter {
 			    		if (FFPROBE.videoCodec != null)
 			    		{
 			    			String vcodec = FFPROBE.videoCodec.replace("video", "");
-			    			for (String s : Shutter.functionsList)
+			    			for (String s : Main.functionsList)
 			    			{
 			    				if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
 			    				|| s.toLowerCase().contains(vcodec.toLowerCase()))
@@ -275,7 +275,7 @@ public class Rewrap extends Shutter {
 							if (btnExtension.isSelected())
 								key = txtExtension.getText();
 
-							lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
+							lblCurrentEncoding.setText(Main.language.getProperty("createOpatomFiles"));
 																									
 							BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName.replace(extension, "") + '"' + " " + '"' + file + '"');
 						
@@ -326,7 +326,7 @@ public class Rewrap extends Shutter {
 							mergeMultiCuts(tempFolder, fileName, extension, newExtension, timecode, fileOut);
 						}
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -346,7 +346,7 @@ public class Rewrap extends Shutter {
 					}
 				}	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -402,7 +402,7 @@ public class Rewrap extends Shutter {
 			//Simple volume compensation
 			String normalization = "";
 			
-			if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible() && Shutter.caseEqualizer.isSelected() == false)
+			if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible() && Main.caseEqualizer.isSelected() == false)
 			{
 				normalization = " -af volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";	
 			}
@@ -535,7 +535,7 @@ public class Rewrap extends Shutter {
 		if (caseAddSubtitles.isSelected())
 		{
 			caseAddSubtitles.setEnabled(true);
-			Shutter.fileList.setSelectedValue(file, true);
+			Main.fileList.setSelectedValue(file, true);
 			
 			autoEmbed = true;
 			
@@ -569,7 +569,7 @@ public class Rewrap extends Shutter {
 			}		
 		}
 		
-		if (Shutter.caseAddSubtitles.isSelected())
+		if (Main.caseAddSubtitles.isSelected())
     	{		
 			String subsFiles = "";
 			for (Component c : SubtitlesEmbed.frame.getContentPane().getComponents())
@@ -591,7 +591,7 @@ public class Rewrap extends Shutter {
 	
 	private static String setMapSubtitles() {
 
-		if (Shutter.caseAddSubtitles.isSelected())
+		if (Main.caseAddSubtitles.isSelected())
 		{			
 			if (comboFilter.getSelectedItem().toString().equals(".mkv"))
 				return " -c:s srt" + FunctionUtils.setMapSubtitles();
@@ -676,7 +676,7 @@ public class Rewrap extends Shutter {
 			return true;
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			Rewrap.main();

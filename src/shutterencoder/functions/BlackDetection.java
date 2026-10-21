@@ -31,14 +31,14 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
-public class BlackDetection extends Shutter {
+public class BlackDetection extends Main {
 
 	public static void main() {
 		
@@ -103,7 +103,7 @@ public class BlackDetection extends Shutter {
 						if (cancelled == false)
 							showDetection(file);
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName))
 								break;
@@ -114,7 +114,7 @@ public class BlackDetection extends Shutter {
 					}
 				}	
 								
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -141,16 +141,16 @@ public class BlackDetection extends Shutter {
 	
 	private static void showDetection(File file) {
 		
-		if (Shutter.cancelled == false && FFMPEG.error == false)
+		if (Main.cancelled == false && FFMPEG.error == false)
 		{
 			if (comboFilter.getSelectedIndex() == 0) // Display
 			{
 				if (FFMPEG.blackFrame.length() > 0)
 				{
-					JOptionPane.showMessageDialog(frame, FFMPEG.blackFrame, Shutter.language.getProperty("functionBlackDetection"), JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, FFMPEG.blackFrame, Main.language.getProperty("functionBlackDetection"), JOptionPane.ERROR_MESSAGE);
 				}
 				else
-					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noErrorDetected"), Shutter.language.getProperty("functionBlackDetection"), JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(frame, Main.language.getProperty("noErrorDetected"), Main.language.getProperty("functionBlackDetection"), JOptionPane.INFORMATION_MESSAGE);
 			}
 			else // Save
 			{
@@ -172,14 +172,14 @@ public class BlackDetection extends Shutter {
 				
 				try {
 					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
-					writer.println(Shutter.language.getProperty("analyzeOf") + " " + file.getName());
+					writer.println(Main.language.getProperty("analyzeOf") + " " + file.getName());
 					writer.println("");
 					if (FFMPEG.blackFrame.length() > 0)
 					{
 						writer.println(FFMPEG.blackFrame);
 					}
 					else
-						writer.println(Shutter.language.getProperty("noErrorDetected"));
+						writer.println(Main.language.getProperty("noErrorDetected"));
 					writer.close();
 				} catch (FileNotFoundException | UnsupportedEncodingException e) {}
 			}
@@ -211,7 +211,7 @@ public class BlackDetection extends Shutter {
 		FunctionUtils.addFileForMail(fileName);		
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			BlackDetection.main();

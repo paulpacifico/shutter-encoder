@@ -26,14 +26,14 @@ import java.io.InputStreamReader;
 
 import javax.imageio.ImageIO;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
-public class NCNN extends Shutter {
+public class NCNN extends Main {
 	
 static int dureeTotale = 0; 
 public static boolean error = false;

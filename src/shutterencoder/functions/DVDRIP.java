@@ -27,7 +27,7 @@ import javax.swing.JOptionPane;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Ftp;
@@ -36,7 +36,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class DVDRIP extends Shutter {
+public class DVDRIP extends Main {
 	
 	public static void main() {
 		
@@ -60,7 +60,7 @@ public class DVDRIP extends Shutter {
 				
 				if (dvdFolder == null)
 				{
-					JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("noDVD"), Shutter.language.getProperty("DVDMissing"), JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, Main.language.getProperty("noDVD"), Main.language.getProperty("DVDMissing"), JOptionPane.ERROR_MESSAGE);
 					cancelled = true;
 				}
 				else
@@ -158,7 +158,7 @@ public class DVDRIP extends Shutter {
 					
 				}
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -212,7 +212,7 @@ public class DVDRIP extends Shutter {
 			File fileOut = new File(labelOutput + "/" + videoName);
 			if(fileOut.exists())
 			{
-				int q = JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("eraseFile"), Shutter.language.getProperty("theFile") + " " + videoName + " " + Shutter.language.getProperty("alreadyExist"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+				int q = JOptionPane.showConfirmDialog(Main.frame, Main.language.getProperty("eraseFile"), Main.language.getProperty("theFile") + " " + videoName + " " + Main.language.getProperty("alreadyExist"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 				if (q == JOptionPane.NO_OPTION)
 					cancelled = true;	
 			}
@@ -239,7 +239,7 @@ public class DVDRIP extends Shutter {
 				return true;
 			}
 
-			if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+			if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 			{
 				lastActions(VOB, fileOut, labelOutput);
 			}

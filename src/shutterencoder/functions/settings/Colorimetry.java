@@ -21,10 +21,10 @@ package shutterencoder.functions.settings;
 
 import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
-public class Colorimetry extends Shutter {
+public class Colorimetry extends Main {
 
 	public static int allR = 0;
     public static int allG = 0;
@@ -49,7 +49,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setColor(String filterComplex) {
 				
-		if (grpColorimetry.isVisible() && Shutter.caseEnableColorimetry.isSelected() && setEQ(true).equals("") == false)
+		if (grpColorimetry.isVisible() && Main.caseEnableColorimetry.isSelected() && setEQ(true).equals("") == false)
 		{			
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -95,20 +95,20 @@ public class Colorimetry extends Shutter {
 			}
 			else
 			{
-				pathToLuts = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+				pathToLuts = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 				pathToLuts = pathToLuts.substring(0,pathToLuts.length()-1);
 				pathToLuts = pathToLuts.substring(0,(int) (pathToLuts.lastIndexOf("/"))).replace("%20", "\\ ")  + "/LUTs/";
 			}
 			
 			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 			{				
-				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString() + ":peak_detect=0");	
+				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "lut=" + pathToLuts + Main.comboLUTs.getSelectedItem().toString() + ":peak_detect=0");	
 			}
 			else
 			{		
 				if (filterComplex != "") filterComplex += ",";
 				
-				filterComplex += "lut3d=file=" + pathToLuts + Shutter.comboLUTs.getSelectedItem().toString();	
+				filterComplex += "lut3d=file=" + pathToLuts + Main.comboLUTs.getSelectedItem().toString();	
 			}
 		}
 		
@@ -273,15 +273,15 @@ public class Colorimetry extends Shutter {
 
 	public static String setSharpness(String eq) {
 	
-		if (Shutter.sliderGrain.getValue() != 0)
+		if (Main.sliderGrain.getValue() != 0)
 		{
 		    if (!eq.isEmpty())
 		        eq += ",";
 
-		    float slider = Shutter.sliderGrain.getValue() / 100.0f;
+		    float slider = Main.sliderGrain.getValue() / 100.0f;
 		    float amount;
 
-		    if (Shutter.sliderGrain.getValue() > 0)
+		    if (Main.sliderGrain.getValue() > 0)
 		    {
 		        amount = 1.0f * slider * slider;
 		        eq += "unsharp=7:7:" + String.format("%.3f", amount) + ":5:5:0";
@@ -298,16 +298,16 @@ public class Colorimetry extends Shutter {
 		
 	public static String setAngle(String eq) {
 
-		if (Shutter.sliderAngle.getValue() != 0)
+		if (Main.sliderAngle.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
 			float angle;
-			if (Shutter.sliderAngle.getValue() > 0)
-				angle = (float) ((float) ((float) Shutter.sliderAngle.getValue() / 10) * Math.PI) / 180;
+			if (Main.sliderAngle.getValue() > 0)
+				angle = (float) ((float) ((float) Main.sliderAngle.getValue() / 10) * Math.PI) / 180;
 			else
-				angle = (float) ((float) (0 - (float) Shutter.sliderAngle.getValue() / 10) * Math.PI) / 180;
+				angle = (float) ((float) (0 - (float) Main.sliderAngle.getValue() / 10) * Math.PI) / 180;
 			
 			float ratio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
 			float h = (float) ( (float) FFPROBE.imageHeight / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
@@ -324,10 +324,10 @@ public class Colorimetry extends Shutter {
 						
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
 			{
-				eq += "rotate=" + ((float) Shutter.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight; 
+				eq += "rotate=" + ((float) Main.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight; 
 			}
 			else
-				eq += "rotate=" + ((float) Shutter.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
+				eq += "rotate=" + ((float) Main.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
 		}
 		
 		return eq;
@@ -350,7 +350,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setVignette(String eq) {
 
-	    if (Shutter.sliderVignette.getValue() != 0)
+	    if (Main.sliderVignette.getValue() != 0)
 	    {
 	        if (eq != "")
 	            eq += ",";
@@ -360,7 +360,7 @@ public class Colorimetry extends Shutter {
 	                    + "):(ow-iw)/2:(oh-ih)/2:black,";
 	        String post = ",crop=iw/" + padFactor + ":ih/" + padFactor;
 
-	        int sliderVal = Shutter.sliderVignette.getValue(); // -100..100
+	        int sliderVal = Main.sliderVignette.getValue(); // -100..100
 	        float maxAngle = (float) (Math.PI / 2);
 	        float angle = maxAngle * (Math.abs(sliderVal) / 100f);
 
@@ -398,7 +398,7 @@ public class Colorimetry extends Shutter {
 	
 	public static String setSaturation(String eq) {
 
-	    int value = Shutter.sliderSaturation.getValue();
+	    int value = Main.sliderSaturation.getValue();
 
 	    if (value != 0) {
 
@@ -428,20 +428,20 @@ public class Colorimetry extends Shutter {
 
 	public static String setBalance(String eq) {		
 		
-		float r = (float) Shutter.sliderRED.getValue() / 400;
-		float g = (float) Shutter.sliderGREEN.getValue() / 400;
-		float b = (float) Shutter.sliderBLUE.getValue() / 400;
+		float r = (float) Main.sliderRED.getValue() / 400;
+		float g = (float) Main.sliderGREEN.getValue() / 400;
+		float b = (float) Main.sliderBLUE.getValue() / 400;
 		
-		if (Shutter.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setAll")))
+		if (Main.comboRGB.getSelectedItem().equals(Main.language.getProperty("setAll")))
 			balanceAll = "rs="+r+":gs="+g+":bs="+b+":rm="+r+":gm="+g+":bm="+b+":rh="+r+":gh="+g+":bh="+b;			
 			
-		if (Shutter.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setLow")))	
+		if (Main.comboRGB.getSelectedItem().equals(Main.language.getProperty("setLow")))	
 			balanceLow = "rs="+r+":gs="+g+":bs="+b;	
 		
-		else if (Shutter.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setMedium")))		
+		else if (Main.comboRGB.getSelectedItem().equals(Main.language.getProperty("setMedium")))		
 			balanceMedium = "rm="+r+":gm="+g+":bm="+b;	
 		
-		else if (Shutter.comboRGB.getSelectedItem().equals(Shutter.language.getProperty("setHigh")))
+		else if (Main.comboRGB.getSelectedItem().equals(Main.language.getProperty("setHigh")))
 			balanceHigh = "rh="+r+":gh="+g+":bh="+b;
 		
 		if (balanceAll != "" && balanceAll.equals("rs=0.0:gs=0.0:bs=0.0:rm=0.0:gm=0.0:bm=0.0:rh=0.0:gh=0.0:bh=0.0") == false)
@@ -480,12 +480,12 @@ public class Colorimetry extends Shutter {
 
 	public static String setContrast(String eq) {
 		
-		if (Shutter.sliderContrast.getValue() != 0)
+		if (Main.sliderContrast.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 
-			eq += "eq=contrast=" + (1 + (float) Shutter.sliderContrast.getValue() / 300); 
+			eq += "eq=contrast=" + (1 + (float) Main.sliderContrast.getValue() / 300); 
 		}
 		
 		return eq;
@@ -493,12 +493,12 @@ public class Colorimetry extends Shutter {
 	
 	public static String setWB(String eq) {
 
-		if (Shutter.sliderBalance.getValue() != 6500)
+		if (Main.sliderBalance.getValue() != 6500)
 		{
 			if (eq != "")
 				eq += ",";
 
-			eq += "colortemperature=" + Shutter.sliderBalance.getValue() + ":pl=1"; 
+			eq += "colortemperature=" + Main.sliderBalance.getValue() + ":pl=1"; 
 		}
 		
 		return eq;
@@ -506,12 +506,12 @@ public class Colorimetry extends Shutter {
 	
 	public static String setHUE(String eq) {
 
-		if (Shutter.sliderHUE.getValue() != 0)
+		if (Main.sliderHUE.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 
-			eq += "hue=h=" + (0 - Shutter.sliderHUE.getValue()); 
+			eq += "hue=h=" + (0 - Main.sliderHUE.getValue()); 
 		}
 		
 		return eq;
@@ -519,20 +519,20 @@ public class Colorimetry extends Shutter {
 	
 	public static String setWhite(String eq) {
 
-		if (Shutter.sliderWhite.getValue() != 0)
+		if (Main.sliderWhite.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
 				
-			if (Shutter.sliderWhite.getValue() > 0)
+			if (Main.sliderWhite.getValue() > 0)
 			{
-				float value = 1 - (float) Shutter.sliderWhite.getValue() / 200;				
+				float value = 1 - (float) Main.sliderWhite.getValue() / 200;				
 				eq += "colorlevels=rimax=" + value + ":gimax=" + value + ":bimax=" + value; 
 			}
 			else
 			{
-				float value = 1 + (float) Shutter.sliderWhite.getValue() / 200;
+				float value = 1 + (float) Main.sliderWhite.getValue() / 200;
 				eq += "colorlevels=romax=" + value + ":gomax=" + value + ":bomax=" + value; 
 			}
 		}
@@ -542,19 +542,19 @@ public class Colorimetry extends Shutter {
 	
 	public static String setBlack(String eq) {
 
-		if (Shutter.sliderBlack.getValue() != 0)
+		if (Main.sliderBlack.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 				
-			if (Shutter.sliderBlack.getValue() > 0)
+			if (Main.sliderBlack.getValue() > 0)
 			{
-				float value = (float) Shutter.sliderBlack.getValue() / 400;				
+				float value = (float) Main.sliderBlack.getValue() / 400;				
 				eq += "colorlevels=romin=" + value + ":gomin=" + value + ":bomin=" + value; 				 
 			}
 			else
 			{
-				float value = 0 - (float) Shutter.sliderBlack.getValue() / 400;
+				float value = 0 - (float) Main.sliderBlack.getValue() / 400;
 				eq += "colorlevels=rimin=" + value + ":gimin=" + value + ":bimin=" + value;
 			}
 				
@@ -565,7 +565,7 @@ public class Colorimetry extends Shutter {
 
 	public static String setShadows(String eq) {
 
-	    int value = Shutter.sliderShadows.getValue();
+	    int value = Main.sliderShadows.getValue();
 
 	    if (value != 0) {
 
@@ -591,7 +591,7 @@ public class Colorimetry extends Shutter {
 
 	public static String setMediums(String eq) {
 
-	    int value = Shutter.sliderMediums.getValue();
+	    int value = Main.sliderMediums.getValue();
 
 	    if (value != 0) {
 
@@ -615,7 +615,7 @@ public class Colorimetry extends Shutter {
 
 	public static String setHighlights(String eq) {
 
-	    int value = Shutter.sliderHighlights.getValue();
+	    int value = Main.sliderHighlights.getValue();
 
 	    if (value != 0) {
 
@@ -640,12 +640,12 @@ public class Colorimetry extends Shutter {
 
 	public static String setExposure(String eq) {
 
-		if (Shutter.sliderExposure.getValue() != 0)
+		if (Main.sliderExposure.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
-			eq += "exposure=" + (float) ((float) Shutter.sliderExposure.getValue() / 100) * 3; 
+			eq += "exposure=" + (float) ((float) Main.sliderExposure.getValue() / 100) * 3; 
 		}
 		
 		return eq;
@@ -653,12 +653,12 @@ public class Colorimetry extends Shutter {
 	
 	public static String setGamma(String eq) {		
 
-		if (Shutter.sliderGamma.getValue() != 0)
+		if (Main.sliderGamma.getValue() != 0)
 		{
 			if (eq != "")
 				eq += ",";
 			
-			eq += "eq=gamma=" + (1 + (float) Shutter.sliderGamma.getValue() / 100); 
+			eq += "eq=gamma=" + (1 + (float) Main.sliderGamma.getValue() / 100); 
 		}
 		
 		return eq;
@@ -717,7 +717,7 @@ public class Colorimetry extends Shutter {
 		eq = setVignette(eq);
 		
 		//FinalEQ
-		Shutter.colorimetryValues = eq.replace("\"", "'");
+		Main.colorimetryValues = eq.replace("\"", "'");
 		
 		return eq;
 	}

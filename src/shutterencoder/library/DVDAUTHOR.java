@@ -23,12 +23,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.utils.Utils;
 
-public class DVDAUTHOR extends Shutter {
+public class DVDAUTHOR extends Main {
 	
 public static boolean error = false;
 public static boolean isRunning = false;
@@ -37,19 +37,19 @@ public static Process process;
 
 	public static void run(final String cmd) {
 		
-	    Console.consoleDVDAUTHOR.append(Shutter.language.getProperty("command") + " " + cmd);
+	    Console.consoleDVDAUTHOR.append(Main.language.getProperty("command") + " " + cmd);
 		
-		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
+		if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
 		{
 	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "dvdauthor " + cmd, lblDestination1.getText()});
 	        RenderQueue.caseRunParallel.setSelected(false);
 	        RenderQueue.caseRunParallel.setEnabled(false);
 	        RenderQueue.parallelValue.setEnabled(false);
 	        
-	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
+	        lblCurrentEncoding.setText(Main.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
-				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
+				lblDestination1.setText(Main.language.getProperty("sameAsSource"));
 		}
 		else
 		{

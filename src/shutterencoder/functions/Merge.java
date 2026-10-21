@@ -28,7 +28,7 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
@@ -37,7 +37,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class Merge extends Shutter {
+public class Merge extends Main {
 
 	public static void main() {
 		
@@ -109,7 +109,7 @@ public class Merge extends Shutter {
 						FFPROBE.totalLength = progressBar.getMaximum();	
 						FFMPEG.fileLength = progressBar.getMaximum();
 											
-						lblCurrentEncoding.setText(Shutter.language.getProperty("babEncoding"));
+						lblCurrentEncoding.setText(Main.language.getProperty("babEncoding"));
 				
 						//Metadatas
 			    		String metadatas = FunctionUtils.setMetadata();
@@ -122,7 +122,7 @@ public class Merge extends Shutter {
 						String audioMapping = setAudioMapping();
 						
 						String openGOP = "";
-						if (Shutter.caseOpenGop.isSelected())
+						if (Main.caseOpenGop.isSelected())
 							openGOP = " -copyinkf";
 						
 						//Command
@@ -144,7 +144,7 @@ public class Merge extends Shutter {
 													
 						listeBAB.delete();							
 
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							lastActions(fileOut);
 						}
@@ -157,7 +157,7 @@ public class Merge extends Shutter {
 					}				
 			    }
 				
-			    if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+			    if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 			    	//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;

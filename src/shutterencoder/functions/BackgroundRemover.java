@@ -24,12 +24,12 @@ import java.io.File;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.BACKGROUNDREMOVER;
 import shutterencoder.library.FFMPEG;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.utils.Utils;
 
-public class BackgroundRemover extends Shutter {
+public class BackgroundRemover extends Main {
 	
 	public static Thread thread;
 	

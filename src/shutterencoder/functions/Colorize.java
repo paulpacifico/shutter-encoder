@@ -32,12 +32,12 @@ import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.DEOLDIFY;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.utils.Utils;
 
-public class Colorize extends Shutter {
+public class Colorize extends Main {
 	
 	public static File sourceFile = null;
 	public static Thread thread;
@@ -192,7 +192,7 @@ public class Colorize extends Shutter {
 									if (FFPROBE.videoCodec != null)
 									{
 										String vcodec = FFPROBE.videoCodec.replace("video", "");
-										for (String s : Shutter.functionsList)
+										for (String s : Main.functionsList)
 										{
 											if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
 											|| s.toLowerCase().contains(vcodec.toLowerCase()))

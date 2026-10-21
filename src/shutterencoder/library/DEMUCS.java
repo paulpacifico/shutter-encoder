@@ -26,11 +26,11 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 
-public class DEMUCS extends Shutter {
+public class DEMUCS extends Main {
 	
 	public static Thread runProcess;
 	public static Process process;
@@ -56,7 +56,7 @@ public class DEMUCS extends Shutter {
 							
 		if (demucs.exists() == false)
 		{		
-			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			int q =  JOptionPane.showConfirmDialog(Main.frame, Main.language.getProperty("additionalFiles") + System.lineSeparator() + Main.language.getProperty("wantToDownload"), Main.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			if (q == JOptionPane.YES_OPTION)
 			{	    									
 				if (System.getProperty("os.name").contains("Windows"))

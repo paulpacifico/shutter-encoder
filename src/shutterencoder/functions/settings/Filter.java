@@ -22,9 +22,9 @@ package shutterencoder.functions.settings;
 import java.io.File;
 
 import shutterencoder.library.EXIFTOOL;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 
-public class Filter extends Shutter {
+public class Filter extends Main {
 
 	public static boolean dateFilter(File file) throws InterruptedException {
 		

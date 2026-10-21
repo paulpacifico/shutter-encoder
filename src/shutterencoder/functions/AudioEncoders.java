@@ -30,7 +30,7 @@ import shutterencoder.functions.settings.Transitions;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
@@ -54,7 +54,7 @@ import shutterencoder.utils.Utils;
  * Dolby TrueHD
  */
 
-public class AudioEncoders extends Shutter {
+public class AudioEncoders extends Main {
 	
 	public static void main() {
 		
@@ -70,11 +70,11 @@ public class AudioEncoders extends Shutter {
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{
 					//Render queue only accept selected files
-					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
 						boolean isSelected = false;
 						
-						for (String input : Shutter.fileList.getSelectedValuesList())
+						for (String input : Main.fileList.getSelectedValuesList())
 						{
 							if (list.getElementAt(i).equals(input))
 							{
@@ -355,12 +355,12 @@ public class AudioEncoders extends Shutter {
 						}
 							
 						//MixAudio
-						if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && caseMixAudio.isSelected() && FFPROBE.surround == false)
+						if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) && caseMixAudio.isSelected() && FFPROBE.surround == false)
 						{
 							break;
 						}
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false && caseSplitAudio.isSelected() == false
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false && caseSplitAudio.isSelected() == false
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected())
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
@@ -372,7 +372,7 @@ public class AudioEncoders extends Shutter {
 					}
 				}	
 
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -668,7 +668,7 @@ public class AudioEncoders extends Shutter {
 				    Thread.currentThread().interrupt();
 				}
 				
-				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+				if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 				{
 					if (lastActions(file, fileName, fileOutput, output))
 						break;
@@ -676,9 +676,9 @@ public class AudioEncoders extends Shutter {
 			}
 			
 		}
-		else if (FFPROBE.channels == 1 && lblSplit.getText().equals(Shutter.language.getProperty("stereo"))) //Si le fichier est stéréo et demandé en stéréo on ne split rien
+		else if (FFPROBE.channels == 1 && lblSplit.getText().equals(Main.language.getProperty("stereo"))) //Si le fichier est stéréo et demandé en stéréo on ne split rien
 		{
-			JOptionPane.showMessageDialog(Shutter.frame, Shutter.language.getProperty("theFile") + " " + fileName + " " + Shutter.language.getProperty("isAlreadyStereo"), Shutter.language.getProperty("cantSplitAudio"), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(Main.frame, Main.language.getProperty("theFile") + " " + fileName + " " + Main.language.getProperty("isAlreadyStereo"), Main.language.getProperty("cantSplitAudio"), JOptionPane.ERROR_MESSAGE);
 		}
 		else if (FFPROBE.channels > 1 && lblSplit.getText().equals(language.getProperty("mono")))
 		{
@@ -706,14 +706,14 @@ public class AudioEncoders extends Shutter {
 				    Thread.currentThread().interrupt();
 				}
 				
-				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+				if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 				{
 					if (lastActions(file, fileName, fileOutput, output))
 						break;
 				}
 			}
 		}
-		else if (FFPROBE.channels > 1 && lblSplit.getText().equals(Shutter.language.getProperty("stereo")))
+		else if (FFPROBE.channels > 1 && lblSplit.getText().equals(Main.language.getProperty("stereo")))
 		{
 			int number = 1;
 			
@@ -738,7 +738,7 @@ public class AudioEncoders extends Shutter {
 				    Thread.currentThread().interrupt();
 				}
 				
-				if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+				if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 				{
 					if (lastActions(file, fileName, fileOutput, output))
 						break;
@@ -783,7 +783,7 @@ public class AudioEncoders extends Shutter {
 		}
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);			
 			AudioEncoders.main();

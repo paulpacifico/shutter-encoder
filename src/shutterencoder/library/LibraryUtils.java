@@ -53,7 +53,7 @@ import org.w3c.dom.Element;
 
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Functions;
 import shutterencoder.ui.others.Settings;
@@ -62,7 +62,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class LibraryUtils extends Shutter {
+public class LibraryUtils extends Main {
 
 	public static boolean showInputDeviceFrame = false;
 	public static StringBuilder videoDevices;
@@ -89,6 +89,7 @@ public class LibraryUtils extends Shutter {
 	public static boolean autoAMF = false;
 	public static boolean autoVIDEOTOOLBOX = false;
 	public static boolean autoVULKAN = false;
+	public static int vulkanGPUIndex = 0;
 	public static Process waveformProcess;
 	public static BufferedWriter waveformWriter;
 	private static StringBuilder getOutputLog;
@@ -141,9 +142,9 @@ public class LibraryUtils extends Shutter {
 	                                            + "_amf -b:v 5000k -s 640x360 -f null -\"");
 	                                    if (!FFMPEG.error) graphicsAccel.add("AMD AMF Encoder");
 	                                }
-	                                String gpuIndex = GPUCount > 1 ? "1" : "0";
-	                                checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
-	                                        + " -f lavfi -i nullsrc -frames:v 1 -c:v " + codec
+
+	                                checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
+	                                        + " -f lavfi -wi nullsrc -frames:v 1 -c:v " + codec
 	                                        + "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -\"");
 	                                if (!FFMPEG.error) graphicsAccel.add("Vulkan Video");
 	                            }
@@ -177,12 +178,10 @@ public class LibraryUtils extends Shutter {
 	                        break;
 	                    }
 	
-	                    case "Apple ProRes": {
-	                    	
+	                    case "Apple ProRes": {	                    	
 	                    	if (isWindows)
 	                    	{
-	                    		String gpuIndex = GPUCount > 1 ? "1" : "0";
-	                    		checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
+	                    		checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
 	                    				+ " -f lavfi -i nullsrc -frames:v 1 -c:v prores_ks_vulkan -s 640x360"
 	                    				+ " -vf format=nv12,hwupload -pix_fmt yuv422p10 -f null -\"");
                                 if (!FFMPEG.error) graphicsAccel.add("Vulkan Video");
@@ -196,9 +195,9 @@ public class LibraryUtils extends Shutter {
 	                    }
 	
 	                    case "FFV1": {
-	                        if (isWindows) {
-	                            String gpuIndex = GPUCount > 1 ? "1" : "0";
-	                            checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
+	                        if (isWindows)
+	                        {
+	                            checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
 	                                    + " -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3"
 	                                    + " -vf format=nv12,hwupload -f null -\"");
 	                            if (!FFMPEG.error) graphicsAccel.add("Vulkan Video");
@@ -244,9 +243,8 @@ public class LibraryUtils extends Shutter {
 	                                        + " -b:v 5000k -s 640x360 -f null -\"");
 	                                if (!FFMPEG.error) graphicsAccel.add("AMD AMF Encoder");
 	
-	                                String gpuIndex = GPUCount > 1 ? "1" : "0";
-	                                checkHWaccel("-init_hw_device vulkan=gpu:" + gpuIndex
-	                                        + " -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan"
+	                                checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
+	                                        + " -f lavfi -i nullsrc -frames:v 1 -cw:v av1_vulkan"
 	                                        + " -b:v 5000k -vf format=nv12,hwupload -f null -\"");
 	                                if (!FFMPEG.error) graphicsAccel.add("Vulkan Video");
 	                            }
@@ -532,6 +530,54 @@ public class LibraryUtils extends Shutter {
 	    return 0;
 	}
 	
+	public static void getVulkanGPUIndex() {
+		
+        ProcessBuilder pb = new ProcessBuilder(FFMPEG.PathToFFMPEG, "-hide_banner", "-v", "debug", "-init_hw_device", "vulkan");
+
+        try {
+            Process process = pb.start();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream())))
+            {
+                String line;
+                boolean inGpuListing = false;
+                
+                Pattern gpuPattern = Pattern.compile(".*?\\s+(\\d+):\\s+(.*?)\\s+\\((.*?)\\)");
+
+                while ((line = reader.readLine()) != null)
+                {
+                    if (line.contains("GPU listing:"))
+                    {
+                        inGpuListing = true;
+                        continue;
+                    }
+
+                    if (inGpuListing)
+                    {
+                        if (line.contains("Device") || line.contains("Queue families") || line.trim().isEmpty()) {
+                            inGpuListing = false;
+                            continue;
+                        }
+
+                        Matcher matcher = gpuPattern.matcher(line);
+                        if (matcher.find()) {
+                            String indexStr = matcher.group(1);
+                            String deviceType = matcher.group(3);
+
+                            if ("discrete".equalsIgnoreCase(deviceType))
+                            {
+                                process.destroyForcibly();
+                                vulkanGPUIndex = Integer.parseInt(indexStr);
+                            }
+                        }
+                    }
+                }
+            }
+
+            process.waitFor();
+        } catch (Exception ignored) {}
+    }
+	
 	public static void checkGPUCapabilities(String file) {
 		
 		if (Utils.loadEncFile != null && Utils.loadEncFile.isAlive())
@@ -607,12 +653,7 @@ public class LibraryUtils extends Shutter {
 						}
 						
 						//Vulkan
-						if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-						{
-							vulkanAvailable = gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:1  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
-						}
-						else
-							vulkanAvailable = gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:0  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+						vulkanAvailable = gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex + "  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						
 						if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 						{								
@@ -654,13 +695,7 @@ public class LibraryUtils extends Shutter {
 					if (comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
 					|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU
 					{
-						if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-						{
-							device = " -init_hw_device vulkan=gpu:1";
-						}
-						else
-							device = " -init_hw_device vulkan=gpu:0";
-						
+						device = " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex;						
 					}
 					else if (comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
 					{
@@ -755,13 +790,7 @@ public class LibraryUtils extends Shutter {
 			{
 				if (hasNvidiaGPU || hasAMDGPU || hasIntelGPU && GPUCount > 1) //Make sure integrated GPU is not used because it's slower
 				{
-					String device = "";
-					if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-					{
-						device = " -init_hw_device vulkan=gpu:1";
-					}
-					else
-						device = " -init_hw_device vulkan=gpu:0";
+					String device = " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex;
 					
 					libplaceboAvailable = gpuFilter(device + selectedGPU + " -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -" + '"');
 				}
@@ -976,12 +1005,7 @@ public class LibraryUtils extends Shutter {
 		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")
 		|| Libplacebo.useLibplaceboFilters && filterComplex.contains("libplacebo")) //Always need to choose the GPU
 		{
-			if (GPUCount > 1) //GPU 0 is always the integrated, GPU 1 is AMD or Nvidia or Intel which should be much faster
-			{
-				gpuDecoding += " -init_hw_device vulkan=gpu:1";
-			}
-			else
-				gpuDecoding += " -init_hw_device vulkan=gpu:0";
+			gpuDecoding += " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex;
 		}	
 		else if (comboAccel.getSelectedItem().equals("VAAPI"))			
 		{
@@ -1066,7 +1090,7 @@ public class LibraryUtils extends Shutter {
 			processFFMPEG.redirectOutput(ProcessBuilder.Redirect.DISCARD);
 			processFFMPEG.redirectError(ProcessBuilder.Redirect.DISCARD);
 			
-			FFMPEG.process = processFFMPEG.start();
+			Process process = processFFMPEG.start();
 			/*
 			String line;
 			BufferedReader input = new BufferedReader(new InputStreamReader(FFMPEG.process.getInputStream()));		
@@ -1081,17 +1105,18 @@ public class LibraryUtils extends Shutter {
 			}*/
 			
 			//Never wait forever: a hung GPU driver (e.g. Vulkan) must be treated as unavailable
-			if (!FFMPEG.process.waitFor(15, TimeUnit.SECONDS))
+			if (!process.waitFor(15, TimeUnit.SECONDS))
 			{
 			    Console.consoleFFMPEG.append(
 			        System.lineSeparator() + "GPU test timed out, process killed."
 			        + System.lineSeparator()
 			    );
-			    FFMPEG.process.destroy();
+			    process.destroyForcibly();
+			    process.waitFor();
 			    return false;
 			}
 
-			return FFMPEG.process.exitValue() == 0;
+			return process.exitValue() == 0;
 
 		} catch (IOException io) {//Bug Linux							
 		} catch (InterruptedException e) {

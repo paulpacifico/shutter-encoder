@@ -30,11 +30,11 @@ import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Transitions;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 
-public class FilterComplex extends Shutter {
+public class FilterComplex extends Main {
 
 	public static String setFilterComplex(String filterComplex, String audio, boolean picture) {
 	
@@ -60,7 +60,7 @@ public class FilterComplex extends Shutter {
 				if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false
 				&& comboAccel.getSelectedItem().equals("VAAPI") || comboAccel.getSelectedItem().equals("Vulkan Video"))			
 				{		
-					if (filterComplex.isEmpty() || FunctionUtils.checkPreviousFilterVulkan(filterComplex) == false || Shutter.caseLUTs.isSelected() || comboAccel.getSelectedItem().equals("VAAPI"))
+					if (filterComplex.isEmpty() || FunctionUtils.checkPreviousFilterVulkan(filterComplex) == false || Main.caseLUTs.isSelected() || comboAccel.getSelectedItem().equals("VAAPI"))
 					{
 						if (filterComplex != "")
 							filterComplex += ",";
@@ -115,7 +115,7 @@ public class FilterComplex extends Shutter {
 	    if (filterComplex != "")
 	    {	          	
 	    	//Si une des cases est sélectionnée alors il y a déjà [0:v]
-	    	if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+	    	if (Main.caseAddWatermark.isSelected() || (Main.caseAddSubtitles.isSelected() && subtitlesBurn))
 	    	{
 	    		filterComplex = " -filter_complex " + '"' + filterComplex + "[out]";
 	    	}
@@ -145,7 +145,7 @@ public class FilterComplex extends Shutter {
 	    }
 	    
 		//On map les sous-titres que l'on intègre        
-	    if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+	    if (Main.caseAddSubtitles.isSelected() && subtitlesBurn == false)
 	    {			        	
 	    	if (comboFilter.getSelectedItem().toString().equals(".mkv"))
 	    		filterComplex += " -c:s srt" + FunctionUtils.setMapSubtitles();
@@ -204,10 +204,10 @@ public class FilterComplex extends Shutter {
 
 			filterComplex = InputAndOutput.segments + filter;
 			
-			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+			if (Main.caseAddWatermark.isSelected() || (Main.caseAddSubtitles.isSelected() && subtitlesBurn))
 			{
 				//Move [0:v] before the segments
-				if (Shutter.caseAddWatermark.isSelected())
+				if (Main.caseAddWatermark.isSelected())
 				{					
 					filterComplex = "[0:v]" + filterComplex.replace("[0:v][scaledwatermark]", "[video][scaledwatermark]"); 
 				}
@@ -215,15 +215,15 @@ public class FilterComplex extends Shutter {
 					filterComplex = "[0:v]" + filterComplex.replace("[0:v]", ""); 
 				
 				//Replace [1:v] to the correct value
-				if (Shutter.caseAddWatermark.isSelected())		
+				if (Main.caseAddWatermark.isSelected())		
 				{
 					filterComplex = filterComplex.replace(";[video][0:v]", ";[video]");					
 					filterComplex = filterComplex.replace("[video][1:v]", "[1:v]").replace(";[1:v]scale=iw", ";[" + VideoPlayerMultiCuts.cutSegments.size() + ":v]scale=iw");
 				}
 				
-				if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
+				if (Main.caseAddSubtitles.isSelected() && subtitlesBurn)
 				{
-					if (Shutter.caseAddWatermark.isSelected())
+					if (Main.caseAddWatermark.isSelected())
 					{
 						filterComplex = filterComplex.replace("[2:v]overlay", "[" + (VideoPlayerMultiCuts.cutSegments.size() + 1) + ":v]overlay");
 					}
@@ -422,7 +422,7 @@ public class FilterComplex extends Shutter {
 		
 		if (comboAudioCodec.getSelectedItem().equals(language.getProperty("noAudio"))) //No audio
 		{
-			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+			if (Main.caseAddWatermark.isSelected() || (Main.caseAddSubtitles.isSelected() && subtitlesBurn))
 			{
 				mapping += " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audio;
 			}
@@ -434,7 +434,7 @@ public class FilterComplex extends Shutter {
 				mapping += " -map v:0" + audio;
 			
 			//On map les sous-titres que l'on intègre        
-			if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+			if (Main.caseAddSubtitles.isSelected() && subtitlesBurn == false)
 			{
 				mapping += " -c:s mov_text" + FunctionUtils.setMapSubtitles();
 			}
@@ -472,7 +472,7 @@ public class FilterComplex extends Shutter {
 						if (audioFiltering != "")
 				    		audioFiltering = audioFiltering + ",";
 						
-						if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+						if (Main.caseAddWatermark.isSelected() || (Main.caseAddSubtitles.isSelected() && subtitlesBurn))
 						{
 							mapping += " -filter_complex " + '"' + filterComplex + "[out];[0:a]" + audioFiltering + "channelsplit[a1][a2]" + '"' + " -map " + '"' + "[out]" + '"' + " -map [a1] -map [a2]" + audio;
 						}
@@ -519,11 +519,11 @@ public class FilterComplex extends Shutter {
 						map = VideoPlayerMultiCuts.cutSegments.size();
 					}
 					
-					if (Shutter.caseAddWatermark.isSelected() && (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+					if (Main.caseAddWatermark.isSelected() && (Main.caseAddSubtitles.isSelected() && subtitlesBurn))
 					{
 						mapping += " -map " + (map + 2);	
 					}
-					else if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+					else if (Main.caseAddWatermark.isSelected() || (Main.caseAddSubtitles.isSelected() && subtitlesBurn))
 					{
 						mapping += " -map " + (map + 1);
 					}
@@ -538,7 +538,7 @@ public class FilterComplex extends Shutter {
 			if (audioFiltering != "")
 	    		audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
 			
-			if (Shutter.caseAddWatermark.isSelected() || (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn))
+			if (Main.caseAddWatermark.isSelected() || (Main.caseAddSubtitles.isSelected() && subtitlesBurn))
 			{
 				mapping = " -filter_complex " + '"' + filterComplex + "[out]" + '"' + " -map " + '"' + "[out]" + '"' + audioFiltering + mapping + audio;
 			}
@@ -551,7 +551,7 @@ public class FilterComplex extends Shutter {
 		}		
 	
 		//On map les sous-titres que l'on intègre        
-	    if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn == false)
+	    if (Main.caseAddSubtitles.isSelected() && subtitlesBurn == false)
 	    {        				
 			mapping += " -c:s mov_text" + FunctionUtils.setMapSubtitles();
 	    }

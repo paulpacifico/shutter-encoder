@@ -29,7 +29,7 @@ import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Ftp;
@@ -39,7 +39,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class VideoInserts extends Shutter {
+public class VideoInserts extends Main {
 
 	public static void main() {
 		
@@ -312,14 +312,14 @@ public class VideoInserts extends Shutter {
 						}
 					}
 			
-					if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+					if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						lastActions(new File(masterFile), fileOut, concatList, labelOutput, temp);
 			
 				} catch (Exception e) {					
 					FFMPEG.error  = true;
 				}
 							
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;

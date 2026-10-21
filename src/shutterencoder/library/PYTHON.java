@@ -29,15 +29,15 @@ import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 
-public class PYTHON extends Shutter {
+public class PYTHON extends Main {
 	
 	public static Thread runProcess;
 	public static Process process;
-	public static String PYTHON_DIR = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();;
+	public static String PYTHON_DIR = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();;
 
 	public static void getPythonPath() {		
 		
@@ -241,14 +241,14 @@ public class PYTHON extends Shutter {
 					else
 					{
 						lblCurrentEncoding.setText(language.getProperty("processEnded"));
-						Shutter.progressBar.setValue(Shutter.progressBar.getMaximum());
+						Main.progressBar.setValue(Main.progressBar.getMaximum());
 					}
 					
 					SwingUtilities.invokeLater(new Runnable()
 					{
 			           @Override
 			           public void run() {
-			        	   Shutter.progressBar.setIndeterminate(false);
+			        	   Main.progressBar.setIndeterminate(false);
 			        	   progressBar.setStringPainted(true);			        	   
 			           }
 					});

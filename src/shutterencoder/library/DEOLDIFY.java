@@ -32,13 +32,13 @@ import java.util.Map;
 
 import javax.swing.JOptionPane;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Update;
 import shutterencoder.utils.Utils;
 
-public class DEOLDIFY extends Shutter {
+public class DEOLDIFY extends Main {
 	
 	public static Thread runProcess;
 	public static Process process;
@@ -69,7 +69,7 @@ public class DEOLDIFY extends Shutter {
 		
 		if (deoldify.exists() == false)
 		{		
-			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			int q =  JOptionPane.showConfirmDialog(Main.frame, Main.language.getProperty("additionalFiles") + System.lineSeparator() + Main.language.getProperty("wantToDownload"), Main.language.getProperty("functionSeparation"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			if (q == JOptionPane.YES_OPTION)
 			{	    									
 				if (System.getProperty("os.name").contains("Windows"))
@@ -190,25 +190,25 @@ public class DEOLDIFY extends Shutter {
 		{
 			new Update();
 			
-			if (Shutter.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
+			if (Main.getLanguage.contains(Locale.of("ar").getDisplayLanguage()))
 			{
-				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + " 1/2");
+				Update.lblNewVersion.setText(Main.language.getProperty("downloadingAIModel") + " 1/2");
 			}
 			else
-				Update.lblNewVersion.setText(Shutter.language.getProperty("downloadingAIModel") + " 1/2");
+				Update.lblNewVersion.setText(Main.language.getProperty("downloadingAIModel") + " 1/2");
 			
-			Utils.changeFrameVisibility(Shutter.frame, true);
+			Utils.changeFrameVisibility(Main.frame, true);
 			
 			Update.HTTPDownload(modelLink, deoldifyModel);	
 
-			Utils.changeFrameVisibility(Shutter.frame, false);
-			Shutter.frame.toFront();
+			Utils.changeFrameVisibility(Main.frame, false);
+			Main.frame.toFront();
 			
 			Update.frame.dispose();
 			
-			if (model.exists() == false && Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionColorize")))
+			if (model.exists() == false && Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionColorize")))
 			{
-				Shutter.comboFonctions.setSelectedItem("");;
+				Main.comboFonctions.setSelectedItem("");;
 			}
 		}
 		

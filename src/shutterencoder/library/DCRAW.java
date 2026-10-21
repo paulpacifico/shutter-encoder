@@ -24,7 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -32,7 +32,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class DCRAW extends Shutter {
+public class DCRAW extends Main {
 	
 public static boolean error = false;
 public static boolean isRunning = false;
@@ -44,17 +44,17 @@ public static Process process;
 		error = false;
 		progressBar.setValue(0);	
 		
-		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
+		if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) && RenderQueue.btnStartRender.isEnabled())
 		{			
 	        RenderQueue.tableRow.addRow(new Object[] {lblCurrentEncoding.getText(), "dcraw_emu" + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG), lblDestination1.getText()});
 	        RenderQueue.caseRunParallel.setSelected(false);
 	        RenderQueue.caseRunParallel.setEnabled(false);
 	        RenderQueue.parallelValue.setEnabled(false);
 	        
-	        lblCurrentEncoding.setText(Shutter.language.getProperty("lblEncodageEnCours"));	        
+	        lblCurrentEncoding.setText(Main.language.getProperty("lblEncodageEnCours"));	        
 			
 			if (caseChangeFolder1.isSelected() == false)
-				lblDestination1.setText(Shutter.language.getProperty("sameAsSource"));
+				lblDestination1.setText(Main.language.getProperty("sameAsSource"));
 		}
 		else
 		{
@@ -86,7 +86,7 @@ public static Process process;
 							processDCRAW.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 						}
 						
-						Console.consoleDCRAW.append(Shutter.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG));
+						Console.consoleDCRAW.append(Main.language.getProperty("command") + " " + PathToDCRAW + cmd.replace("PathToFFMPEG", FFMPEG.PathToFFMPEG));
 						
 						isRunning = true;
 						

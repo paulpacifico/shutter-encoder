@@ -29,10 +29,10 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
-public class Timecode extends Shutter {
+public class Timecode extends Main {
 
 	public static String setTimecode(File file) {
 		
@@ -42,9 +42,9 @@ public class Timecode extends Shutter {
         	dropFrame = ";";
     	}
         
-   		if (Shutter.caseConform.isSelected())
+   		if (Main.caseConform.isSelected())
    		{
-   			if (Shutter.comboFPS.getSelectedItem().toString().equals("29,97") || Shutter.comboFPS.getSelectedItem().toString().equals("59,94"))
+   			if (Main.comboFPS.getSelectedItem().toString().equals("29,97") || Main.comboFPS.getSelectedItem().toString().equals("59,94"))
    			{
    				dropFrame = ";";
    			}
@@ -111,10 +111,10 @@ public class Timecode extends Shutter {
 							+ (Integer.valueOf(FFPROBE.timecode3) + Integer.valueOf(VideoPlayerUI.caseInS.getText())) * 1000
 							+ (Integer.valueOf(FFPROBE.timecode4) + Integer.valueOf(VideoPlayerUI.caseInF.getText())) * VideoPlayerUI.inputFramerateMS;	
 				
-				String h = Shutter.formatter.format(Math.floor(time / 1000) / 3600);
-				String m = Shutter.formatter.format((Math.floor(time / 1000) / 60) % 60);
-				String s = Shutter.formatter.format(Math.floor(time / 1000) % 60);    		
-				String f = Shutter.formatter.format((time % 1000) / VideoPlayerUI.inputFramerateMS);
+				String h = Main.formatter.format(Math.floor(time / 1000) / 3600);
+				String m = Main.formatter.format((Math.floor(time / 1000) / 60) % 60);
+				String s = Main.formatter.format(Math.floor(time / 1000) % 60);    		
+				String f = Main.formatter.format((time % 1000) / VideoPlayerUI.inputFramerateMS);
 				
             	return " -timecode " + '"' + h + ":" + m + ":" + s + dropFrame + f + '"';
             }

@@ -35,11 +35,11 @@ import org.json.JSONArray;
 
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.utils.Utils;
 
-public class Translate extends Shutter {
+public class Translate extends Main {
 	
     private static final int CHUNK_SIZE = 1500;
 

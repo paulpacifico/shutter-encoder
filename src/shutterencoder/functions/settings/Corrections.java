@@ -26,24 +26,24 @@ import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 
-public class Corrections extends Shutter {
+public class Corrections extends Main {
 
 	public static File vidstab = null;
 	
 	public static String setStabilisation(String filterComplex, File file, String fichier, String concat) throws InterruptedException {
 				
-		if (Shutter.caseStabilisation.isSelected())
+		if (Main.caseStabilisation.isSelected())
 		{
 			if (System.getProperty("os.name").contains("Windows"))
 			{
 				vidstab = new File("vidstab.trf");
 			}
 			else					    		
-				vidstab = new File(Shutter.dirTemp + "vidstab.trf");		
+				vidstab = new File(Main.dirTemp + "vidstab.trf");		
 			
-			lblCurrentEncoding.setText(Shutter.language.getProperty("analyzeOf") + " " + fichier);
+			lblCurrentEncoding.setText(Main.language.getProperty("analyzeOf") + " " + fichier);
 			
 			//Analyse du fichier
 			String cmd;
@@ -71,7 +71,7 @@ public class Corrections extends Shutter {
 	
 	public static String setDeflicker(String filterComplex) {
 		
-		if (Shutter.caseDeflicker.isSelected())
+		if (Main.caseDeflicker.isSelected())
 		{
 			if (filterComplex != "") filterComplex += ",";
 		
@@ -89,7 +89,7 @@ public class Corrections extends Shutter {
 		
 	public static String setDeband(String filterComplex) {
 		
-		if (Shutter.caseBanding.isSelected())
+		if (Main.caseBanding.isSelected())
 		{
 			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 			{
@@ -108,7 +108,7 @@ public class Corrections extends Shutter {
 	
 	public static String setLimiter(String filterComplex) {
 		
-		if (Shutter.caseLimiter.isSelected())
+		if (Main.caseLimiter.isSelected())
 		{			
 			if (filterComplex != "") filterComplex += ",";
 
@@ -127,9 +127,9 @@ public class Corrections extends Shutter {
 	
 	public static String setDetails(String filterComplex) {
 		
-		if (Shutter.caseDetails.isSelected())
+		if (Main.caseDetails.isSelected())
 		{
-			float value = (0 - (float) Shutter.sliderDetails.getValue() / 10);
+			float value = (0 - (float) Main.sliderDetails.getValue() / 10);
 			
 			if (filterComplex != "") filterComplex += ",";
 			
@@ -141,9 +141,9 @@ public class Corrections extends Shutter {
 	
 	public static String setGrain(String filterComplex) {
 
-	    if (Shutter.caseAddGrain.isSelected())
+	    if (Main.caseAddGrain.isSelected())
 	    {
-	        int value = Shutter.sliderAddGrain.getValue();
+	        int value = Main.sliderAddGrain.getValue();
 
 	        if (filterComplex != "") filterComplex += ",";
 
@@ -160,9 +160,9 @@ public class Corrections extends Shutter {
 		//Checking if last filter is GPU accelerated
 		boolean filterGPU = FunctionUtils.checkPreviousFilterVulkan(filterComplex);
 		
-		if (Shutter.caseDenoise.isSelected())
+		if (Main.caseDenoise.isSelected())
 		{
-			int value = Shutter.sliderDenoise.getValue();
+			int value = Main.sliderDenoise.getValue();
 			int r = 2;
 			if (value >= 4 && value < 8) r = 4;
 			else if (value >= 8) r = 6;
@@ -177,7 +177,7 @@ public class Corrections extends Shutter {
 			//GPU filter
 			if (noGPU == false && filterGPU && filterComplex.contains("nlmeans"))
 			{
-				if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+				if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				{
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -191,9 +191,9 @@ public class Corrections extends Shutter {
 	
 	public static String setSmoothExposure(String filterComplex) {
 		
-		if (Shutter.caseSmoothExposure.isSelected())
+		if (Main.caseSmoothExposure.isSelected())
 		{
-			int value = Shutter.sliderSmoothExposure.getValue();
+			int value = Main.sliderSmoothExposure.getValue();
 			
 			if (filterComplex != "") filterComplex += ",";
 			

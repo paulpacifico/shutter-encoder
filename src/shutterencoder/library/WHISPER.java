@@ -76,7 +76,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.utils.UnlockExternalApps;
@@ -251,11 +251,11 @@ public class WHISPER {
 	        
 	        if (isVersionAtLeast(version, "1.6") == false)
 	        {
-	        	JOptionPane.showMessageDialog(Shutter.frame, "Shutter Transcriber >=1.6 is required." + System.lineSeparator() + "Please update your app!",
+	        	JOptionPane.showMessageDialog(Main.frame, "Shutter Transcriber >=1.6 is required." + System.lineSeparator() + "Please update your app!",
 	        	"Shutter Transcriber", JOptionPane.ERROR_MESSAGE);
 	        	
-	        	if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
-					Shutter.comboFonctions.setSelectedItem("");
+	        	if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionTranscribe")))
+					Main.comboFonctions.setSelectedItem("");
 	        	
 	        	UIController.changeWidth();
 	        }
@@ -267,7 +267,7 @@ public class WHISPER {
 			}
 			else
 			{
-				Shutter.comboFonctions.setSelectedItem("");
+				Main.comboFonctions.setSelectedItem("");
 				Utils.openFile(transcriberApp);
 			}	
 		}
@@ -280,19 +280,19 @@ public class WHISPER {
 	        JLabel background = new JLabel(icon);
 	        background.setLayout(new BorderLayout());
 	        
-	        JLabel text = new JLabel("<html>" + Shutter.language.getProperty("shutterTranscriberRequired") + "<br>" + Shutter.language.getProperty("wantToDownload") + "</html>", SwingConstants.CENTER);
+	        JLabel text = new JLabel("<html>" + Main.language.getProperty("shutterTranscriberRequired") + "<br>" + Main.language.getProperty("wantToDownload") + "</html>", SwingConstants.CENTER);
 	        Image transcriber = new ImageIcon(getClass().getClassLoader().getResource("resources/icon_transcriber.png")).getImage();
 	        Image newimg = transcriber.getScaledInstance(40, 40, java.awt.Image.SCALE_SMOOTH);
 			ImageIcon logo = new ImageIcon(newimg);
 			text.setIcon(logo);
 	        text.setOpaque(false);
 	        text.setForeground(Color.WHITE);
-	        text.setFont(new Font(Shutter.mainFont, Font.BOLD, 14));
+	        text.setFont(new Font(Main.mainFont, Font.BOLD, 14));
 	        
 	        background.add(text, BorderLayout.CENTER);
 
-			int q = JOptionPane.showConfirmDialog(Shutter.frame, background,
-					Shutter.language.getProperty("functionTranscribe"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
+			int q = JOptionPane.showConfirmDialog(Main.frame, background,
+					Main.language.getProperty("functionTranscribe"), JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE);
 
 			if (q == JOptionPane.YES_OPTION)
 			{
@@ -330,13 +330,13 @@ public class WHISPER {
 					} catch (IOException | URISyntaxException er) {}	
 				}															
 			}
-			else if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
+			else if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionTranscribe")))
 			{
-				Shutter.comboFonctions.removeItem(Shutter.language.getProperty("functionTranscribe"));
+				Main.comboFonctions.removeItem(Main.language.getProperty("functionTranscribe"));
 			}
 			
-			if (Shutter.comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionTranscribe")))
-				Shutter.comboFonctions.setSelectedItem("");
+			if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionTranscribe")))
+				Main.comboFonctions.setSelectedItem("");
 		}
 	}
 	
@@ -702,8 +702,8 @@ public class WHISPER {
 
 		panel.add(optionsContainer, BorderLayout.SOUTH);
         
-        Object[] options = { Shutter.language.getProperty("btnApply") };
-        JOptionPane.showOptionDialog(Shutter.frame, panel, Shutter.language.getProperty("functionTranscribe"), 
+        Object[] options = { Main.language.getProperty("btnApply") };
+        JOptionPane.showOptionDialog(Main.frame, panel, Main.language.getProperty("functionTranscribe"), 
         JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 
         if (labels.get(slider.getValue()).getText().equals("Fast"))
@@ -739,7 +739,7 @@ public class WHISPER {
 	public static void deleteIncompleteModel() {
 		
 		//AI model incomplete
-		if (Shutter.lblCurrentEncoding.getText().equals(Shutter.language.getProperty("downloadingAIModel")))
+		if (Main.lblCurrentEncoding.getText().equals(Main.language.getProperty("downloadingAIModel")))
 		{
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -751,8 +751,8 @@ public class WHISPER {
 	   						FileUtils.deleteDirectory(checkIfModelExists());		
 	   				} catch (Exception e) {}
 	        	   
-	        	   Shutter.progressBar.setIndeterminate(false);
-	        	   Shutter.progressBar.setStringPainted(true);			        	   
+	        	   Main.progressBar.setIndeterminate(false);
+	        	   Main.progressBar.setStringPainted(true);			        	   
 	           }
 			});
 		}
@@ -827,8 +827,8 @@ public class WHISPER {
 	public static void run(String wavFile, String fileName) {
 		
 		error = false;				
-		Shutter.btnStart.setEnabled(false);
-		Shutter.progressBar.setValue(0);
+		Main.btnStart.setEnabled(false);
+		Main.progressBar.setValue(0);
 				
 		runProcess = new Thread(new Runnable()  {
 
@@ -951,11 +951,11 @@ public class WHISPER {
 					processBuilder.command().add("--speaker_num");
 					processBuilder.command().add(spinnerIdentifySpeakers.getValue().toString());
 					
-					Shutter.lblCurrentEncoding.setText("Identifying speakers");
+					Main.lblCurrentEncoding.setText("Identifying speakers");
 				}
 					
 				//Output format
-				if (Shutter.comboFilter.getSelectedItem().toString().equals(".srt"))
+				if (Main.comboFilter.getSelectedItem().toString().equals(".srt"))
 				{
 					processBuilder.command().add("--output_format");
 					processBuilder.command().add("srt");
@@ -963,14 +963,14 @@ public class WHISPER {
 					processBuilder.command().add("True");
 					
 				}							
-				else if (Shutter.comboFilter.getSelectedItem().toString().equals(".vtt"))
+				else if (Main.comboFilter.getSelectedItem().toString().equals(".vtt"))
 				{
 					processBuilder.command().add("--output_format");
 					processBuilder.command().add("vtt");
 					processBuilder.command().add("--word_timestamps");
 					processBuilder.command().add("True");
 				}
-				else if (Shutter.comboFilter.getSelectedItem().toString().equals(".txt"))
+				else if (Main.comboFilter.getSelectedItem().toString().equals(".txt"))
 				{
 					processBuilder.command().add("--output_format");
 					processBuilder.command().add("txt");
@@ -985,7 +985,7 @@ public class WHISPER {
 		        
 				processBuilder.redirectErrorStream(true);
 
-				Console.consolePYTHON.append(Shutter.language.getProperty("command") + " " + String.join(" ", processBuilder.command()));	
+				Console.consolePYTHON.append(Main.language.getProperty("command") + " " + String.join(" ", processBuilder.command()));	
 				
 				isRunning = true;	
 				process = processBuilder.start();
@@ -995,9 +995,9 @@ public class WHISPER {
 	            File model = checkIfModelExists();
 	            if (model == null)
             	{
-            		Shutter.lblCurrentEncoding.setText(Shutter.language.getProperty("downloadingAIModel"));
-            		Shutter.progressBar.setIndeterminate(true);
-            		Shutter.progressBar.setStringPainted(false);
+            		Main.lblCurrentEncoding.setText(Main.language.getProperty("downloadingAIModel"));
+            		Main.progressBar.setIndeterminate(true);
+            		Main.progressBar.setStringPainted(false);
             	}
 	            
 	            Console.consolePYTHON.append(System.lineSeparator());
@@ -1027,47 +1027,47 @@ public class WHISPER {
 
 	            		if (line.contains("Detected language") && line.contains("with probability"))
 		            	{
-	            			Shutter.lblCurrentEncoding.setText("Transcribing " + fileName);
-	            			Shutter.progressBar.setMaximum(FFMPEG.fileLength);
-	            			Shutter.progressBar.setValue(0); 			        	   	
+	            			Main.lblCurrentEncoding.setText("Transcribing " + fileName);
+	            			Main.progressBar.setMaximum(FFMPEG.fileLength);
+	            			Main.progressBar.setValue(0); 			        	   	
  			        	   	
- 			        	   	if (Shutter.progressBar.isIndeterminate())
+ 			        	   	if (Main.progressBar.isIndeterminate())
 	            			{
 	            				SwingUtilities.invokeLater(new Runnable()
 		    					{
 		    			           @Override
 		    			           public void run() {
-		    			        	   Shutter.progressBar.setIndeterminate(false);
-		    			        	   Shutter.progressBar.setStringPainted(true);
+		    			        	   Main.progressBar.setIndeterminate(false);
+		    			        	   Main.progressBar.setStringPainted(true);
 		    			           }
 		    					});
 	            			}
 		            	}
 	            		else if (line.contains("[embeddings] Diarization:"))
 		            	{
-	            			Shutter.lblCurrentEncoding.setText("Identifying speakers");
+	            			Main.lblCurrentEncoding.setText("Identifying speakers");
 	            			
-	            			if (Shutter.progressBar.isIndeterminate())
+	            			if (Main.progressBar.isIndeterminate())
 	            			{
 	            				SwingUtilities.invokeLater(new Runnable()
 		    					{
 		    			           @Override
 		    			           public void run() {
-		    			        	   Shutter.progressBar.setIndeterminate(false);
-		    			        	   Shutter.progressBar.setStringPainted(true);	
-		    			        	   Shutter.progressBar.setValue(0);
+		    			        	   Main.progressBar.setIndeterminate(false);
+		    			        	   Main.progressBar.setStringPainted(true);	
+		    			        	   Main.progressBar.setValue(0);
 		    			           }
 		    					});
 	            			}	            			
 	            				            			
-	            			Shutter.progressBar.setMaximum(100);
+	            			Main.progressBar.setMaximum(100);
 		            		
 		            		Pattern pattern = Pattern.compile("(\\d+)(?:\\.\\d+)?%");
 		                    Matcher matcher = pattern.matcher(line);
 		                    
 		                    if (matcher.find()) {
 		                        int percentage = Integer.parseInt(matcher.group(1));
-		                        Shutter.progressBar.setValue(percentage);
+		                        Main.progressBar.setValue(percentage);
 		                    }
 		            	}
 	            		else if (line.contains(" --> "))
@@ -1081,11 +1081,11 @@ public class WHISPER {
 							if (s4.length > 2)
 								value = Integer.parseInt(s4[0]) * 3600 + Integer.parseInt(s4[1]) * 60 + Integer.parseInt(s4[2]);
 																				
-							Shutter.progressBar.setValue(value);
+							Main.progressBar.setValue(value);
 						}		            	
 	            	}
 	            	
-	            	if (Shutter.cancelled)
+	            	if (Main.cancelled)
 	            		break;	 
 	            }
 	            

@@ -28,12 +28,12 @@ import shutterencoder.functions.AudioNormalization;
 import shutterencoder.functions.Colorize;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Equalizer;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.utils.Utils;
 
-public class AudioSettings extends Shutter {
+public class AudioSettings extends Main {
 		
 	public static String setAudioFiles(String audioFiles, File file) {
 		
@@ -616,7 +616,7 @@ public class AudioSettings extends Shutter {
 
 	public static String setEQ(String filter) {
 		
-		if (Shutter.caseEqualizer.isSelected())
+		if (Main.caseEqualizer.isSelected())
 		{					
 			if (Equalizer.sliderEQ1.getValue() != 0)
 			{

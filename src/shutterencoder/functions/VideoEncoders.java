@@ -57,7 +57,7 @@ import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.NCNN;
 import shutterencoder.library.TSMUXER;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RecordInputDevice;
@@ -97,7 +97,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUtils;
  * XDCAM HD 35
  */
 
-public class VideoEncoders extends Shutter {
+public class VideoEncoders extends Main {
 	
 	public static void main() {
 		
@@ -114,11 +114,11 @@ public class VideoEncoders extends Shutter {
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{	
 					//Render queue only accept selected files
-					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
 						boolean isSelected = false;
 						
-						for (String input : Shutter.fileList.getSelectedValuesList())
+						for (String input : Main.fileList.getSelectedValuesList())
 						{
 							if (list.getElementAt(i).equals(input))
 							{
@@ -642,7 +642,7 @@ public class VideoEncoders extends Shutter {
 						filterComplex = Overlay.showTimecode(filterComplex, fileName.replace(extension, ""), false);
 
 						//Zoom
-						if (Shutter.sliderZoom.getValue() != 0)
+						if (Main.sliderZoom.getValue() != 0)
 						{		
 							filterComplex = Colorimetry.setZoom(filterComplex);
 						}
@@ -958,7 +958,7 @@ public class VideoEncoders extends Shutter {
 							
 							if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 							{			
-								Shutter.btnStart.setText(Shutter.language.getProperty("btnPauseFunction"));
+								Main.btnStart.setText(Main.language.getProperty("btnPauseFunction"));
 								VideoPlayerUI.resizeAll();
 								
 								upscale(new File(list.getElementAt(0)), fileOut);
@@ -1125,14 +1125,14 @@ public class VideoEncoders extends Shutter {
 							{
 								case "DVD":
 									
-									lblCurrentEncoding.setText(Shutter.language.getProperty("createBurnFiles"));
+									lblCurrentEncoding.setText(Main.language.getProperty("createBurnFiles"));
 									makeVOBfiles(authoringFolder, fileOutputName);
 									
 									break;
 									
 								case "Blu-ray":									
 								
-									lblCurrentEncoding.setText(Shutter.language.getProperty("createBurnFiles"));
+									lblCurrentEncoding.setText(Main.language.getProperty("createBurnFiles"));
 									makeBDMVfiles(authoringFolder, fileOutputName);		
 									
 									break;
@@ -1153,7 +1153,7 @@ public class VideoEncoders extends Shutter {
 									case "XDCAM HD422":
 									case "XDCAM HD 35":
 										
-										lblCurrentEncoding.setText(Shutter.language.getProperty("createOpatomFiles"));
+										lblCurrentEncoding.setText(Main.language.getProperty("createOpatomFiles"));
 																												
 										BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName.replace(extension, "") + '"' + " " + '"' + fileOut.toString() + '"');
 									
@@ -1174,7 +1174,7 @@ public class VideoEncoders extends Shutter {
 									case "XDCAM HD422":	
 									case "XDCAM HD 35":
 										
-										lblCurrentEncoding.setText(Shutter.language.getProperty("createAS10Format"));
+										lblCurrentEncoding.setText(Main.language.getProperty("createAS10Format"));
 										
 										BMXTRANSWRAP.run("-t as10 -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, "_AS10" + comboFilter.getSelectedItem().toString()) + '"' + " --shim-name " + '"' + comboAS10.getSelectedItem().toString() + '"' + " " + '"' + fileOut.toString() + '"');
 								
@@ -1189,7 +1189,7 @@ public class VideoEncoders extends Shutter {
 										
 									case "AVC-Intra 100":
 										
-										lblCurrentEncoding.setText(Shutter.language.getProperty("createAS10Format").replace("10", "11"));
+										lblCurrentEncoding.setText(Main.language.getProperty("createAS10Format").replace("10", "11"));
 																				
 										BMXTRANSWRAP.run("-t as11op1a -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, "_AS11" + comboFilter.getSelectedItem().toString()) + '"' + " " + '"' + fileOut.toString() + '"');
 									
@@ -1221,7 +1221,7 @@ public class VideoEncoders extends Shutter {
 								FileUtils.deleteDirectory(authoringFolder);	
 						}
 								
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false 
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false 
 						|| FFMPEG.saveCode == false && caseEnableSequence.isSelected()
 						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected())
 						{
@@ -1236,7 +1236,7 @@ public class VideoEncoders extends Shutter {
 				FunctionUtils.OPAtomFolder = null;
 				FunctionUtils.silentTrack = "";
 
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -1284,7 +1284,7 @@ public class VideoEncoders extends Shutter {
 		{
 			if (comboResolution.getSelectedItem().toString().contains("AI"))
 			{
-				if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+				if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 				{
 					o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
 					o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
@@ -1310,11 +1310,11 @@ public class VideoEncoders extends Shutter {
     	
     	//Ratio comparison
     	if (ir != or 
-    	&& (Shutter.caseAddTimecode.isSelected()
-    	|| Shutter.caseShowTimecode.isSelected()
-    	|| Shutter.caseAddText.isSelected()
-    	|| Shutter.caseShowFileName.isSelected()    	
-    	|| Shutter.caseAddWatermark.isSelected()))
+    	&& (Main.caseAddTimecode.isSelected()
+    	|| Main.caseShowTimecode.isSelected()
+    	|| Main.caseAddText.isSelected()
+    	|| Main.caseShowFileName.isSelected()    	
+    	|| Main.caseAddWatermark.isSelected()))
     	{
     		return false;
     	}
@@ -1325,11 +1325,11 @@ public class VideoEncoders extends Shutter {
 	public static boolean setCroppingLast() {
 		
 		//Always crop after these options
-		if (Shutter.caseAddTimecode.isSelected()
-    	|| Shutter.caseShowTimecode.isSelected()
-    	|| Shutter.caseAddText.isSelected()
-    	|| Shutter.caseShowFileName.isSelected()    	
-    	|| Shutter.caseAddWatermark.isSelected())
+		if (Main.caseAddTimecode.isSelected()
+    	|| Main.caseShowTimecode.isSelected()
+    	|| Main.caseAddText.isSelected()
+    	|| Main.caseShowFileName.isSelected()    	
+    	|| Main.caseAddWatermark.isSelected())
     	{
     		return true;
     	}
@@ -2013,7 +2013,7 @@ public class VideoEncoders extends Shutter {
 				
 	private static void makeVOBfiles(File dvdFolder, String MPEGFile) throws IOException, InterruptedException {
 		
-		String PathToDvdXml = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String PathToDvdXml = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (System.getProperty("os.name").contains("Windows"))
 			PathToDvdXml = PathToDvdXml.substring(1,PathToDvdXml.length()-1);
 		else
@@ -2058,7 +2058,7 @@ public class VideoEncoders extends Shutter {
 		
 	private static void makeBDMVfiles(File blurayFolder, String MKVfile) throws IOException, InterruptedException {
 		
-		String PathToblurayMeta = Shutter.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+		String PathToblurayMeta = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (System.getProperty("os.name").contains("Windows"))
 			PathToblurayMeta = PathToblurayMeta.substring(1,PathToblurayMeta.length()-1);
 		else
@@ -2098,11 +2098,11 @@ public class VideoEncoders extends Shutter {
 		progressBar.setMaximum(fileOut.getParentFile().listFiles().length);
 		
 		String model = "realesr-general-wdn-x4v3";							
-		if (Shutter.comboResolution.getSelectedItem().toString().contains("animation"))
+		if (Main.comboResolution.getSelectedItem().toString().contains("animation"))
 		{
 			model = "realesrgan-x4plus-anime";
 		}	
-		else if (Shutter.comboResolution.getSelectedItem().toString().contains("photo"))
+		else if (Main.comboResolution.getSelectedItem().toString().contains("photo"))
 		{
 			model = "4x_NMKD-Siax_200k";
 		}
@@ -2144,7 +2144,7 @@ public class VideoEncoders extends Shutter {
 			return true;
 				
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			VideoEncoders.main();			

@@ -25,9 +25,9 @@ import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.Corrections;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 
-public class Libplacebo extends Shutter {
+public class Libplacebo extends Main {
 
 	public static boolean useLibplaceboFilters = false;
 	

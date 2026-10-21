@@ -23,13 +23,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts.CutSegment;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
-public class InputAndOutput extends Shutter {
+public class InputAndOutput extends Main {
 
 	public static String inPoint = "";
 	public static String outPoint = "";
@@ -199,17 +199,17 @@ public class InputAndOutput extends Shutter {
 	        String secondInputFile = "";	        
 	        if (matcher.find())
 	        {
-	        	if (Shutter.caseAddWatermark.isSelected() && Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
+	        	if (Main.caseAddWatermark.isSelected() && Main.caseAddSubtitles.isSelected() && subtitlesBurn)
 	            {
 	        		secondInputFile = " -i " + matcher.group(1);
 	        		matcher.find();
 	        		lavfi += " -i " + matcher.group(1);	        		
 	            }
-	        	else if (Shutter.caseAddWatermark.isSelected())
+	        	else if (Main.caseAddWatermark.isSelected())
 	        	{
 	        		secondInputFile = " -i " + matcher.group(1);
 	        	}
-	        	else if (Shutter.caseAddSubtitles.isSelected() && subtitlesBurn)
+	        	else if (Main.caseAddSubtitles.isSelected() && subtitlesBurn)
 	        	{
 	        		lavfi += " -i " + matcher.group(1);	     
 	        	}

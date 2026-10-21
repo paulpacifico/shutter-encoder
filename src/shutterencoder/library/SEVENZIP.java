@@ -27,12 +27,12 @@ import java.io.OutputStream;
 
 import javax.swing.SwingUtilities;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.utils.Utils;
 
-public class SEVENZIP extends Shutter {
+public class SEVENZIP extends Main {
 	
 	public static boolean isRunning = false;
 	public static Thread runProcess;
@@ -47,7 +47,7 @@ public class SEVENZIP extends Shutter {
 			@Override
 			public void run() {
 				
-				Console.consoleFFMPEG.append(Shutter.language.getProperty("command") + " " + cmd);			
+				Console.consoleFFMPEG.append(Main.language.getProperty("command") + " " + cmd);			
 				
 				try {
 					String PathTo7za;

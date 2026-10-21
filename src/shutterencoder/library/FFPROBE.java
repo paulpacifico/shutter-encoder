@@ -33,7 +33,7 @@ import javax.swing.JOptionPane;
 
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.GOP;
@@ -45,7 +45,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class FFPROBE extends Shutter {
+public class FFPROBE extends Main {
 	
 public static Process process;
 private static StringBuilder getOutputLog;
@@ -634,9 +634,9 @@ public static String colorprimaries = "";
 					}
 	
 					//Reload comboPreset value
-					if (Shutter.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
+					if (Main.caseEnableCrop.isSelected() && cropLock.getName().equals("cropLock"))
 					{
-						Shutter.comboPreset.setSelectedItem(Shutter.comboPreset.getSelectedItem());
+						Main.comboPreset.setSelectedItem(Main.comboPreset.getSelectedItem());
 					}
 					
 					//Refresh comboFilter for this function
@@ -653,7 +653,7 @@ public static String colorprimaries = "";
 						e.printStackTrace();
 					} finally {
 						isRunning = false;
-						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
 							
 				}			
@@ -894,7 +894,7 @@ public static String colorprimaries = "";
 					e.printStackTrace();
 				} finally {
 					isRunning = false;
-					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 				
 			}			
@@ -962,7 +962,7 @@ public static String colorprimaries = "";
 				            if ((i > 20000 || gopCount > 500) && isGOPWindow)
 				            {
 				            	GOP.frame.dispose();
-				            	JOptionPane.showMessageDialog(frame, Shutter.language.getProperty("cantAnalyzeGop"), Shutter.language.getProperty("analyzeError"), JOptionPane.ERROR_MESSAGE);			
+				            	JOptionPane.showMessageDialog(frame, Main.language.getProperty("cantAnalyzeGop"), Main.language.getProperty("analyzeError"), JOptionPane.ERROR_MESSAGE);			
 				            }
 				            break;
 						 }
@@ -1007,7 +1007,7 @@ public static String colorprimaries = "";
 					} catch (Exception e) {						
 					} finally {
 						isRunning = false;
-						Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+						Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}		
 						
 			}			
@@ -1054,7 +1054,7 @@ public static String colorprimaries = "";
 				
 					processFFPROBE.redirectErrorStream(true); //IMPORTANT AVOID FREEZING
 					
-					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					isRunning = true;	
 					Process process = processFFPROBE.start();
 
@@ -1105,7 +1105,7 @@ public static String colorprimaries = "";
 				} catch (Exception e) {				
 					FFMPEG.error = true;					
 				} finally {
-					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					isRunning = false;
 				}						
 			}			
@@ -1155,7 +1155,7 @@ public static String colorprimaries = "";
 			} catch (Exception e) {}
 			finally {
 				isRunning = false;
-				Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 		
 		return false;			
@@ -1179,11 +1179,11 @@ public static String colorprimaries = "";
 					calcul = true;
 										
 					//Updating video file
-					if (Shutter.list.getSize() != 0)
+					if (Main.list.getSize() != 0)
 					{
-						if (Shutter.scanIsRunning)
+						if (Main.scanIsRunning)
 						{
-							File dir = new File(Shutter.list.firstElement());
+							File dir = new File(Main.list.firstElement());
 							for (File f : dir.listFiles())
 							{
 								if (f.isHidden() == false && f.isFile())
@@ -1201,11 +1201,11 @@ public static String colorprimaries = "";
 								}
 							}
 						} 
-						else if (Shutter.fileList.getSelectedIndices().length != 0)
+						else if (Main.fileList.getSelectedIndices().length != 0)
 						{							
 							//Sending to Data()
 							if (inputDeviceIsRunning == false)					
-								FFPROBE.Data(Shutter.fileList.getSelectedValue());
+								FFPROBE.Data(Main.fileList.getSelectedValue());
 							
 							try {
 								processData.join();
@@ -1215,23 +1215,23 @@ public static String colorprimaries = "";
 							
 							if (totalLength != 0 && inputDeviceIsRunning == false)
 							{           		
-				    		    if (Shutter.comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
+				    		    if (Main.comboFonctions.getSelectedItem().toString().equals("Blu-ray"))
 				    		    {
 				    				float debit = (float) ((float) 23000000 / FFPROBE.totalLength) * 8;
 				    				
 				    				if (comboFilter.getSelectedIndex() == 0) //H.264
 									{
 				    					if (debit > 38)
-					    					Shutter.debitVideo.setSelectedItem(38000);
+					    					Main.debitVideo.setSelectedItem(38000);
 					    				else
-					    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+					    					Main.debitVideo.setSelectedItem((int) debit * 1000);
 									}
 									else //H.265
 									{
 										if (debit > 50)
-					    					Shutter.debitVideo.setSelectedItem(50000);
+					    					Main.debitVideo.setSelectedItem(50000);
 					    				else
-					    					Shutter.debitVideo.setSelectedItem((int) debit * 1000);
+					    					Main.debitVideo.setSelectedItem((int) debit * 1000);
 									}
 			    		    	}	
 		             
@@ -1253,7 +1253,7 @@ public static String colorprimaries = "";
 				} catch (Exception e) {}
 				finally {
 					calcul = false;
-					Shutter.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 			}
 		});
@@ -1289,7 +1289,7 @@ public static String colorprimaries = "";
 			else
 				multi = 1;
 			
-			if (Shutter.list.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
+			if (Main.list.getSize() > 0 && imageResolution != null && (lblVBR.getText().equals("CQ") == false || lblVBR.isVisible() == false))
 			{
 				int hours = 0;
 				int min = 0;

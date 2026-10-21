@@ -24,14 +24,14 @@ import java.io.File;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.EXIFTOOL;
 import shutterencoder.library.FFMPEG;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
-public class Command extends Shutter {
+public class Command extends Main {
 	
 	public static void main() {
 		
@@ -47,11 +47,11 @@ public class Command extends Shutter {
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{
 					//Render queue only accept selected files
-					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
 						boolean isSelected = false;
 						
-						for (String input : Shutter.fileList.getSelectedValuesList())
+						for (String input : Main.fileList.getSelectedValuesList())
 						{
 							if (list.getElementAt(i).equals(input))
 							{
@@ -164,7 +164,7 @@ public class Command extends Shutter {
 						final File folder = new File(fileOut.getParent());
 						FunctionUtils.listFilesForFolder(fileName.replace(extension, ""), folder);
 	
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 							break;
@@ -175,7 +175,7 @@ public class Command extends Shutter {
 					}
 				}	
 
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -212,7 +212,7 @@ public class Command extends Shutter {
 		
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			Command.main();

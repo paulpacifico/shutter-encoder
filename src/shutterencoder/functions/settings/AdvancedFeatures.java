@@ -23,10 +23,10 @@ import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
 
-public class AdvancedFeatures extends Shutter {
+public class AdvancedFeatures extends Main {
 		
 	public static String setDeinterlace(boolean progressiveOutput, boolean noGPU, String filterComplex) {		
 		
@@ -66,7 +66,7 @@ public class AdvancedFeatures extends Shutter {
 			if (LibraryUtils.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false)
 			{
 				//GPU filter
-				if ((LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+				if ((LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
 				{				
 					if (filterComplex != "") filterComplex += ",";
@@ -78,7 +78,7 @@ public class AdvancedFeatures extends Shutter {
 					else
 						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "bwdif_cuda").replace("yadif", "yadif_cuda") + "=" + doubler + ":" + field + ":0,hwdownload,format=" + bitDepth;
 				}
-				else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
+				else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("advanced")))
 				{		
 					if (filterComplex != "") filterComplex += ",";
@@ -90,7 +90,7 @@ public class AdvancedFeatures extends Shutter {
 					else
 						filterComplex += comboForcerDesentrelacement.getSelectedItem().toString().replace("bwdif", "vpp_qsv=deinterlace=1").replace("advanced", "vpp_qsv=deinterlace=2") + ",hwdownload,format=" + bitDepth;
 				}
-				else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+				else if ((LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				&& (caseForcerDesentrelacement.isSelected() == false || comboForcerDesentrelacement.getSelectedItem().toString().equals("bwdif") || comboForcerDesentrelacement.getSelectedItem().toString().equals("yadif")))
 				{
 					if (caseForcerDesentrelacement.isSelected() == false) // => Auto deinterlacing
@@ -170,7 +170,7 @@ public class AdvancedFeatures extends Shutter {
 				}
 				else if (caseForcePreset.isSelected())
 				{
-					return " -preset " + Shutter.comboForcePreset.getSelectedItem().toString();
+					return " -preset " + Main.comboForcePreset.getSelectedItem().toString();
 				}
 				else
 				{
@@ -194,7 +194,7 @@ public class AdvancedFeatures extends Shutter {
 				 }
 				 else if (caseForceSpeed.isSelected())
 				 {
-					 return " -preset " + Shutter.comboForceSpeed.getSelectedItem().toString();
+					 return " -preset " + Main.comboForceSpeed.getSelectedItem().toString();
 				 }
 				 
 				 break;			
@@ -239,16 +239,16 @@ public class AdvancedFeatures extends Shutter {
 		        {
 					if (caseForceQuality.isSelected())
 					{
-						return " -speed " + Shutter.comboForceSpeed.getSelectedItem().toString() + " -quality " + Shutter.comboForceQuality.getSelectedItem().toString();
+						return " -speed " + Main.comboForceSpeed.getSelectedItem().toString() + " -quality " + Main.comboForceQuality.getSelectedItem().toString();
 					}
 					else
-		        		return " -speed " + Shutter.comboForceSpeed.getSelectedItem().toString();
+		        		return " -speed " + Main.comboForceSpeed.getSelectedItem().toString();
 		        }
 		        else
 		        {
 		        	if (caseForceQuality.isSelected())
 					{
-						return " -speed 4 -quality " + Shutter.comboForceQuality.getSelectedItem().toString();
+						return " -speed 4 -quality " + Main.comboForceQuality.getSelectedItem().toString();
 					}
 					else
 						return " -speed 4";
@@ -265,7 +265,7 @@ public class AdvancedFeatures extends Shutter {
 			case "AV1":
 		
 				if (caseForceLevel.isSelected())
-		        	return " -profile:v " + Shutter.comboForceProfile.getSelectedItem().toString() + " -level " + Shutter.comboForceLevel.getSelectedItem().toString();
+		        	return " -profile:v " + Main.comboForceProfile.getSelectedItem().toString() + " -level " + Main.comboForceLevel.getSelectedItem().toString();
 		    
 				break;
 					
@@ -273,11 +273,11 @@ public class AdvancedFeatures extends Shutter {
 				
 				if (caseForceLevel.isSelected())
 		        {
-		        	String profile = Shutter.comboForceProfile.getSelectedItem().toString().replace("base", "baseline");
+		        	String profile = Main.comboForceProfile.getSelectedItem().toString().replace("base", "baseline");
 		            if (caseColorspace.isSelected() && profile.equals("high") && comboColorspace.getSelectedItem().toString().contains("10bits") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
 		    			profile = "high10";
 		            
-		            return " -profile:v " + profile + " -level " + Shutter.comboForceLevel.getSelectedItem().toString();
+		            return " -profile:v " + profile + " -level " + Main.comboForceLevel.getSelectedItem().toString();
 		        }
 		        else
 		        {
@@ -297,7 +297,7 @@ public class AdvancedFeatures extends Shutter {
 						}
 		        		else if (comboResolution.getSelectedItem().toString().contains("AI"))
 						{
-							if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+							if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 							{
 								s[0] = String.valueOf(FFPROBE.imageWidth * 2);
 								s[1] = String.valueOf(FFPROBE.imageHeight * 2);
@@ -312,7 +312,7 @@ public class AdvancedFeatures extends Shutter {
 		    			{
 		    				if (comboResolution.getSelectedItem().toString().contains("AI"))
 		    				{
-		    					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+		    					if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 		    					{
 		    						s[0] = String.valueOf(Math.round(Integer.parseInt(s[0]) * 2));
 		    						s[1] = String.valueOf(Math.round(Integer.parseInt(s[1]) * 2));
@@ -361,7 +361,7 @@ public class AdvancedFeatures extends Shutter {
 				
 				if (caseForceLevel.isSelected())
 		        {
-		        	String profile = Shutter.comboForceProfile.getSelectedItem().toString();
+		        	String profile = Main.comboForceProfile.getSelectedItem().toString();
 		    		if (caseColorspace.isSelected() && profile.equals("main") && comboColorspace.getSelectedItem().toString().contains("10bits"))
 		    		{
 		    			profile = "main10";    
@@ -394,7 +394,7 @@ public class AdvancedFeatures extends Shutter {
 		    			profile = profile.replace("-", "");
 		    		}
 		        	
-		    		return " -profile:v " + profile + " -level:v " + Shutter.comboForceLevel.getSelectedItem().toString();
+		    		return " -profile:v " + profile + " -level:v " + Main.comboForceLevel.getSelectedItem().toString();
 		        }
 		        else
 		        {
@@ -440,7 +440,7 @@ public class AdvancedFeatures extends Shutter {
 		        }
 				else if (caseForceTune.isSelected())
 		        {
-		        	return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
+		        	return " -tune " + Main.comboForceTune.getSelectedItem().toString();
 		        }
 		        
 		        break;		
@@ -450,7 +450,7 @@ public class AdvancedFeatures extends Shutter {
 				
 				if (caseForceTune.isSelected())
 				{
-					return " -tune-content " + Shutter.comboForceTune.getSelectedItem().toString();
+					return " -tune-content " + Main.comboForceTune.getSelectedItem().toString();
 				}
 				
 				break;
@@ -468,7 +468,7 @@ public class AdvancedFeatures extends Shutter {
 						return " -quality quality" + getAmfQualityOptions();
 					}
 					else
-						return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
+						return " -tune " + Main.comboForceTune.getSelectedItem().toString();
 		        }
 				else if (comboAccel.getSelectedItem().equals("Vulkan Video"))
 				{
@@ -477,7 +477,7 @@ public class AdvancedFeatures extends Shutter {
 						return " -tune hq";
 					}
 					else
-						return " -tune " + Shutter.comboForceTune.getSelectedItem().toString();
+						return " -tune " + Main.comboForceTune.getSelectedItem().toString();
 				}
 				//CPU tuning is handled from setparams
 				
@@ -640,7 +640,7 @@ public class AdvancedFeatures extends Shutter {
 		       
 				if (caseGOP.isSelected())
 		        {
-		        	return " -g " + Shutter.gopSize.getText();
+		        	return " -g " + Main.gopSize.getText();
 		        }
 		        
 		        break;

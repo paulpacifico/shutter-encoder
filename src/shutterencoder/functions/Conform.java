@@ -26,7 +26,7 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
@@ -35,7 +35,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class Conform extends Shutter {
+public class Conform extends Main {
 	
 	public static void main() {
 		
@@ -51,11 +51,11 @@ public class Conform extends Shutter {
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{
 					//Render queue only accept selected files
-					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
 						boolean isSelected = false;
 						
-						for (String input : Shutter.fileList.getSelectedValuesList())
+						for (String input : Main.fileList.getSelectedValuesList())
 						{
 							if (list.getElementAt(i).equals(input))
 							{
@@ -137,7 +137,7 @@ public class Conform extends Shutter {
 						}
 										
 						//Command		    		
-				    	float FPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".")));
+				    	float FPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Main.language.getProperty("fps"), "").replace(",", ".")));
 				    	float value = (float) (FFPROBE.currentFPS / FPSOut);
 						
 						String cmd = " -c:v copy -c:s copy" + audio + " -map v:0 -map a? -map s? -y ";
@@ -149,7 +149,7 @@ public class Conform extends Shutter {
 						    Thread.currentThread().interrupt();
 						}
 	
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -160,7 +160,7 @@ public class Conform extends Shutter {
 					}
 				}	
 
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -188,7 +188,7 @@ public class Conform extends Shutter {
 	private static String setAudio() {
 		
     	float AudioFPSIn = FFPROBE.currentFPS;
-    	float AudioFPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".")));
+    	float AudioFPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Main.language.getProperty("fps"), "").replace(",", ".")));
     	float value = (float) (AudioFPSOut / AudioFPSIn);
     	if (value < 0.5f || value > 2.0f)
     		return " -an";
@@ -213,7 +213,7 @@ public class Conform extends Shutter {
 		Utils.copyFile(fileOut);		
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			Conform.main();

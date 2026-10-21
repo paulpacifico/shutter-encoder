@@ -34,12 +34,12 @@ import javax.swing.JLabel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Informations;
 import shutterencoder.utils.Utils;
 
-public class MEDIAINFO extends Shutter {
+public class MEDIAINFO extends Main {
 	
 	public static int totalDuration = 0; 
 	public static boolean error = false;
@@ -50,7 +50,7 @@ public class MEDIAINFO extends Shutter {
 				
 		error = false;
 		
-	    Console.consoleMEDIAINFO.append(Shutter.language.getProperty("command") + " --Output=HTML " + '"' + file.toString() + '"');
+	    Console.consoleMEDIAINFO.append(Main.language.getProperty("command") + " --Output=HTML " + '"' + file.toString() + '"');
 		
 		runProcess = new Thread(new Runnable()  {
 			

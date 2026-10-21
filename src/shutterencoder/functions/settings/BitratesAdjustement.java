@@ -21,9 +21,9 @@ package shutterencoder.functions.settings;
 
 import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 
-public class BitratesAdjustement extends Shutter {
+public class BitratesAdjustement extends Main {
 	
 	public static boolean DVD2Pass;
 	public static int DVDBitrate;
@@ -43,18 +43,18 @@ public class BitratesAdjustement extends Shutter {
 	
 	public static String setCrop(String filterComplex) {		
 		    	
-    	if (Shutter.caseEnableCrop.isSelected())
+    	if (Main.caseEnableCrop.isSelected())
 		{		
 			//IMPORTANT
 			float imageRatio = 1.0f;
 			
 			int ow = FFPROBE.imageWidth;  
 			
-			if (Shutter.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Shutter.comboResolution.getSelectedItem().toString().equals(Shutter.language.getProperty("source")) == false)
+			if (Main.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Main.comboResolution.getSelectedItem().toString().equals(Main.language.getProperty("source")) == false)
 			{
 				if (comboResolution.getSelectedItem().toString().contains("AI"))
 				{
-					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+					if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 					{
 						ow = (int) Math.round(ow * 2);
 					}
@@ -72,10 +72,10 @@ public class BitratesAdjustement extends Shutter {
 				imageRatio = (float) FFPROBE.imageWidth / ow;
 			}
 			
-			int cropWidth = Math.round((float) Integer.parseInt(Shutter.textCropWidth.getText()) / imageRatio);
-			int cropHeight = Math.round((float) Integer.parseInt(Shutter.textCropHeight.getText()) / imageRatio);
-			int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
-			int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
+			int cropWidth = Math.round((float) Integer.parseInt(Main.textCropWidth.getText()) / imageRatio);
+			int cropHeight = Math.round((float) Integer.parseInt(Main.textCropHeight.getText()) / imageRatio);
+			int cropX = Math.round((float)Integer.parseInt(Main.textCropPosX.getText()) / imageRatio);
+			int cropY = Math.round((float)Integer.parseInt(Main.textCropPosY.getText()) / imageRatio);
 
 			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 			{

@@ -21,21 +21,21 @@ package shutterencoder.functions.settings;
 
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
-public class Transitions extends Shutter {
+public class Transitions extends Main {
 
 	public static String setVideoFade(String filterComplex, boolean isVideoPlayer) {
 		
 		if (grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer)
 		{
 			//Fade-in
-	    	if (Shutter.caseVideoFadeIn.isSelected())
+	    	if (Main.caseVideoFadeIn.isSelected())
 	    	{ 
 	    		boolean fade = true;
 	    		
@@ -50,10 +50,10 @@ public class Transitions extends Shutter {
 	    		{
 		    		if (filterComplex != "") filterComplex += ",";	
 		    		
-		    		long videoInValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+		    		long videoInValue = (long) (Integer.parseInt(Main.spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 		    		
 		    		String color = "black";
-					if (Shutter.lblFadeInColor.getText().equals(language.getProperty("white")))
+					if (Main.lblFadeInColor.getText().equals(language.getProperty("white")))
 						color = "white";
 		    		
 		    		String videoFade = "fade=in:st=0ms:d=" + videoInValue + "ms:color=" + color;
@@ -73,7 +73,7 @@ public class Transitions extends Shutter {
 	    	}
 	    	
 	    	//Fade-out
-	    	if (Shutter.caseVideoFadeOut.isSelected())
+	    	if (Main.caseVideoFadeOut.isSelected())
 	    	{
 	    		boolean fade = true;
 	    		
@@ -88,17 +88,17 @@ public class Transitions extends Shutter {
 	    		{
 		    		if (filterComplex != "") filterComplex += ",";	
 		    		
-		    		long videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+		    		long videoOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 		    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
 	
 		    		if (caseEnableSequence.isSelected())
 		    		{
-		    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
+		    			videoOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
 			    		videoStart = (long) ((float) ((float) 1000 / Integer.parseInt(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))) * list.getSize()) - videoOutValue;
 		    		}
 		    		else if (Settings.btnSetBab.isSelected())
 		    		{
-		    			videoOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+		    			videoOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 			    		videoStart = (long) FunctionUtils.mergeDuration - videoOutValue;
 		    		}
 		    		else
@@ -130,7 +130,7 @@ public class Transitions extends Shutter {
 		    		}
 		    		
 		    		String color = "black";
-					if (Shutter.lblFadeOutColor.getText().equals(language.getProperty("white")))
+					if (Main.lblFadeOutColor.getText().equals(language.getProperty("white")))
 						color = "white";
 		    		
 		    		String videoFade = "fade=out:st=" + videoStart + "ms:d=" + videoOutValue + "ms:color=" + color;
@@ -153,7 +153,7 @@ public class Transitions extends Shutter {
 		String audioFilter = "";
 		
 		//Fade-in
-		if ((grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer) && Shutter.caseAudioFadeIn.isSelected())
+		if ((grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer) && Main.caseAudioFadeIn.isSelected())
     	{ 			
 			boolean fade = true;
 			
@@ -166,7 +166,7 @@ public class Transitions extends Shutter {
     		
     		if (fade)
     		{
-	    		long audioInValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long audioInValue = (long) (Integer.parseInt(Main.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 				
 	    		if (isVideoPlayer)
 	    		{
@@ -190,7 +190,7 @@ public class Transitions extends Shutter {
 		String audioFilter = "";
 
     	//Fade-out
-		if ((grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer) && Shutter.caseAudioFadeOut.isSelected())
+		if ((grpTransitions.isEnabled() || VideoPlayerUI.fullscreenPlayer) && Main.caseAudioFadeOut.isSelected())
     	{
 			boolean fade = true;
 			
@@ -203,12 +203,12 @@ public class Transitions extends Shutter {
 			
     		if (fade)
     		{
-	    		long audioOutValue = (long) (Integer.parseInt(Shutter.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long audioOutValue = (long) (Integer.parseInt(Main.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 	    		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
 	    		
 	    		if (Settings.btnSetBab.isSelected())
 	    		{
-	    			audioOutValue = (long) (Integer.parseInt(Shutter.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    			audioOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
 	    			audioStart = (long) FunctionUtils.mergeDuration - audioOutValue;
 	    		}
 	    		else

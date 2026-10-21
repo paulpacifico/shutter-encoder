@@ -38,11 +38,11 @@ import java.util.regex.Pattern;
 
 import javax.swing.JOptionPane;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.VideoWeb;
 
-public class YOUTUBEDL extends Shutter {
+public class YOUTUBEDL extends Main {
 	
 public static File ytdlp;
 private static String PathToYOUTUBEDL;
@@ -59,7 +59,7 @@ public static String format = "";
 
 		if (System.getProperty("os.name").contains("Windows"))
 		{
-			ytdlp = new File(Shutter.documents + "/Library/yt-dlp.exe");
+			ytdlp = new File(Main.documents + "/Library/yt-dlp.exe");
 		}
 		else
 		{
@@ -71,7 +71,7 @@ public static String format = "";
 			else
 				youtubedl = "yt-dlp_linux";
 			
-			ytdlp = new File(Shutter.documents + "/Library/" + youtubedl);
+			ytdlp = new File(Main.documents + "/Library/" + youtubedl);
 		}
 		
 		PathToYOUTUBEDL = '"' + ytdlp.toString() + '"';

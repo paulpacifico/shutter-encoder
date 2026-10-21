@@ -25,7 +25,7 @@ import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
@@ -35,7 +35,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class ReplaceAudio extends Shutter {
+public class ReplaceAudio extends Main {
 	
 	private static long shortestLength = 0;
 	private static int videoStream = 0;
@@ -104,7 +104,7 @@ public class ReplaceAudio extends Shutter {
 			    Thread.currentThread().interrupt();
 			}
 		
-			if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+			if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 			{
 				lastActions(videoFile, fileName, fileOut, labelOutput);
 			}
@@ -115,7 +115,7 @@ public class ReplaceAudio extends Shutter {
 			cancelled = true;
 		}
 		
-		if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+		if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 		{
 			//Reset data for the current selected file
 			VideoPlayerCore.videoPath = null;
@@ -246,7 +246,7 @@ public class ReplaceAudio extends Shutter {
 								//IMPORTANT
 								shortestLength = 0;
 								
-								if (FFMPEG.error || Shutter.cancelled)
+								if (FFMPEG.error || Main.cancelled)
 								{
 									break;
 								}

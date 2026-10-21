@@ -25,11 +25,11 @@ import java.io.InputStreamReader;
 
 import javax.swing.JOptionPane;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 
-public class BACKGROUNDREMOVER extends Shutter {
+public class BACKGROUNDREMOVER extends Main {
 	
 	public static Thread runProcess;
 	public static Process process;
@@ -49,7 +49,7 @@ public class BACKGROUNDREMOVER extends Shutter {
 								
 		if (backgroundRemover.exists() == false)
 		{		
-			int q =  JOptionPane.showConfirmDialog(Shutter.frame, Shutter.language.getProperty("additionalFiles") + System.lineSeparator() + Shutter.language.getProperty("wantToDownload"), Shutter.language.getProperty("functionBackgroundRemover"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			int q =  JOptionPane.showConfirmDialog(Main.frame, Main.language.getProperty("additionalFiles") + System.lineSeparator() + Main.language.getProperty("wantToDownload"), Main.language.getProperty("functionBackgroundRemover"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			if (q == JOptionPane.YES_OPTION)
 			{	    	
 				String[] cmd = { backgroundRemoverFolder.toString() + "/bin/python3", "-m", "pip", "install", "backgroundremover", "--no-warn-script-location" };

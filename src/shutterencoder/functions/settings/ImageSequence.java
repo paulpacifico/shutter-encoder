@@ -19,10 +19,10 @@
 
 package shutterencoder.functions.settings;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
-public class ImageSequence extends Shutter {
+public class ImageSequence extends Main {
 		
 	public static String setBlend(String filterComplex) {
 		

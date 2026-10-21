@@ -38,7 +38,7 @@ import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.library.NCNN;
 import shutterencoder.library.XPDFREADER;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RecordInputDevice;
@@ -49,7 +49,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class Picture extends Shutter {
+public class Picture extends Main {
 		
 	private static boolean isGPUCompatible = false;
 	
@@ -67,11 +67,11 @@ public class Picture extends Shutter {
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{
 					//Render queue only accept selected files
-					if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
 						boolean isSelected = false;
 						
-						for (String input : Shutter.fileList.getSelectedValuesList())
+						for (String input : Main.fileList.getSelectedValuesList())
 						{
 							if (list.getElementAt(i).equals(input))
 							{
@@ -197,7 +197,7 @@ public class Picture extends Shutter {
 						filterComplex = Image.setCrop(filterComplex, file);
 				        
 				        //Zoom
-						if (Shutter.sliderZoom.getValue() != 0)
+						if (Main.sliderZoom.getValue() != 0)
 						{		
 							filterComplex = Colorimetry.setZoom(filterComplex);
 						}
@@ -409,7 +409,7 @@ public class Picture extends Shutter {
 							LibraryUtils.isGPUCompatible = isGPUCompatible; 
 						}
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{							
 							if (lastActions(file, fileName, extension, fileOut, labelOutput) || videoPlayerCapture)
 								break;
@@ -420,7 +420,7 @@ public class Picture extends Shutter {
 					}
 				}	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) && encode)
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) && encode)
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -560,7 +560,7 @@ public class Picture extends Shutter {
 	
 	private static String setExtension() {			
 	
-		if (comboFonctions.getSelectedItem().equals(Shutter.language.getProperty("functionPicture")))
+		if (comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionPicture")))
 		{
 			if (caseCreateSequence.isSelected())
 			{
@@ -599,11 +599,11 @@ public class Picture extends Shutter {
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".gif"))
 		{
-			return " -loop 0 -r " + comboImageOption.getSelectedItem().toString().replace(",", ".").replace(" " + Shutter.language.getProperty("fps"), "");
+			return " -loop 0 -r " + comboImageOption.getSelectedItem().toString().replace(",", ".").replace(" " + Main.language.getProperty("fps"), "");
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".apng"))
 		{
-			return " -r " + comboImageOption.getSelectedItem().toString().replace(" " + Shutter.language.getProperty("fps"), "").replace(",", ".");
+			return " -r " + comboImageOption.getSelectedItem().toString().replace(" " + Main.language.getProperty("fps"), "").replace(",", ".");
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".webp") && FFPROBE.totalLength > 40)
 		{
@@ -623,11 +623,11 @@ public class Picture extends Shutter {
 		progressBar.setMaximum(fileOut.getParentFile().listFiles().length);
 		
 		String model = "realesr-general-wdn-x4v3";							
-		if (Shutter.comboResolution.getSelectedItem().toString().contains("animation"))
+		if (Main.comboResolution.getSelectedItem().toString().contains("animation"))
 		{
 			model = "realesrgan-x4plus-anime";
 		}	
-		else if (Shutter.comboResolution.getSelectedItem().toString().contains("photo"))
+		else if (Main.comboResolution.getSelectedItem().toString().contains("photo"))
 		{
 			model = "4x_NMKD-Siax_200k";
 		}		
@@ -660,7 +660,7 @@ public class Picture extends Shutter {
 			if (comboFilter.getSelectedItem().toString().equals(".png") == false)
 			{									
 				String scale = "";								
-				if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+				if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 				{
 					scale = " -vf " + '"' + "scale=iw*0.5:ih*0.5" + flags + '"';
 				}
@@ -673,7 +673,7 @@ public class Picture extends Shutter {
 				    Thread.currentThread().interrupt();
 				}
 			}
-			else if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+			else if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 			{
 				FFMPEG.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + flags + '"' + " -y " + '"' + fileOut + '"');
 				
@@ -720,7 +720,7 @@ public class Picture extends Shutter {
 		
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);				
 			Picture.main(true, false);

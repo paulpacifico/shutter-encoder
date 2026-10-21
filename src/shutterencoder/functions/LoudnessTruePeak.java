@@ -31,14 +31,14 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
-public class LoudnessTruePeak extends Shutter {
+public class LoudnessTruePeak extends Main {
 	
 	public static void main() {
 		
@@ -101,7 +101,7 @@ public class LoudnessTruePeak extends Shutter {
 						if (cancelled == false)
 							showDetection(file);				
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName))
 								break;
@@ -112,7 +112,7 @@ public class LoudnessTruePeak extends Shutter {
 					}
 				}	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -163,7 +163,7 @@ public class LoudnessTruePeak extends Shutter {
 
 	private static void showDetection(File file) {
 		
-		if (FFMPEG.analyseLufs != null && Shutter.cancelled == false && FFMPEG.error == false)
+		if (FFMPEG.analyseLufs != null && Main.cancelled == false && FFMPEG.error == false)
 		{
 			if (comboFilter.getSelectedIndex() == 0) // Display
 			{
@@ -189,7 +189,7 @@ public class LoudnessTruePeak extends Shutter {
 				
 				try {
 					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
-					writer.println(Shutter.language.getProperty("analyzeOf") + " " + file.getName());
+					writer.println(Main.language.getProperty("analyzeOf") + " " + file.getName());
 					writer.println("");
 					writer.println(FFMPEG.analyseLufs + System.lineSeparator() + System.lineSeparator() + FFMPEG.shortTermValues);
 					writer.close();
@@ -223,7 +223,7 @@ public class LoudnessTruePeak extends Shutter {
 		FunctionUtils.addFileForMail(fileName);		
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			LoudnessTruePeak.main();

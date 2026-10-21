@@ -67,7 +67,7 @@ import javax.swing.JPanel;
 import shutterencoder.functions.settings.BitratesAdjustement;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.RecordInputDevice;
@@ -80,7 +80,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class FFMPEG extends Shutter {
+public class FFMPEG extends Main {
 	
 public static String PathToFFMPEG;
 public static int fileLength = 0; 
@@ -314,7 +314,7 @@ public static StringBuilder errorLog = new StringBuilder();
 	        	        				{
 			        	        			VideoPlayerCore.frameVideo = null;
 			        	        			VideoPlayerUI.player.repaint();
-			        	        			lblRemainingTime.setText(Shutter.language.getProperty("timePause"));
+			        	        			lblRemainingTime.setText(Main.language.getProperty("timePause"));
 			        	        			Thread.sleep(50);				        	        			
 	        	        				}				        	        	
 			        	        		

@@ -22,12 +22,12 @@ package shutterencoder.library;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.utils.Utils;
 
-public class EXIFTOOL extends Shutter {
+public class EXIFTOOL extends Main {
 	
 public static boolean error = false;
 public static boolean isRunning = false;
@@ -56,7 +56,7 @@ private static Boolean horizontal = true;
 		if (cmd != '"' + "" + '"')
 		{
 			Console.consoleEXIFTOOL.append(System.lineSeparator());
-			Console.consoleEXIFTOOL.append(Shutter.language.getProperty("command") + " " + cmd);
+			Console.consoleEXIFTOOL.append(Main.language.getProperty("command") + " " + cmd);
 		}
 			
 		//Watermark scaling

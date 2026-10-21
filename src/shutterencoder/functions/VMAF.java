@@ -30,7 +30,7 @@ import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFMPEG;
 import shutterencoder.library.FFPROBE;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -38,7 +38,7 @@ import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
-public class VMAF extends Shutter {
+public class VMAF extends Main {
 	
 	boolean warningSourceFile = true;
 	
@@ -109,7 +109,7 @@ public class VMAF extends Shutter {
 						if (cancelled == false)
 							showDetection(file);				
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")) == false)
+						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName))
 								break;
@@ -120,7 +120,7 @@ public class VMAF extends Shutter {
 					}
 				}	
 				
-				if (btnStart.getText().equals(Shutter.language.getProperty("btnAddToRender")))
+				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 				{
 					//Reset data for the current selected file
 					VideoPlayerCore.videoPath = null;
@@ -147,7 +147,7 @@ public class VMAF extends Shutter {
 
 	private static void showDetection(File file) {
 		
-		if (FFMPEG.VMAFScore != null && Shutter.cancelled == false && FFMPEG.error == false)
+		if (FFMPEG.VMAFScore != null && Main.cancelled == false && FFMPEG.error == false)
 		{
 			if (comboFilter.getSelectedIndex() == 0) // Display
 			{
@@ -173,7 +173,7 @@ public class VMAF extends Shutter {
 				
 				try {
 					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
-					writer.println(Shutter.language.getProperty("analyzeOf") + " " + file.getName());
+					writer.println(Main.language.getProperty("analyzeOf") + " " + file.getName());
 					writer.println("");
 					writer.println(FFMPEG.VMAFScore);
 					writer.close();
@@ -207,7 +207,7 @@ public class VMAF extends Shutter {
 		FunctionUtils.addFileForMail(fileName);		
 		
 		//Watch folder
-		if (Shutter.scanIsRunning)
+		if (Main.scanIsRunning)
 		{
 			FunctionUtils.moveScannedFiles(file);
 			VMAF.main();

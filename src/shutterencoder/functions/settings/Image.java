@@ -26,11 +26,11 @@ import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.FFPROBE;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
-public class Image extends Shutter {
+public class Image extends Main {
 	
 	public static String setCrop(String filterComplex, File file) {		
 
@@ -59,7 +59,7 @@ public class Image extends Shutter {
 					{
 						if (comboResolution.getSelectedItem().toString().contains("AI"))
 						{
-							if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+							if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 							{
 								ow = (int) Math.round(ow * 2);
 							}
@@ -98,10 +98,10 @@ public class Image extends Shutter {
 					}
 				}
 				
-				int cropWidth = Math.round((float) Integer.parseInt(Shutter.textCropWidth.getText()) / imageRatio);
-				int cropHeight = Math.round((float) Integer.parseInt(Shutter.textCropHeight.getText()) / imageRatio);
-				int cropX = Math.round((float)Integer.parseInt(Shutter.textCropPosX.getText()) / imageRatio);
-				int cropY = Math.round((float)Integer.parseInt(Shutter.textCropPosY.getText()) / imageRatio);
+				int cropWidth = Math.round((float) Integer.parseInt(Main.textCropWidth.getText()) / imageRatio);
+				int cropHeight = Math.round((float) Integer.parseInt(Main.textCropHeight.getText()) / imageRatio);
+				int cropX = Math.round((float)Integer.parseInt(Main.textCropPosX.getText()) / imageRatio);
+				int cropY = Math.round((float)Integer.parseInt(Main.textCropPosY.getText()) / imageRatio);
 				
 				if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 				{
@@ -234,7 +234,7 @@ public class Image extends Shutter {
 			//GPU filter	
 			if (noGPU == false && filterGPU && (filterComplex.contains("transpose") || filterComplex.contains("hflip")))
 			{				
-				if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+				if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 				{
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -247,7 +247,7 @@ public class Image extends Shutter {
 
 					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
-				else if (LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
+				else if (LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("qsv")))
 				{				
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -260,7 +260,7 @@ public class Image extends Shutter {
 					
 					filterComplex += ",hwdownload,format=" + bitDepth;
 				}
-				else if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
+				else if (LibraryUtils.autoVULKAN || (LibraryUtils.vulkanAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("vulkan")))
 				{
 					filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 					
@@ -313,7 +313,7 @@ public class Image extends Shutter {
 			{
 				if (comboResolution.getSelectedItem().toString().contains("AI"))
 				{
-					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+					if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 					{
 						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
 						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
@@ -505,28 +505,28 @@ public class Image extends Shutter {
 				deinterlacing = true;
 			}
 
-			if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+			if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, ":interp_algo=" + setScaleAlgorithm("CUDA"));			
 				
 				filterComplex = filterComplex.replace("scale=", "scale_cuda=") + ",hwdownload,format=" + bitDepth;	
 			}
-			else if ((LibraryUtils.autoAMF || (LibraryUtils.amfAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false)
+			else if ((LibraryUtils.autoAMF || (LibraryUtils.amfAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("amf"))) && deinterlacing == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, ":scale_type=" + setScaleAlgorithm("AMF"));
 				
 				filterComplex = filterComplex.replace("scale=", "vpp_amf=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("force_original_aspect_ratio") == false)
+			else if ((LibraryUtils.autoQSV || (LibraryUtils.qsvAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("qsv"))) && filterComplex.contains("force_original_aspect_ratio") == false)
 			{				
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, ":mode=" + setScaleAlgorithm("QSV"));
 				
 				filterComplex = filterComplex.replace("scale=", "scale_qsv=") + ",hwdownload,format=" + bitDepth;
 			}
-			else if ((LibraryUtils.autoVIDEOTOOLBOX || (LibraryUtils.videotoolboxAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false)
+			else if ((LibraryUtils.autoVIDEOTOOLBOX || (LibraryUtils.videotoolboxAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("videotoolbox"))) && deinterlacing == false && filterComplex.contains("force_original_aspect_ratio") == false)
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				filterComplex = filterComplex.replace(flags, "");
@@ -656,7 +656,7 @@ public class Image extends Shutter {
 			{
 				if (comboResolution.getSelectedItem().toString().contains("AI"))
 				{
-					if (Shutter.comboResolution.getSelectedItem().toString().contains("2x"))
+					if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 					{
 						o[0] = String.valueOf(Math.round(Integer.parseInt(o[0]) * 2));
 						o[1] = String.valueOf(Math.round(Integer.parseInt(o[1]) * 2));
@@ -793,7 +793,7 @@ public class Image extends Shutter {
 		//GPU filter	
 		if (noGPU == false && filterComplex.contains("pad=") && filterGPU)
 		{
-			if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Shutter.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
+			if (LibraryUtils.autoCUDA || (LibraryUtils.cudaAvailable && Main.comboGPUFilter.getSelectedItem().toString().equals("cuda")))
 			{
 				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth, ""); //Removes hwdownload if the scaling is also using GPU to avoid GPU->CPU->GPU transfert
 				

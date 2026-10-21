@@ -25,12 +25,12 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import shutterencoder.ui.main.Shutter;
+import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Console;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.utils.Utils;
 
-public class LTCDUMP extends Shutter {
+public class LTCDUMP extends Main {
 	
 public static boolean error = false;
 public static boolean isRunning = false;
