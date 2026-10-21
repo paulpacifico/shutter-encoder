@@ -24,8 +24,8 @@ import java.io.File;
 import java.util.Set;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.ANONYMIZER;
-import shutterencoder.library.FFMPEG;
+import shutterencoder.library.Anonymizer;
+import shutterencoder.library.FFmpeg;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -110,15 +110,15 @@ public class BlurFaces extends Main {
 						lblElapsedTime.setVisible(false);
 						
 						//Command		
-						ANONYMIZER.run(file.toString(), fileOut);		
+						Anonymizer.run(file.toString(), fileOut);		
 										
 						try {
-							ANONYMIZER.runProcess.join();
+							Anonymizer.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
 														
-						if (FFMPEG.saveCode == false)
+						if (FFmpeg.saveCode == false)
 						{
 							if (lastActions(fileOut, labelOutput))
 								break;
@@ -126,7 +126,7 @@ public class BlurFaces extends Main {
 					}
 					catch (Exception e)
 					{
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 						e.printStackTrace();
 					}
 				}

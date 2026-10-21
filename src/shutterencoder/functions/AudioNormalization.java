@@ -24,8 +24,8 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -128,10 +128,10 @@ public class AudioNormalization extends Main {
 							else
 								cmd =  " -vn" + filterComplex + " -f null -" + '"';	
 							
-							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd);		
+							FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd);		
 							
 							try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
@@ -145,7 +145,7 @@ public class AudioNormalization extends Main {
 						
 						if (cancelled == false)
 						{							
-							String normalization = "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB"; //Simple volume compensation
+							String normalization = "volume=" + String.valueOf(FFmpeg.newVolume).replace(",", ".") + "dB"; //Simple volume compensation
 							boolean twoPass = false;
 							
 							//Using LoudNorm filter
@@ -171,13 +171,13 @@ public class AudioNormalization extends Main {
 								lblCurrentEncoding.setText(fileName);
 							
 							//Command
-							if (FFPROBE.stereo)
+							if (FFprobe.stereo)
 							{
 								cmd = " -af " + normalization + " -c:v copy -c:s copy" + audio + " -y ";
 							}
-						    else if (FFPROBE.channels > 1)	
+						    else if (FFprobe.channels > 1)	
 						    {
-						    	if (FFPROBE.channels >= 4)	    		
+						    	if (FFprobe.channels >= 4)	    		
 						    	{
 									if (audioTracks == 0)
 										cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy" + audio.replace("-map a?", "-map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7?") + " -y ";
@@ -201,31 +201,31 @@ public class AudioNormalization extends Main {
 									output = " -f null -" + '"';
 							}
 							
-							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + output);							
+							FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd + output);							
 							
 							try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
 							
-							if (cancelled == false && FFMPEG.error == false && twoPass)
+							if (cancelled == false && FFmpeg.error == false && twoPass)
 							{
 								lblCurrentEncoding.setText(fileName);
 								
 								//Replacing normalization string
-								String secondPassNormalization = normalization.replace(":print_format=summary", "") + ":measured_I=" + FFMPEG.integrated + ":measured_TP=" + FFMPEG.truePeak + ":measured_LRA="  + FFMPEG.LRA + ":measured_thresh=" + FFMPEG.Threshold + ":offset=0:linear=true";
+								String secondPassNormalization = normalization.replace(":print_format=summary", "") + ":measured_I=" + FFmpeg.integrated + ":measured_TP=" + FFmpeg.truePeak + ":measured_LRA="  + FFmpeg.LRA + ":measured_thresh=" + FFmpeg.Threshold + ":offset=0:linear=true";
 								
-								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd.replace(normalization, secondPassNormalization) + '"' + fileOut + '"');
+								FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd.replace(normalization, secondPassNormalization) + '"' + fileOut + '"');
 								
 								try {
-									FFMPEG.runProcess.join();
+									FFmpeg.runProcess.join();
 								} catch (InterruptedException e) {
 								    Thread.currentThread().interrupt();
 								}
 							}
 							
-							if (FFMPEG.error)
+							if (FFmpeg.error)
 							{
 								String audioCodec = "aac";
 								if (System.getProperty("os.name").contains("Mac"))
@@ -233,13 +233,13 @@ public class AudioNormalization extends Main {
 									audioCodec = "aac_at";
 								}
 								
-								if (FFPROBE.stereo)
+								if (FFprobe.stereo)
 								{
 									cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a aac -ar " + lbl48k.getSelectedItem().toString() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								}
-							    else if (FFPROBE.channels > 1)	
+							    else if (FFprobe.channels > 1)	
 							    {
-							    	if (FFPROBE.channels >= 4)	    		
+							    	if (FFprobe.channels >= 4)	    		
 							    	{
 										if (audioTracks == 0)
 											cmd = " -filter_complex " + '"' + "[0:a:0]" + normalization + "[a1];[0:a:1]" + normalization + "[a2]" + '"' + " -c:v copy -c:s copy -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + " -b:a 320k -map v:0? -map [a1] -map [a2] -map 0:a:2? -map 0:a:3? -map 0:a:4? -map 0:a:5? -map 0:a:6? -map 0:a:7? -map s? -y ";
@@ -252,24 +252,24 @@ public class AudioNormalization extends Main {
 							    else
 							    	cmd = " -af " + normalization + " -c:v copy -c:s copy -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + " -b:a 320k -map v:0? -map a? -map s? -y ";
 								
-								FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');	
+								FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd + '"' + fileOut + '"');	
 							}
 							
 							try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
 						}
 	
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
 						}
 						
 					} catch (InterruptedException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 				
@@ -302,13 +302,13 @@ public class AudioNormalization extends Main {
 		boolean normalizeToPeak = language.getProperty("functionNormalization").equals(comboFonctions.getSelectedItem().toString()) && casePeakNormalization.isSelected();
 		String peakMode = normalizeToPeak ? "sample" : "true";
 	
-		if (FFPROBE.stereo)
+		if (FFprobe.stereo)
 		{
 			return " -af ebur128=peak=" + peakMode;
 		}
-	    else if (FFPROBE.channels > 1)	
+	    else if (FFprobe.channels > 1)	
 	    {
-	    	if (FFPROBE.channels >= 4)	    		
+	    	if (FFprobe.channels >= 4)	    		
 	    	{
 	    		String[] options = {"A1 & A2", "A3 & A4"};
 	    		audioTracks = JOptionPane.showOptionDialog(frame, language.getProperty("ChooseMultitrack"), language.getProperty("multitrack"), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
@@ -379,19 +379,19 @@ public class AudioNormalization extends Main {
 		}
 		else //Mode Auto
 		{
-			return " -c:a " + FFPROBE.audioCodec + " -ar " + FFPROBE.audioSampleRate + " -b:a " + FFPROBE.audioBitrate + "k -map v:0? -map a? -map s?";
+			return " -c:a " + FFprobe.audioCodec + " -ar " + FFprobe.audioSampleRate + " -b:a " + FFprobe.audioBitrate + "k -map v:0? -map a? -map s?";
 		}
 		
-		if (FFPROBE.qantization == 24)
+		if (FFprobe.qantization == 24)
 		{
-			return " -c:a pcm_s24le -ar " + FFPROBE.audioSampleRate + " -map v:0? -map a? -map s?";
+			return " -c:a pcm_s24le -ar " + FFprobe.audioSampleRate + " -map v:0? -map a? -map s?";
 		}
-		else if (FFPROBE.qantization == 32)
+		else if (FFprobe.qantization == 32)
 		{
-			return " -c:a pcm_s32le -ar " + FFPROBE.audioSampleRate + " -map v:0? -map a? -map s?";
+			return " -c:a pcm_s32le -ar " + FFprobe.audioSampleRate + " -map v:0? -map a? -map s?";
 		}
 		else
-			return " -c:a pcm_s16le -ar " + FFPROBE.audioSampleRate + " -map v:0? -map a? -map s?";
+			return " -c:a pcm_s16le -ar " + FFprobe.audioSampleRate + " -map v:0? -map a? -map s?";
 	}
 	
 	private static boolean lastActions(File file, String fileName, File fileOut, String output) {

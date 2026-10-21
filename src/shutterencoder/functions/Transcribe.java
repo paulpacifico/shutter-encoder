@@ -35,9 +35,9 @@ import java.util.regex.Pattern;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
-import shutterencoder.library.WHISPER;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
+import shutterencoder.library.Whisper;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -95,12 +95,12 @@ public class Transcribe extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));
 				
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -162,10 +162,10 @@ public class Transcribe extends Main {
 						//Command
 						String cmd = " -c:a pcm_s16le -ac 1 -ar 16000 -vn -y ";
 										
-						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"' + waveFile + '"');		
+						FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"' + waveFile + '"');		
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
@@ -180,10 +180,10 @@ public class Transcribe extends Main {
 							if (comboFilter.getSelectedItem().toString().equals(".srt") || comboFilter.getSelectedItem().toString().equals(".vtt"))
 								format = true;								
 														
-							WHISPER.run(waveFile, fileName);		
+							Whisper.run(waveFile, fileName);		
 										
 							try {
-								WHISPER.runProcess.join();
+								Whisper.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
@@ -210,14 +210,14 @@ public class Transcribe extends Main {
 							}
 						}
 														
-						if (FFMPEG.saveCode == false)
+						if (FFmpeg.saveCode == false)
 						{
 							lastActions(fileOut, labelOutput);
 						}						
 					}
 					catch (Exception e)
 					{
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 						e.printStackTrace();
 					}	
 					finally
@@ -237,7 +237,7 @@ public class Transcribe extends Main {
 
 				UIController.endOfFunction();	
 				
-				if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")) == false && FFMPEG.error == false && cancelled == false)
+				if (comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionTranscribe")) == false && FFmpeg.error == false && cancelled == false)
 				{
 					fileList.setSelectedValue(currentFile, true);						
 					comboSubsSource.setSelectedIndex(0);
@@ -296,12 +296,12 @@ public class Transcribe extends Main {
         int linesInChunk = 0;
 
         for (String word : words) {
-            if (currentLine.length() + word.length() + 1 > Integer.parseInt(WHISPER.textChars.getText())) {
+            if (currentLine.length() + word.length() + 1 > Integer.parseInt(Whisper.textChars.getText())) {
                 currentChunk.append(currentLine.toString().trim()).append("\n");
                 currentLine.setLength(0);
                 linesInChunk++;
 
-                if (linesInChunk == Integer.parseInt(WHISPER.textLines.getText())) {
+                if (linesInChunk == Integer.parseInt(Whisper.textLines.getText())) {
                     chunks.add(currentChunk.toString().trim());
                     currentChunk.setLength(0);
                     linesInChunk = 0;

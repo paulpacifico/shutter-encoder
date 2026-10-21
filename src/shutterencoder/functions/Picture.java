@@ -32,12 +32,12 @@ import shutterencoder.functions.settings.Overlay;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FilterComplex;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.DCRAW;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Dcraw;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.NCNN;
-import shutterencoder.library.XPDFREADER;
+import shutterencoder.library.Ncnn;
+import shutterencoder.library.Xpdfreader;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -224,19 +224,19 @@ public class Picture extends Main {
 						filterComplex = FilterComplex.setFilterComplex(filterComplex, "", true);		
 
 						//InOut	
-						if (FFPROBE.totalLength > 40)
+						if (FFprobe.totalLength > 40)
 						{
 							//Write the in and out values before getInputAndOutput()
 							if (VideoPlayerUI.caseApplyCutToAll.isSelected())
 							{							
 								VideoPlayerCore.videoPath = file.toString();							
 								VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-								VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+								VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 								VideoPlayerUtils.setFileList();	
 							}
 							
 							//InOut	
-							InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
+							InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));	
 							
 							if (videoPlayerCapture && VideoPlayerUtils.waveformContainer.isVisible())
 							{
@@ -303,7 +303,7 @@ public class Picture extends Main {
 							btnStart.setEnabled(false);	
 							UIController.disableAll();
 														
-							for (int p = 1 ; p < XPDFREADER.pagesCount + 1; p++)
+							for (int p = 1 ; p < Xpdfreader.pagesCount + 1; p++)
 							{
 								int n = 1;
 								do {
@@ -312,10 +312,10 @@ public class Picture extends Main {
 								} while (fileOut.exists());
 								
 								if (cancelled == false)
-									XPDFREADER.run(" -r 300 -f " + p + " -l " + p + " " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
+									Xpdfreader.run(" -r 300 -f " + p + " -l " + p + " " + '"' + file.toString() + '"' + " - | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');
 
 								try {
-									XPDFREADER.runProcess.join();
+									Xpdfreader.runProcess.join();
 								} catch (InterruptedException e) {
 								    Thread.currentThread().interrupt();
 								}				
@@ -327,7 +327,7 @@ public class Picture extends Main {
 						{
 							btnStart.setEnabled(false);	
 							UIController.disableAll();
-							DCRAW.run(" -v -w -q 3 -o 1 -6 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');							
+							Dcraw.run(" -v -w -q 3 -o 1 -6 -g 2.4 12.92 -Z - " + '"' + file.toString() + '"' + " | PathToFFMPEG -i -" + logo + cmd + '"' + fileOut + '"');							
 						}
 						else if (inputDeviceIsRunning)
 						{	
@@ -336,7 +336,7 @@ public class Picture extends Main {
 							if ((list.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
 								cmd = cmd.replace("1:v", "2:v").replace("-map v:0", "-map 1:v").replace("0:v", "1:v");							
 							
-							FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + '"' + fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp) + '"');						
+							FFmpeg.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + '"' + fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp) + '"');						
 							
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
@@ -357,19 +357,19 @@ public class Picture extends Main {
 							String ext = fileOut.getName().substring(fileOut.getName().lastIndexOf("."));
 							fileOut = new File(upscaleFolder + "/" + fileOut.getName().replace(ext, ".png"));								
 
-							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + InputAndOutput.outPoint) + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
+							FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + InputAndOutput.outPoint) + filterComplex + singleFrame + colorspace + " -an -y " + '"' + fileOut + '"');
 							try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
 							
-							if (NCNN.isRunning && NCNN.process != null)
+							if (Ncnn.isRunning && Ncnn.process != null)
 							{
-								NCNN.process.destroy();
+								Ncnn.process.destroy();
 								
 								try {
-									NCNN.runProcess.join();
+									Ncnn.runProcess.join();
 								} catch (InterruptedException e) {
 								    Thread.currentThread().interrupt();
 								}
@@ -381,13 +381,13 @@ public class Picture extends Main {
 						}
 						else
 						{				
-							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + InputAndOutput.outPoint) + cmd + '"' + fileOut + '"');		
+							FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + InputAndOutput.outPoint) + cmd + '"' + fileOut + '"');		
 						}
 	
 						if (isRaw)
 						{
 							try {
-								DCRAW.runProcess.join();
+								Dcraw.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
@@ -397,7 +397,7 @@ public class Picture extends Main {
 						else
 						{
 							try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
@@ -409,14 +409,14 @@ public class Picture extends Main {
 							LibraryUtils.isGPUCompatible = isGPUCompatible; 
 						}
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{							
 							if (lastActions(file, fileName, extension, fileOut, labelOutput) || videoPlayerCapture)
 								break;
 						}
 						
 					} catch (Exception e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 				
@@ -463,18 +463,18 @@ public class Picture extends Main {
 		{					
 			if (filterComplex != "") filterComplex += ",";	
 			
-			if (FFPROBE.hasAlpha)
+			if (FFprobe.hasAlpha)
 			{
 				filterComplex += "format=rgba";
 				
-				if (FFPROBE.imageDepth > 8)
+				if (FFprobe.imageDepth > 8)
 					filterComplex += "64le";
 			}
 			else
 			{
 				filterComplex += "format=rgb";
 				
-				if (FFPROBE.imageDepth > 8)
+				if (FFprobe.imageDepth > 8)
 				{
 					filterComplex += "48le";
 				}
@@ -494,9 +494,9 @@ public class Picture extends Main {
 		}
 		else
 		{
-			if (FFPROBE.interlaced.equals("1"))
+			if (FFprobe.interlaced.equals("1"))
 			{
-				return "yadif=0:" + FFPROBE.fieldOrder + ":0";		
+				return "yadif=0:" + FFprobe.fieldOrder + ":0";		
 			}
 			else
 				return "";
@@ -605,7 +605,7 @@ public class Picture extends Main {
 		{
 			return " -r " + comboImageOption.getSelectedItem().toString().replace(" " + Main.language.getProperty("fps"), "").replace(",", ".");
 		}
-		else if (comboFilter.getSelectedItem().toString().equals(".webp") && FFPROBE.totalLength > 40)
+		else if (comboFilter.getSelectedItem().toString().equals(".webp") && FFprobe.totalLength > 40)
 		{
 			return " -loop 0";
 		}
@@ -634,14 +634,14 @@ public class Picture extends Main {
 		
 		if (caseCreateSequence.isSelected())
 		{			
-			NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
+			Ncnn.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + Ncnn.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut.getParentFile() + '"', false);
 		}
 		else		
-			NCNN.run(" -v -i " + '"' + fileOut + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut + '"', false);
+			Ncnn.run(" -v -i " + '"' + fileOut + '"' + " -m " + '"' + Ncnn.modelsPath + '"' + " -n " + model + " -o " + '"' + fileOut + '"', false);
 		
 		do {
 			Thread.sleep(100);
-		} while (NCNN.isRunning && cancelled == false);	
+		} while (Ncnn.isRunning && cancelled == false);	
 																				
 		progressBar.setValue(0);
 		int progressValue = 0;
@@ -665,20 +665,20 @@ public class Picture extends Main {
 					scale = " -vf " + '"' + "scale=iw*0.5:ih*0.5" + flags + '"';
 				}
 				
-				FFMPEG.run(" -i " + '"' + file + '"' + scale + compression + " -y " + '"' + fileOut + '"');
+				FFmpeg.run(" -i " + '"' + file + '"' + scale + compression + " -y " + '"' + fileOut + '"');
 			
 				try {
-					FFMPEG.runProcess.join();
+					FFmpeg.runProcess.join();
 				} catch (InterruptedException e) {
 				    Thread.currentThread().interrupt();
 				}
 			}
 			else if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 			{
-				FFMPEG.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + flags + '"' + " -y " + '"' + fileOut + '"');
+				FFmpeg.run(" -i " + '"' + file + '"' + " -vf " + '"' + "scale=iw*0.5:ih*0.5" + flags + '"' + " -y " + '"' + fileOut + '"');
 				
 				try {
-					FFMPEG.runProcess.join();
+					FFmpeg.runProcess.join();
 				} catch (InterruptedException e) {
 				    Thread.currentThread().interrupt();
 				}			

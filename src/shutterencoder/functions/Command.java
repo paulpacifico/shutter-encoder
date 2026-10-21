@@ -22,8 +22,8 @@ package shutterencoder.functions;
 import java.io.File;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.EXIFTOOL;
-import shutterencoder.library.FFMPEG;
+import shutterencoder.library.Exiftool;
+import shutterencoder.library.FFmpeg;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -127,21 +127,21 @@ public class Command extends Main {
 						{
 							cmd += " -y ";
 							
-							FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
+							FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
 							
 							try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
 							
 					        if (cmd.contains("-pass"))
 		         			{
-					        	FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + '"'  + fileOut + '"');		
+					        	FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + '"'  + fileOut + '"');		
 		         			}
 		
 					        try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
@@ -150,12 +150,12 @@ public class Command extends Main {
 						{
 							btnStart.setEnabled(false);
 							
-							EXIFTOOL.run(" -tagsfromfile " + '"'  + file.toString() + '"' + cmd  + " " + '"'  + file.toString() + '"');		
+							Exiftool.run(" -tagsfromfile " + '"'  + file.toString() + '"' + cmd  + " " + '"'  + file.toString() + '"');		
 							
 							do
 							{
 								Thread.sleep(100);
-							} while (EXIFTOOL.isRunning);
+							} while (Exiftool.isRunning);
 							
 							btnStart.setEnabled(true);
 						}
@@ -164,14 +164,14 @@ public class Command extends Main {
 						final File folder = new File(fileOut.getParent());
 						FunctionUtils.listFilesForFolder(fileName.replace(extension, ""), folder);
 	
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 							break;
 						}
 					
 					} catch (InterruptedException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 

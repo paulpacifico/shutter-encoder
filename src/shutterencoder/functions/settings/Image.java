@@ -24,7 +24,7 @@ import java.io.File;
 import shutterencoder.functions.VideoEncoders;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
@@ -45,7 +45,7 @@ public class Image extends Main {
 
 				float imageRatio = 1.0f;
 				
-				int ow = FFPROBE.imageWidth;  
+				int ow = FFprobe.imageWidth;  
 				
 				if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
@@ -80,11 +80,11 @@ public class Image extends Main {
 						
 						if (s[0].equals("auto"))
 						{
-							ow = Math.round(FFPROBE.imageHeight / Integer.parseInt(s[1]));
+							ow = Math.round(FFprobe.imageHeight / Integer.parseInt(s[1]));
 						}
 						else if (s[1].equals("auto"))
 						{
-							ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
+							ow = Math.round(FFprobe.imageWidth / Integer.parseInt(s[0]));
 						}
 						else //ratio like 4:1 etc...
 						{
@@ -94,7 +94,7 @@ public class Image extends Main {
 
 		        	if (VideoEncoders.setScalingFirst())
 					{
-		        		imageRatio = (float) FFPROBE.imageWidth / ow;
+		        		imageRatio = (float) FFprobe.imageWidth / ow;
 					}
 				}
 				
@@ -229,7 +229,7 @@ public class Image extends Main {
 			}
 						
 			//Format
-			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+			String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";
 						
 			//GPU filter	
 			if (noGPU == false && filterGPU && (filterComplex.contains("transpose") || filterComplex.contains("hflip")))
@@ -297,10 +297,10 @@ public class Image extends Main {
 		
 		String flags = ":scaler=" + Settings.comboScale.getSelectedItem().toString();
 		
-		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && FFPROBE.imageResolution != null)
+		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false && FFprobe.imageResolution != null)
 		{
-			String i[] = FFPROBE.imageResolution.split("x");        
-			String o[] = FFPROBE.imageResolution.split("x");
+			String i[] = FFprobe.imageResolution.split("x");        
+			String o[] = FFprobe.imageResolution.split("x");
 						
 			if (comboResolution.getSelectedItem().toString().contains("%"))
 			{
@@ -433,7 +433,7 @@ public class Image extends Main {
 		}
 		else if (limitToFHD)
 		{
-			String i[] = FFPROBE.imageResolution.split("x");    
+			String i[] = FFprobe.imageResolution.split("x");    
 			String o[] = "1920x1080".split("x");
 			
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
@@ -487,7 +487,7 @@ public class Image extends Main {
 		}
 		
 		//Format
-		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+		String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";
 						
 		//GPU scaling /!\ scale=iw is used for the watermark scaling
 		if (LibraryUtils.isGPUCompatible && filterComplex.contains("scale=") && filterComplex.contains("scale=iw") == false && noGPU == false && filterGPU
@@ -642,8 +642,8 @@ public class Image extends Main {
 		
 		if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		{
-			String i[] = FFPROBE.imageResolution.split("x");        
-			String o[] = FFPROBE.imageResolution.split("x");
+			String i[] = FFprobe.imageResolution.split("x");        
+			String o[] = FFprobe.imageResolution.split("x");
 						
 			if (comboResolution.getSelectedItem().toString().contains("%"))
 			{
@@ -748,7 +748,7 @@ public class Image extends Main {
 		}
 		else if (limitToFHD)
 		{
-			String i[] = FFPROBE.imageResolution.split("x");    
+			String i[] = FFprobe.imageResolution.split("x");    
 			String o[] = "1920x1080".split("x");
 			
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
@@ -788,7 +788,7 @@ public class Image extends Main {
 		}
 		
 		//Format
-		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+		String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";
 					
 		//GPU filter	
 		if (noGPU == false && filterComplex.contains("pad=") && filterGPU)

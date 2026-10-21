@@ -29,8 +29,8 @@ import javax.swing.JOptionPane;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
@@ -72,12 +72,12 @@ public class LoudnessTruePeak extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));	
 						
 		            	//Audio
 						String audio = setAudio();	
@@ -89,10 +89,10 @@ public class LoudnessTruePeak extends Main {
 						else
 							cmd =  " -vn" + audio + " -f null -" + '"';	
 						
-						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd);		
+						FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd);		
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
@@ -101,14 +101,14 @@ public class LoudnessTruePeak extends Main {
 						if (cancelled == false)
 							showDetection(file);				
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName))
 								break;
 						}
 					
 					} catch (InterruptedException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 				
@@ -139,13 +139,13 @@ public class LoudnessTruePeak extends Main {
 
 	private static String setAudio() {
 		
-		if (FFPROBE.stereo)
+		if (FFprobe.stereo)
 		{
 			return " -af ebur128=peak=true";
 		}
-	    else if (FFPROBE.channels > 1)	
+	    else if (FFprobe.channels > 1)	
 	    {
-	    	if (FFPROBE.channels >= 4)	    		
+	    	if (FFprobe.channels >= 4)	    		
 	    	{
 	    		String[] options = {"A1 & A2", "A3 & A4"};
 	    		int q = JOptionPane.showOptionDialog(frame, language.getProperty("ChooseMultitrack"), language.getProperty("multitrack"), JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null, options, options[0]);
@@ -163,11 +163,11 @@ public class LoudnessTruePeak extends Main {
 
 	private static void showDetection(File file) {
 		
-		if (FFMPEG.analyseLufs != null && Main.cancelled == false && FFMPEG.error == false)
+		if (FFmpeg.analyseLufs != null && Main.cancelled == false && FFmpeg.error == false)
 		{
 			if (comboFilter.getSelectedIndex() == 0) // Display
 			{
-				JOptionPane.showMessageDialog(frame, FFMPEG.analyseLufs, file.getName(), JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(frame, FFmpeg.analyseLufs, file.getName(), JOptionPane.INFORMATION_MESSAGE);
 			}
 			else // Save
 			{
@@ -191,7 +191,7 @@ public class LoudnessTruePeak extends Main {
 					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
 					writer.println(Main.language.getProperty("analyzeOf") + " " + file.getName());
 					writer.println("");
-					writer.println(FFMPEG.analyseLufs + System.lineSeparator() + System.lineSeparator() + FFMPEG.shortTermValues);
+					writer.println(FFmpeg.analyseLufs + System.lineSeparator() + System.lineSeparator() + FFmpeg.shortTermValues);
 					writer.close();
 				} catch (FileNotFoundException | UnsupportedEncodingException e) {}
 			}
@@ -201,10 +201,10 @@ public class LoudnessTruePeak extends Main {
 	private static boolean lastActions(File file, String fileName) {		
 		
 		//Errors
-		if (FFMPEG.error)
+		if (FFmpeg.error)
 		{
-			FFMPEG.errorList.append(fileName);
-		    FFMPEG.errorList.append(System.lineSeparator());
+			FFmpeg.errorList.append(fileName);
+		    FFmpeg.errorList.append(System.lineSeparator());
 		}
 
 		//Process cancelled
@@ -214,7 +214,7 @@ public class LoudnessTruePeak extends Main {
 		}
 		else
 		{
-			if(FFMPEG.error == false)
+			if(FFmpeg.error == false)
 				FunctionUtils.completed++;
 			lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 		}

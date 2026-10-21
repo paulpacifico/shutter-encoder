@@ -50,13 +50,13 @@ import shutterencoder.functions.settings.Transitions;
 import shutterencoder.functions.utils.FilterComplex;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.BMXTRANSWRAP;
-import shutterencoder.library.DVDAUTHOR;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Bmxtranswrap;
+import shutterencoder.library.Dvdauthor;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.NCNN;
-import shutterencoder.library.TSMUXER;
+import shutterencoder.library.Ncnn;
+import shutterencoder.library.Tsmuxer;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -153,7 +153,7 @@ public class VideoEncoders extends Main {
 			            	String audioFiles = "";
 			            	
 							//Finding video file name
-				            if (FFPROBE.FindStreams(file.toString()))
+				            if (FFprobe.FindStreams(file.toString()))
 				            {
 				            	audioFiles = AudioSettings.setAudioFiles(audioFiles, file);
 				            }
@@ -171,11 +171,11 @@ public class VideoEncoders extends Main {
 						if (FunctionUtils.analyze(file, false, false) == false)
 							continue;	
 						
-						if (FFPROBE.audioOnly)
+						if (FFprobe.audioOnly)
 						{
-							FFPROBE.imageWidth = 1920;
-							FFPROBE.imageHeight = 1080;
-							FFPROBE.imageResolution = "1920x1080";
+							FFprobe.imageWidth = 1920;
+							FFprobe.imageHeight = 1080;
+							FFprobe.imageResolution = "1920x1080";
 						}
 							
 						//Write the in and out values before getInputAndOutput()
@@ -183,12 +183,12 @@ public class VideoEncoders extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();													
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -412,7 +412,7 @@ public class VideoEncoders extends Main {
 							
 							case "DV":
 								
-								if (FFPROBE.currentFPS == 25.0f)
+								if (FFprobe.currentFPS == 25.0f)
 								{
 									resolution = " -s 720x576";									
 								}
@@ -506,17 +506,17 @@ public class VideoEncoders extends Main {
 								
 								case "Blu-ray":
 									
-									if (FFPROBE.interlaced.equals("1") && (caseForcerProgressif.isSelected() || comboFilter.getSelectedIndex() == 1)) //H.265
+									if (FFprobe.interlaced.equals("1") && (caseForcerProgressif.isSelected() || comboFilter.getSelectedIndex() == 1)) //H.265
 									{
-										filterComplex = "yadif=0:" + FFPROBE.fieldOrder + ":0"; 
+										filterComplex = "yadif=0:" + FFprobe.fieldOrder + ":0"; 
 									}
 									break;
 									
 								case "DVD":
 									
-									if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected())
+									if (FFprobe.interlaced.equals("1") && caseForcerProgressif.isSelected())
 									{
-										filterComplex = "yadif=0:" + FFPROBE.fieldOrder + ":0"; 
+										filterComplex = "yadif=0:" + FFprobe.fieldOrder + ":0"; 
 									}
 									
 									break;
@@ -541,7 +541,7 @@ public class VideoEncoders extends Main {
 									case "XDCAM HD 35":
 									case "DVD" : //Needed 16:9 aspect ratio
 										
-										if (FFPROBE.imageResolution.equals("1440x1080"))
+										if (FFprobe.imageResolution.equals("1440x1080"))
 										{
 											filterComplex = Image.setScale(filterComplex, false, false);	
 											filterComplex = Image.setPad(filterComplex, false, false);			
@@ -665,7 +665,7 @@ public class VideoEncoders extends Main {
 									case "XDCAM HD 35":
 									case "DVD" : //Needed 16:9 aspect ratio
 										
-										if (FFPROBE.imageResolution.equals("1440x1080"))
+										if (FFprobe.imageResolution.equals("1440x1080"))
 										{
 											filterComplex = Image.setScale(filterComplex, false, false);	
 											filterComplex = Image.setPad(filterComplex, false, false);			
@@ -827,7 +827,7 @@ public class VideoEncoders extends Main {
 							
 							case "DV":
 								
-								if (FFPROBE.currentFPS == 25.0f)
+								if (FFprobe.currentFPS == 25.0f)
 								{
 									frameRate = " -r 25";							
 								}
@@ -906,10 +906,10 @@ public class VideoEncoders extends Main {
 			        	if (filterComplex.contains("hwdownload")) //When GPU scaling is used
 			    		{
 			        		//Format
-			        		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";	
+			        		String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";	
 			    			
 			    			//When there is no CPU filter AND it's 8bit only
-			    			if (FFPROBE.imageDepth == 8 && filterComplex.contains("format=" + bitDepth + "[out]") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && caseColorspace.isSelected() == false)
+			    			if (FFprobe.imageDepth == 8 && filterComplex.contains("format=" + bitDepth + "[out]") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false && caseColorspace.isSelected() == false)
 			    			{
 			    				filterComplex = filterComplex.replace(",hwdownload,format=" + bitDepth + "[out]", "[out]");
 			    			}
@@ -935,7 +935,7 @@ public class VideoEncoders extends Main {
 							if ((list.getElementAt(0).equals("Capture.current.screen") || System.getProperty("os.name").contains("Mac")) && RecordInputDevice.audioDeviceIndex > 0)
 								cmd = cmd.replace("1:v", "2:v").replace("-map v:0", "-map 1:v").replace("0:v", "1:v");	
 							
-							FFMPEG.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));						
+							FFmpeg.run(" " + RecordInputDevice.setInputDevices() + logo + cmd + output.replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));						
 							
 							fileOut = new File(fileOut.toString().replace("Capture.current", timeStamp).replace("Capture.input", timeStamp));
 						}
@@ -985,7 +985,7 @@ public class VideoEncoders extends Main {
 									quality = " -q:v 0";
 								}
 								
-								FFMPEG.run(InputAndOutput.setInputString(gpuDecoding + InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + filter + quality + " -an -y " + '"' + fileOut + '"');
+								FFmpeg.run(InputAndOutput.setInputString(gpuDecoding + InputAndOutput.inPoint + inputCodec, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + filter + quality + " -an -y " + '"' + fileOut + '"');
 								
 								int current = 0;
 								do {
@@ -1002,7 +1002,7 @@ public class VideoEncoders extends Main {
 										Thread.sleep(10);
 									}
 									
-								} while (FFMPEG.runProcess.isAlive());
+								} while (FFmpeg.runProcess.isAlive());
 								
 								upscale(null, fileOut);
 							}
@@ -1033,30 +1033,30 @@ public class VideoEncoders extends Main {
 							
 							if (cancelled == false)
 							{
-								String inputFramerate = " -r " + FFPROBE.currentFPS;
+								String inputFramerate = " -r " + FFprobe.currentFPS;
 								
-								if (FFPROBE.currentFPS == 59.94f)
+								if (FFprobe.currentFPS == 59.94f)
 								{
 									inputFramerate = " -r 60000/1001";
 								}
-								else if (FFPROBE.currentFPS == 29.97f)
+								else if (FFprobe.currentFPS == 29.97f)
 								{
 									inputFramerate = " -r 30000/1001";
 								}
-								else if (FFPROBE.currentFPS == 23.98f)
+								else if (FFprobe.currentFPS == 23.98f)
 								{
 									inputFramerate = " -r 24000/1001";
 								}
 								
 								if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 								{
-									FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd + output);
+									FFmpeg.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd + output);
 								}
 								else
-									FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + output);
+									FFmpeg.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + output);
 								
 								try {
-									FFMPEG.runProcess.join();
+									FFmpeg.runProcess.join();
 								} catch (InterruptedException e) {
 								    Thread.currentThread().interrupt();
 								}
@@ -1065,13 +1065,13 @@ public class VideoEncoders extends Main {
 								{
 									if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 									{
-										FFMPEG.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + output);
+										FFmpeg.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + output);
 									}
 									else
-										FFMPEG.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);		
+										FFmpeg.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);		
 									
 									try {
-										FFMPEG.runProcess.join();
+										FFmpeg.runProcess.join();
 									} catch (InterruptedException e) {
 									    Thread.currentThread().interrupt();
 									}	
@@ -1088,37 +1088,37 @@ public class VideoEncoders extends Main {
 							//IMPORTANT
 							fileOut = new File(lblDestination1.getText() + "/" + fileOut.getName().replace("%06d" + comboImageOption.getSelectedItem(), ext));
 						}
-						else if (FFPROBE.audioOnly)
+						else if (FFprobe.audioOnly)
 						{
-							progressBar.setMaximum((int) FFPROBE.totalLength / 1000);
-							FFMPEG.run(InputAndOutput.setInputString(loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', " -t " + FFPROBE.totalLength + "ms" + InputAndOutput.outPoint) + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
+							progressBar.setMaximum((int) FFprobe.totalLength / 1000);
+							FFmpeg.run(InputAndOutput.setInputString(loop + stream + " -f lavfi -i color=c=black:s=1920x1080:r=25" + InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', " -t " + FFprobe.totalLength + "ms" + InputAndOutput.outPoint) + cmd.replace("0:a", "1:a").replace("-map a", "-map 1:a") + output);
 						}
 						else
 						{
-							FFMPEG.run(InputAndOutput.setInputString(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + cmd + output);		
+							FFmpeg.run(InputAndOutput.setInputString(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + cmd + output);		
 						}
 
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
 						
 						if (grpBitrate.isVisible() && case2pass.isSelected() || comboFonctions.getSelectedItem().toString().equals("DVD") && pass !=  "")
 						{						
-							if (FFMPEG.cancelled == false && comboResolution.getSelectedItem().toString().contains("AI") == false)
+							if (FFmpeg.cancelled == false && comboResolution.getSelectedItem().toString().contains("AI") == false)
 							{
-								FFMPEG.run(InputAndOutput.setInputString(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);	
+								FFmpeg.run(InputAndOutput.setInputString(gpuDecoding + loop + stream + InputAndOutput.inPoint + inputCodec + concat, " -i " + '"' + file.toString() + '"', logo + subtitles + InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);	
 														
 								try {
-									FFMPEG.runProcess.join();
+									FFmpeg.runProcess.join();
 								} catch (InterruptedException e) {
 								    Thread.currentThread().interrupt();
 								}
 							}
 						}
 																			
-						if (FFMPEG.saveCode == false && cancelled == false && FFMPEG.error == false)
+						if (FFmpeg.saveCode == false && cancelled == false && FFmpeg.error == false)
 						{
 							//HDR
 							switch (comboFonctions.getSelectedItem().toString())
@@ -1155,13 +1155,13 @@ public class VideoEncoders extends Main {
 										
 										lblCurrentEncoding.setText(Main.language.getProperty("createOpatomFiles"));
 																												
-										BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName.replace(extension, "") + '"' + " " + '"' + fileOut.toString() + '"');
+										Bmxtranswrap.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName.replace(extension, "") + '"' + " " + '"' + fileOut.toString() + '"');
 									
 										do
 										{
 											Thread.sleep(100);
 										}
-										while (BMXTRANSWRAP.isRunning);
+										while (Bmxtranswrap.isRunning);
 										
 										fileOut.delete();
 										break;
@@ -1176,13 +1176,13 @@ public class VideoEncoders extends Main {
 										
 										lblCurrentEncoding.setText(Main.language.getProperty("createAS10Format"));
 										
-										BMXTRANSWRAP.run("-t as10 -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, "_AS10" + comboFilter.getSelectedItem().toString()) + '"' + " --shim-name " + '"' + comboAS10.getSelectedItem().toString() + '"' + " " + '"' + fileOut.toString() + '"');
+										Bmxtranswrap.run("-t as10 -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, "_AS10" + comboFilter.getSelectedItem().toString()) + '"' + " --shim-name " + '"' + comboAS10.getSelectedItem().toString() + '"' + " " + '"' + fileOut.toString() + '"');
 								
 										do
 										{
 											Thread.sleep(100);
 										}
-										while(BMXTRANSWRAP.isRunning);
+										while(Bmxtranswrap.isRunning);
 										
 										fileOut.delete();
 										break;
@@ -1191,13 +1191,13 @@ public class VideoEncoders extends Main {
 										
 										lblCurrentEncoding.setText(Main.language.getProperty("createAS10Format").replace("10", "11"));
 																				
-										BMXTRANSWRAP.run("-t as11op1a -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, "_AS11" + comboFilter.getSelectedItem().toString()) + '"' + " " + '"' + fileOut.toString() + '"');
+										Bmxtranswrap.run("-t as11op1a -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, "_AS11" + comboFilter.getSelectedItem().toString()) + '"' + " " + '"' + fileOut.toString() + '"');
 									
 										do
 										{
 											Thread.sleep(100);
 										}
-										while(BMXTRANSWRAP.isRunning);
+										while(Bmxtranswrap.isRunning);
 										
 										fileOut.delete();
 										break;
@@ -1217,19 +1217,19 @@ public class VideoEncoders extends Main {
 							final File folder = new File(fileOut.getParent());
 							FunctionUtils.listFilesForFolder(null, folder);
 							
-							if (FFMPEG.saveCode || cancelled || FFMPEG.error)
+							if (FFmpeg.saveCode || cancelled || FFmpeg.error)
 								FileUtils.deleteDirectory(authoringFolder);	
 						}
 								
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false 
-						|| FFMPEG.saveCode == false && caseEnableSequence.isSelected()
-						|| FFMPEG.saveCode == false && Settings.btnSetBab.isSelected())
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false 
+						|| FFmpeg.saveCode == false && caseEnableSequence.isSelected()
+						|| FFmpeg.saveCode == false && Settings.btnSetBab.isSelected())
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
 						}
 					} catch (InterruptedException | IOException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}			
 				}
 								
@@ -1270,8 +1270,8 @@ public class VideoEncoders extends Main {
 		}			
 		
 		//Set scaling before or after depending on using a pad or stretch mode
-		String i[] = FFPROBE.imageResolution.split("x");        
-		String o[] = FFPROBE.imageResolution.split("x");
+		String i[] = FFprobe.imageResolution.split("x");        
+		String o[] = FFprobe.imageResolution.split("x");
 					
 		if (comboResolution.getSelectedItem().toString().contains("%"))
 		{
@@ -1378,7 +1378,7 @@ public class VideoEncoders extends Main {
 				if (comboFilter.getSelectedIndex() == 0)
 				{
 					String interlace = "";
-					if (FFPROBE.currentFPS != 24.0 && FFPROBE.currentFPS != 23.98 && caseForcerProgressif.isSelected() == false)
+					if (FFprobe.currentFPS != 24.0 && FFprobe.currentFPS != 23.98 && caseForcerProgressif.isSelected() == false)
 			        	interlace = ":tff=1";
 					
 					String maxrate = "40000";
@@ -1405,7 +1405,7 @@ public class VideoEncoders extends Main {
 
 			case "DVD":
 				
-				if (FFPROBE.currentFPS == 25.0f)
+				if (FFprobe.currentFPS == 25.0f)
 				{
 					return " -aspect 16:9 -target pal-dvd -s 720x576";
 				}
@@ -1828,7 +1828,7 @@ public class VideoEncoders extends Main {
 				
 			case "DV":
 				
-				if (FFPROBE.currentFPS == 25.0f)
+				if (FFprobe.currentFPS == 25.0f)
 				{
 					return " -pix_fmt yuv420p";							
 				}
@@ -1880,7 +1880,7 @@ public class VideoEncoders extends Main {
 
 			case "DVD":
 				
-				float bitrate = (float) ((float) 4000000 / FFPROBE.totalLength) * 8;
+				float bitrate = (float) ((float) 4000000 / FFprobe.totalLength) * 8;
 				if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 				{
 					double totalIn =  Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * VideoPlayerUI.inputFramerateMS;
@@ -2030,7 +2030,7 @@ public class VideoEncoders extends Main {
 		String line;
 		while ((line = oldXML.readLine()) != null)
 		{
-			if (FFPROBE.currentFPS != 25.0f && line.contains("pal"))
+			if (FFprobe.currentFPS != 25.0f && line.contains("pal"))
 			{
 				writer.write(line.replace("pal", "ntsc").replace("720x576", "720x480") + System.lineSeparator());
 			}
@@ -2047,13 +2047,13 @@ public class VideoEncoders extends Main {
 		writer.close();		
 			
 			if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
-				DVDAUTHOR.run("-o " + '"' + dvdFolder.toString() + "/" + '"' + " -x " + '"' + dvdFolder.toString() + "/dvd.xml" + '"');
+				Dvdauthor.run("-o " + '"' + dvdFolder.toString() + "/" + '"' + " -x " + '"' + dvdFolder.toString() + "/dvd.xml" + '"');
 			else
-				DVDAUTHOR.run("-o " + '"' + dvdFolder.toString() + '"' + " -x " + '"' + dvdFolder.toString() + "/dvd.xml" + '"');	
+				Dvdauthor.run("-o " + '"' + dvdFolder.toString() + '"' + " -x " + '"' + dvdFolder.toString() + "/dvd.xml" + '"');	
 				
             do {
             	Thread.sleep(100);
-            } while (DVDAUTHOR.isRunning);
+            } while (Dvdauthor.isRunning);
 	}
 		
 	private static void makeBDMVfiles(File blurayFolder, String MKVfile) throws IOException, InterruptedException {
@@ -2085,11 +2085,11 @@ public class VideoEncoders extends Main {
 			oldmeta.close();
 			writer.close();		
 			
-			TSMUXER.run('"' + blurayFolder.toString().replace("\\", "/") + "/bluray.meta" + '"' + " " + '"' + blurayFolder.toString().replace("\\", "/") + '"');	
+			Tsmuxer.run('"' + blurayFolder.toString().replace("\\", "/") + "/bluray.meta" + '"' + " " + '"' + blurayFolder.toString().replace("\\", "/") + '"');	
 				
             do {
             	Thread.sleep(100);
-            } while (TSMUXER.isRunning);
+            } while (Tsmuxer.isRunning);
 }
 	
 	private static void upscale(File inputFile, File fileOut) throws InterruptedException {
@@ -2119,14 +2119,14 @@ public class VideoEncoders extends Main {
 		
 		if (inputFile != null) //Image sequence
 		{
-			NCNN.run(" -v -i " + '"' + inputFile.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + format + " -o " + '"' + fileOut.getParentFile() + '"', false);
+			Ncnn.run(" -v -i " + '"' + inputFile.getParentFile() + '"' + " -m " + '"' + Ncnn.modelsPath + '"' + " -n " + model + format + " -o " + '"' + fileOut.getParentFile() + '"', false);
 		}
 		else
-			NCNN.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + NCNN.modelsPath + '"' + " -n " + model + format + " -o " + '"' + fileOut.getParentFile() + '"', false);
+			Ncnn.run(" -v -i " + '"' + fileOut.getParentFile() + '"' + " -m " + '"' + Ncnn.modelsPath + '"' + " -n " + model + format + " -o " + '"' + fileOut.getParentFile() + '"', false);
 		
 		do {
 			Thread.sleep(100);
-		} while (NCNN.isRunning && cancelled == false);			
+		} while (Ncnn.isRunning && cancelled == false);			
 	}
 	
 	private static boolean lastActions(File file, String fileName, File fileOut, String output) {

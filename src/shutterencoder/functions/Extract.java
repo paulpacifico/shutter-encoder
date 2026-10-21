@@ -22,8 +22,8 @@ package shutterencoder.functions;
 import java.io.File;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -124,45 +124,45 @@ public class Extract extends Main {
 						String container = extension;
 						if (comboFilter.getSelectedItem().toString().contains(language.getProperty("audio")))
 						{
-							FFPROBE.audioCodec = FFPROBE.audioCodecs[audioStream];							
+							FFprobe.audioCodec = FFprobe.audioCodecs[audioStream];							
 							
-							if (FFPROBE.audioCodec.contains("pcm"))
+							if (FFprobe.audioCodec.contains("pcm"))
 							{
 								container = ".wav";	
 							}
-							else if (FFPROBE.audioCodec.contains("aac"))
+							else if (FFprobe.audioCodec.contains("aac"))
 							{
 								container = ".m4a";						
 							}
-							else if (FFPROBE.audioCodec.contains("eac3"))
+							else if (FFprobe.audioCodec.contains("eac3"))
 							{
 								container = ".eac3";	
 							}
-							else if (FFPROBE.audioCodec.contains("ac3"))
+							else if (FFprobe.audioCodec.contains("ac3"))
 							{
 								container = ".ac3";	
 							}
-							else if (FFPROBE.audioCodec.contains("opus"))
+							else if (FFprobe.audioCodec.contains("opus"))
 							{
 								container = ".opus";
 							}
-							else if (FFPROBE.audioCodec.contains("vorbis"))
+							else if (FFprobe.audioCodec.contains("vorbis"))
 							{
 								container = ".oga";	
 							}
-							else if (FFPROBE.audioCodec.contains("eac3"))
+							else if (FFprobe.audioCodec.contains("eac3"))
 							{
 								container = ".eac3";
 							}
-							else if (FFPROBE.audioCodec.contains("wma"))
+							else if (FFprobe.audioCodec.contains("wma"))
 							{
 								container = ".wma";
 							}
-							else if (FFPROBE.audioCodec.contains("mp3"))
+							else if (FFprobe.audioCodec.contains("mp3"))
 							{
 								container = ".mp3";	
 							}
-							else if (FFPROBE.audioCodec.contains("mp2"))
+							else if (FFprobe.audioCodec.contains("mp2"))
 							{
 								container = ".mp2";	
 							}
@@ -171,15 +171,15 @@ public class Extract extends Main {
 						{
 							container = ".srt";		
 							
-							if (FFPROBE.subtitlesCodec.equals("dvd_subtitle"))
+							if (FFprobe.subtitlesCodec.equals("dvd_subtitle"))
 							{
 								container = ".sup";
 							}
-							else if (FFPROBE.subtitlesCodec.equals("hdmv_pgs_subtitle"))
+							else if (FFprobe.subtitlesCodec.equals("hdmv_pgs_subtitle"))
 							{
 								container = ".sup";
 							}
-							else if (FFPROBE.subtitlesCodec.equals("ass"))
+							else if (FFprobe.subtitlesCodec.equals("ass"))
 							{
 								container = ".ass";
 							}
@@ -207,15 +207,15 @@ public class Extract extends Main {
 									
 						//Command
 						String cmd = mapping + metadatas + " -y ";
-						FFMPEG.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
+						FFmpeg.run(" -i " + '"' + file.toString() + '"' + cmd + '"'  + fileOut + '"');		
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
 																		
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
@@ -224,7 +224,7 @@ public class Extract extends Main {
 						//Loop the same file until the last videoStream				
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("video")))
 						{
-							if (videoStream < (FFPROBE.videoStreams - 1))
+							if (videoStream < (FFprobe.videoStreams - 1))
 							{
 								videoStream ++;
 								i --;
@@ -238,7 +238,7 @@ public class Extract extends Main {
 						//Loop the same file until the last audioStream				
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("audio")))
 						{
-							if (audioStream < (FFPROBE.audioStreams - 1))
+							if (audioStream < (FFprobe.audioStreams - 1))
 							{
 								audioStream ++;
 								i --;
@@ -252,7 +252,7 @@ public class Extract extends Main {
 						//Loop the same file until the last subStream				
 						if (comboFilter.getSelectedItem().toString().equals(language.getProperty("subtitles")))
 						{
-							if (subStream < (FFPROBE.subtitleStreams - 1))
+							if (subStream < (FFprobe.subtitleStreams - 1))
 							{
 								subStream ++;
 								i --;
@@ -264,7 +264,7 @@ public class Extract extends Main {
 						}	
 				
 					} catch (InterruptedException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 				
@@ -303,50 +303,50 @@ public class Extract extends Main {
 			public void run() {
 								
 				//Extract video
-				if (FFPROBE.videoStreams > 0 && cancelled == false && FFMPEG.error == false)
+				if (FFprobe.videoStreams > 0 && cancelled == false && FFmpeg.error == false)
 				{
 					comboFilter.setSelectedItem(language.getProperty("video"));
 					Extract.main();	
 					
-					if (cancelled == false && FFMPEG.error == false)
+					if (cancelled == false && FFmpeg.error == false)
 					{
 						do {
 							try {
 								Thread.sleep(100);
 							} catch (InterruptedException e1) {}
-						} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
+						} while (cancelled == false && FFmpeg.error == false && extractComplete == false);
 					}
 				}
 				
 				//Extract audio
-				if (FFPROBE.audioStreams > 0 && cancelled == false && FFMPEG.error == false)
+				if (FFprobe.audioStreams > 0 && cancelled == false && FFmpeg.error == false)
 				{
 					comboFilter.setSelectedItem(language.getProperty("audio"));
 					Extract.main();	
 					
-					if (cancelled == false && FFMPEG.error == false)
+					if (cancelled == false && FFmpeg.error == false)
 					{
 						do {
 							try {
 								Thread.sleep(100);
 							} catch (InterruptedException e1) {}
-						} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
+						} while (cancelled == false && FFmpeg.error == false && extractComplete == false);
 					}
 				}
 
 				//Extract subs
-				if (FFPROBE.subtitleStreams > 0 && cancelled == false && FFMPEG.error == false)
+				if (FFprobe.subtitleStreams > 0 && cancelled == false && FFmpeg.error == false)
 				{
 					comboFilter.setSelectedItem(language.getProperty("subtitles"));
 					Extract.main();
 
-					if (cancelled == false && FFMPEG.error == false)
+					if (cancelled == false && FFmpeg.error == false)
 					{
 						do {
 							try {
 								Thread.sleep(100);
 							} catch (InterruptedException e1) {}
-						} while (cancelled == false && FFMPEG.error == false && extractComplete == false);
+						} while (cancelled == false && FFmpeg.error == false && extractComplete == false);
 					}
 				}	
 				

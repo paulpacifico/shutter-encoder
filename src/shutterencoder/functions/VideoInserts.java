@@ -27,8 +27,8 @@ import java.util.Arrays;
 
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
@@ -74,14 +74,14 @@ public class VideoInserts extends Main {
 								break;
 			            }
 						
-						FFPROBE.Data(list.getElementAt(i));
+						FFprobe.Data(list.getElementAt(i));
 						try {
-							FFPROBE.processData.join();
+							FFprobe.processData.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
 						
-						listeFichiers[i] = tcInMs() + "=" + '"' + list.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFPROBE.totalLength);
+						listeFichiers[i] = tcInMs() + "=" + '"' + list.getElementAt(i) + '"' + "=" + (int) (tcInMs() + FFprobe.totalLength);
 					}
 																								
 					long temps = 0;	
@@ -90,17 +90,17 @@ public class VideoInserts extends Main {
 					for (int i = 0 ; i < list.getSize() ; i++)
 					{
 						String fichier[] = listeFichiers[i].split("=");
-						FFPROBE.Data(fichier[1].replace("\"", ""));
+						FFprobe.Data(fichier[1].replace("\"", ""));
 						try {
-							FFPROBE.processData.join();
+							FFprobe.processData.join();
 						} catch (InterruptedException er) {
 						    Thread.currentThread().interrupt();
 						}
 						
-						if (FFPROBE.totalLength > temps)
+						if (FFprobe.totalLength > temps)
 						{
 							masterFile = listeFichiers[i];		
-							temps = FFPROBE.totalLength;
+							temps = FFprobe.totalLength;
 						}
 					}
 																			
@@ -117,9 +117,9 @@ public class VideoInserts extends Main {
 					String masterName = new File(master[1].replace("\"", "")).getName();
 					
 					//On analyse le fichier Master pour obtenir le timescale
-					FFPROBE.FrameData(master[1].replace("\"", ""));					
+					FFprobe.FrameData(master[1].replace("\"", ""));					
 					try {
-						FFPROBE.processFrameData.join();
+						FFprobe.processFrameData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}
@@ -183,9 +183,9 @@ public class VideoInserts extends Main {
 									lblCurrentEncoding.setText(new File(s[1].replace("\"", "")).getName());								
 																
 									//On intègre le timescale à chaque plan
-									FFMPEG.run(" -i " + s[1] + " -video_track_timescale " + FFPROBE.timeBase + " -c copy -map v:0? -map a? -map s? -y "  + withTempFolder);	
+									FFmpeg.run(" -i " + s[1] + " -video_track_timescale " + FFprobe.timeBase + " -c copy -map v:0? -map a? -map s? -y "  + withTempFolder);	
 									try {
-										FFMPEG.runProcess.join();
+										FFmpeg.runProcess.join();
 									} catch (InterruptedException e) {
 									    Thread.currentThread().interrupt();
 									}
@@ -303,20 +303,20 @@ public class VideoInserts extends Main {
 					if (cancelled == false)
 					{						
 						String cmd = " -i " + master[1] + timecode + " -c:v copy -c:a copy -c:s copy -map v:0? -map 1:a? -map s? -y ";
-						FFMPEG.run(" -safe 0 -f concat -i " + '"' + concatList.toString() + '"' + cmd + '"' + fileOut.toString() + '"');		
+						FFmpeg.run(" -safe 0 -f concat -i " + '"' + concatList.toString() + '"' + cmd + '"' + fileOut.toString() + '"');		
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
 					}
 			
-					if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+					if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						lastActions(new File(masterFile), fileOut, concatList, labelOutput, temp);
 			
 				} catch (Exception e) {					
-					FFMPEG.error  = true;
+					FFmpeg.error  = true;
 				}
 							
 				if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
@@ -364,10 +364,10 @@ public class VideoInserts extends Main {
 	
 	private static int tcInMs() {
 		
-		int heures = Integer.parseInt(FFPROBE.timecode1);
-		int minutes = Integer.parseInt(FFPROBE.timecode2);
-		int secondes = Integer.parseInt(FFPROBE.timecode3);
-		int images = (int) (Integer.parseInt(FFPROBE.timecode4) * (1000 / FFPROBE.currentFPS));
+		int heures = Integer.parseInt(FFprobe.timecode1);
+		int minutes = Integer.parseInt(FFprobe.timecode2);
+		int secondes = Integer.parseInt(FFprobe.timecode3);
+		int images = (int) (Integer.parseInt(FFprobe.timecode4) * (1000 / FFprobe.currentFPS));
 		
 		int totalMiliSecondes = (int) (heures * 3600000) + (minutes * 60000) + (secondes * 1000) + images;  
 						
@@ -379,7 +379,7 @@ public class VideoInserts extends Main {
 		int h = timecode / 3600000;
 		int m = ((timecode / 60000) % 60);
 		int s = (timecode / 1000) % 60;    		
-		int f = (int) (timecode / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS);	
+		int f = (int) (timecode / (1000 / FFprobe.currentFPS) % FFprobe.currentFPS);	
 				
 		NumberFormat formatter = new DecimalFormat("00");
 		

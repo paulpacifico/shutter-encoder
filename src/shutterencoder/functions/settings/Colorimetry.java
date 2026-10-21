@@ -20,7 +20,7 @@
 package shutterencoder.functions.settings;
 
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
@@ -158,7 +158,7 @@ public class Colorimetry extends Main {
 				    {
 				    	if (filterComplex != "") filterComplex += ",";
 				    	
-				    	String format = FFPROBE.hasAlpha ? "format=gbrapf32le," : "format=gbrpf32le,";
+				    	String format = FFprobe.hasAlpha ? "format=gbrapf32le," : "format=gbrpf32le,";
 					
 				    	filterComplex += format + "zscale=rangein=full:range=full:transferin=linear:transfer=" + transfer;
 				    }
@@ -255,14 +255,14 @@ public class Colorimetry extends Main {
 		{
 			return " -apply_trc iec61966_2_1";
 		}
-		else if (FFPROBE.videoCodec != null)
+		else if (FFprobe.videoCodec != null)
 		{
 			//Preserve the alpha channel
-			if (FFPROBE.videoCodec.contains("vp9") && FFPROBE.hasAlpha)
+			if (FFprobe.videoCodec.contains("vp9") && FFprobe.hasAlpha)
 			{
 				return " -c:v libvpx-vp9";
 			}
-			else if (FFPROBE.videoCodec.contains("vp8"))
+			else if (FFprobe.videoCodec.contains("vp8"))
 			{
 				return " -c:v libvpx";
 			}
@@ -309,22 +309,22 @@ public class Colorimetry extends Main {
 			else
 				angle = (float) ((float) (0 - (float) Main.sliderAngle.getValue() / 10) * Math.PI) / 180;
 			
-			float ratio = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
-			float h = (float) ( (float) FFPROBE.imageHeight / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
+			float ratio = (float) FFprobe.imageWidth / FFprobe.imageHeight;
+			float h = (float) ( (float) FFprobe.imageHeight / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
 			float w = (float) h * ratio;
 			if (ratio < 1)
 			{
-				ratio = (float) FFPROBE.imageHeight / FFPROBE.imageWidth;
-				w = (float) ( (float) FFPROBE.imageWidth / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
+				ratio = (float) FFprobe.imageHeight / FFprobe.imageWidth;
+				w = (float) ( (float) FFprobe.imageWidth / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
 				h = (float) w * ratio;
 			}
 			
-			w = (float) (2 - ((float) FFPROBE.imageWidth / w));
-			h = (float) (2 - ((float) FFPROBE.imageHeight / h));			
+			w = (float) (2 - ((float) FFprobe.imageWidth / w));
+			h = (float) (2 - ((float) FFprobe.imageHeight / h));			
 						
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
 			{
-				eq += "rotate=" + ((float) Main.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFPROBE.imageWidth + ":" + FFPROBE.imageHeight; 
+				eq += "rotate=" + ((float) Main.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFprobe.imageWidth + ":" + FFprobe.imageHeight; 
 			}
 			else
 				eq += "rotate=" + ((float) Main.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
@@ -365,9 +365,9 @@ public class Colorimetry extends Main {
 	        float angle = maxAngle * (Math.abs(sliderVal) / 100f);
 
 	        if (sliderVal > 0)
-	            eq += pre + "vignette=" + angle + ":mode=backward:aspect=" + FFPROBE.imageRatio + post;
+	            eq += pre + "vignette=" + angle + ":mode=backward:aspect=" + FFprobe.imageRatio + post;
 	        else
-	            eq += pre + "vignette=" + angle + ":aspect=" + FFPROBE.imageRatio + post;
+	            eq += pre + "vignette=" + angle + ":aspect=" + FFprobe.imageRatio + post;
 	    }
 
 	    return eq;

@@ -28,8 +28,8 @@ import javax.swing.JOptionPane;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
@@ -83,12 +83,12 @@ public class VMAF extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));	
 						
 						//Sending command
 						String cmd;
@@ -97,10 +97,10 @@ public class VMAF extends Main {
 						else
 							cmd =  " -filter_complex libvmaf -an -f null -" + '"';	
 						
-						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.inPoint) + " -i " + '"' + savedFilePath.toString() + '"' + InputAndOutput.outPoint + cmd);		
+						FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.inPoint) + " -i " + '"' + savedFilePath.toString() + '"' + InputAndOutput.outPoint + cmd);		
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
@@ -109,14 +109,14 @@ public class VMAF extends Main {
 						if (cancelled == false)
 							showDetection(file);				
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName))
 								break;
 						}
 					
 					} catch (InterruptedException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 				
@@ -147,11 +147,11 @@ public class VMAF extends Main {
 
 	private static void showDetection(File file) {
 		
-		if (FFMPEG.VMAFScore != null && Main.cancelled == false && FFMPEG.error == false)
+		if (FFmpeg.VMAFScore != null && Main.cancelled == false && FFmpeg.error == false)
 		{
 			if (comboFilter.getSelectedIndex() == 0) // Display
 			{
-				JOptionPane.showMessageDialog(frame, file.getName() + System.lineSeparator() + FFMPEG.VMAFScore, "VMAF", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(frame, file.getName() + System.lineSeparator() + FFmpeg.VMAFScore, "VMAF", JOptionPane.INFORMATION_MESSAGE);
 			}
 			else // Save
 			{
@@ -175,7 +175,7 @@ public class VMAF extends Main {
 					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
 					writer.println(Main.language.getProperty("analyzeOf") + " " + file.getName());
 					writer.println("");
-					writer.println(FFMPEG.VMAFScore);
+					writer.println(FFmpeg.VMAFScore);
 					writer.close();
 				} catch (FileNotFoundException | UnsupportedEncodingException e) {}
 			}
@@ -185,10 +185,10 @@ public class VMAF extends Main {
 	private static boolean lastActions(File file, String fileName) {		
 		
 		//Errors
-		if (FFMPEG.error)
+		if (FFmpeg.error)
 		{
-			FFMPEG.errorList.append(fileName);
-		    FFMPEG.errorList.append(System.lineSeparator());
+			FFmpeg.errorList.append(fileName);
+		    FFmpeg.errorList.append(System.lineSeparator());
 		}
 
 		//Process cancelled
@@ -198,7 +198,7 @@ public class VMAF extends Main {
 		}
 		else
 		{
-			if(FFMPEG.error == false)
+			if(FFmpeg.error == false)
 				FunctionUtils.completed++;
 			lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 		}

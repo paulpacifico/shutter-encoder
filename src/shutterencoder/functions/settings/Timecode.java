@@ -28,7 +28,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 
@@ -72,7 +72,7 @@ public class Timecode extends Main {
 	            	int s = Integer.parseInt(split[2]);
 	            	
 	            	int totalSeconds = h + m + s;
-	            	int sampleRate = FFPROBE.audioSampleRate;
+	            	int sampleRate = FFprobe.audioSampleRate;
 	        		if (caseSampleRate.isSelected())
 	        			sampleRate = (int) (Float.parseFloat(lbl48k.getSelectedItem().toString().replace("k", "")) * 1000);
 	        		
@@ -93,7 +93,7 @@ public class Timecode extends Main {
             	int s = Integer.parseInt(TCset3.getText());
             	
             	int totalSeconds = h + m + s;
-            	int sampleRate = FFPROBE.audioSampleRate;
+            	int sampleRate = FFprobe.audioSampleRate;
         		if (caseSampleRate.isSelected())
         			sampleRate = (int) (Float.parseFloat(lbl48k.getSelectedItem().toString().replace("k", "")) * 1000);
         		
@@ -102,14 +102,14 @@ public class Timecode extends Main {
                        
             return " -timecode " + '"' + TCset1.getText() + ":" + TCset2.getText() + ":" + TCset3.getText() + dropFrame + TCset4.getText() + '"' + audioTimecode;
 		}
-		else if (FFPROBE.timecode1 != "")
+		else if (FFprobe.timecode1 != "")
 		{						
 			if (InputAndOutput.inPoint != "")
             {
-				double time = (Integer.valueOf(FFPROBE.timecode1) + Integer.valueOf(VideoPlayerUI.caseInH.getText())) * 3600000
-							+ (Integer.valueOf(FFPROBE.timecode2) + Integer.valueOf(VideoPlayerUI.caseInM.getText())) * 60000
-							+ (Integer.valueOf(FFPROBE.timecode3) + Integer.valueOf(VideoPlayerUI.caseInS.getText())) * 1000
-							+ (Integer.valueOf(FFPROBE.timecode4) + Integer.valueOf(VideoPlayerUI.caseInF.getText())) * VideoPlayerUI.inputFramerateMS;	
+				double time = (Integer.valueOf(FFprobe.timecode1) + Integer.valueOf(VideoPlayerUI.caseInH.getText())) * 3600000
+							+ (Integer.valueOf(FFprobe.timecode2) + Integer.valueOf(VideoPlayerUI.caseInM.getText())) * 60000
+							+ (Integer.valueOf(FFprobe.timecode3) + Integer.valueOf(VideoPlayerUI.caseInS.getText())) * 1000
+							+ (Integer.valueOf(FFprobe.timecode4) + Integer.valueOf(VideoPlayerUI.caseInF.getText())) * VideoPlayerUI.inputFramerateMS;	
 				
 				String h = Main.formatter.format(Math.floor(time / 1000) / 3600);
 				String m = Main.formatter.format((Math.floor(time / 1000) / 60) % 60);
@@ -119,7 +119,7 @@ public class Timecode extends Main {
             	return " -timecode " + '"' + h + ":" + m + ":" + s + dropFrame + f + '"';
             }
 			else
-				return " -timecode " + '"' + FFPROBE.timecode1 + ":" + FFPROBE.timecode2 + ":" + FFPROBE.timecode3 + dropFrame + FFPROBE.timecode4 + '"';
+				return " -timecode " + '"' + FFprobe.timecode1 + ":" + FFprobe.timecode2 + ":" + FFprobe.timecode3 + dropFrame + FFprobe.timecode4 + '"';
 		}
 		
 		return "";
@@ -127,7 +127,7 @@ public class Timecode extends Main {
 	
 	public static boolean isDropFrame() {
 		
-		if (FFPROBE.dropFrameTC.equals(";") && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+		if (FFprobe.dropFrameTC.equals(";") && (FFprobe.currentFPS == 29.97f || FFprobe.currentFPS == 59.94f))
      	{
 			return true;
      	}
@@ -137,7 +137,7 @@ public class Timecode extends Main {
 	
 	public static boolean isNonDropFrame() {
 		
-		if (FFPROBE.dropFrameTC.equals(";") == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f) || FFPROBE.currentFPS == 23.98f)
+		if (FFprobe.dropFrameTC.equals(";") == false && (FFprobe.currentFPS == 29.97f || FFprobe.currentFPS == 59.94f) || FFprobe.currentFPS == 23.98f)
      	{
 			return true;
      	}
@@ -152,17 +152,17 @@ public class Timecode extends Main {
 		//NTSC framerates => remove a frame to reach round framerate		
 		if (isNonDropFrame())
 		{
-			double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
+			double currentTime = currentFrame * ((double) 1000 / FFprobe.currentFPS);
 			
-			if (FFPROBE.currentFPS == 23.98f)
+			if (FFprobe.currentFPS == 23.98f)
 			{
 				currentFrame -= (currentTime * 0.024 / 1000) - 1;
 			}
-			else if (FFPROBE.currentFPS == 29.97f)
+			else if (FFprobe.currentFPS == 29.97f)
 			{
 				currentFrame -= (currentTime * 0.03 / 1000) - 1;
 			}
-			else if (FFPROBE.currentFPS == 59.94f)
+			else if (FFprobe.currentFPS == 59.94f)
 			{					
 				currentFrame -= (currentTime * 0.06 / 1000) - 1;
 			}	
@@ -182,17 +182,17 @@ public class Timecode extends Main {
 		//Allows to set the current seeking values		
 		if (isNonDropFrame())
 		{
-			double currentTime = currentFrame * ((double) 1000 / FFPROBE.currentFPS);
+			double currentTime = currentFrame * ((double) 1000 / FFprobe.currentFPS);
 				
-			if (FFPROBE.currentFPS == 23.98f)
+			if (FFprobe.currentFPS == 23.98f)
 			{
 				currentFrame += (currentTime * 0.024 / 1000);
 			}
-			else if (FFPROBE.currentFPS == 29.97f)
+			else if (FFprobe.currentFPS == 29.97f)
 			{
 				currentFrame += (currentTime * 0.03 / 1000);
 			}
-			else if (FFPROBE.currentFPS == 59.94f)
+			else if (FFprobe.currentFPS == 59.94f)
 			{
 				currentFrame += (currentTime * 0.06 / 1000);
 			}
@@ -211,11 +211,11 @@ public class Timecode extends Main {
 
 		if (isDropFrame())
 		{
-			int step = (FFPROBE.currentFPS == 29.97f) ? 2 : 4;
+			int step = (FFprobe.currentFPS == 29.97f) ? 2 : 4;
 
 			// Standard timecode counts per 10 minutes and 1 minute (including skipped numbers)
-			int framesPer10Min = (FFPROBE.currentFPS == 29.97f) ? 17982 : 35964; 
-			int framesPerMin   = (FFPROBE.currentFPS == 29.97f) ? 1798 : 3596;
+			int framesPer10Min = (FFprobe.currentFPS == 29.97f) ? 17982 : 35964; 
+			int framesPerMin   = (FFprobe.currentFPS == 29.97f) ? 1798 : 3596;
 
 			int frameCountInt = (int) Math.round(currentFrame);
 
@@ -239,11 +239,11 @@ public class Timecode extends Main {
 
 		if (isDropFrame())
 		{
-		    int step = (FFPROBE.currentFPS == 29.97f) ? 2 : 4;
+		    int step = (FFprobe.currentFPS == 29.97f) ? 2 : 4;
 
 		    // Standard timecode counts per 10 minutes and 1 minute (including skipped numbers)
-		    int timecodePer10Min = (FFPROBE.currentFPS == 29.97f) ? 18000 : 36000; 
-		    int timecodePerMin   = (FFPROBE.currentFPS == 29.97f) ? 1800 : 3600;
+		    int timecodePer10Min = (FFprobe.currentFPS == 29.97f) ? 18000 : 36000; 
+		    int timecodePerMin   = (FFprobe.currentFPS == 29.97f) ? 1800 : 3600;
 
 		    int frameCountInt = (int) Math.round(currentFrame);
 

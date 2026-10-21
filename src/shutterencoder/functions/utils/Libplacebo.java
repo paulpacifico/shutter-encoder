@@ -23,7 +23,7 @@ import shutterencoder.functions.settings.AdvancedFeatures;
 import shutterencoder.functions.settings.BitratesAdjustement;
 import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.Corrections;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Main;
 
@@ -96,7 +96,7 @@ public class Libplacebo extends Main {
 	    if (caseLUTs.isSelected())
 		{
 			//Mandatory for correct lut display
-			format += FFPROBE.hasAlpha ? "format=rgba64le," : "format=rgb48,";
+			format += FFprobe.hasAlpha ? "format=rgba64le," : "format=rgb48,";
 		}
 		
 	    return format + params;
@@ -290,7 +290,7 @@ public class Libplacebo extends Main {
 	public static String setLibplaceboFilter(String filterComplex, String newLibplaceboFilter) {
 		
 		//Format
-		String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+		String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";
 		
 		if (FunctionUtils.isPreviousFilterVulkan(filterComplex) && caseLUTs.isSelected() == false) // hwdownload is required if rgb48 is present from caseLUTs
 		{			

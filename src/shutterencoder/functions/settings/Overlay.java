@@ -30,8 +30,8 @@ import javax.swing.JTextField;
 
 import shutterencoder.functions.VideoEncoders;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.subtitling.SubtitlesEmbed;
@@ -47,7 +47,7 @@ public class Overlay extends Main {
 		if ((Main.caseAddTimecode.isSelected() || Main.caseShowTimecode.isSelected() || Main.caseAddText.isSelected() || Main.caseShowFileName.isSelected()))
 		{			
 			//IMPORTANT RESET SCALING
-			FFPROBE.analyzedMedia = null;
+			FFprobe.analyzedMedia = null;
 			
 			if (VideoPlayerCore.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayerCore.videoPath).getName()) == false) //Do not process scaling if it's the first item
 			{		
@@ -55,9 +55,9 @@ public class Overlay extends Main {
 				VideoPlayerCore.videoPath = null;
 				
 				float scale = 0.0f;
-				if (FFPROBE.previousImageWidth > 0)	
+				if (FFprobe.previousImageWidth > 0)	
 				{
-					scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+					scale = ((float) FFprobe.imageWidth / FFprobe.previousImageWidth);
 
 					if (scale != 0.0f)
 					{
@@ -78,10 +78,10 @@ public class Overlay extends Main {
 				}
 			}
 			
-			String tc1 = FFPROBE.timecode1;
-			String tc2 = FFPROBE.timecode2;
-			String tc3 = FFPROBE.timecode3;
-			String tc4 = FFPROBE.timecode4;
+			String tc1 = FFprobe.timecode1;
+			String tc2 = FFprobe.timecode2;
+			String tc3 = FFprobe.timecode3;
+			String tc4 = FFprobe.timecode4;
 						 
 			if (Main.caseAddTimecode.isSelected() && Main.TC1.getText().isEmpty() == false && Main.TC2.getText().isEmpty() == false && Main.TC3.getText().isEmpty() == false && Main.TC4.getText().isEmpty() == false)
 			{			
@@ -90,13 +90,13 @@ public class Overlay extends Main {
 				tc3 = Main.TC3.getText();		    
 				tc4 = Main.TC4.getText();			
 			}
-			else if (Main.caseShowTimecode.isSelected() && FFPROBE.timecode1.equals("") == false)
+			else if (Main.caseShowTimecode.isSelected() && FFprobe.timecode1.equals("") == false)
 			{							
-				float tcH = Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS;
-				float tcM = Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS;
-				float tcS = Integer.parseInt(tc3) * FFPROBE.currentFPS;
+				float tcH = Integer.parseInt(tc1) * 3600 * FFprobe.currentFPS;
+				float tcM = Integer.parseInt(tc2) * 60 * FFprobe.currentFPS;
+				float tcS = Integer.parseInt(tc3) * FFprobe.currentFPS;
 				
-				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());
+				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFprobe.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
 				float offset = timeIn + tcH + tcM + tcS + Integer.parseInt(tc4);
 
@@ -105,29 +105,29 @@ public class Overlay extends Main {
 				
 				DecimalFormat formatter = new DecimalFormat("00");	
 				
-				tc1 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
-				tc2 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);
-				tc3 = formatter.format(Math.floor(offset / FFPROBE.currentFPS) % 60);    		
-				tc4 = formatter.format(Math.round(offset % FFPROBE.currentFPS));
+				tc1 = formatter.format(Math.floor(offset / FFprobe.currentFPS / 3600));
+				tc2 = formatter.format(Math.floor(offset / FFprobe.currentFPS / 60) % 60);
+				tc3 = formatter.format(Math.floor(offset / FFprobe.currentFPS) % 60);    		
+				tc4 = formatter.format(Math.round(offset % FFprobe.currentFPS));
 			}	
 			
 			if (videoPlayerCapture)
 			{		
 				if (Main.caseShowTimecode.isSelected())
 				{
-					tc1 = FFPROBE.timecode1;
-					tc2 = FFPROBE.timecode2;
-					tc3 = FFPROBE.timecode3;
-					tc4 = FFPROBE.timecode4;
+					tc1 = FFprobe.timecode1;
+					tc2 = FFprobe.timecode2;
+					tc3 = FFprobe.timecode3;
+					tc4 = FFprobe.timecode4;
 				}
 				
 				DecimalFormat formatter = new DecimalFormat("00");					
 												
-				float tcH = Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS;
-				float tcM = Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS;
-				float tcS = Integer.parseInt(tc3) * FFPROBE.currentFPS;
+				float tcH = Integer.parseInt(tc1) * 3600 * FFprobe.currentFPS;
+				float tcM = Integer.parseInt(tc2) * 60 * FFprobe.currentFPS;
+				float tcS = Integer.parseInt(tc3) * FFprobe.currentFPS;
 				
-				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());
+				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFprobe.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());
 
 				//NTSC framerate
 				if (Main.caseShowTimecode.isSelected())
@@ -141,20 +141,20 @@ public class Overlay extends Main {
 				if (offset < 0)
 					offset = 0;
 				
-				tc1 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 3600));
-				tc2 = formatter.format(Math.floor(offset / FFPROBE.currentFPS / 60) % 60);
-				tc3 = formatter.format(Math.floor(offset / FFPROBE.currentFPS) % 60);    		
-				tc4 = formatter.format(Math.floor(offset % FFPROBE.currentFPS));
+				tc1 = formatter.format(Math.floor(offset / FFprobe.currentFPS / 3600));
+				tc2 = formatter.format(Math.floor(offset / FFprobe.currentFPS / 60) % 60);
+				tc3 = formatter.format(Math.floor(offset / FFprobe.currentFPS) % 60);    		
+				tc4 = formatter.format(Math.floor(offset % FFprobe.currentFPS));
 			}
 			
-			String rate = String.valueOf(FFPROBE.currentFPS);
+			String rate = String.valueOf(FFprobe.currentFPS);
 			if (caseConform.isSelected())
 			{
 				rate = comboFPS.getSelectedItem().toString().replace(",", ".");
 			}
 			else if (caseForcerDesentrelacement.isSelected() && lblTFF.getText().contains("x2"))
 			{
-				rate = String.valueOf(FFPROBE.currentFPS * 2);
+				rate = String.valueOf(FFprobe.currentFPS * 2);
 			}
 			
 			String overlayFont = "fontfile='" + findFont(comboOverlayFont.getSelectedItem().toString()) + "'";
@@ -165,7 +165,7 @@ public class Overlay extends Main {
 			
 			float imageRatio = 1.0f;
 			
-			int ow = FFPROBE.imageWidth;  
+			int ow = FFprobe.imageWidth;  
 			
 			if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{
@@ -200,11 +200,11 @@ public class Overlay extends Main {
 					
 					if (s[0].equals("auto"))
 					{
-						ow = Math.round(FFPROBE.imageHeight / Integer.parseInt(s[1]));
+						ow = Math.round(FFprobe.imageHeight / Integer.parseInt(s[1]));
 					}
 					else if (s[1].equals("auto"))
 					{
-						ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
+						ow = Math.round(FFprobe.imageWidth / Integer.parseInt(s[0]));
 					}
 					else //ratio like 1:4 etc...
 					{
@@ -214,7 +214,7 @@ public class Overlay extends Main {
 
 	        	if (VideoEncoders.setScalingFirst())
 				{
-	        		imageRatio = (float) FFPROBE.imageWidth / ow;
+	        		imageRatio = (float) FFprobe.imageWidth / ow;
 				}
 			}
 			
@@ -235,7 +235,7 @@ public class Overlay extends Main {
 		   	if ((Main.caseAddTimecode.isSelected() || Main.caseShowTimecode.isSelected()))
 		   	{
 		   		String dropFrame = ":";
-		   		if (FFPROBE.dropFrameTC.equals(":") == false && (FFPROBE.currentFPS == 29.97f || FFPROBE.currentFPS == 59.94f))
+		   		if (FFprobe.dropFrameTC.equals(":") == false && (FFprobe.currentFPS == 29.97f || FFprobe.currentFPS == 59.94f))
 		   		{
 		   			dropFrame = ";";
 		   		}
@@ -254,7 +254,7 @@ public class Overlay extends Main {
 		   		
 		   		if (Main.caseAddTimecode.isSelected() && Main.lblTimecode.getText().equals(Main.language.getProperty("lblFrameNumber")))
 		   		{
-		   			String startNumber = String.format("%.0f", Integer.parseInt(tc1) * 3600 * FFPROBE.currentFPS + Integer.parseInt(tc2) * 60 * FFPROBE.currentFPS + Integer.parseInt(tc3) * FFPROBE.currentFPS + Integer.parseInt(tc4));
+		   			String startNumber = String.format("%.0f", Integer.parseInt(tc1) * 3600 * FFprobe.currentFPS + Integer.parseInt(tc2) * 60 * FFprobe.currentFPS + Integer.parseInt(tc3) * FFprobe.currentFPS + Integer.parseInt(tc4));
 		   			filterComplex += "drawtext=" + overlayFont + ":text='%{frame_num}': start_number=" + startNumber + ":x=" + Math.round(Integer.parseInt(Main.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Main.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundTcAlpha;
 		   		}
 		   		else
@@ -306,7 +306,7 @@ public class Overlay extends Main {
 			caseAddSubtitles.setEnabled(false);
 		
 			try {
-				FFMPEG.runProcess.join();
+				FFmpeg.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}
@@ -336,10 +336,10 @@ public class Overlay extends Main {
 				if (Main.btnI.getForeground() != Color.BLACK)
 					background += ",Italic=1";
 				
-				String i[] = FFPROBE.imageResolution.split("x"); 
+				String i[] = FFprobe.imageResolution.split("x"); 
 				
 				//Set the input seeking
-				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFPROBE.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());			
+				float timeIn = (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText())) * FFprobe.currentFPS + Integer.parseInt(VideoPlayerUI.caseInF.getText());			
 				VideoPlayerOverlay.writeCurrentSubs(timeIn, false);
 				
 	            //Delete created .srt file
@@ -391,12 +391,12 @@ public class Overlay extends Main {
 			}
 			else // ASS or SSA
 			{
-				String i[] = FFPROBE.imageResolution.split("x");
+				String i[] = FFprobe.imageResolution.split("x");
 				Main.textSubsWidth.setText(i[0]); //IMPORTANT
 				
 				if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 				{
-					String s[] = FFPROBE.imageResolution.split("x");	
+					String s[] = FFprobe.imageResolution.split("x");	
 					
 					if (comboResolution.getSelectedItem().toString().contains("%"))
 					{
@@ -477,7 +477,7 @@ public class Overlay extends Main {
 		if (Main.caseAddWatermark.isSelected())
 	    {			
 			//IMPORTANT RESET SCALING
-			FFPROBE.analyzedMedia = null;
+			FFprobe.analyzedMedia = null;
 			
 			if (VideoPlayerCore.videoPath == null || lblCurrentEncoding.getText().equals(new File(VideoPlayerCore.videoPath).getName()) == false) //Do not process scaling if it's the first item
 			{		
@@ -485,9 +485,9 @@ public class Overlay extends Main {
 				VideoPlayerCore.videoPath = null;
 								
 				float scale = 0.0f;
-				if (FFPROBE.previousImageWidth > 0)	
+				if (FFprobe.previousImageWidth > 0)	
 				{
-					scale = ((float) FFPROBE.imageWidth / FFPROBE.previousImageWidth);
+					scale = ((float) FFprobe.imageWidth / FFprobe.previousImageWidth);
 					
 					if (scale != 0.0f)
 					{			
@@ -506,7 +506,7 @@ public class Overlay extends Main {
 			
 			float imageRatio = 1.0f;
 			
-			int ow = FFPROBE.imageWidth;  
+			int ow = FFprobe.imageWidth;  
 			
 			if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{
@@ -541,11 +541,11 @@ public class Overlay extends Main {
 					
 					if (s[0].equals("auto"))
 					{
-						ow = Math.round(FFPROBE.imageHeight / Integer.parseInt(s[1]));
+						ow = Math.round(FFprobe.imageHeight / Integer.parseInt(s[1]));
 					}
 					else if (s[1].equals("auto"))
 					{
-						ow = Math.round(FFPROBE.imageWidth / Integer.parseInt(s[0]));
+						ow = Math.round(FFprobe.imageWidth / Integer.parseInt(s[0]));
 					}
 					else //ratio like 4:1 etc...
 					{
@@ -555,7 +555,7 @@ public class Overlay extends Main {
 
 	        	if (VideoEncoders.setScalingFirst())
 				{
-	        		imageRatio = (float) FFPROBE.imageWidth / ow;
+	        		imageRatio = (float) FFprobe.imageWidth / ow;
 				}
 			}
 
@@ -583,7 +583,7 @@ public class Overlay extends Main {
 		
 		if (Main.caseAddSubtitles.isSelected() && subtitlesBurn)
     	{    		
-        	String i[] = FFPROBE.imageResolution.split("x");
+        	String i[] = FFprobe.imageResolution.split("x");
 
         	int ImageWidth = Integer.parseInt(i[0]);
         	
@@ -609,7 +609,7 @@ public class Overlay extends Main {
         	}
         	else if (comboFonctions.getSelectedItem().toString().equals("DVD") == false && comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
         	{
-        		String s[] = FFPROBE.imageResolution.split("x");	
+        		String s[] = FFprobe.imageResolution.split("x");	
 				
         		if (comboResolution.getSelectedItem().toString().contains("%"))
 				{

@@ -34,7 +34,7 @@ import java.util.List;
 import org.json.JSONArray;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
+import shutterencoder.library.FFmpeg;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.utils.Utils;
@@ -58,7 +58,7 @@ public class Translate extends Main {
 				
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{
-					FFMPEG.error = false;
+					FFmpeg.error = false;
 					progressBar.setValue(0);
 					
 					File file = FunctionUtils.setInputFile(new File(list.getElementAt(i)));		
@@ -108,9 +108,9 @@ public class Translate extends Main {
 				            Files.writeString(new File(fileOutputName).toPath(), translated, StandardCharsets.UTF_8);
 						}
 						else
-							FFMPEG.error = true;
+							FFmpeg.error = true;
 				            
-						if (FFMPEG.saveCode == false)
+						if (FFmpeg.saveCode == false)
 						{
 							if (lastActions(file, fileName))
 								break;
@@ -118,7 +118,7 @@ public class Translate extends Main {
 					
 					} catch (Exception e) {
 						e.printStackTrace();
-						FFMPEG.error = true;
+						FFmpeg.error = true;
 					}
 				}	
 								
@@ -229,10 +229,10 @@ public class Translate extends Main {
     private static boolean lastActions(File file, String fileName) {	
 		
 		//Errors
-		if (FFMPEG.error)
+		if (FFmpeg.error)
 		{
-			FFMPEG.errorList.append(fileName);
-		    FFMPEG.errorList.append(System.lineSeparator());
+			FFmpeg.errorList.append(fileName);
+		    FFmpeg.errorList.append(System.lineSeparator());
 		}
 
 		//Process cancelled
@@ -242,7 +242,7 @@ public class Translate extends Main {
 		}
 		else
 		{
-			if (FFMPEG.error == false)
+			if (FFmpeg.error == false)
 				FunctionUtils.completed++;
 			
 			lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));

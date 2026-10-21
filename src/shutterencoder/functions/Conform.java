@@ -24,8 +24,8 @@ import java.io.File;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -112,12 +112,12 @@ public class Conform extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));	
 						
 						//File output
 						File fileOut = new File(fileOutputName);				
@@ -138,25 +138,25 @@ public class Conform extends Main {
 										
 						//Command		    		
 				    	float FPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Main.language.getProperty("fps"), "").replace(",", ".")));
-				    	float value = (float) (FFPROBE.currentFPS / FPSOut);
+				    	float value = (float) (FFprobe.currentFPS / FPSOut);
 						
 						String cmd = " -c:v copy -c:s copy" + audio + " -map v:0 -map a? -map s? -y ";
-						FFMPEG.run(InputAndOutput.setInputString(" -itsscale " + value + InputAndOutput.inPoint, " -i " + '"' + file + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');						
+						FFmpeg.run(InputAndOutput.setInputString(" -itsscale " + value + InputAndOutput.inPoint, " -i " + '"' + file + '"', InputAndOutput.outPoint) + cmd + '"'  + fileOut + '"');						
 												
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
 	
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
 						}
 						
 					} catch (InterruptedException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 
@@ -187,15 +187,15 @@ public class Conform extends Main {
 		
 	private static String setAudio() {
 		
-    	float AudioFPSIn = FFPROBE.currentFPS;
+    	float AudioFPSIn = FFprobe.currentFPS;
     	float AudioFPSOut = Float.parseFloat((comboFilter.getSelectedItem().toString().replace(" " + Main.language.getProperty("fps"), "").replace(",", ".")));
     	float value = (float) (AudioFPSOut / AudioFPSIn);
     	if (value < 0.5f || value > 2.0f)
     		return " -an";
     	else
     	{
-    		if (FFPROBE.audioCodec != null && FFPROBE.audioCodec != "")
-    			return " -c:a " + FFPROBE.audioCodec + " -b:a " + FFPROBE.audioBitrate + "k -af atempo=" + value;	
+    		if (FFprobe.audioCodec != null && FFprobe.audioCodec != "")
+    			return " -c:a " + FFprobe.audioCodec + " -b:a " + FFprobe.audioBitrate + "k -af atempo=" + value;	
     		else
     			return " -an";	
     	}

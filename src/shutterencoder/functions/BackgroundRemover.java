@@ -22,8 +22,7 @@ package shutterencoder.functions;
 import java.io.File;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.BACKGROUNDREMOVER;
-import shutterencoder.library.FFMPEG;
+import shutterencoder.library.FFmpeg;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -100,15 +99,15 @@ public class BackgroundRemover extends Main {
 						}
 						
 						//Run BackgroundRemover
-						BACKGROUNDREMOVER.run(file.toString(), fileOut.toString());
+						shutterencoder.library.BackgroundRemover.run(file.toString(), fileOut.toString());
 						
 						try {
-							BACKGROUNDREMOVER.runProcess.join();
+							shutterencoder.library.BackgroundRemover.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}								
 						
-						if (FFMPEG.saveCode == false)
+						if (FFmpeg.saveCode == false)
 						{
 							lastActions(fileOut, labelOutput);
 							
@@ -118,7 +117,7 @@ public class BackgroundRemover extends Main {
 					}
 					catch (Exception e)
 					{
-						FFMPEG.error = true;
+						FFmpeg.error = true;
 						e.printStackTrace();
 					}
 				}

@@ -29,8 +29,8 @@ import javax.swing.JOptionPane;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.RenderQueue;
@@ -72,12 +72,12 @@ public class OfflineDetection extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));	
 						
 						//Stats_file
 						String stats_file;
@@ -92,10 +92,10 @@ public class OfflineDetection extends Main {
 						if (System.getProperty("os.name").contains("Windows"))						
 							cmd += '"';					
 														
-						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd);		
+						FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd);		
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
@@ -104,14 +104,14 @@ public class OfflineDetection extends Main {
 						if (cancelled == false)
 							showDetection(file);
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName))
 							break;
 						}
 						
 					} catch (InterruptedException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 								
@@ -142,13 +142,13 @@ public class OfflineDetection extends Main {
 	
 	private static void showDetection(File file) {
 		
-		if (Main.cancelled == false && FFMPEG.error == false)
+		if (Main.cancelled == false && FFmpeg.error == false)
 		{
 			if (comboFilter.getSelectedIndex() == 0) // Display
 			{
-				if (FFMPEG.mediaOfflineFrame.length() > 0)
+				if (FFmpeg.mediaOfflineFrame.length() > 0)
 				{
-					JOptionPane.showMessageDialog(frame, FFMPEG.mediaOfflineFrame, Main.language.getProperty("functionOfflineDetection"), JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(frame, FFmpeg.mediaOfflineFrame, Main.language.getProperty("functionOfflineDetection"), JOptionPane.ERROR_MESSAGE);
 				}
 				else
 					JOptionPane.showMessageDialog(frame, Main.language.getProperty("noErrorDetected"), Main.language.getProperty("functionOfflineDetection"), JOptionPane.INFORMATION_MESSAGE);					
@@ -175,9 +175,9 @@ public class OfflineDetection extends Main {
 					PrintWriter writer = new PrintWriter(fileOutputName + ".txt", "UTF-8");
 					writer.println(Main.language.getProperty("analyzeOf") + " " + file.getName());
 					writer.println("");
-					if (FFMPEG.mediaOfflineFrame.length() > 0)
+					if (FFmpeg.mediaOfflineFrame.length() > 0)
 					{
-						writer.println(FFMPEG.mediaOfflineFrame);
+						writer.println(FFmpeg.mediaOfflineFrame);
 					}
 					else
 						writer.println(Main.language.getProperty("noErrorDetected"));
@@ -190,10 +190,10 @@ public class OfflineDetection extends Main {
 	private static boolean lastActions(File file, String fileName) {	
 		
 		//Errors
-		if (FFMPEG.error)
+		if (FFmpeg.error)
 		{
-			FFMPEG.errorList.append(fileName);
-		    FFMPEG.errorList.append(System.lineSeparator());
+			FFmpeg.errorList.append(fileName);
+		    FFmpeg.errorList.append(System.lineSeparator());
 		}
 
 		//Process cancelled
@@ -203,7 +203,7 @@ public class OfflineDetection extends Main {
 		}
 		else
 		{
-			if(FFMPEG.error == false)
+			if(FFmpeg.error == false)
 				FunctionUtils.completed++;
 			lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 		}

@@ -24,9 +24,9 @@ import java.io.File;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.DEMUCS;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Demucs;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -73,12 +73,12 @@ public class AudioSeparation extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));
 								
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);
@@ -103,19 +103,19 @@ public class AudioSeparation extends Main {
 						String cmd = " -c:a pcm_s16le -ar 44.1k -vn -y ";
 						
 						//audio bit depth
-						if (FFPROBE.audioCodec.contains("pcm_s24"))
+						if (FFprobe.audioCodec.contains("pcm_s24"))
 						{
 							cmd = " -c:a pcm_s24le -ar 44.1k -vn -y ";
 						}
-						else if (FFPROBE.audioCodec.contains("pcm_f32"))
+						else if (FFprobe.audioCodec.contains("pcm_f32"))
 						{
 							cmd = " -c:a pcm_f32le -ar 44.1k -vn -y ";
 						}
 										
-						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"' + waveFile.toString() + '"');		
+						FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + '"' + waveFile.toString() + '"');		
 						
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
@@ -127,10 +127,10 @@ public class AudioSeparation extends Main {
 							lblElapsedTime.setVisible(false);
 														
 							//Run demucs
-							DEMUCS.run(model, separationFolder.toString(), waveFile.toString(), comboFilter.getSelectedItem().toString());
+							Demucs.run(model, separationFolder.toString(), waveFile.toString(), comboFilter.getSelectedItem().toString());
 										
 							try {
-								DEMUCS.runProcess.join();
+								Demucs.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}							
@@ -138,7 +138,7 @@ public class AudioSeparation extends Main {
 							waveFile.delete();
 						}
 						
-						if (cancelled || FFMPEG.error)
+						if (cancelled || FFmpeg.error)
 						{
 							separationFolder.delete();
 						}
@@ -149,14 +149,14 @@ public class AudioSeparation extends Main {
 								modelFolder.delete();
 						}
 														
-						if (FFMPEG.saveCode == false)
+						if (FFmpeg.saveCode == false)
 						{
 							lastActions(separationFolder, labelOutput);
 						}						
 					}
 					catch (Exception e)
 					{
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 						e.printStackTrace();
 					}
 				}

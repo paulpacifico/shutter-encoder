@@ -24,8 +24,8 @@ import java.io.File;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -75,12 +75,12 @@ public class FrameMD5 extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));	
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));	
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);	
@@ -126,23 +126,23 @@ public class FrameMD5 extends Main {
 						}											
 						
 						//Command
-						FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + " -f framemd5 -y " + '"'  + fileOut + '"');
+						FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + " -f framemd5 -y " + '"'  + fileOut + '"');
 	
 						try {
-							FFMPEG.runProcess.join();
+							FFmpeg.runProcess.join();
 						} catch (InterruptedException e) {
 						    Thread.currentThread().interrupt();
 						}
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false
-						|| FFMPEG.saveCode == false && caseEnableSequence.isSelected())
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false
+						|| FFmpeg.saveCode == false && caseEnableSequence.isSelected())
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
 						}
 						
 					} catch (InterruptedException e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 				}	
 				

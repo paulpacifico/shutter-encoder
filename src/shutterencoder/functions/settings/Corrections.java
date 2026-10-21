@@ -23,8 +23,8 @@ import java.io.File;
 
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Main;
 
@@ -52,9 +52,9 @@ public class Corrections extends Main {
 			else
 				cmd =  " -an -vf vidstabdetect=result=" + vidstab.toString() + " -y -f null -";	
 			
-			FFMPEG.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
+			FFmpeg.run(InputAndOutput.inPoint + concat + " -i " + '"' + file.toString() + '"' + InputAndOutput.outPoint + cmd);		
 			try {
-				FFMPEG.runProcess.join();
+				FFmpeg.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}				
@@ -75,7 +75,7 @@ public class Corrections extends Main {
 		{
 			if (filterComplex != "") filterComplex += ",";
 		
-			float framerate = FFPROBE.currentFPS;
+			float framerate = FFprobe.currentFPS;
 			if (caseEnableSequence.isSelected())
 			{
 				framerate = Float.parseFloat(caseSequenceFPS.getSelectedItem().toString());
@@ -112,13 +112,13 @@ public class Corrections extends Main {
 		{			
 			if (filterComplex != "") filterComplex += ",";
 
-			if (FFPROBE.imageDepth == 8)
+			if (FFprobe.imageDepth == 8)
 				filterComplex += "limiter=16:235";
-			else if (FFPROBE.imageDepth == 10)
+			else if (FFprobe.imageDepth == 10)
 				filterComplex += "limiter=64:940";
-			else if (FFPROBE.imageDepth == 12)
+			else if (FFprobe.imageDepth == 12)
 				filterComplex += "limiter=256:3760";
-			else if (FFPROBE.imageDepth == 16)
+			else if (FFprobe.imageDepth == 16)
 				filterComplex += "limiter=4096:60160";
 		}	
 		
@@ -172,7 +172,7 @@ public class Corrections extends Main {
 			filterComplex += "nlmeans=s=" + value + ":p=3:r=" + r + ":pc=0";
 			
 			//Format
-			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+			String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";
 						
 			//GPU filter
 			if (noGPU == false && filterGPU && filterComplex.contains("nlmeans"))

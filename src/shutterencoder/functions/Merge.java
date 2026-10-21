@@ -26,8 +26,8 @@ import java.io.PrintWriter;
 import shutterencoder.functions.settings.AudioSettings;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -83,11 +83,11 @@ public class Merge extends Main {
 				            }
 							
 							//IMPORTANT RESET MEDIA
-							FFPROBE.analyzedMedia = null;
+							FFprobe.analyzedMedia = null;
 							
-							FFPROBE.Data(list.getElementAt(i));
+							FFprobe.Data(list.getElementAt(i));
 							try {
-								FFPROBE.processData.join();
+								FFprobe.processData.join();
 							} catch (InterruptedException er) {
 							    Thread.currentThread().interrupt();
 							}							
@@ -96,8 +96,8 @@ public class Merge extends Main {
 							{
 								timecode = Timecode.setTimecode(null);	
 							}
-							totalLength += FFPROBE.totalLength;
-							FFPROBE.totalLength = 0;
+							totalLength += FFprobe.totalLength;
+							FFprobe.totalLength = 0;
 							
 							writer.println("file '" + list.getElementAt(i) + "'");
 						}				
@@ -106,8 +106,8 @@ public class Merge extends Main {
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 																			
 						progressBar.setMaximum((int) (totalLength / 1000));
-						FFPROBE.totalLength = progressBar.getMaximum();	
-						FFMPEG.fileLength = progressBar.getMaximum();
+						FFprobe.totalLength = progressBar.getMaximum();	
+						FFmpeg.fileLength = progressBar.getMaximum();
 											
 						lblCurrentEncoding.setText(Main.language.getProperty("babEncoding"));
 				
@@ -129,14 +129,14 @@ public class Merge extends Main {
 						if (cancelled == false)
 						{
 							String attachedPic = "";
-							if (FFPROBE.attachedPic)
+							if (FFprobe.attachedPic)
 								attachedPic = " -disposition:v:0 attached_pic";
 							
 							String cmd = timecode + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + attachedPic + audioMapping + metadatas + " -map s? -y ";
-							FFMPEG.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + fileOutputName + '"');		
+							FFmpeg.run(" -safe 0 -f concat -i " + '"' + listeBAB.toString() + '"' + cmd + '"'  + fileOutputName + '"');		
 					
 							try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
@@ -144,7 +144,7 @@ public class Merge extends Main {
 													
 						listeBAB.delete();							
 
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							lastActions(fileOut);
 						}
@@ -153,7 +153,7 @@ public class Merge extends Main {
 													
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 						
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}				
 			    }
 				

@@ -21,7 +21,7 @@ package shutterencoder.functions.settings;
 
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.library.LibraryUtils;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
@@ -40,12 +40,12 @@ public class AdvancedFeatures extends Main {
 			
 			filterComplex += comboForcerDesentrelacement.getSelectedItem().toString() + "=first_field=" + detelecineFields;
 		}
-		else if (FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
-		|| FFPROBE.interlaced != null && FFPROBE.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
+		else if (FFprobe.interlaced != null && FFprobe.interlaced.equals("1") && caseForcerEntrelacement.isSelected() == false && progressiveOutput				
+		|| FFprobe.interlaced != null && FFprobe.interlaced.equals("1") && caseConform.isSelected() && (comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")) || comboConform.getSelectedItem().toString().equals(language.getProperty("conformByInterpolation")))
 		|| caseForcerDesentrelacement.isSelected())
 		{
 			int doubler = 0;
-			String field = FFPROBE.fieldOrder;
+			String field = FFprobe.fieldOrder;
 			if (lblTFF.getText().contains("x2") && caseForcerDesentrelacement.isSelected())
 			{
 				doubler = 1;
@@ -61,7 +61,7 @@ public class AdvancedFeatures extends Main {
 			}
 			
 			//Format
-			String bitDepth = FFPROBE.imageDepth == 10 ? "p010" : "nv12";
+			String bitDepth = FFprobe.imageDepth == 10 ? "p010" : "nv12";
 						
 			if (LibraryUtils.isGPUCompatible && comboGPUFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) == false && noGPU == false)
 			{
@@ -285,7 +285,7 @@ public class AdvancedFeatures extends Main {
 		            if (caseColorspace.isSelected() && comboColorspace.getSelectedItem().toString().contains("10bits") && comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()))
 		    			profile = "high10";
 		            
-		        	String s[] = FFPROBE.imageResolution.split("x");
+		        	String s[] = FFprobe.imageResolution.split("x");
 		        	if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 		        	{
 		        		if (comboResolution.getSelectedItem().toString().contains("%"))
@@ -299,13 +299,13 @@ public class AdvancedFeatures extends Main {
 						{
 							if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 							{
-								s[0] = String.valueOf(FFPROBE.imageWidth * 2);
-								s[1] = String.valueOf(FFPROBE.imageHeight * 2);
+								s[0] = String.valueOf(FFprobe.imageWidth * 2);
+								s[1] = String.valueOf(FFprobe.imageHeight * 2);
 							}
 							else
 							{
-								s[0] = String.valueOf(FFPROBE.imageWidth * 4);
-								s[1] = String.valueOf(FFPROBE.imageHeight * 4);
+								s[0] = String.valueOf(FFprobe.imageWidth * 4);
+								s[1] = String.valueOf(FFprobe.imageHeight * 4);
 							}
 						}
 		        		else if (comboResolution.getSelectedItem().toString().contains("x"))
@@ -328,7 +328,7 @@ public class AdvancedFeatures extends Main {
 		    			}
 		        		else if (comboResolution.getSelectedItem().toString().contains(":"))
 						{
-		        			String i[] = FFPROBE.imageResolution.split("x");
+		        			String i[] = FFprobe.imageResolution.split("x");
 							s = comboResolution.getSelectedItem().toString().replace("auto", "1").split(":");
 							
 							int iw = Integer.parseInt(i[0]);
@@ -351,7 +351,7 @@ public class AdvancedFeatures extends Main {
 		            int width = Integer.parseInt(s[0]);
 		            int height = Integer.parseInt(s[1]); 
 		
-		            if (width > 1920 || height > 1080 || FFPROBE.currentFPS >= 120.0f || FunctionUtils.setVideoBitrate() >= 100000)
+		            if (width > 1920 || height > 1080 || FFprobe.currentFPS >= 120.0f || FunctionUtils.setVideoBitrate() >= 100000)
 		            	return " -profile:v " + profile; //level is auto selected by ffmpeg
 		            else
 		            	return " -profile:v " + profile + " -level 5.1";
@@ -547,9 +547,9 @@ public class AdvancedFeatures extends Main {
 			case "MPEG-1":
 			case "MPEG-2":
 		
-				if (FFPROBE.interlaced.equals("1") && caseForcerDesentrelacement.isSelected() == false && comboFilter.getSelectedIndex() == 1)
+				if (FFprobe.interlaced.equals("1") && caseForcerDesentrelacement.isSelected() == false && comboFilter.getSelectedIndex() == 1)
 		        {               
-		            if (FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder.equals("1")) //Invert fields
+		            if (FFprobe.interlaced.equals("1") && FFprobe.fieldOrder.equals("1")) //Invert fields
 		            	return " -field_order bt -flags +ildct";                    	
 		            else
 		            	return " -flags +ildct";	
@@ -566,9 +566,9 @@ public class AdvancedFeatures extends Main {
 				{
 		        	return " -field_order progressive";  
 		    	}
-		        else if (FFPROBE.interlaced.equals("1") || caseForcerEntrelacement.isSelected())
+		        else if (FFprobe.interlaced.equals("1") || caseForcerEntrelacement.isSelected())
 		        {               	
-		          if ((FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
+		          if ((FFprobe.interlaced.equals("1") && FFprobe.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
 		        	  return " -field_order bt";                    	
 		          else
 		        	  return " -field_order tt"; 
@@ -578,7 +578,7 @@ public class AdvancedFeatures extends Main {
 	        		        
 			case "DNxHD":
 				
-				if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
+				if (FFprobe.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
 		        {        					
 		            //Interlacing only for 50i          	 
 		            switch (comboFilter.getSelectedItem().toString())
@@ -586,7 +586,7 @@ public class AdvancedFeatures extends Main {
 		            	case "120":
 		            	case "185":
 		            	case "185 X":	
-		                    if ((FFPROBE.interlaced.equals("1") && FFPROBE.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
+		                    if ((FFprobe.interlaced.equals("1") && FFprobe.fieldOrder.equals("1")) || caseForcerInversion.isSelected()) //Invert fields
 		                    	return " -field_order bt -flags +ildct";                    	
 		                    else
 		                    	return " -flags +ildct";			                   	
@@ -603,7 +603,7 @@ public class AdvancedFeatures extends Main {
 			case "XDCAM HD422":
 			case "XDCAM HD 35":				
 				
-				if (FFPROBE.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
+				if (FFprobe.interlaced.equals("1") && caseForcerProgressif.isSelected() == false || caseForcerEntrelacement.isSelected())
 				{
 					return " -flags +ildct+ilme";
 				}
@@ -677,7 +677,7 @@ public class AdvancedFeatures extends Main {
 		{
 			float newFPS = Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
 			
-			float FPS = FFPROBE.currentFPS;
+			float FPS = FFprobe.currentFPS;
 			if (caseEnableSequence.isSelected())
 				FPS = Float.valueOf(caseSequenceFPS.getSelectedItem().toString().replace(",", ".").replace(",", "."));
 			
@@ -721,7 +721,7 @@ public class AdvancedFeatures extends Main {
         		
             if (filterComplex != "") filterComplex += ",";
             
-            filterComplex += "minterpolate=fps=" + newFPS + ",setpts=" + (newFPS / FFPROBE.currentFPS) + "*PTS";            
+            filterComplex += "minterpolate=fps=" + newFPS + ",setpts=" + (newFPS / FFprobe.currentFPS) + "*PTS";            
         }
 		
 		return filterComplex;
@@ -736,7 +736,7 @@ public class AdvancedFeatures extends Main {
                     	
             if (filterComplex != "") filterComplex += ",";
             	
-            filterComplex += "setpts=" + (FFPROBE.currentFPS / newFPS) + "*PTS";   
+            filterComplex += "setpts=" + (FFprobe.currentFPS / newFPS) + "*PTS";   
 
     		if (comboConform.getSelectedItem().toString().equals(language.getProperty("conformByReverse")))		            		
     			filterComplex += ",reverse";   			
@@ -766,7 +766,7 @@ public class AdvancedFeatures extends Main {
 		}
 		else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))
 		{
-			return " -r " + FFPROBE.currentFPS;
+			return " -r " + FFprobe.currentFPS;
 		}
 		else if (caseConform.isSelected())
 		{
@@ -796,15 +796,15 @@ public class AdvancedFeatures extends Main {
 		}
 		else if (Settings.comboSync.getSelectedItem().toString().equals("auto"))
 		{
-			if (FFPROBE.currentFPS == 59.94f)
+			if (FFprobe.currentFPS == 59.94f)
 			{
 				return " -r 60000/1001";
 			}
-			else if (FFPROBE.currentFPS == 29.97f)
+			else if (FFprobe.currentFPS == 29.97f)
 			{
 				return " -r 30000/1001";
 			}
-			else if (FFPROBE.currentFPS == 23.98f)
+			else if (FFprobe.currentFPS == 23.98f)
 			{
 				return " -r 24000/1001";
 			}
@@ -858,7 +858,7 @@ public class AdvancedFeatures extends Main {
 							filterComplex += "format=yuv444p,interlace";
 						}
 					}
-					else if (FFPROBE.currentFPS == 50.0f || FFPROBE.currentFPS == 59.94f || FFPROBE.currentFPS == 60.0f)
+					else if (FFprobe.currentFPS == 50.0f || FFprobe.currentFPS == 59.94f || FFprobe.currentFPS == 60.0f)
 					{
 						if (filterComplex != "") filterComplex += ",";
 						
@@ -1044,20 +1044,20 @@ public class AdvancedFeatures extends Main {
 						
 						if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
 						{
-							FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
+							FFprobe.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
 						}
 						
 						if (comboCLLvalue.getSelectedItem().toString().equals("auto") == false)
 						{
-							FFPROBE.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
+							FFprobe.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
 						}
 						
 						if (comboFALLvalue.getSelectedItem().toString().equals("auto") == false)
 						{
-							FFPROBE.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
+							FFprobe.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
 						}
 						
-						options += "colorprim=bt2020:transfer=" + PQorHLG + ":colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(" + (int) FFPROBE.HDRmax * 10000 + "," + FFPROBE.HDRmin * 10000 + "):max-cll=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL;
+						options += "colorprim=bt2020:transfer=" + PQorHLG + ":colormatrix=bt2020nc:master-display=G(13250,34500)B(7500,3000)R(34000,16000)WP(15635,16450)L(" + (int) FFprobe.HDRmax * 10000 + "," + FFprobe.HDRmin * 10000 + "):max-cll=" + FFprobe.maxCLL + "," + FFprobe.maxFALL;
 					}
 					
 					//Levels
@@ -1161,20 +1161,20 @@ public class AdvancedFeatures extends Main {
 						
 						if (comboHDRvalue.getSelectedItem().toString().equals("auto") == false)
 						{
-							FFPROBE.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
+							FFprobe.HDRmax = Integer.parseInt(comboHDRvalue.getSelectedItem().toString().replace(" nits", ""));
 						}
 						
 						if (comboCLLvalue.getSelectedItem().toString().equals("auto") == false)
 						{
-							FFPROBE.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
+							FFprobe.maxCLL = Integer.parseInt(comboCLLvalue.getSelectedItem().toString().replace(" nits", ""));
 						}
 						
 						if (comboFALLvalue.getSelectedItem().toString().equals("auto") == false)
 						{
-							FFPROBE.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
+							FFprobe.maxFALL = Integer.parseInt(comboFALLvalue.getSelectedItem().toString().replace(" nits", ""));
 						}
 						
-						options += "input-depth=10:color-primaries=9:transfer-characteristics=" + PQorHLG + ":matrix-coefficients=9:mastering-display=G(0.265,0.69)B(0.15,0.06)R(0.68,0.32)WP(0.3127,0.329)L(" + (int) FFPROBE.HDRmax + "," + FFPROBE.HDRmin + "):content-light=" + FFPROBE.maxCLL + "," + FFPROBE.maxFALL + ":enable-hdr=1";
+						options += "input-depth=10:color-primaries=9:transfer-characteristics=" + PQorHLG + ":matrix-coefficients=9:mastering-display=G(0.265,0.69)B(0.15,0.06)R(0.68,0.32)WP(0.3127,0.329)L(" + (int) FFprobe.HDRmax + "," + FFprobe.HDRmin + "):content-light=" + FFprobe.maxCLL + "," + FFprobe.maxFALL + ":enable-hdr=1";
 					}
 					
 					//Custom params

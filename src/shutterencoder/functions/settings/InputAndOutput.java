@@ -22,7 +22,7 @@ package shutterencoder.functions.settings;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts.CutSegment;
@@ -43,7 +43,7 @@ public class InputAndOutput extends Main {
 		outPoint = "";
 		segments = "";
 		
-		if (setInputAndOutput && FFPROBE.totalLength > 40)
+		if (setInputAndOutput && FFprobe.totalLength > 40)
 		{
 			//Multi cuts feature
 			if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
@@ -70,13 +70,13 @@ public class InputAndOutput extends Main {
 	
 		        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
 		        	{		        	
-		        		double outputFPS = FFPROBE.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
+		        		double outputFPS = FFprobe.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 			    		
 			    		outPoint = " -frames:v " + (int) Math.ceil((double) frames / outputFPS);
 		        	}
 		        	else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySlowMotion")))	        
 		        	{
-		        		double outputFPS = Float.parseFloat(comboFPS.getSelectedItem().toString().replace(",", ".")) / FFPROBE.accurateFPS;  
+		        		double outputFPS = Float.parseFloat(comboFPS.getSelectedItem().toString().replace(",", ".")) / FFprobe.accurateFPS;  
 			    		
 			    		outPoint = " -frames:v " + (int) Math.ceil((double) frames * outputFPS);
 		        	}
@@ -85,7 +85,7 @@ public class InputAndOutput extends Main {
 			        	outPoint = " -frames:v " + frames;
 		        	}
 		        	else
-		        		outPoint = " -t " + (long) Math.floor((double) frames * ((float) 1000 / FFPROBE.accurateFPS)) + "ms";		        	
+		        		outPoint = " -t " + (long) Math.floor((double) frames * ((float) 1000 / FFprobe.accurateFPS)) + "ms";		        	
 		        }
 				
 				if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
@@ -120,16 +120,16 @@ public class InputAndOutput extends Main {
 		for (i = 0 ; i < VideoPlayerMultiCuts.cutSegments.size() ; i++)
     	{
 			//Video segment
-			if (FFPROBE.audioOnly == false && audioOutput == false)
+			if (FFprobe.audioOnly == false && audioOutput == false)
 			{
 				String videoIndex = i > 0 ? "[" + i + ":v]" : ""; //first [0:v] is already added from FilterComplex.setFilterComplex()
 				segments += videoIndex + "setpts=PTS-STARTPTS[v" + i + "];";
 			}
 			
 			//Audio segment
-			if (FFPROBE.hasAudio)
+			if (FFprobe.hasAudio)
 			{
-				for (int c = 0 ; c < FFPROBE.channels ; c++)
+				for (int c = 0 ; c < FFprobe.channels ; c++)
 				{
 					segments += "[" + i + ":a:" + c + "]asetpts=PTS-STARTPTS[a" + i + "_c" + c + "];";
 				}
@@ -140,15 +140,15 @@ public class InputAndOutput extends Main {
 		for (int o = 0 ; o < VideoPlayerMultiCuts.cutSegments.size() ; o++)
     	{
 			//Video segment
-			if (FFPROBE.audioOnly == false && audioOutput == false)
+			if (FFprobe.audioOnly == false && audioOutput == false)
 			{
 				segments += "[v" + o + "]";
 			}
 			
 			//Audio segment
-			if (FFPROBE.hasAudio)
+			if (FFprobe.hasAudio)
 			{
-				for (int c = 0 ; c < FFPROBE.channels ; c++)
+				for (int c = 0 ; c < FFprobe.channels ; c++)
 				{
 					segments += "[a" + o + "_c" + c + "]";
 				}
@@ -157,19 +157,19 @@ public class InputAndOutput extends Main {
 		
 		//Output streams
 		String streams = "";
-		if (FFPROBE.audioOnly || audioOutput)
+		if (FFprobe.audioOnly || audioOutput)
 		{
-			streams = ":v=0:a=" + FFPROBE.channels;
+			streams = ":v=0:a=" + FFprobe.channels;
 		}
-		else if (FFPROBE.hasAudio == false)
+		else if (FFprobe.hasAudio == false)
 		{
 			streams = ":v=1:a=0[video];[video]";
 		}
 		else //Video + Audio stream
 		{
-			streams = ":v=1:a=" + FFPROBE.channels + "[video]";
+			streams = ":v=1:a=" + FFprobe.channels + "[video]";
 			
-			for (int c = 0 ; c < FFPROBE.channels ; c++)
+			for (int c = 0 ; c < FFprobe.channels ; c++)
 			{
 				streams += "[audio_" + c + "]";
 			}
@@ -239,7 +239,7 @@ public class InputAndOutput extends Main {
 				//Set output point
 	        	if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")) || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
 	        	{		        	
-	        		double outputFPS = FFPROBE.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
+	        		double outputFPS = FFprobe.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));  
 		    		
 	        		inputFiles += " -frames:v " + (int) Math.ceil((double) total / outputFPS) + afterInput;
 	        	}
@@ -248,7 +248,7 @@ public class InputAndOutput extends Main {
 	        		inputFiles += " -frames:v " + total + afterInput;
 	        	}
 	        	else
-	        		inputFiles += " -t " + (long) Math.floor((double) total * ((float) 1000 / FFPROBE.accurateFPS)) + "ms" + afterInput;
+	        		inputFiles += " -t " + (long) Math.floor((double) total * ((float) 1000 / FFprobe.accurateFPS)) + "ms" + afterInput;
 	        	
 	        	inputFiles += file;
 	        	isFirstInput = false;

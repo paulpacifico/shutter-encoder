@@ -26,8 +26,8 @@ import javax.swing.JComboBox;
 
 import shutterencoder.functions.AudioNormalization;
 import shutterencoder.functions.Colorize;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Equalizer;
 import shutterencoder.ui.others.RecordInputDevice;
@@ -271,7 +271,7 @@ public class AudioSettings extends Main {
 				
 				if (audioFiltering != "") audioFiltering += ",";
 							
-				audioFiltering += "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";				
+				audioFiltering += "volume=" + String.valueOf(FFmpeg.newVolume).replace(",", ".") + "dB";				
 			}
 			
 			if (caseOPATOM.isSelected())
@@ -283,9 +283,9 @@ public class AudioSettings extends Main {
 			{
 				return setCustomAudio(isBroadcastCodec, audioFiltering);
 			}
-			else if (FFPROBE.stereo)
+			else if (FFprobe.stereo)
 		    {
-		    	if (FFPROBE.surround && lblAudioMapping.getSelectedItem().toString().equals("Multi") == false)
+		    	if (FFprobe.surround && lblAudioMapping.getSelectedItem().toString().equals("Multi") == false)
 		    	{			    			    		
 		    		if (audioFiltering != "")
 			    		audioFiltering = audioFiltering + ",";
@@ -297,11 +297,11 @@ public class AudioSettings extends Main {
 		    		}
 		    		
 		    		String channelMix = "";
-		    		if (FFPROBE.channelLayout.equals("7.1"))
+		    		if (FFprobe.channelLayout.equals("7.1"))
 		    		{
 		    			channelMix = "pan=stereo|FL=0.6*FL+0.5*FC+0.3*BL+0.3*SL+0.2*LFE|FR=0.6*FR+0.5*FC+0.3*BR+0.3*SR+0.2*LFE";
 		    		}
-		    		else if (FFPROBE.channelLayout.equals("6.1"))
+		    		else if (FFprobe.channelLayout.equals("6.1"))
 		    		{
 		    			channelMix = "pan=stereo|FL=0.6*FL+0.5*FC+0.3*BC+0.3*SL+0.2*LFE|FR=0.6*FR+0.5*FC+0.3*BC+0.3*SR+0.2*LFE";
 		    		}
@@ -362,9 +362,9 @@ public class AudioSettings extends Main {
 							mapping += " -map a:" + (comboAudio8.getSelectedIndex()) + "?";
     				}
 
-				    if (audioCodec.equals("libopus") && FFPROBE.channelLayout != "")
+				    if (audioCodec.equals("libopus") && FFprobe.channelLayout != "")
 				    {
-				    	mapping += " -channel_layout " + FFPROBE.channelLayout;
+				    	mapping += " -channel_layout " + FFprobe.channelLayout;
 				    }
 					
 				    if (isBroadcastCodec) //Managed from FunctionUtils
@@ -420,7 +420,7 @@ public class AudioSettings extends Main {
 	    				audioCodec += " -aac_is 0 -aac_pns 0";
 	    			}
 				    
-		    		audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
+		    		audio += "[0:a]amix=inputs=" + FFprobe.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 		    	}
 		    	else //Stereo
 		    	{		    		
@@ -430,7 +430,7 @@ public class AudioSettings extends Main {
 		    		audio += " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate + audioFiltering + " -map a:" + comboAudio1.getSelectedIndex();
 		    	}		    		
 		    }
-		    else if (FFPROBE.channels > 1)
+		    else if (FFprobe.channels > 1)
 		    {
 		         if (inputDeviceIsRunning)
 		         {
@@ -479,7 +479,7 @@ public class AudioSettings extends Main {
 		    				audioCodec += " -aac_is 0 -aac_pns 0";
 		    			}
 				    	
-			    		audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
+			    		audio += "[0:a]amix=inputs=" + FFprobe.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 			    	}
 		         }
 		    	 else if (lblAudioMapping.getSelectedItem().toString().equals(language.getProperty("stereo")))
@@ -536,7 +536,7 @@ public class AudioSettings extends Main {
 		    			 audioCodec += " -aac_is 0 -aac_pns 0";
 		    		 }
 				    
-		    		 audio += "[0:a]amix=inputs=" + FFPROBE.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
+		    		 audio += "[0:a]amix=inputs=" + FFprobe.channels + audioFiltering + "[a]" + '"' + " -c:a " + audioCodec + " -ar " + lbl48k.getSelectedItem().toString() + audioBitrate;
 		    	 }
 		    	 else //Multi
 		    	 {

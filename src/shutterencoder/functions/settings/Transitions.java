@@ -20,7 +20,7 @@
 package shutterencoder.functions.settings;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
@@ -50,7 +50,7 @@ public class Transitions extends Main {
 	    		{
 		    		if (filterComplex != "") filterComplex += ",";	
 		    		
-		    		long videoInValue = (long) (Integer.parseInt(Main.spinnerVideoFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+		    		long videoInValue = (long) (Integer.parseInt(Main.spinnerVideoFadeIn.getText()) * ((float) 1000 / FFprobe.currentFPS));
 		    		
 		    		String color = "black";
 					if (Main.lblFadeInColor.getText().equals(language.getProperty("white")))
@@ -88,8 +88,8 @@ public class Transitions extends Main {
 	    		{
 		    		if (filterComplex != "") filterComplex += ",";	
 		    		
-		    		long videoOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-		    		long videoStart = (long) FFPROBE.totalLength - videoOutValue;
+		    		long videoOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFprobe.currentFPS));
+		    		long videoStart = (long) FFprobe.totalLength - videoOutValue;
 	
 		    		if (caseEnableSequence.isSelected())
 		    		{
@@ -98,13 +98,13 @@ public class Transitions extends Main {
 		    		}
 		    		else if (Settings.btnSetBab.isSelected())
 		    		{
-		    			videoOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+		    			videoOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFprobe.currentFPS));
 			    		videoStart = (long) FunctionUtils.mergeDuration - videoOutValue;
 		    		}
 		    		else
 		    		{
-		        		long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-		        		long totalOut = FFPROBE.totalLength;
+		        		long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFprobe.currentFPS));
+		        		long totalOut = FFprobe.totalLength;
 						 
 			    		if (InputAndOutput.segments != "" && isVideoPlayer == false)
 			    		{
@@ -112,18 +112,18 @@ public class Transitions extends Main {
 			    			totalOut = 0;
 			    			for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 							{
-			    				totalIn += (long) ((seg.inH * 3600000 + seg.inM * 60000 + seg.inS * 1000)  + seg.inF * (1000 / FFPROBE.currentFPS));
-								totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFPROBE.currentFPS));
+			    				totalIn += (long) ((seg.inH * 3600000 + seg.inM * 60000 + seg.inS * 1000)  + seg.inF * (1000 / FFprobe.currentFPS));
+								totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFprobe.currentFPS));
 							}
 			    		}
 			    		else if (VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 				        {
-							totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+							totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFprobe.currentFPS));
 				        }
 						
 		        		if (isVideoPlayer)
 		        		{
-		        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));	        			
+		        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFprobe.currentFPS));	        			
 		        		}
 		        			        		
 		        		videoStart = (totalOut - totalIn) - videoOutValue;	        		
@@ -166,7 +166,7 @@ public class Transitions extends Main {
     		
     		if (fade)
     		{
-	    		long audioInValue = (long) (Integer.parseInt(Main.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    		long audioInValue = (long) (Integer.parseInt(Main.spinnerAudioFadeIn.getText()) * ((float) 1000 / FFprobe.currentFPS));
 				
 	    		if (isVideoPlayer)
 	    		{
@@ -203,18 +203,18 @@ public class Transitions extends Main {
 			
     		if (fade)
     		{
-	    		long audioOutValue = (long) (Integer.parseInt(Main.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
-	    		long audioStart =  (long) FFPROBE.totalLength - audioOutValue;
+	    		long audioOutValue = (long) (Integer.parseInt(Main.spinnerAudioFadeOut.getText()) * ((float) 1000 / FFprobe.currentFPS));
+	    		long audioStart =  (long) FFprobe.totalLength - audioOutValue;
 	    		
 	    		if (Settings.btnSetBab.isSelected())
 	    		{
-	    			audioOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFPROBE.currentFPS));
+	    			audioOutValue = (long) (Integer.parseInt(Main.spinnerVideoFadeOut.getText()) * ((float) 1000 / FFprobe.currentFPS));
 	    			audioStart = (long) FunctionUtils.mergeDuration - audioOutValue;
 	    		}
 	    		else
 				{
-					long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFPROBE.currentFPS));
-					long totalOut = FFPROBE.totalLength;
+					long totalIn = (long) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseInF.getText()) * (1000 / FFprobe.currentFPS));
+					long totalOut = FFprobe.totalLength;
 					 
 					if (InputAndOutput.segments != "" && isVideoPlayer == false)
 		    		{
@@ -222,18 +222,18 @@ public class Transitions extends Main {
 		    			totalOut = 0;
 		    			for (VideoPlayerMultiCuts.CutSegment seg : VideoPlayerMultiCuts.cutSegments)
 						{
-		    				totalIn += (long) ((seg.inH * 3600000 + seg.inM * 60000 + seg.inS * 1000)  + seg.inF * (1000 / FFPROBE.currentFPS));
-							totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFPROBE.currentFPS));
+		    				totalIn += (long) ((seg.inH * 3600000 + seg.inM * 60000 + seg.inS * 1000)  + seg.inF * (1000 / FFprobe.currentFPS));
+							totalOut += (long) ((seg.outH * 3600000 + seg.outM * 60000 + seg.outS * 1000)  + seg.outF * (1000 / FFprobe.currentFPS));
 						}
 		    		}
 		    		else if (VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 			        {
-						totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFPROBE.currentFPS));
+						totalOut = (long) (Integer.parseInt(VideoPlayerUI.caseOutH.getText()) * 3600000 + Integer.parseInt(VideoPlayerUI.caseOutM.getText()) * 60000 + Integer.parseInt(VideoPlayerUI.caseOutS.getText()) * 1000 + Integer.parseInt(VideoPlayerUI.caseOutF.getText()) * (1000 / FFprobe.currentFPS));
 			        }
 					
 					if (isVideoPlayer)
 	        		{
-	        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFPROBE.currentFPS));
+	        			totalIn = (long) Math.floor(VideoPlayerCore.playerCurrentFrame *  ((float) 1000 / FFprobe.currentFPS));
 	        		}
 					
 					audioStart = (totalOut - totalIn) - audioOutValue;
@@ -269,7 +269,7 @@ public class Transitions extends Main {
 	        		newFPS = Float.parseFloat((caseSequenceFPS.getSelectedItem().toString()).replace(",", "."));
 	        	}
 	        	 
-	        	float value = (float) (newFPS / FFPROBE.currentFPS);
+	        	float value = (float) (newFPS / FFprobe.currentFPS);
 	        	
 	        	if (value >= 0.5f && value <= 2.0f)
 	        	{

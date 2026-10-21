@@ -21,7 +21,7 @@ package shutterencoder.functions.settings;
 
 import java.io.File;
 
-import shutterencoder.library.EXIFTOOL;
+import shutterencoder.library.Exiftool;
 import shutterencoder.ui.main.Main;
 
 public class Filter extends Main {
@@ -30,7 +30,7 @@ public class Filter extends Main {
 		
 		if (caseYear.isSelected() || caseMonth.isSelected() || caseDay.isSelected() || caseFrom.isSelected())
 		{			 
-			String date[] = EXIFTOOL.exifDate.split(":");
+			String date[] = Exiftool.exifDate.split(":");
 
 			if (caseYear.isSelected())
 			{
@@ -49,7 +49,7 @@ public class Filter extends Main {
 			}		
 			if (caseFrom.isSelected())
 			{
-				String exif[] = EXIFTOOL.exifHours.split(":");
+				String exif[] = Exiftool.exifHours.split(":");
 				String from[] = comboFrom.getSelectedItem().toString().split(":");
 				String to[] = comboTo.getSelectedItem().toString().split(":");
 				

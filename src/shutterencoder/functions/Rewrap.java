@@ -33,9 +33,9 @@ import shutterencoder.functions.settings.AudioSettings;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.BMXTRANSWRAP;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Bmxtranswrap;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -108,9 +108,9 @@ public class Rewrap extends Main {
 			    		String metadatas = FunctionUtils.setMetadata();
 			    		
 			    		String flags = "";
-			    		if (FFPROBE.videoCodec != null)
+			    		if (FFprobe.videoCodec != null)
 			    		{
-			    			String vcodec = FFPROBE.videoCodec.replace("video", "");
+			    			String vcodec = FFprobe.videoCodec.replace("video", "");
 			    			for (String s : Main.functionsList)
 			    			{
 			    				if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
@@ -155,31 +155,31 @@ public class Rewrap extends Main {
 						{							
 							VideoPlayerCore.videoPath = file.toString();							
 							VideoPlayerUtils.updateGrpIn(Timecode.getNTSCtimecode(InputAndOutput.savedInPoint));
-							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFPROBE.totalLength / 1000 * FFPROBE.accurateFPS) - InputAndOutput.savedOutPoint));							
+							VideoPlayerUtils.updateGrpOut(Timecode.getNTSCtimecode(((double) FFprobe.totalLength / 1000 * FFprobe.accurateFPS) - InputAndOutput.savedOutPoint));							
 							VideoPlayerUtils.setFileList();	
 						}
 						
 						//InOut	
-						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFPROBE.totalLength));					
+						InputAndOutput.getInputAndOutput(VideoPlayerUtils.getFileList(file.toString(), FFprobe.totalLength));					
 						
 						//Framerate
 						String frameRate = "";						
 						if (comboFilter.getSelectedItem().toString().equals(".mxf"))
 						{
-							if (FFPROBE.currentFPS == 59.94f)
+							if (FFprobe.currentFPS == 59.94f)
 							{
 								frameRate = " -r 60000/1001";
 							}
-							else if (FFPROBE.currentFPS == 29.97f)
+							else if (FFprobe.currentFPS == 29.97f)
 							{
 								frameRate = " -r 30000/1001";
 							}
-							else if (FFPROBE.currentFPS == 23.98f)
+							else if (FFprobe.currentFPS == 23.98f)
 							{
 								frameRate = " -r 24000/1001";
 							}
 							else
-								frameRate = " -r " + FFPROBE.currentFPS;
+								frameRate = " -r " + FFprobe.currentFPS;
 																	
 						}
 												
@@ -277,13 +277,13 @@ public class Rewrap extends Main {
 
 							lblCurrentEncoding.setText(Main.language.getProperty("createOpatomFiles"));
 																									
-							BMXTRANSWRAP.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName.replace(extension, "") + '"' + " " + '"' + file + '"');
+							Bmxtranswrap.run("-t avid -p -o " + '"' + labelOutput + "/" + prefix + fileName.replace(extension, key) + '"' + " --clip " + '"' + fileName.replace(extension, "") + '"' + " --tape " + '"' + fileName.replace(extension, "") + '"' + " " + '"' + file + '"');
 						
 							do
 							{
 								Thread.sleep(100);
 							}
-							while (BMXTRANSWRAP.isRunning);				
+							while (Bmxtranswrap.isRunning);				
 						}
 						else //FFMPEG
 						{
@@ -314,10 +314,10 @@ public class Rewrap extends Main {
 							else
 								cmd = " -c:v copy -ignore_unknown" + audio + timecode + aspect + frameRate + " -map v:0?" + audioMapping + mapSubtitles + metadatas + flags + " -y " + '"'  + fileOut + '"';
 							
-							FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + rotate, " -i " + '"' + file.toString() + '"', subtitles + InputAndOutput.outPoint) + cmd);	
+							FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.inPoint + concat + rotate, " -i " + '"' + file.toString() + '"', subtitles + InputAndOutput.outPoint) + cmd);	
 							
 							try {
-								FFMPEG.runProcess.join();
+								FFmpeg.runProcess.join();
 							} catch (InterruptedException e) {
 							    Thread.currentThread().interrupt();
 							}
@@ -326,14 +326,14 @@ public class Rewrap extends Main {
 							mergeMultiCuts(tempFolder, fileName, extension, newExtension, timecode, fileOut);
 						}
 						
-						if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{
 							if (lastActions(file, fileName, fileOut, labelOutput))
 								break;
 						}
 					
 					} catch (Exception e) {
-						FFMPEG.error  = true;
+						FFmpeg.error  = true;
 					}
 					finally
 					{
@@ -404,7 +404,7 @@ public class Rewrap extends Main {
 			
 			if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible() && Main.caseEqualizer.isSelected() == false)
 			{
-				normalization = " -af volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";	
+				normalization = " -af volume=" + String.valueOf(FFmpeg.newVolume).replace(",", ".") + "dB";	
 			}
 			
 			if (comboAudioCodec.getSelectedItem().toString().contains("PCM"))
@@ -474,7 +474,7 @@ public class Rewrap extends Main {
 		{
 			if (audioFiltering != "") audioFiltering += ",";		
 			
-			audioFiltering += "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";
+			audioFiltering += "volume=" + String.valueOf(FFmpeg.newVolume).replace(",", ".") + "dB";
 		}	
 		
 		if (grpSetAudio.isVisible() && caseChangeAudioCodec.isSelected() && comboAudioCodec.getSelectedItem().equals(language.getProperty("custom")))
@@ -563,7 +563,7 @@ public class Rewrap extends Main {
 			caseAddSubtitles.setEnabled(false);
 		
 			try {
-				FFMPEG.runProcess.join();
+				FFmpeg.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}		
@@ -600,7 +600,7 @@ public class Rewrap extends Main {
 		}
 		else if (casePreserveSubs.isSelected())
         {
-        	if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("dvb_subtitle"))
+        	if (FFprobe.subtitlesCodec != "" && FFprobe.subtitlesCodec.equals("dvb_subtitle"))
         	{
     			switch (comboFilter.getSelectedItem().toString())
     			{
@@ -617,7 +617,7 @@ public class Rewrap extends Main {
         	}
         	else if (comboFilter.getSelectedItem().toString().equals(".mkv"))
         	{
-        		if (FFPROBE.subtitlesCodec != "" && FFPROBE.subtitlesCodec.equals("hdmv_pgs_subtitle"))
+        		if (FFprobe.subtitlesCodec != "" && FFprobe.subtitlesCodec.equals("hdmv_pgs_subtitle"))
         		{
         			return " -c:s copy -map s?";
         		}
@@ -651,10 +651,10 @@ public class Rewrap extends Main {
 		    
 		    writer.close();
 		    
-			FFMPEG.run(" -safe 0 -f concat -i " + '"' + concatFile + '"' + timecode + " -c copy -map v:0? -map a? -y " + '"' + fileOut.toString() + '"');	
+			FFmpeg.run(" -safe 0 -f concat -i " + '"' + concatFile + '"' + timecode + " -c copy -map v:0? -map a? -y " + '"' + fileOut.toString() + '"');	
 			
 			try {
-				FFMPEG.runProcess.join();
+				FFmpeg.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}

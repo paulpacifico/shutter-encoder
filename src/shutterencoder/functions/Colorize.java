@@ -29,9 +29,9 @@ import java.nio.file.StandardCopyOption;
 import org.apache.commons.io.FileUtils;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.DEOLDIFY;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.Deoldify;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -56,11 +56,11 @@ public class Colorize extends Main {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
-				DEOLDIFY.patchDeoldify();
-				DEOLDIFY.patchFFmpeg();
-				DEOLDIFY.downloadModel();
+				Deoldify.patchDeoldify();
+				Deoldify.patchFFmpeg();
+				Deoldify.downloadModel();
 						
-				if (new File(DEOLDIFY.deoldifyModel).exists())
+				if (new File(Deoldify.deoldifyModel).exists())
 				{						
 					File tempFolder = null;
 					
@@ -127,20 +127,20 @@ public class Colorize extends Main {
 							}
 							
 							//Run deoldify
-							DEOLDIFY.run(file.toString(), model);
+							Deoldify.run(file.toString(), model);
 							if (comboFilter.getSelectedItem().equals("video"))
 							{
 								do {								
 									Thread.sleep(1000);		
 									
-									File extractFolder = new File(DEOLDIFY.deoldifyFolder + "/video/bwframes/" + fileName.replace(extension, ""));
-									File colorFolder = new File(DEOLDIFY.deoldifyFolder + "/video/colorframes/" + fileName.replace(extension, ""));
+									File extractFolder = new File(Deoldify.deoldifyFolder + "/video/bwframes/" + fileName.replace(extension, ""));
+									File colorFolder = new File(Deoldify.deoldifyFolder + "/video/colorframes/" + fileName.replace(extension, ""));
 									
 									//Get progress of extraction
 									if (extractFolder.exists() && colorFolder.exists() == false && cancelled == false)
 				            		{
 			            				int files = extractFolder.listFiles().length;
-					            		progressBar.setValue((int) ((float) files * 100 / ((float) ((float) FFPROBE.totalLength / 1000) * FFPROBE.currentFPS)));
+					            		progressBar.setValue((int) ((float) files * 100 / ((float) ((float) FFprobe.totalLength / 1000) * FFprobe.currentFPS)));
 				            		}
 									
 									//Move the colored frames to output tempFolder
@@ -162,12 +162,12 @@ public class Colorize extends Main {
 							            } catch (Exception e) {}
 									}
 									
-								} while (DEOLDIFY.runProcess.isAlive());	
+								} while (Deoldify.runProcess.isAlive());	
 							}		
 							else
 							{
 								try {
-									DEOLDIFY.runProcess.join();
+									Deoldify.runProcess.join();
 								} catch (InterruptedException e) {
 								    Thread.currentThread().interrupt();
 								}	
@@ -177,7 +177,7 @@ public class Colorize extends Main {
 							{
 								//Delete the video folder
 								try {
-									FileUtils.deleteDirectory(new File(DEOLDIFY.deoldifyFolder + "/video"));
+									FileUtils.deleteDirectory(new File(Deoldify.deoldifyFolder + "/video"));
 								} catch (Exception e) {}
 								
 								if (cancelled)
@@ -189,9 +189,9 @@ public class Colorize extends Main {
 								{
 									sourceFile = file;
 									
-									if (FFPROBE.videoCodec != null)
+									if (FFprobe.videoCodec != null)
 									{
-										String vcodec = FFPROBE.videoCodec.replace("video", "");
+										String vcodec = FFprobe.videoCodec.replace("video", "");
 										for (String s : Main.functionsList)
 										{
 											if (vcodec.toLowerCase().equals(s.replace(".", "").replace("-", "").toLowerCase())
@@ -214,19 +214,19 @@ public class Colorize extends Main {
 									}
 									
 									caseEnableSequence.doClick();
-									caseSequenceFPS.setSelectedItem(String.valueOf(FFPROBE.currentFPS));
+									caseSequenceFPS.setSelectedItem(String.valueOf(FFprobe.currentFPS));
 									
 									break;
 								}
 							}
 							else //Move the image colorized from result_images folder
 							{
-								File tempFile = new File(DEOLDIFY.deoldifyFolder + "/result_images/" + fileName); 								
+								File tempFile = new File(Deoldify.deoldifyFolder + "/result_images/" + fileName); 								
 								if (tempFile.exists())
 									tempFile.renameTo(fileOut);	
 							}
 							
-							if (FFMPEG.saveCode == false)
+							if (FFmpeg.saveCode == false)
 							{
 								lastActions(new File(labelOutput), labelOutput);
 							}						
@@ -240,7 +240,7 @@ public class Colorize extends Main {
 								} catch (IOException e1) {}
 							}
 							
-							FFMPEG.error  = true;
+							FFmpeg.error  = true;
 							e.printStackTrace();
 						}
 					}

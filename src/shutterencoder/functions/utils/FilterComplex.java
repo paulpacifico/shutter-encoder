@@ -28,8 +28,8 @@ import javax.swing.JComboBox;
 import shutterencoder.functions.settings.AudioSettings;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Transitions;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
@@ -154,7 +154,7 @@ public class FilterComplex extends Main {
 	    }
 	    else if (casePreserveSubs.isSelected())
 	    {       	        	
-	    	if (FFPROBE.subtitlesCodec != "" && (FFPROBE.subtitlesCodec.equals("dvb_subtitle") || FFPROBE.subtitlesCodec.equals("dvd_subtitle")))
+	    	if (FFprobe.subtitlesCodec != "" && (FFprobe.subtitlesCodec.equals("dvb_subtitle") || FFprobe.subtitlesCodec.equals("dvd_subtitle")))
 	    	{        		
 				switch (comboFilter.getSelectedItem().toString())
 				{
@@ -162,11 +162,11 @@ public class FilterComplex extends Main {
 					case ".mkv":
 					case ".ts":
 						
-						if (FFPROBE.subtitlesCodec.equals("dvb_subtitle"))
+						if (FFprobe.subtitlesCodec.equals("dvb_subtitle"))
 						{
 							filterComplex += " -c:s dvbsub -map s?";
 						}
-						else if (FFPROBE.subtitlesCodec.equals("dvd_subtitle"))
+						else if (FFprobe.subtitlesCodec.equals("dvd_subtitle"))
 						{
 							filterComplex += " -c:s dvdsub -map s?";
 						}
@@ -181,7 +181,7 @@ public class FilterComplex extends Main {
 	    	}
 	    	else if (comboFilter.getSelectedItem().toString().equals(".mkv"))
 	    	{
-	    		if (FFPROBE.subtitlesCodec != "" && (FFPROBE.subtitlesCodec.equals("hdmv_pgs_subtitle") || FFPROBE.subtitlesCodec.equals("ass")))
+	    		if (FFprobe.subtitlesCodec != "" && (FFprobe.subtitlesCodec.equals("hdmv_pgs_subtitle") || FFprobe.subtitlesCodec.equals("ass")))
 	    		{
 	    			filterComplex += " -c:s copy -map s?";
 	    		}
@@ -255,7 +255,7 @@ public class FilterComplex extends Main {
 	
 	    		audio = audio.replace(" -filter:a " + '"' + audioFilter + '"', ""); //Fetch only audio codec  	
 	    		
-	    		for (int c = 0 ; c < FFPROBE.channels ; c++)
+	    		for (int c = 0 ; c < FFprobe.channels ; c++)
 	    		{
 	    			filterComplex += ";[audio_" + c + "]" + audioFilter + "[a" + c + "]"; 	    			
 	    		}
@@ -264,7 +264,7 @@ public class FilterComplex extends Main {
 	        //No audio
 	        if (audio.contains("-an"))
 	        {
-	            for (int c = 0 ; c < FFPROBE.channels ; c++)
+	            for (int c = 0 ; c < FFprobe.channels ; c++)
 	            {
 	                filterComplex += ";[" + audioOutputName + c +"]anullsink";
 	            }   
@@ -272,7 +272,7 @@ public class FilterComplex extends Main {
 	        else if (audio.contains("-map a?")) //Add non mapped track to anullsink
 	        {
 	        	String tracks = "";
-	            for (int c = 0 ; c < FFPROBE.channels ; c++)
+	            for (int c = 0 ; c < FFprobe.channels ; c++)
 	            {
 	                tracks += " -map " + '"' + "[" + audioOutputName + c +"]" + '"';
 	            }
@@ -281,10 +281,10 @@ public class FilterComplex extends Main {
 	        }
 	        else if (audio.contains("[0:a]")) //Add non mapped track to anullsink
 	        {
-	            if (audio.contains("amix=inputs=" + FFPROBE.channels))
+	            if (audio.contains("amix=inputs=" + FFprobe.channels))
 	            {
 	                String tracks = "";
-	                for (int c = 0 ; c < FFPROBE.channels ; c++)
+	                for (int c = 0 ; c < FFprobe.channels ; c++)
 	                {
 	                    tracks += "[" + audioOutputName + c +"]";
 	                }
@@ -295,9 +295,9 @@ public class FilterComplex extends Main {
 	            {
 	                audio = audio.replace("[0:a]", "[" + audioOutputName + "0]");
 	                
-	                if (FFPROBE.channels > 1)
+	                if (FFprobe.channels > 1)
 	                {
-	                    for (int c = 1 ; c < FFPROBE.channels ; c++)
+	                    for (int c = 1 ; c < FFprobe.channels ; c++)
 	                    {
 	                        filterComplex += ";[" + audioOutputName + c +"]anullsink"; //null output
 	                    }
@@ -309,7 +309,7 @@ public class FilterComplex extends Main {
 	            Matcher m = Pattern.compile("0:a:(\\d+)").matcher(audio);
 	
 	            //Add anullsink to non-mapped audio tracks
-	            for (int c = 0 ; c < FFPROBE.channels ; c++)
+	            for (int c = 0 ; c < FFprobe.channels ; c++)
 	            {
 	                boolean map = false;
 	                m.reset();
@@ -338,7 +338,7 @@ public class FilterComplex extends Main {
 	            Matcher m = Pattern.compile("a:(\\d+)").matcher(audio);
 	
 	            //Add anullsink to non-mapped audio tracks
-	            for (int c = 0 ; c < FFPROBE.channels ; c++)
+	            for (int c = 0 ; c < FFprobe.channels ; c++)
 	            {
 	                boolean map = false;
 	                m.reset();
@@ -365,7 +365,7 @@ public class FilterComplex extends Main {
 	            while (m.find())
 	            {
 	                int channel = Integer.parseInt(m.group(1));
-	                if ((channel + 1) > FFPROBE.channels)
+	                if ((channel + 1) > FFprobe.channels)
 	                {
 	                    audio = audio.replace(" -map a:" + channel + "?", "");     
 	                }
@@ -414,7 +414,7 @@ public class FilterComplex extends Main {
 		{				
 			if (audioFiltering != "") audioFiltering += ",";
 			
-			audioFiltering += "volume=" + String.valueOf(FFMPEG.newVolume).replace(",", ".") + "dB";				
+			audioFiltering += "volume=" + String.valueOf(FFmpeg.newVolume).replace(",", ".") + "dB";				
 		}
 		
 		//Multiple cuts
@@ -456,7 +456,7 @@ public class FilterComplex extends Main {
 			for (int m = 1 ; m < channels; m++) 
 			{	
 				//On map les pistes existantes
-				if (m <= FFPROBE.channels)
+				if (m <= FFprobe.channels)
 				{ 
 					if (inputDeviceIsRunning)
 					{
@@ -467,7 +467,7 @@ public class FilterComplex extends Main {
 						else
 							mapping = " -map a?";	
 					}
-					else if (FFPROBE.channels == 1) //Si le son est stereo alors on split
+					else if (FFprobe.channels == 1) //Si le son est stereo alors on split
 					{
 						if (audioFiltering != "")
 				    		audioFiltering = audioFiltering + ",";
@@ -533,7 +533,7 @@ public class FilterComplex extends Main {
 			}
 		}		
 				
-		if (FFPROBE.channels != 1) //On ajoute le filterComplex lorsque il n'y a pas de split des pistes son	
+		if (FFprobe.channels != 1) //On ajoute le filterComplex lorsque il n'y a pas de split des pistes son	
 		{
 			if (audioFiltering != "")
 	    		audioFiltering = " -filter:a " + '"' + audioFiltering + '"';
@@ -577,7 +577,7 @@ public class FilterComplex extends Main {
 	    		mapping = mapping.replace(" -filter:a " + '"' + audioFilter + '"', ""); //Fetch only audio codec  	
 	    		
 	    		String tracks = "";
-	    		for (int c = 0 ; c < FFPROBE.channels ; c++)
+	    		for (int c = 0 ; c < FFprobe.channels ; c++)
 	    		{
 	    			tracks += ";[audio_" + c + "]" + audioFilter + "[a" + c + "]"; 	    			
 	    		}
@@ -591,7 +591,7 @@ public class FilterComplex extends Main {
 			//No audio
 			if (mapping.contains("-an"))
 			{
-	    		for (int c = 0 ; c < FFPROBE.channels ; c++)
+	    		for (int c = 0 ; c < FFprobe.channels ; c++)
 	    		{
 	    			mapping = mapping.replaceFirst("\\[out\\]", "[out];[" + audioOutputName + c +"]anullsink");
 	    		}   
@@ -601,7 +601,7 @@ public class FilterComplex extends Main {
 				Matcher m = Pattern.compile("a:(\\d+)").matcher(mapping);
 	
 				//Add anullsink to non-mapped audio tracks
-				for (int c = 0 ; c < FFPROBE.channels ; c++)
+				for (int c = 0 ; c < FFprobe.channels ; c++)
 	    		{
 					boolean map = false;
 					m.reset();
@@ -628,7 +628,7 @@ public class FilterComplex extends Main {
 				while (m.find())
 				{
 					int channel = Integer.parseInt(m.group(1));
-					if ((channel + 1) > FFPROBE.channels)
+					if ((channel + 1) > FFprobe.channels)
 					{
 						mapping = mapping.replace(" -map a:" + channel, "");     
 					}

@@ -58,14 +58,14 @@ import com.formdev.flatlaf.util.SystemFileChooser;
 import shutterencoder.functions.Transcribe;
 import shutterencoder.functions.settings.Corrections;
 import shutterencoder.functions.settings.InputAndOutput;
-import shutterencoder.library.EXIFTOOL;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
-import shutterencoder.library.LTCDUMP;
+import shutterencoder.library.Exiftool;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
+import shutterencoder.library.Ltcdump;
 import shutterencoder.library.LibraryUtils;
-import shutterencoder.library.MEDIAINFO;
-import shutterencoder.library.XPDFREADER;
-import shutterencoder.library.WHISPER;
+import shutterencoder.library.Mediainfo;
+import shutterencoder.library.Xpdfreader;
+import shutterencoder.library.Whisper;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
@@ -103,23 +103,23 @@ public class FunctionUtils extends Main {
 						
 		if (isRaw || caseGenerateFromDate.isSelected())
 		{
-			EXIFTOOL.run('"' + file.toString() + '"');	
+			Exiftool.run('"' + file.toString() + '"');	
 			try {
-				EXIFTOOL.runProcess.join();
+				Exiftool.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}
 			
 			if (caseGenerateFromDate.isSelected())
-				FFPROBE.analyzedMedia = null; //Allow to load data with FFPROBE
+				FFprobe.analyzedMedia = null; //Allow to load data with FFPROBE
 		}
 		
 		//inputDeviceIsRunning is already analyzed
 		if (inputDeviceIsRunning == false && isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
-			FFPROBE.FrameData(file.toString());	
+			FFprobe.FrameData(file.toString());	
 			try {
-				FFPROBE.processFrameData.join();
+				FFprobe.processFrameData.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}
@@ -130,12 +130,12 @@ public class FunctionUtils extends Main {
 		}	 
 		else if (extension.toLowerCase().equals(".pdf"))
 		{
-			FFPROBE.totalLength = 0;
-			FFPROBE.analyzedMedia = file.toString();
+			FFprobe.totalLength = 0;
+			FFprobe.analyzedMedia = file.toString();
 			
-			XPDFREADER.getPagesCount(file.toString());	
+			Xpdfreader.getPagesCount(file.toString());	
 			try {
-				XPDFREADER.runProcess.join();
+				Xpdfreader.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}
@@ -143,9 +143,9 @@ public class FunctionUtils extends Main {
 			if (analyzeError(file.toString()))
 				return false;
 			 
-			XPDFREADER.toFFPROBE(file.toString());	
+			Xpdfreader.toFFPROBE(file.toString());	
 			try {
-				XPDFREADER.runProcess.join();
+				Xpdfreader.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}
@@ -156,12 +156,12 @@ public class FunctionUtils extends Main {
 		
 		if (isRaw == false && extension.toLowerCase().equals(".pdf") == false)
 		{
-			FFPROBE.Data(file.toString());
+			FFprobe.Data(file.toString());
 			try {
-				while (FFPROBE.processData == null) //Wait for the process to initialize
+				while (FFprobe.processData == null) //Wait for the process to initialize
 					Thread.sleep(1);
 				
-				FFPROBE.processData.join();
+				FFprobe.processData.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}
@@ -190,9 +190,9 @@ public class FunctionUtils extends Main {
 			}
 					
 			//Check with MEDIAINFO
-			MEDIAINFO.run(file.toString(), false);			
+			Mediainfo.run(file.toString(), false);			
 			try {
-				MEDIAINFO.runProcess.join();
+				Mediainfo.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}			
@@ -200,9 +200,9 @@ public class FunctionUtils extends Main {
 			//Get timecode from audio
 			if (caseReadAudioTimecode.isSelected())
 			{
-				LTCDUMP.run(file.toString());
+				Ltcdump.run(file.toString());
 				try {
-					LTCDUMP.runProcess.join();
+					Ltcdump.runProcess.join();
 				} catch (InterruptedException e) {
 				    Thread.currentThread().interrupt();
 				}
@@ -210,10 +210,10 @@ public class FunctionUtils extends Main {
 		}
 		
 		//IMPORTANT
-		if (FFPROBE.interlaced == null)
+		if (FFprobe.interlaced == null)
 		{
-			FFPROBE.interlaced = "0";
-			FFPROBE.fieldOrder = "0";
+			FFprobe.interlaced = "0";
+			FFprobe.fieldOrder = "0";
 		}
 		
 		return true;
@@ -221,9 +221,9 @@ public class FunctionUtils extends Main {
 
 	public  static boolean analyzeError(String file)
 	{						
-		 if (FFMPEG.error)// || EXIFTOOL.error || DCRAW.error || DVDAUTHOR.error || MKVMERGE.error || TSMUXER.error || XPDF.error)
+		 if (FFmpeg.error)// || EXIFTOOL.error || DCRAW.error || DVDAUTHOR.error || MKVMERGE.error || TSMUXER.error || XPDF.error)
 		 {			 
-		 	errorList = new StringBuilder(file + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
+		 	errorList = new StringBuilder(file + System.lineSeparator() + FFmpeg.errorLog + System.lineSeparator());
 			return true;
 		 }
 		 return false;
@@ -462,7 +462,7 @@ public class FunctionUtils extends Main {
 	public static void moveScannedFiles(File file)
 	{
 		//Error
-		if (FFMPEG.error)
+		if (FFmpeg.error)
 		{
 			File folder = new File(file.getParent() + "/error");
 
@@ -588,24 +588,24 @@ public class FunctionUtils extends Main {
 				if (Settings.btnSetBab.isSelected())
 				{
 					//IMPORTANT RESET MEDIA
-					FFPROBE.analyzedMedia = null;
+					FFprobe.analyzedMedia = null;
 					
-					FFPROBE.Data(list.getElementAt(i));
+					FFprobe.Data(list.getElementAt(i));
 					try {
-						while (FFPROBE.processData == null) //Wait for the process to initialize
+						while (FFprobe.processData == null) //Wait for the process to initialize
 							Thread.sleep(1);
 						
-						FFPROBE.processData.join();
+						FFprobe.processData.join();
 					} catch (InterruptedException er) {
 					    Thread.currentThread().interrupt();
 					}
 					
-					mergeDuration += FFPROBE.totalLength;
-					FFPROBE.totalLength = 0;
+					mergeDuration += FFprobe.totalLength;
+					FFprobe.totalLength = 0;
 				}
 				else if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 				{
-					FFPROBE.currentFPS = 25.0f; //Important
+					FFprobe.currentFPS = 25.0f; //Important
 					mergeDuration = (int) (Main.list.getSize() * ((float) 1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString().replace(",", "."))));
 				}
 				
@@ -615,16 +615,16 @@ public class FunctionUtils extends Main {
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));			
 			progressBar.setMaximum((int) (mergeDuration / 1000));
 			
-			FFPROBE.totalLength = mergeDuration;
+			FFprobe.totalLength = mergeDuration;
 			VideoPlayerUI.fileDuration = FunctionUtils.mergeDuration;			
-			FFMPEG.fileLength = progressBar.getMaximum();
+			FFmpeg.fileLength = progressBar.getMaximum();
 			
 			writer.close();
 						
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			
 			frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			FFMPEG.error  = true;
+			FFmpeg.error  = true;
 			if (concatFile.exists())
 				concatFile.delete();
 			
@@ -762,24 +762,24 @@ public class FunctionUtils extends Main {
 			{
 				if (text.contains("{resolution}"))
 				{
-					text = text.replace("{resolution}", FFPROBE.imageWidth + "x" + FFPROBE.imageHeight);
+					text = text.replace("{resolution}", FFprobe.imageWidth + "x" + FFprobe.imageHeight);
 				}
 				else if (text.contains("{scale}"))
 				{
-					text = text.replace("{scale}", FFPROBE.imageWidth + "x" + FFPROBE.imageHeight);
+					text = text.replace("{scale}", FFprobe.imageWidth + "x" + FFprobe.imageHeight);
 				}
 				
 				if (text.contains("{width}"))
 				{
-					text = text.replace("{width}", String.valueOf(FFPROBE.imageWidth));
+					text = text.replace("{width}", String.valueOf(FFprobe.imageWidth));
 				}
 				
 				if (text.contains("{height}"))
 				{
-					text = text.replace("{height}", String.valueOf(FFPROBE.imageHeight));
+					text = text.replace("{height}", String.valueOf(FFprobe.imageHeight));
 				}
 				
-				float or = (float) FFPROBE.imageWidth / FFPROBE.imageHeight;
+				float or = (float) FFprobe.imageWidth / FFprobe.imageHeight;
 				
 				if (text.contains("{ratio}"))
 				{
@@ -792,8 +792,8 @@ public class FunctionUtils extends Main {
 			}
 			else
 			{
-				String i[] = FFPROBE.imageResolution.split("x");        
-				String o[] = FFPROBE.imageResolution.split("x");
+				String i[] = FFprobe.imageResolution.split("x");        
+				String o[] = FFprobe.imageResolution.split("x");
 							
 				if (comboResolution.getSelectedItem().toString().contains("%"))
 				{
@@ -905,7 +905,7 @@ public class FunctionUtils extends Main {
 					text = text.replace("{framerate}", comboFPS.getSelectedItem().toString());
 				}
 				else
-					text = text.replace("{framerate}", String.valueOf(FFPROBE.currentFPS).replace(".0", ""));
+					text = text.replace("{framerate}", String.valueOf(FFprobe.currentFPS).replace(".0", ""));
 			}
 			else if (text.contains("{fps}"))
 			{				
@@ -914,7 +914,7 @@ public class FunctionUtils extends Main {
 					text = text.replace("{fps}", comboFPS.getSelectedItem().toString());
 				}
 				else
-					text = text.replace("{fps}", String.valueOf(FFPROBE.currentFPS).replace(".0", ""));
+					text = text.replace("{fps}", String.valueOf(FFprobe.currentFPS).replace(".0", ""));
 			}
 			
 			if (text.contains("{preset}"))
@@ -924,7 +924,7 @@ public class FunctionUtils extends Main {
 			
 			if (text.contains("{timecode}"))
 			{				
-				text = text.replace("{timecode}", FFPROBE.timecode1 + FFPROBE.timecode2 + FFPROBE.timecode3 + FFPROBE.timecode4);
+				text = text.replace("{timecode}", FFprobe.timecode1 + FFprobe.timecode2 + FFprobe.timecode3 + FFprobe.timecode4);
 			}
 			
 			if (text.contains("{bitrate}"))
@@ -1013,11 +1013,11 @@ public class FunctionUtils extends Main {
 				compValue = 414720; //2000kbps
 			}		
 						
-			int pixels = FFPROBE.imageWidth * FFPROBE.imageHeight;
+			int pixels = FFprobe.imageWidth * FFprobe.imageHeight;
 			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")) == false)
 			{  
-				String i[] = FFPROBE.imageResolution.split("x");
-				String o[] = FFPROBE.imageResolution.split("x");
+				String i[] = FFprobe.imageResolution.split("x");
+				String o[] = FFprobe.imageResolution.split("x");
 							
 				if (comboResolution.getSelectedItem().toString().contains("%"))
 				{
@@ -1030,13 +1030,13 @@ public class FunctionUtils extends Main {
 				{
 					if (Main.comboResolution.getSelectedItem().toString().contains("2x"))
 					{
-						o[0] = String.valueOf(FFPROBE.imageWidth * 2);
-						o[1] = String.valueOf(FFPROBE.imageHeight * 2);
+						o[0] = String.valueOf(FFprobe.imageWidth * 2);
+						o[1] = String.valueOf(FFprobe.imageHeight * 2);
 					}
 					else
 					{
-						o[0] = String.valueOf(FFPROBE.imageWidth * 4);
-						o[1] = String.valueOf(FFPROBE.imageHeight * 4);
+						o[0] = String.valueOf(FFprobe.imageWidth * 4);
+						o[1] = String.valueOf(FFprobe.imageHeight * 4);
 					}
 				}
 				else if (comboResolution.getSelectedItem().toString().contains("x"))
@@ -1076,7 +1076,7 @@ public class FunctionUtils extends Main {
 				pixels = ow * oh;	
 			}				
 			
-			float framerate = FFPROBE.currentFPS;
+			float framerate = FFprobe.currentFPS;
 			if (caseConform.isSelected())
 			{
 				framerate = Float.valueOf(comboFPS.getSelectedItem().toString().replace(",", "."));
@@ -1116,7 +1116,7 @@ public class FunctionUtils extends Main {
 		{		
 			if (Main.isLocked)
 			{
-				FFPROBE.setFilesize();
+				FFprobe.setFilesize();
 			}
 			
 			return Integer.parseInt(debitVideo.getSelectedItem().toString());
@@ -1149,7 +1149,7 @@ public class FunctionUtils extends Main {
 				
 		if (casePreserveMetadata.isSelected())
 		{		
-			if (FFPROBE.audioOnly == false)
+			if (FFprobe.audioOnly == false)
 			{
 				metadata = " -map_metadata 0 -map_chapters 0";
 				
@@ -1158,7 +1158,7 @@ public class FunctionUtils extends Main {
 					metadata += " -map_metadata:s:v 0:s:v";
 				}
 				
-				if (FFPROBE.hasAudio && casePreserveSubs.isSelected() == false)
+				if (FFprobe.hasAudio && casePreserveSubs.isSelected() == false)
 				{
 					metadata += " -map_metadata:s:a 0:s:a";
 				}
@@ -1294,7 +1294,7 @@ public class FunctionUtils extends Main {
 		
 		//Same name as source
 		if (caseChangeFolder1.isSelected() == false && file.equals(file.replace(oldExt.toLowerCase(), surname.substring(0, surname.length() - 1) + newExt))
-		|| caseChangeFolder1.isSelected() && path.equals(new File(FFPROBE.analyzedMedia).getParent()))
+		|| caseChangeFolder1.isSelected() && path.equals(new File(FFprobe.analyzedMedia).getParent()))
 		{
 			do {
 				fileOut = new File(path + "/" + file.replace(oldExt, surname + n + newExt));
@@ -1386,10 +1386,10 @@ public class FunctionUtils extends Main {
 
 					subsCanvas.setSize(
 							(int) ((float) Integer.parseInt(textSubsWidth.getText())
-									/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
+									/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())),
 							(int) (VideoPlayerUI.player.getHeight()
 									+ (float) Integer.parseInt(textSubtitlesPosition.getText())
-											/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())));
+											/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())));
 
 					subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
 					VideoPlayerUI.player.add(subsCanvas);
@@ -1436,20 +1436,20 @@ public class FunctionUtils extends Main {
 								if (extension.equals(".mkv"))
 									cmd = " -c copy -c:s srt -map v:0? -map a? -map 1:s -y ";
 
-								FFMPEG.run(" -i " + '"' + fileIn + '"' + " -i " + '"' + subtitlesFilePath + '"' + cmd + '"' + fileOut + '"');
+								FFmpeg.run(" -i " + '"' + fileIn + '"' + " -i " + '"' + subtitlesFilePath + '"' + cmd + '"' + fileOut + '"');
 
 								Main.lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 								Main.lblCurrentEncoding.setText(fileIn.getName());
 
 								try {
-									FFMPEG.runProcess.join();
+									FFmpeg.runProcess.join();
 								} catch (InterruptedException e) {
 								    Thread.currentThread().interrupt();
 								}
 
-								if (FFMPEG.error || fileOut.length() == 0) {
-									FFMPEG.errorList.append(fileIn.getName());
-									FFMPEG.errorList.append(System.lineSeparator());
+								if (FFmpeg.error || fileOut.length() == 0) {
+									FFmpeg.errorList.append(fileIn.getName());
+									FFmpeg.errorList.append(System.lineSeparator());
 									fileOut.delete();
 								}
 
@@ -1458,11 +1458,11 @@ public class FunctionUtils extends Main {
 									fileOut.delete();
 
 								// Update lblFilesEnded
-								if (Main.cancelled == false && FFMPEG.error == false)
+								if (Main.cancelled == false && FFmpeg.error == false)
 									Main.lblFilesEnded.setText(FunctionUtils.completedFiles(1));
 
 								// Open the destination folder
-								if (Main.caseOpenFolderAtEnd1.isSelected() && Main.cancelled == false && FFMPEG.error == false)
+								if (Main.caseOpenFolderAtEnd1.isSelected() && Main.cancelled == false && FFmpeg.error == false)
 								{
 									if (System.getProperty("os.name").contains("Mac"))
 									{
@@ -1520,9 +1520,9 @@ public class FunctionUtils extends Main {
 				}
 				else if (comboSubsSource.getSelectedItem().toString().equals(Main.language.getProperty("functionTranscribe")))
 				{
-					new WHISPER();
+					new Whisper();
 					
-					if (WHISPER.transcriberApp != null)
+					if (Whisper.transcriberApp != null)
 						Transcribe.main();					
 				}
 				else
@@ -1530,10 +1530,10 @@ public class FunctionUtils extends Main {
 					File srt = new File(video.toString().replace(ext, ".srt"));
 					
 					//Command
-					FFMPEG.runSilently(" -i " + '"' + video.toString() + '"' + " -vn -an -map s:" + (comboSubsSource.getSelectedIndex() - 1) + "? -y " + '"'  + video.toString().replace(ext, ".srt") + '"');	
+					FFmpeg.runSilently(" -i " + '"' + video.toString() + '"' + " -vn -an -map s:" + (comboSubsSource.getSelectedIndex() - 1) + "? -y " + '"'  + video.toString().replace(ext, ".srt") + '"');	
 
 					try {
-						FFMPEG.runProcess.join();
+						FFmpeg.runProcess.join();
 					} catch (InterruptedException e) {
 					    Thread.currentThread().interrupt();
 					}
@@ -1600,10 +1600,10 @@ public class FunctionUtils extends Main {
 								{
 									subtitlesFilePath = new File(Main.subtitlesFile.toString().replace(".vtt", ".srt"));
 
-									FFMPEG.runSilently(" -i " + '"' + fc.getSelectedFile().toString() + '"' + " -y " + '"' + subtitlesFilePath.toString().replace(".srt", "_vtt.srt") + '"');
+									FFmpeg.runSilently(" -i " + '"' + fc.getSelectedFile().toString() + '"' + " -y " + '"' + subtitlesFilePath.toString().replace(".srt", "_vtt.srt") + '"');
 
 									try {
-										FFMPEG.runProcess.join();
+										FFmpeg.runProcess.join();
 									} catch (InterruptedException e) {
 									    Thread.currentThread().interrupt();
 									}
@@ -1615,10 +1615,10 @@ public class FunctionUtils extends Main {
 								VideoPlayerOverlay.writeSub(subtitlesFilePath.toString(), StandardCharsets.UTF_8);
 
 								subsCanvas.setSize((int) ((float) Integer.parseInt(textSubsWidth.getText())
-										/ ((float) FFPROBE.imageHeight / VideoPlayerUI.player.getHeight())),
+										/ ((float) FFprobe.imageHeight / VideoPlayerUI.player.getHeight())),
 										(int) (VideoPlayerUI.player.getHeight()
 												+ (float) Integer.parseInt(textSubtitlesPosition.getText())
-														/ ((float) FFPROBE.imageHeight
+														/ ((float) FFprobe.imageHeight
 																/ VideoPlayerUI.player.getHeight())));
 
 								subsCanvas.setLocation((VideoPlayerUI.player.getWidth() - subsCanvas.getWidth()) / 2, 0);
@@ -1796,7 +1796,7 @@ public class FunctionUtils extends Main {
 	public static void addFileForMail(final String file)
 	{		
 		String text = Main.language.getProperty("isEncoded");
-		if (FFMPEG.error)
+		if (FFmpeg.error)
 			text = Main.language.getProperty("notEncoded");
 		
 		if (caseChangeFolder3.isSelected())
@@ -1834,7 +1834,7 @@ public class FunctionUtils extends Main {
 				Message message = new MimeMessage(session);
 				message.setFrom(new InternetAddress(Utils.username));
 				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(textMail.getText()));			
-				if (FFMPEG.error)
+				if (FFmpeg.error)
 				{
 					message.setSubject(Main.language.getProperty("shutterEncodingError"));
 				}
@@ -1981,10 +1981,10 @@ public class FunctionUtils extends Main {
 		}
 		
 		//Errors
-		if (FFMPEG.error || fileOut.exists() && fileOut.length() == 0 && caseCreateSequence.isSelected() == false && extension.equals(".pdf") == false)
+		if (FFmpeg.error || fileOut.exists() && fileOut.length() == 0 && caseCreateSequence.isSelected() == false && extension.equals(".pdf") == false)
 		{
-			errorList.append(fileName + System.lineSeparator() + FFMPEG.errorLog + System.lineSeparator());
-			FFMPEG.errorLog.setLength(0);
+			errorList.append(fileName + System.lineSeparator() + FFmpeg.errorLog + System.lineSeparator());
+			FFmpeg.errorLog.setLength(0);
 			
 			try {
 				fileOut.delete();
@@ -2028,7 +2028,7 @@ public class FunctionUtils extends Main {
 		}
 	
 		//Ended files
-		if (cancelled == false && FFMPEG.error == false)
+		if (cancelled == false && FFmpeg.error == false)
 		{
 			completed++;
 			lblFilesEnded.setText(completedFiles(completed));
@@ -2039,11 +2039,11 @@ public class FunctionUtils extends Main {
 		{			 
 			NumberFormat formatter = new DecimalFormat("00");
 
-			long timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFPROBE.currentFPS);
-			long millisecondsToTc = timecodeToMs + FFPROBE.totalLength;
+			long timecodeToMs = Integer.parseInt(TCset1.getText()) * 3600000 + Integer.parseInt(TCset2.getText()) * 60000 + Integer.parseInt(TCset3.getText()) * 1000 + Integer.parseInt(TCset4.getText()) * (int) (1000 / FFprobe.currentFPS);
+			long millisecondsToTc = timecodeToMs + FFprobe.totalLength;
 			
 			if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
-				millisecondsToTc = timecodeToMs + VideoPlayerUI.durationH * 3600000 + VideoPlayerUI.durationM * 60000 + VideoPlayerUI.durationS * 1000 + VideoPlayerUI.durationF * (int) (1000 / FFPROBE.currentFPS);
+				millisecondsToTc = timecodeToMs + VideoPlayerUI.durationH * 3600000 + VideoPlayerUI.durationM * 60000 + VideoPlayerUI.durationS * 1000 + VideoPlayerUI.durationF * (int) (1000 / FFprobe.currentFPS);
 			
 			if (caseEnableSequence.isSelected())
 				millisecondsToTc = Main.list.getSize() * (int) (1000 / Float.parseFloat(caseSequenceFPS.getSelectedItem().toString()));
@@ -2051,17 +2051,17 @@ public class FunctionUtils extends Main {
 			TCset1.setText(formatter.format(millisecondsToTc / 3600000));
 			TCset2.setText(formatter.format((millisecondsToTc / 60000) % 60));
 			TCset3.setText(formatter.format((millisecondsToTc / 1000) % 60));				        
-			TCset4.setText(formatter.format((int) (millisecondsToTc / (1000 / FFPROBE.currentFPS) % FFPROBE.currentFPS)));	
+			TCset4.setText(formatter.format((int) (millisecondsToTc / (1000 / FFprobe.currentFPS) % FFprobe.currentFPS)));	
 		}
 		
 		//Open the folder
-		if (caseOpenFolderAtEnd1.isSelected() && comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false && cancelled == false && FFMPEG.error == false)
+		if (caseOpenFolderAtEnd1.isSelected() && comboFonctions.getSelectedItem().equals(language.getProperty("functionMerge")) == false && cancelled == false && FFmpeg.error == false)
 		{
 			Utils.openFile(new File(output));
 		}		
 		
 		//Delete file
-		if (caseDeleteSourceFile.isSelected() && file != null && cancelled == false && FFMPEG.error == false)
+		if (caseDeleteSourceFile.isSelected() && file != null && cancelled == false && FFmpeg.error == false)
 		{
 			file.delete();
 		}

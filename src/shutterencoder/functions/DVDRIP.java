@@ -25,8 +25,8 @@ import java.io.PrintWriter;
 import javax.swing.JOptionPane;
 
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Console;
@@ -119,13 +119,13 @@ public class DVDRIP extends Main {
 								}
 								writer.println("file '" + VOB + "'");	
 								
-								FFPROBE.Data(VOB);
+								FFprobe.Data(VOB);
 								try {
-									FFPROBE.processData.join();
+									FFprobe.processData.join();
 								} catch (InterruptedException er) {
 								    Thread.currentThread().interrupt();
 								}
-								dureeTotale += FFPROBE.totalLength;
+								dureeTotale += FFprobe.totalLength;
 								
 								Console.consoleFFMPEG.append(VOB + System.lineSeparator());					
 							}
@@ -221,10 +221,10 @@ public class DVDRIP extends Main {
 			{
 				//Command
 				String cmd = " -c:v copy -c:a copy -c:s copy -err_detect ignore_err -map v:0? -map a? -map s? -y ";
-				FFMPEG.run(" -safe 0 -f concat -i " + '"' + concatFile.toString() + '"' + cmd + '"'  + fileOut + '"');	
+				FFmpeg.run(" -safe 0 -f concat -i " + '"' + concatFile.toString() + '"' + cmd + '"'  + fileOut + '"');	
 				
 				try {
-					FFMPEG.runProcess.join();
+					FFmpeg.runProcess.join();
 				} catch (InterruptedException e) {
 				    Thread.currentThread().interrupt();
 				}
@@ -239,13 +239,13 @@ public class DVDRIP extends Main {
 				return true;
 			}
 
-			if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+			if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 			{
 				lastActions(VOB, fileOut, labelOutput);
 			}
 			
 		} catch (Exception e) {
-			FFMPEG.error  = true;
+			FFmpeg.error  = true;
 		}
 		finally { //Dans tous les cas on vide la liste de fichiers VOB
 			concatFile.delete();										

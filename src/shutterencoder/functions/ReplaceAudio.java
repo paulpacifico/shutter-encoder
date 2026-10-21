@@ -23,8 +23,8 @@ import java.io.File;
 
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.utils.FunctionUtils;
-import shutterencoder.library.FFMPEG;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFmpeg;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.others.Ftp;
@@ -96,15 +96,15 @@ public class ReplaceAudio extends Main {
 											
 			//Command				
 			String cmd = shortest + " -c:v copy -c:s copy" + audio + " -map s? -y ";
-			FFMPEG.run(InputAndOutput.setInputString(InputAndOutput.outPoint, " -i " + '"' + videoFile.toString() + '"', "") + audioFiles + cmd + '"'  + fileOut + '"');		
+			FFmpeg.run(InputAndOutput.setInputString(InputAndOutput.outPoint, " -i " + '"' + videoFile.toString() + '"', "") + audioFiles + cmd + '"'  + fileOut + '"');		
 					
 			try {
-				FFMPEG.runProcess.join();
+				FFmpeg.runProcess.join();
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}
 		
-			if (FFMPEG.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
+			if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 			{
 				lastActions(videoFile, fileName, fileOut, labelOutput);
 			}
@@ -163,27 +163,27 @@ public class ReplaceAudio extends Main {
 								if (videoStream <= 1)
 								{
 									//Allows to get the shortest file duration
-									FFPROBE.Data(list.getElementAt(i));
+									FFprobe.Data(list.getElementAt(i));
 									try {
-										FFPROBE.processData.join();
+										FFprobe.processData.join();
 									} catch (InterruptedException er) {
 									    Thread.currentThread().interrupt();
 									}
 									
-									if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
+									if (FFprobe.totalLength < shortestLength || shortestLength == 0)
 									{
-										shortestLength = FFPROBE.totalLength;
+										shortestLength = FFprobe.totalLength;
 									}
 								}
 								
-								if (FFPROBE.FindStreams(list.getElementAt(i)))
+								if (FFprobe.FindStreams(list.getElementAt(i)))
 								{
 									videoStream ++;				
 								}
 							}
 							else
 							{
-								shortestLength = FFPROBE.totalLength;
+								shortestLength = FFprobe.totalLength;
 							}							
 						}
 						
@@ -202,16 +202,16 @@ public class ReplaceAudio extends Main {
 									videoFile = new File(list.getElementAt(i));
 								
 									//Allows to get the shortest file duration
-									FFPROBE.Data(list.getElementAt(i+1));
+									FFprobe.Data(list.getElementAt(i+1));
 									try {
-										FFPROBE.processData.join();
+										FFprobe.processData.join();
 									} catch (InterruptedException er) {
 									    Thread.currentThread().interrupt();
 									}
 									
-									if (FFPROBE.totalLength < shortestLength || shortestLength == 0)
+									if (FFprobe.totalLength < shortestLength || shortestLength == 0)
 									{
-										shortestLength = FFPROBE.totalLength;
+										shortestLength = FFprobe.totalLength;
 									}
 								
 									if (comboAudioCodec.getSelectedItem().toString().equals(language.getProperty("noAudio")) && caseChangeAudioCodec.isSelected())
@@ -246,7 +246,7 @@ public class ReplaceAudio extends Main {
 								//IMPORTANT
 								shortestLength = 0;
 								
-								if (FFMPEG.error || Main.cancelled)
+								if (FFmpeg.error || Main.cancelled)
 								{
 									break;
 								}
@@ -270,19 +270,19 @@ public class ReplaceAudio extends Main {
 							
 							if (caseAudioOffset.isSelected())
 							{
-								FFPROBE.Data(videoFile.toString());
+								FFprobe.Data(videoFile.toString());
 								try {
-									FFPROBE.processData.join();
+									FFprobe.processData.join();
 								} catch (InterruptedException er) {
 								    Thread.currentThread().interrupt();
 								}
 								
 								if (caseAudioOffset.isSelected())
 								{
-									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
+									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFprobe.currentFPS)) / 1000;							
 								}
 								else
-									offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+									offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFprobe.currentFPS)) / 1000);
 								
 								audioFiles = " -itsoffset " + offset + " -i " + '"' + list.getElementAt(0)  + '"' + " -map 0:v -map 1:a";
 							}
@@ -308,19 +308,19 @@ public class ReplaceAudio extends Main {
 							
 							if (caseAudioOffset.isSelected())
 							{
-								FFPROBE.Data(videoFile.toString());
+								FFprobe.Data(videoFile.toString());
 								try {
-									FFPROBE.processData.join();
+									FFprobe.processData.join();
 								} catch (InterruptedException er) {
 								    Thread.currentThread().interrupt();
 								}
 								
 								if (caseAudioOffset.isSelected())
 								{
-									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000;							
+									offset = (float) ((float) Integer.parseInt(txtAudioOffset.getText()) * ((float) 1000 / FFprobe.currentFPS)) / 1000;							
 								}
 								else
-									offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+									offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFprobe.currentFPS)) / 1000);
 								
 								audioFiles = " -itsoffset " + offset + audioFiles;
 							}
@@ -332,18 +332,18 @@ public class ReplaceAudio extends Main {
 															
 							do {
 								Thread.sleep(100);
-							} while (FFPROBE.isRunning);	
+							} while (FFprobe.isRunning);	
 						}
 						
 						//Start replacement
 						main(audioFiles, audioExt, videoFile);
 					}
 							
-				if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFMPEG.error == false)
+				if (Settings.btnEmptyListAtEnd.isSelected() && cancelled == false && FFmpeg.error == false)
 					list.clear();
 					
 				} catch (InterruptedException e1) {					
-					FFMPEG.error  = true;
+					FFmpeg.error  = true;
 				}
 			}
 		});
@@ -366,7 +366,7 @@ public class ReplaceAudio extends Main {
 				}
 				else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 				{
-					offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFPROBE.currentFPS)) / 1000);
+					offset = (float) (Integer.parseInt(VideoPlayerUI.caseInH.getText()) * 3600 + Integer.parseInt(VideoPlayerUI.caseInM.getText()) * 60 + Integer.parseInt(VideoPlayerUI.caseInS.getText()) + ((float) Integer.parseInt(VideoPlayerUI.caseInF.getText()) * ((float) 1000 / FFprobe.currentFPS)) / 1000);
 					audioFiles += " -itsoffset " + offset + " -i " + '"' + list.getElementAt(i)  + '"';
 				}
 				else

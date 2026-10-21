@@ -20,7 +20,7 @@
 package shutterencoder.functions.settings;
 
 import shutterencoder.functions.utils.Libplacebo;
-import shutterencoder.library.FFPROBE;
+import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
 
 public class BitratesAdjustement extends Main {
@@ -48,7 +48,7 @@ public class BitratesAdjustement extends Main {
 			//IMPORTANT
 			float imageRatio = 1.0f;
 			
-			int ow = FFPROBE.imageWidth;  
+			int ow = FFprobe.imageWidth;  
 			
 			if (Main.comboFonctions.getSelectedItem().toString().equals("DVD") == false && Main.comboResolution.getSelectedItem().toString().equals(Main.language.getProperty("source")) == false)
 			{
@@ -69,7 +69,7 @@ public class BitratesAdjustement extends Main {
 		        	ow = Integer.parseInt(s[0]); 
 				}
 				
-				imageRatio = (float) FFPROBE.imageWidth / ow;
+				imageRatio = (float) FFprobe.imageWidth / ow;
 			}
 			
 			int cropWidth = Math.round((float) Integer.parseInt(Main.textCropWidth.getText()) / imageRatio);
