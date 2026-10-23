@@ -89,6 +89,7 @@ public class LibraryUtils extends Main {
 	public static boolean autoAMF = false;
 	public static boolean autoVIDEOTOOLBOX = false;
 	public static boolean autoVULKAN = false;
+	private static boolean isIntegratedGPU = false;
 	public static int vulkanGPUIndex = 0;
 	public static Process waveformProcess;
 	public static BufferedWriter waveformWriter;
@@ -179,7 +180,7 @@ public class LibraryUtils extends Main {
 	                    }
 	
 	                    case "Apple ProRes": {	                    	
-	                    	if (isWindows)
+	                    	if (isWindows && isIntegratedGPU == false)
 	                    	{
 	                    		checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
 	                    				+ " -f lavfi -i nullsrc -frames:v 1 -c:v prores_ks_vulkan -s 640x360"
@@ -569,11 +570,15 @@ public class LibraryUtils extends Main {
                                 process.destroyForcibly();
                                 vulkanGPUIndex = Integer.parseInt(indexStr);
                             }
+                            else if ("integrated".equalsIgnoreCase(deviceType) && GPUCount == 1) //Disable vulkan hwaccel for integrated GPU due to memory leak issue
+                            {
+                            	isIntegratedGPU = true;
+                            }
                         }
                     }
                 }
             }
-
+            
             process.waitFor();
         } catch (Exception ignored) {}
     }

@@ -30,11 +30,11 @@ import shutterencoder.utils.Utils;
 
 public class Tsmuxer extends Main {
 	
-static int dureeTotale = 0; 
-public static boolean error = false;
-public static boolean isRunning = false;
-public static Thread runProcess;
-public static Process process;
+	public static int dureeTotale = 0; 
+	public static boolean error = false;
+	public static boolean isRunning = false;
+	public static Thread runProcess;
+	public static Process process;
 
 	public static void run(final String cmd) {
 		

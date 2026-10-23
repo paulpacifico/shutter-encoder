@@ -30,10 +30,10 @@ import shutterencoder.utils.Utils;
 
 public class Dvdauthor extends Main {
 	
-public static boolean error = false;
-public static boolean isRunning = false;
-public static Thread runProcess;
-public static Process process;
+	public static boolean error = false;
+	public static boolean isRunning = false;
+	public static Thread runProcess;
+	public static Process process;
 
 	public static void run(final String cmd) {
 		

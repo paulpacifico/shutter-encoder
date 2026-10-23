@@ -82,45 +82,45 @@ import shutterencoder.utils.Utils;
 
 public class FFmpeg extends Main {
 	
-public static String PathToFFMPEG;
-public static int fileLength = 0; 
-public static boolean error = false;
-public static boolean isRunning = false;
-public static BufferedWriter writer;
-public static Thread runProcess = new Thread();
-private static Thread displayThread;
-public static Process process;
-private static Process processAudio;
-private static InputStream audio = null;	
-private static AudioInputStream audioInputStream = null;
-private static SourceDataLine line = null;
-private static float directDisplayInputRatio = 1.777777f;
-private static Image frameVideo;
-public static String analyseLufs;
-public static String integrated;
-public static String truePeak;
-public static String samplePeak;
-public static String LRA;
-public static String Threshold;
-public static Float mseSensibility = 800f;
-public static float newVolume;
-public static StringBuilder shortTermValues;
-public static StringBuilder blackFrame;
-public static StringBuilder mediaOfflineFrame;
-public static String VMAFScore;
-public static String cropdetect;
-private static boolean firstInput = true;
-public static int firstScreenIndex = -1;
-
-//Encoding average FPS	
-private static int frame0 = 0;
-private static long time = 0;
-public static long elapsedTime = 0;
-public static int previousElapsedTime = 0;
-private static int fps = 0;
-
-private static StringBuilder getOutputLog;
-public static StringBuilder errorLog = new StringBuilder();
+	public static String PathToFFMPEG;
+	public static int fileLength = 0; 
+	public static boolean error = false;
+	public static boolean isRunning = false;
+	public static BufferedWriter writer;
+	public static Thread runProcess = new Thread();
+	private static Thread displayThread;
+	public static Process process;
+	private static Process processAudio;
+	private static InputStream audio = null;	
+	private static AudioInputStream audioInputStream = null;
+	private static SourceDataLine line = null;
+	private static float directDisplayInputRatio = 1.777777f;
+	private static Image frameVideo;
+	public static String analyseLufs;
+	public static String integrated;
+	public static String truePeak;
+	public static String samplePeak;
+	public static String LRA;
+	public static String Threshold;
+	public static Float mseSensibility = 800f;
+	public static float newVolume;
+	public static StringBuilder shortTermValues;
+	public static StringBuilder blackFrame;
+	public static StringBuilder mediaOfflineFrame;
+	public static String VMAFScore;
+	public static String cropdetect;
+	private static boolean firstInput = true;
+	public static int firstScreenIndex = -1;
+	
+	//Encoding average FPS	
+	private static int frame0 = 0;
+	private static long time = 0;
+	public static long elapsedTime = 0;
+	public static int previousElapsedTime = 0;
+	private static int fps = 0;
+	
+	private static StringBuilder getOutputLog;
+	public static StringBuilder errorLog = new StringBuilder();
 
 	public static void getFFmpegPath() {
 		

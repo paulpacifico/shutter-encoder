@@ -35,12 +35,12 @@ import shutterencoder.utils.Utils;
 
 public class Ncnn extends Main {
 	
-static int dureeTotale = 0; 
-public static boolean error = false;
-public static boolean isRunning = false;
-public static Thread runProcess;
-public static Process process;
-public static String modelsPath;
+	public static int dureeTotale = 0; 
+	public static boolean error = false;
+	public static boolean isRunning = false;
+	public static Thread runProcess;
+	public static Process process;
+	public static String modelsPath;
 
 	public static void run(final String cmd, boolean isVideoPlayer) {
 				

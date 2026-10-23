@@ -47,76 +47,76 @@ import shutterencoder.utils.Utils;
 
 public class FFprobe extends Main {
 	
-public static Process process;
-private static StringBuilder getOutputLog;
-public static boolean isRunning = false;
-public static boolean calcul = false;
-private static boolean videoStreamAnalyzed = false;
-public static boolean audioOnly = true;
-public static boolean hasAudio = false;
-public static boolean attachedPic = false;
-public static Thread processData;
-public static Thread processFrameData;
-public static Thread processVideoLevels;
-public static Thread processGOP;
-public static Thread processFindStreams;
-public static Thread processSetLength;
-public static String analyzedMedia = null;
-public static String subtitlesCodec = "";
-public static int subtitleStreams = 0;
-public static int videoStreams = 0;
-public static int audioStreams = 0;
-public static long totalLength;
-public static String getVideoLengthTC;
-public static String lumaLevel;
-public static float currentFPS;
-public static double accurateFPS;
-public static String interlaced;
-public static String fieldOrder;
-private static boolean videoStream = false;
-public static String pixelformat = "";
-public static int imageDepth = 8;
-public static String imageResolution;
-public static int previousImageWidth;
-public static int previousImageHeight;
-public static int imageWidth;
-public static int imageHeight;
-public static float imageRatio = 1.777778f;
-public static int cropPixelsWidth;
-public static int cropPixelsHeight;
-public static String dropFrameTC = "";
-public static String timecode1 = "";
-public static String timecode2 = "";
-public static String timecode3 = "";
-public static String timecode4 = "";
-public static int audioSampleRate = 48000;
-public static boolean stereo = true;	
-public static boolean surround = false;
-public static String channelLayout = "";
-public static int channels;	
-public static int qantization;
-public static String videoFormat;
-public static String videoCodec;
-public static String audioCodec;
-public static String[] audioCodecs;
-public static String audioBitrate;
-public static String timeBase = "";
-public static String creationTime = "";
-public static float HDRmin = 0;
-public static float HDRmax = 0;
-public static int maxCLL = 0;
-public static int maxFALL = 0;
-public static double keyFrame = 0;
-public static int gopCount = 0;
-public static int gopSpace = 124;
-public static boolean hasAlpha = false;
-public static boolean isRotated = false;
-public static int gridRows = 0;
-public static int gridCols = 0;
-public static boolean hasDolbyVision = false;
-public static String colorspace = "";
-public static String colortransfer = "";
-public static String colorprimaries = "";
+	public static Process process;
+	private static StringBuilder getOutputLog;
+	public static boolean isRunning = false;
+	public static boolean calcul = false;
+	private static boolean videoStreamAnalyzed = false;
+	public static boolean audioOnly = true;
+	public static boolean hasAudio = false;
+	public static boolean attachedPic = false;
+	public static Thread processData;
+	public static Thread processFrameData;
+	public static Thread processVideoLevels;
+	public static Thread processGOP;
+	public static Thread processFindStreams;
+	public static Thread processSetLength;
+	public static String analyzedMedia = null;
+	public static String subtitlesCodec = "";
+	public static int subtitleStreams = 0;
+	public static int videoStreams = 0;
+	public static int audioStreams = 0;
+	public static long totalLength;
+	public static String getVideoLengthTC;
+	public static String lumaLevel;
+	public static float currentFPS;
+	public static double accurateFPS;
+	public static String interlaced;
+	public static String fieldOrder;
+	private static boolean videoStream = false;
+	public static String pixelformat = "";
+	public static int imageDepth = 8;
+	public static String imageResolution;
+	public static int previousImageWidth;
+	public static int previousImageHeight;
+	public static int imageWidth;
+	public static int imageHeight;
+	public static float imageRatio = 1.777778f;
+	public static int cropPixelsWidth;
+	public static int cropPixelsHeight;
+	public static String dropFrameTC = "";
+	public static String timecode1 = "";
+	public static String timecode2 = "";
+	public static String timecode3 = "";
+	public static String timecode4 = "";
+	public static int audioSampleRate = 48000;
+	public static boolean stereo = true;	
+	public static boolean surround = false;
+	public static String channelLayout = "";
+	public static int channels;	
+	public static int qantization;
+	public static String videoFormat;
+	public static String videoCodec;
+	public static String audioCodec;
+	public static String[] audioCodecs;
+	public static String audioBitrate;
+	public static String timeBase = "";
+	public static String creationTime = "";
+	public static float HDRmin = 0;
+	public static float HDRmax = 0;
+	public static int maxCLL = 0;
+	public static int maxFALL = 0;
+	public static double keyFrame = 0;
+	public static int gopCount = 0;
+	public static int gopSpace = 124;
+	public static boolean hasAlpha = false;
+	public static boolean isRotated = false;
+	public static int gridRows = 0;
+	public static int gridCols = 0;
+	public static boolean hasDolbyVision = false;
+	public static String colorspace = "";
+	public static String colortransfer = "";
+	public static String colorprimaries = "";
 
 	public static void Data(final String file) {	
 
@@ -315,8 +315,12 @@ public static String colorprimaries = "";
 				            }
 				            
 				            // Video stream
-							if ((line.contains("Video:") || line.contains("Tile Grid:")) && line.contains("attached pic") == false && line.contains("unspecified size") == false && videoStreamAnalyzed == false)
-							{											
+							if ((line.contains("Video:") || line.contains("Tile Grid:"))
+								&& line.contains("Stream")
+								&& line.contains("attached pic") == false
+								&& line.contains("unspecified size") == false
+								&& videoStreamAnalyzed == false)
+							{				
 								//Video codec
 								if (line.contains("Video:"))
 								{
@@ -352,7 +356,7 @@ public static String colorprimaries = "";
 				                Matcher matcher = resolutionPattern.matcher(line);
 				                
 				                if (matcher.find())
-				                {
+				                {				                	
 				                	imageWidth = Integer.parseInt(matcher.group(1));
 				                	imageHeight = Integer.parseInt(matcher.group(2));
 				                	imageResolution = imageWidth + "x" + imageHeight;

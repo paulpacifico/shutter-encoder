@@ -29,17 +29,17 @@ import shutterencoder.utils.Utils;
 
 public class Exiftool extends Main {
 	
-public static boolean error = false;
-public static boolean isRunning = false;
-public static Thread runProcess;
-public static String exifDate;
-public static String exifHours;
-public static String creationDate;
-public static String creationHours;
-public static String exifWidth;
-public static String exifHeight;
-private static boolean scanOrientation = true;
-private static Boolean horizontal = true;
+	public static boolean error = false;
+	public static boolean isRunning = false;
+	public static Thread runProcess;
+	public static String exifDate;
+	public static String exifHours;
+	public static String creationDate;
+	public static String creationHours;
+	public static String exifWidth;
+	public static String exifHeight;
+	private static boolean scanOrientation = true;
+	private static Boolean horizontal = true;
 
 	public static void run(final String cmd) {
 				

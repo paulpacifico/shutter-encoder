@@ -42,11 +42,11 @@ import shutterencoder.utils.Utils;
 
 public class Xpdfreader extends Main {
 	
-public static boolean error = false;
-public static boolean isRunning = false;
-public static Thread runProcess;
-public static Process process;
-public static int pagesCount = 1;
+	public static boolean error = false;
+	public static boolean isRunning = false;
+	public static Thread runProcess;
+	public static Process process;
+	public static int pagesCount = 1;
 
 	public static void run(final String cmd) {
 					

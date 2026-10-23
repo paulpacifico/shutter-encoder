@@ -44,16 +44,16 @@ import shutterencoder.ui.others.VideoWeb;
 
 public class Ytdlp extends Main {
 	
-public static File ytdlp;
-private static String PathToYOUTUBEDL;
-public static boolean error = false;
-static int dureeTotale = 0; 
-public static boolean isRunning = false;
-public static Thread runProcess;
-public static	Process process;
-public static File outputFile;
-public static StringBuilder formatsOutput;
-public static String format = "";
+	public static File ytdlp;
+	private static String PathToYOUTUBEDL;
+	public static boolean error = false;
+	static int dureeTotale = 0; 
+	public static boolean isRunning = false;
+	public static Thread runProcess;
+	public static	Process process;
+	public static File outputFile;
+	public static StringBuilder formatsOutput;
+	public static String format = "";
 
 	public static boolean checkYOUTUBEDL() {
 
