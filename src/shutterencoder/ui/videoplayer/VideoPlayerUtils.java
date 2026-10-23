@@ -88,7 +88,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	public static Process processLoadImage;
 	
 	public static void setMedia() {
-
+		
 		loadMedia = new Thread(new Runnable()
 		{
 			@Override

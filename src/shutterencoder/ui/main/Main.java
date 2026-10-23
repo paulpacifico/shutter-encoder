@@ -45,11 +45,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.awt.geom.Area;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -725,15 +721,6 @@ public class Main {
 				documents.mkdirs();
 		}
 		
-		try {
-			PrintStream	log = new PrintStream(new FileOutputStream(documents + "/errors.log", true), true, StandardCharsets.UTF_8);
-			
-			System.setOut(log);
-	        System.setErr(log);
-
-	        System.out.println("Application started");
-		} catch (FileNotFoundException ignored) {}
-				
 		new Main().initializeUI();
 
 		ImageIO.setUseCache(false); // IMPORTANT use RAM instead of HDD cache

@@ -93,9 +93,10 @@ public class ListFileTransferHandler extends TransferHandler {
 							} else
 								file = new File(file.getParent());
 
-							if (System.getProperty("os.name").contains("Mac")
-									|| System.getProperty("os.name").contains("Linux"))
+							if (System.getProperty("os.name").contains("Mac") || System.getProperty("os.name").contains("Linux"))
+							{
 								Main.list.addElement(file + "/");
+							}
 							else
 								Main.list.addElement(file + "\\");
 
