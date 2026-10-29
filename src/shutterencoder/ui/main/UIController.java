@@ -408,7 +408,7 @@ public class UIController extends Main {
 		    	comboSelectedGPU.setVisible(false);	
 	    }
 		
-		if (Settings.btnDisableVideoPlayer.isSelected())
+		if (Settings.btnDisableVideoPlayer.isSelected() || comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")))
 		{
 			lblGpuDecoding.setVisible(false);
 			comboGPUDecoding.setVisible(false);
@@ -501,23 +501,32 @@ public class UIController extends Main {
 		int screenWidth = (int) (allScreens[screenIndex].getDisplayMode().getWidth() * dpiScaleFactor);
 		int screenX = (int) allScreens[screenIndex].getDefaultConfiguration().getBounds().getX();
 
+		if (Settings.btnDisableVideoPlayer.isSelected())
+			screenX = frame.getX();
+		
 		int height = 0;
 		int screenOffset = allScreens[screenIndex].getDefaultConfiguration().getBounds().y;
 
-		if ((frame.getHeight() < screenHeight - taskBarHeight || frame.getWidth() < screenWidth) && frame.getWidth() != 654 && frame.getWidth() != (extendedWidth - 312)) {
+		if ((frame.getHeight() < screenHeight - taskBarHeight || (frame.getWidth() < screenWidth && Settings.btnDisableVideoPlayer.isSelected() == false)) && frame.getWidth() != 654 && frame.getWidth() != (extendedWidth - 312))
+		{
 			height = screenHeight - taskBarHeight - frame.getHeight();
 			resizeAll(screenWidth, height);
 			frame.setLocation(screenX, screenOffset);
-		} else if ((frame.getHeight() == screenHeight - taskBarHeight && frame.getWidth() == screenWidth)) {
+		}
+		else if ((frame.getHeight() == screenHeight - taskBarHeight && frame.getWidth() == screenWidth))
+		{
 			height = minHeight - frame.getHeight();
 			resizeAll(extendedWidth, height);
-			frame.setLocation(screenX + dim.width / 2 - frame.getSize().width / 2,
-					dim.height / 2 - frame.getSize().height / 2 + screenOffset);
-		} else if (frame.getHeight() >= screenHeight - taskBarHeight) {
+			frame.setLocation(screenX + dim.width / 2 - frame.getSize().width / 2, dim.height / 2 - frame.getSize().height / 2 + screenOffset);
+		}
+		else if (frame.getHeight() >= screenHeight - taskBarHeight)
+		{
 			height = minHeight - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), dim.height / 2 - frame.getSize().height / 2 + screenOffset);
-		} else {
+		}
+		else
+		{
 			height = screenHeight - taskBarHeight - frame.getHeight();
 			resizeAll(frame.getWidth(), height);
 			frame.setLocation(frame.getX(), screenOffset);
@@ -590,6 +599,8 @@ public class UIController extends Main {
 		lblV.setLocation(lblShutterEncoder.getX() + lblShutterEncoder.getWidth(), 5);
 
 		int grpX = frame.getWidth() - 312 - 12;
+		
+		grpFileInformation.setLocation(grpX, grpFileInformation.getLocation().y);
 		grpResolution.setLocation(grpX, grpResolution.getLocation().y);
 		grpBitrate.setLocation(grpX, grpBitrate.getLocation().y);
 		grpSetAudio.setLocation(grpX, grpSetAudio.getLocation().y);
@@ -614,7 +625,7 @@ public class UIController extends Main {
 		setButtonsLocation();
 
 		grpChooseFiles.setSize(grpChooseFiles.getWidth(), frame.getHeight() - 423);
-		fileList.setSize(292, frame.getHeight() - 483);
+		fileList.setSize(292, frame.getHeight() - 495);
 		addToList.setSize(fileList.getSize());
 		scrollBar.setSize(292, fileList.getHeight());
 		grpChooseFunction.setLocation(grpChooseFunction.getX(), grpChooseFiles.getY() + grpChooseFiles.getHeight() + 4);
@@ -818,7 +829,7 @@ public class UIController extends Main {
 		|| language.getProperty("functionInsert").equals(function)
 		|| "DVD Rip".equals(function)
 		|| language.getProperty("functionSceneDetection").equals(function)
-		||	language.getProperty("functionWeb").equals(function))
+		|| language.getProperty("functionWeb").equals(function))
 		{
 			noSections = true;
 			noVideoPlayer = true;
@@ -857,6 +868,20 @@ public class UIController extends Main {
 				if (comboFonctions.getEditor().getItem().equals("") == false && noSections == false)
 				{		
 					grpFileInformation.setVisible(false);
+					
+					if (frame.getWidth() == 332)
+					{
+						if (Settings.btnDisableVideoPlayer.isSelected())
+						{
+							frame.setBounds(frame.getX() - 332 / 2, frame.getY(), 664, frame.getHeight());
+						}
+						else
+							frame.setBounds(frame.getX() - (Main.extendedWidth - 332) / 2, frame.getY(), Main.extendedWidth, frame.getHeight());
+						
+						UIController.resizeAll(frame.getWidth(), 0);
+						
+						TopBar.lblV.setVisible(true);
+					}
 					
 					try {						
 						VideoPlayerUI.seekOnKeyFrames = false;
@@ -3984,7 +4009,33 @@ public class UIController extends Main {
 					grpAdvanced.setVisible(false);
 					btnReset.setVisible(false);
 					
-					grpFileInformation.setVisible(true);
+					if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")))
+					{
+						grpFileInformation.setVisible(false);
+						
+						frame.setBounds(frame.getX() + (frame.getWidth() - 332) / 2, frame.getY(), 332, frame.getHeight());
+						UIController.resizeAll(frame.getWidth(), 0);
+						
+						TopBar.lblV.setVisible(false);
+					}
+					else
+					{
+						grpFileInformation.setVisible(true);						
+						
+						if (frame.getWidth() == 332)
+						{
+							if (Settings.btnDisableVideoPlayer.isSelected())
+							{
+								frame.setBounds(frame.getX() - 332 / 2, frame.getY(), 664, frame.getHeight());
+							}
+							else
+								frame.setBounds(frame.getX() - (Main.extendedWidth - 332) / 2, frame.getY(), Main.extendedWidth, frame.getHeight());
+							
+							UIController.resizeAll(frame.getWidth(), 0);
+							
+							TopBar.lblV.setVisible(true);
+						}
+					}
 				}				
 			}
 		});
@@ -5051,6 +5102,7 @@ public class UIController extends Main {
 				components[i].setEnabled(false);
 			}
 			fileList.setEnabled(false);
+			sortName.setEnabled(false);
 		}
 
 		components = grpDestination.getComponents();
@@ -5215,6 +5267,7 @@ public class UIController extends Main {
 				components[i].setEnabled(true);
 			}
 			fileList.setEnabled(true);
+			sortName.setEnabled(true);
 		}
 
 		components = grpDestination.getComponents();
@@ -5649,8 +5702,10 @@ public class UIController extends Main {
 
 	public static void endOfFunction() {
 
-		if (errorList.length() != 0) {
-			if (Settings.btnDisableSound.isSelected() == false) {
+		if (errorList.length() != 0)
+		{
+			if (Settings.btnDisableSound.isSelected() == false && disableEndingSound == false)
+			{
 				try {
 					AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundErrorURL);
 					Clip clip = AudioSystem.getClip();
@@ -5794,7 +5849,7 @@ public class UIController extends Main {
 			}
 			
 		} else if (screenshotIsRunning) {
-			VideoPlayerUtils.addWaveform(false);
+			VideoPlayerUtils.generateWaveform(false);
 		}
 
 		if (scanIsRunning == false) {
@@ -5811,7 +5866,8 @@ public class UIController extends Main {
 				progressBar.setMaximum(1);
 			progressBar.setValue(progressBar.getMaximum());
 
-			if (Settings.btnDisableSound.isSelected() == false) {
+			if (Settings.btnDisableSound.isSelected() == false && disableEndingSound == false)
+			{
 				try {
 					AudioInputStream audioIn = AudioSystem.getAudioInputStream(soundURL);
 					Clip clip = AudioSystem.getClip();

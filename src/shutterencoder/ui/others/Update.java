@@ -19,7 +19,9 @@
 
 package shutterencoder.ui.others;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -44,6 +46,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JScrollPane;
 import javax.swing.SwingConstants;
 
 import org.jsoup.Jsoup;
@@ -229,15 +232,24 @@ public class Update {
 		
 	        try {
 	        	
-	        	JLabel news = new JLabel(Main.language.getProperty("wantToDownload"));
-	        	
+	        	JLabel news = new JLabel();
 	        	try {
-		        	Document changelog = Jsoup.connect("https://www.shutterencoder.com/changelog.txt").get();
-		        	changelog.outputSettings().prettyPrint(false);
-		        	String[] versions = changelog.select("body").toString().split("Version");	        	
-	  				news = new JLabel("<html>Version" + versions[1].replace(System.lineSeparator(), "<br>") + Main.language.getProperty("wantToDownload") + "</html>");   
-	        	}
-	        	catch (Exception er){}
+	        	    Document changelog = Jsoup.connect("https://www.shutterencoder.com/changelog.txt").get();
+	        	    changelog.outputSettings().prettyPrint(false);
+	        	    String[] versions = changelog.select("body").toString().split("Version");    
+	        	    news = new JLabel("<html>Version" + versions[1].replace(System.lineSeparator(), "<br>") + "</html>");    
+	        	    news.setBackground(Utils.c35);	        	    
+	        	} catch (Exception er){}
+
+	        	JScrollPane scrollPane = new JScrollPane(news);
+	        	scrollPane.getViewport().setBackground(Utils.c35);
+	        	scrollPane.setPreferredSize(new Dimension(500, 300));
+
+	        	JLabel downloadLabel = new JLabel(Main.language.getProperty("wantToDownload"));
+
+	        	JPanel panel = new JPanel(new BorderLayout(0, 10));
+	        	panel.add(scrollPane, BorderLayout.CENTER);
+	        	panel.add(downloadLabel, BorderLayout.SOUTH);      
 	        	
 			    Document doc = Jsoup.connect("https://www.shutterencoder.com").get();
 			    			    
@@ -256,7 +268,7 @@ public class Update {
 		            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 		            			{
 			            				
-		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, panel, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {	    									
 			    							runProcess(file.attr("href"));	
@@ -282,7 +294,7 @@ public class Update {
 			            			//Checking new update
 			            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 			            			{
-			            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			            				 int q =  JOptionPane.showConfirmDialog(Main.frame, panel, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			    						 if (q == JOptionPane.YES_OPTION)
 			    						 {
 			    								runProcess(file.attr("href"));	   
@@ -302,7 +314,7 @@ public class Update {
 			            			//Checking new update
 			            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 			            			{
-			            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+			            				 int q =  JOptionPane.showConfirmDialog(Main.frame, panel, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 			    						 if (q == JOptionPane.YES_OPTION)
 			    						 {
 			    								runProcess(file.attr("href"));	   
@@ -326,7 +338,7 @@ public class Update {
 		            			//Checking new update
 		            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, panel, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {
 		    								runProcess(file.attr("href"));	   
@@ -343,7 +355,7 @@ public class Update {
 		            			//Checking new update
 		            			if (newVersion > Integer.parseInt(Main.actualVersion.replace(".", "")) )
 		            			{
-		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, news, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
+		            				 int q =  JOptionPane.showConfirmDialog(Main.frame, panel, Main.language.getProperty("updateAvailable") + " (v"+ s[2]+ ")", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);	    						 
 		    						 if (q == JOptionPane.YES_OPTION)
 		    						 {
 		    								runProcess(file.attr("href"));	   

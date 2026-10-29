@@ -176,6 +176,10 @@ public class TopBar extends Main{
 
 			@Override
 			public void mousePressed(MouseEvent e) {
+				
+				if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")))
+					return;
+				
 				expand.setIcon(new FlatSVGIcon("resources/expand.svg", 15, 15).setColorFilter(new FlatSVGIcon.ColorFilter(color -> {
 				    float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
 				    float newBrightness = Math.min(1.0f, hsb[2] * 0.9f); 				    

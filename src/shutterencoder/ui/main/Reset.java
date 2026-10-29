@@ -27,6 +27,7 @@ import java.awt.event.MouseEvent;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JSlider;
 
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 
@@ -593,8 +594,13 @@ public class Reset extends Main {
 
 					// grpCorrections
 					for (Component c : grpCorrections.getComponents()) {
+						
 						if (c != null && c instanceof JCheckBox && ((JCheckBox) c).isSelected()) {
 							((JCheckBox) c).doClick();
+						}
+						
+						if (c != null && c instanceof JSlider) {
+							((JSlider) c).setValue(0);
 						}
 					}
 

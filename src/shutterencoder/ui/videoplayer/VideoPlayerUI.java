@@ -1760,7 +1760,7 @@ public class VideoPlayerUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 			
-				VideoPlayerUtils.addWaveform(true);
+				VideoPlayerUtils.generateWaveform(true);
 				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); //Use VideoPlayer.resizeAll and reload the frame	
 			}
 			
@@ -2347,12 +2347,12 @@ public class VideoPlayerUI {
            	
 		                } while (splitTime < playerMarkOut);
 	                }
-
+	                
 	                //Waveform
 	                if (VideoPlayerCore.videoPath != null
 	                && VideoPlayerUtils.waveform != null
-	                && caseShowWaveform.isVisible() && caseShowWaveform.isSelected()
-	                && FFprobe.hasAudio)
+	                && (caseShowWaveform.isVisible() || Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio"))) && caseShowWaveform.isSelected()
+	                && (FFprobe.hasAudio || Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) && Main.list.getSize() > 1))
 	                {
 	                    g2.drawImage(VideoPlayerUtils.waveform, 0, 0, getWidth(), getHeight(), null);
 	                }	                
@@ -3841,10 +3841,10 @@ public class VideoPlayerUI {
 				{
 					if (VideoPlayerUtils.waveform != null)
 					{
-						VideoPlayerUtils.addWaveform(false);
+						VideoPlayerUtils.generateWaveform(false);
 					}
 					else
-						VideoPlayerUtils.addWaveform(true);
+						VideoPlayerUtils.generateWaveform(true);
 				}
 				else
 				{
@@ -4168,7 +4168,7 @@ public class VideoPlayerUI {
 			//Waveforms
 			if (fullscreenPlayer == false && isPiping == false && Main.btnStart.getText().equals(Main.language.getProperty("btnPauseFunction")) == false && Main.list.getSize() > 0 && VideoPlayerUtils.addWaveform.isAlive() == false)
 			{	
-				VideoPlayerUtils.addWaveform(false);				 					
+				VideoPlayerUtils.generateWaveform(false);				 					
 			}
 			
 			//Thumbnails

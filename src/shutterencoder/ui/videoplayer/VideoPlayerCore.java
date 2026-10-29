@@ -317,7 +317,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				playerThread.start();	
 				
 				//Audio thread
-				if (mouseIsPressed == false && FFprobe.hasAudio)
+				if (mouseIsPressed == false && (FFprobe.hasAudio || Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) && Main.list.getSize() > 1))
 				{
 					playerAudiothread = new Thread(new Runnable() {
 						
@@ -496,9 +496,9 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			width = h;
 			height = w;
 		}
-		
+
 		//Reduce quality
-		if (Main.windowDrag == false && isBuffering == false)
+		if (Main.windowDrag == false && isBuffering == false && VideoPlayerUtils.preview == null)
 		{
 			Dimension dim = getDimension(width, height, comboPlayerQuality.getSelectedIndex());
 			width = dim.width;
@@ -1673,15 +1673,18 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				
 		//Deflicker			
 		filter = Corrections.setDeflicker(filter);
-				 
-		//Details			
-		filter = Corrections.setDetails(filter);	
 		
-		//Details			
-		filter = Corrections.setGrain(filter);			
-											            	
+		//Deblock			
+		filter = Corrections.setDeblock(filter);
+		
 		//Denoise			
 		filter = Corrections.setDenoiser(filter, noGPU);
+				 
+		//Details			
+		filter = Corrections.setDetails(filter);
+		
+		//Grain			
+		filter = Corrections.setGrain(filter);      	
 		
 		//Exposure
 		if (VideoPlayerUtils.preview == null) //Show only on playing
@@ -1726,7 +1729,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 		//Add filters
 		filter = " -vf " + '"' + filter;
-		
+				
 		if (caseVuMeter.isSelected() && FFprobe.hasAudio && Main.caseAddSubtitles.isSelected() == false && VideoPlayerUtils.preview == null)
 		{
 			String aspeed = "";
@@ -1803,6 +1806,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		//Close filter
 		filter += '"';
 		
+		//System.out.println(filter);
+				
 		try {
 			
 			if (Main.caseAddSubtitles.isSelected()

@@ -154,6 +154,7 @@ public class Settings {
 	public static JLabel lblDestination2 = new JLabel(); 
 	public static JLabel lblDestination3 = new JLabel(); 
 	public static boolean videoWebCaseMetadata = false;
+	public static boolean videoWebCaseSubtitles = false;
 	public static Integer savedDayOfYear = 0;
 	public static boolean modelIsSaving;
 	
@@ -415,7 +416,8 @@ public class Settings {
 					Main.caseDisplay.setVisible(false);
 					Main.caseDisplay.setSelected(false);
 					
-					Main.frame.setBounds(Main.frame.getX() + (Main.frame.getWidth() - 664) / 2, Main.frame.getY(), 664, Main.frame.getHeight());
+					if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionWeb")) == false)
+						Main.frame.setBounds(Main.frame.getX() + (Main.frame.getWidth() - 664) / 2, Main.frame.getY(), 664, Main.frame.getHeight());
 					
 					// Waveform
 					if (VideoPlayerUtils.addWaveformIsRunning)
@@ -433,7 +435,8 @@ public class Settings {
 				{
 					Main.caseDisplay.setVisible(true);
 					
-					Main.frame.setBounds(Main.frame.getX() - 332, Main.frame.getY(), 1350, Main.frame.getHeight());
+					if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionWeb")) == false)
+						Main.frame.setBounds(Main.frame.getX() - 332, Main.frame.getY(), 1350, Main.frame.getHeight());
 				}
 				
 				UIController.changeWidth();				
@@ -1719,6 +1722,12 @@ public class Settings {
 							videoWebCaseMetadata = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
 						}
 						
+						//caseSubtitles
+						if (eElement.getElementsByTagName("Name").item(0).getFirstChild().getTextContent().equals("caseSubtitles"))
+						{
+							videoWebCaseSubtitles = Boolean.valueOf(eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent());
+						}
+												
 						//CustomFFmpeg
 						if (btnCustomFFmpegPath.isSelected() && txtCustomFFmpegPath.getText().equals("") == false)
 						{
@@ -2545,6 +2554,30 @@ public class Settings {
 				cValue.appendChild(document.createTextNode(String.valueOf(VideoWeb.caseMetadata.isSelected())));
 			else
 				cValue.appendChild(document.createTextNode(String.valueOf(videoWebCaseMetadata)));
+			component.appendChild(cValue);
+			
+			root.appendChild(component);	
+			
+			//CaseSubtitles
+			//Component
+			component = document.createElement("Component");
+			
+			//Type
+			cType = document.createElement("Type");
+			cType.appendChild(document.createTextNode("JCheckBox"));
+			component.appendChild(cType);
+			
+			//Name
+			cName = document.createElement("Name");			
+			cName.appendChild(document.createTextNode("caseSubtitles"));
+			component.appendChild(cName);
+			
+			//Value
+			cValue = document.createElement("Value");
+			if (VideoWeb.caseSubtitles != null)
+				cValue.appendChild(document.createTextNode(String.valueOf(VideoWeb.caseSubtitles.isSelected())));
+			else
+				cValue.appendChild(document.createTextNode(String.valueOf(videoWebCaseSubtitles)));
 			component.appendChild(cValue);
 			
 			root.appendChild(component);	

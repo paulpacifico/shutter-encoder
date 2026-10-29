@@ -141,7 +141,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 					            processLoadImage.destroyForcibly();
 					            
 					            try {
-									VideoPlayerUtils.loadImageThread.join();
+									loadImageThread.join();
 								} catch (InterruptedException ex) {
 									ex.printStackTrace();
 									Thread.currentThread().interrupt();
@@ -165,8 +165,11 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 							
 							//IMPORTANT
 							if (FFprobe.isRunning)
-							{
+							{								
 								try {
+									while (FFprobe.processData == null) //Wait for the process to initialize
+										Thread.sleep(1);
+									
 									FFprobe.processData.join();
 								} catch (InterruptedException er) {
 								    Thread.currentThread().interrupt();
@@ -1259,12 +1262,12 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		} catch (Exception e){}
 	}
 
-	public static void addWaveform(boolean newWaveform) {
+	public static void generateWaveform(boolean newWaveform) {
 
 		if (FFmpeg.isRunning == false
 		&& waveformContainer.isVisible()
 		&& caseShowWaveform.isSelected()
-		&& FFprobe.hasAudio
+		&& (FFprobe.hasAudio || Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) && Main.list.getSize() > 1)
 		&& addWaveformIsRunning == false
 		&& Settings.btnDisableVideoPlayer.isSelected() == false)
 		{		
@@ -1318,20 +1321,24 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						if (size > 549944)
 							size = 549944;
 						
+						String inputMedia = videoPath;
+						if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) && Main.fileList.getSelectedIndex() + 1 < Main.list.getSize())
+							inputMedia = Main.list.getElementAt(Main.fileList.getSelectedIndex() + 1);
+						
 						if (FFprobe.channels > 1 && comboAudioTrack.isVisible())
 						{		
 							if (comboAudioTrack.getSelectedItem() != null && comboAudioTrack.getSelectedItem().equals("Mix"))
 							{
-								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFprobe.channels + ",aresample=" + size +"," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + inputMedia + '"' + " -filter_complex " + '"' + "[0:a]amerge=inputs=" + FFprobe.channels + ",aresample=" + size +"," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"'  + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 							else
 							{
-								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=" + size + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
+								LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + inputMedia + '"' + " -filter_complex " + '"' + "[0:a:" + comboAudioTrack.getSelectedIndex() + "]aresample=" + size + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -"); 
 							}
 						}
 						else
 						{
-							LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + videoPath + '"' + " -filter_complex " + '"' + "[0:a]aresample=" + size + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
+							LibraryUtils.playerWaveform(start + " -v quiet -hide_banner -i " + '"' + inputMedia + '"' + " -filter_complex " + '"' + "[0:a]aresample=" + size + "," + duration + "aformat=channel_layouts=mono,compand,showwavespic=size=" + size + "x" + waveformContainer.getHeight() + ":colors=0xE1E1E1,format=rgba,colorkey=black:0.01" + '"' + " -vn -frames:v 1 -c:v png -f image2pipe -");  																
 						}						
 						
 						if (RenderQueue.frame != null && RenderQueue.frame.isVisible())
@@ -1406,7 +1413,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 		loadImagePending = false;
 	
 	    loadImageThread = new Thread(() -> {
-		    	
+		    		
 	    	//Clear the buffer
 			if (bufferedFrames.size() > 0)
 			{				
@@ -1606,12 +1613,15 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	
 	public static void restartPlayback() {
 		
-		if (VideoPlayerUtils.playerIsPlaying())				
+		if (playerIsPlaying())				
 		{
+			//Do not generate the last pending image
+			loadImagePending = false;
+			
 			if (loadImageThread != null)
 			{
 				try {
-					VideoPlayerUtils.loadImageThread.join();
+					loadImageThread.join();
 				} catch (InterruptedException ex) {
 					ex.printStackTrace();
 					Thread.currentThread().interrupt();
@@ -1628,8 +1638,8 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 				}
 			}
 			
-			VideoPlayerUtils.processLoadImage.destroyForcibly();
-			VideoPlayerUtils.loadImageThread.interrupt();					
+			processLoadImage.destroyForcibly();
+			loadImageThread.interrupt();	
 			
 			VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 		}

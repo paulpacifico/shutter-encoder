@@ -30,9 +30,15 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -85,11 +91,60 @@ public class ChooseFiles extends Main {
 		grpChooseFiles.setBackground(Utils.c30);
 		frame.getContentPane().add(grpChooseFiles);
 
+		final boolean[] sortAscending = { true };
+
+		sortName = new JLabel(language.getProperty("name") + "  ▲");
+		sortName.setBackground(Utils.c35);
+		sortName.setOpaque(false);
+		sortName.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 2));
+		sortName.setBounds(10, 44, 292, 18);
+		grpChooseFiles.add(sortName);
+		
+		sortName.addMouseListener(new MouseAdapter() {
+			
+			@Override
+		    public void mouseClicked(MouseEvent e) {
+				
+				if (btnStart.getText().equals(language.getProperty("btnStartFunction")) == false || btnStart.isEnabled() == false)
+					return;
+				
+		        List<String> files = new ArrayList<>();
+
+		        for (int i = 0; i < list.getSize(); i++)
+		        {
+		        	files.add(list.getElementAt(i));
+		        }
+
+		        Comparator<String> comparator = Comparator.comparing(
+		            path -> new File(path).getName(),
+		            String.CASE_INSENSITIVE_ORDER
+		        );
+
+		        if (!sortAscending[0]) {
+		            comparator = comparator.reversed();
+		        }
+
+		        files.sort(comparator);
+
+		        list.clear();
+		        for (String file : files) {
+		            list.addElement(file);
+		        }
+		        
+		        if (list.getSize() > 0)
+		        	addToList.setVisible(false);
+		        
+		        lblFiles.setText(Utils.filesNumber());
+
+		        sortAscending[0] = !sortAscending[0];
+		        sortName.setText(sortAscending[0] ? language.getProperty("name") + " ▲" : language.getProperty("name") + " ▼");
+		    }
+		});
+		
 		fileList = new JList<String>(list);
 		fileList.setBackground(Utils.c35);
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
-		fileList.setBounds(10, 50, 292, frame.getHeight() - 483);
 		fileList.setToolTipText(language.getProperty("rightClick"));
 
 		fileList.getModel().addListDataListener(new ListDataListener() {
@@ -212,24 +267,10 @@ public class ChooseFiles extends Main {
 		addToList.setVerticalAlignment(SwingConstants.CENTER);
 		fileList.add(addToList);
 
-		btnEmptyList = new JButton(language.getProperty("btnEmptyList"));
-		btnEmptyList.setFont(new Font(boldFont, Font.PLAIN, 12));
-		btnEmptyList.setBounds(124, 21, 82, 21);
-		grpChooseFiles.add(btnEmptyList);
-
-		btnEmptyList.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				list.clear();
-				
-			}
-			
-		});
 		
 		scrollBar = new JScrollPane();
 		scrollBar.getViewport().add(fileList);
-		scrollBar.setBounds(10, 50, 292, fileList.getHeight());
+		scrollBar.setBounds(10, 44 + sortName.getHeight(), 292, frame.getHeight() - 495);
 		scrollBar.setOpaque(false);
 		scrollBar.getViewport().setOpaque(false);
 		grpChooseFiles.add(scrollBar);
@@ -1061,22 +1102,36 @@ public class ChooseFiles extends Main {
 
 		});
 
-		lblFilesEnded = new JLabel(language.getProperty("lblTermine"));
-		lblFilesEnded.setFont(new Font(boldFont, Font.PLAIN, 13));
+		lblFiles = new JLabel(Utils.filesNumber());
+		lblFiles.setForeground(Color.WHITE);	
+		lblFiles.setBounds(scrollBar.getX() + scrollBar.getWidth() - lblFiles.getPreferredSize().width - 8, sortName.getY(), lblFiles.getPreferredSize().width + 4, 16);
+		grpChooseFiles.add(lblFiles);
+		
+		lblFilesEnded = new JLabel(language.getProperty("lblTermine") + " / ");
 		lblFilesEnded.setForeground(Utils.themeColor);
 		lblFilesEnded.setVisible(false);
-		lblFilesEnded.setBounds(213, 15, 94, 16);
+		lblFilesEnded.setHorizontalAlignment(SwingConstants.RIGHT);
+		lblFilesEnded.setBounds(lblFiles.getX() - lblFilesEnded.getPreferredSize().width - 8, lblFiles.getY(), lblFilesEnded.getPreferredSize().width + 4, lblFiles.getHeight());
 		grpChooseFiles.add(lblFilesEnded);
-
-		lblFiles = new JLabel(Utils.filesNumber());
-		lblFiles.setForeground(Color.WHITE);
-		lblFiles.setFont(new Font(boldFont, Font.PLAIN, 13));
-		lblFiles.setBounds(213, 30, 83, 16);
-		grpChooseFiles.add(lblFiles);
+		
+		lblFiles.addPropertyChangeListener("text", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {            	
+            	lblFiles.setBounds(scrollBar.getX() + scrollBar.getWidth() - lblFiles.getPreferredSize().width - 8, sortName.getY(), lblFiles.getPreferredSize().width + 4, 16);
+            	lblFilesEnded.setBounds(lblFiles.getX() - lblFilesEnded.getPreferredSize().width - 8, lblFiles.getY(), lblFilesEnded.getPreferredSize().width + 4, lblFiles.getHeight());
+            }
+        });
+				
+		lblFilesEnded.addPropertyChangeListener("text", new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent evt) {
+            	lblFiles.setBounds(scrollBar.getX() + scrollBar.getWidth() - lblFiles.getPreferredSize().width - 8, sortName.getY(), lblFiles.getPreferredSize().width + 4, 16);
+            	lblFilesEnded.setBounds(lblFiles.getX() - lblFilesEnded.getPreferredSize().width - 8, lblFiles.getY(), lblFilesEnded.getPreferredSize().width + 4, lblFiles.getHeight());
+            }
+        });
 
 		btnBrowse = new JButton(language.getProperty("btnBrowse"));
-		btnBrowse.setFont(new Font(boldFont, Font.PLAIN, 12));
-		btnBrowse.setBounds(8, 21, 113, 21);
+		btnBrowse.setBounds(scrollBar.getX(), 19, 113, 21);
 		grpChooseFiles.add(btnBrowse);
 
 		btnBrowse.addActionListener(new ActionListener() {
@@ -1160,6 +1215,21 @@ public class ChooseFiles extends Main {
 
 			}
 		});
+		
+		btnEmptyList = new JButton(language.getProperty("btnEmptyList"));
+		btnEmptyList.setFont(new Font(boldFont, Font.PLAIN, 12));
+		btnEmptyList.setBounds(btnBrowse.getX() + btnBrowse.getWidth() + 4, btnBrowse.getY(), btnBrowse.getWidth(), 21);
+		grpChooseFiles.add(btnEmptyList);
+
+		btnEmptyList.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				list.clear();
+				
+			}
+			
+		});;
 
 	}
 }

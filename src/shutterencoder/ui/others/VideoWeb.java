@@ -101,6 +101,7 @@ public class VideoWeb {
 	private JCheckBox caseWAV;
 	private JCheckBox caseAuto;
 	public static JCheckBox caseMetadata;
+	public static JCheckBox caseSubtitles;
 	public static JCheckBox caseTimecode;
 	public static JTextField textTimecodeIn;
 	public static JTextField textTimecodeOut;
@@ -561,6 +562,20 @@ public class VideoWeb {
 		caseMetadata.setBounds(66, caseAuto.getY() + 22, caseMetadata.getPreferredSize().width, 16);	
 		grpURL.add(caseMetadata);
 		
+		caseSubtitles = new JCheckBox(Main.language.getProperty("casePreserveSubs"));
+		caseSubtitles.setName("caseSubtitles");
+		if (Settings.videoWebCaseSubtitles)
+		{
+			caseSubtitles.setSelected(true);
+		}
+		else
+		{
+			caseSubtitles.setSelected(false);
+		}
+		caseSubtitles.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
+		caseSubtitles.setBounds(caseMetadata.getX() + caseMetadata.getWidth(), caseMetadata.getY(), caseSubtitles.getPreferredSize().width, 16);	
+		grpURL.add(caseSubtitles);
+		
 		caseTimecode = new JCheckBox(Main.language.getProperty("caseSetTimecode"));
 		caseTimecode.setName("caseTimecode");
 		caseTimecode.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
@@ -891,6 +906,11 @@ public class VideoWeb {
 		if (caseMetadata.isSelected())
 		{
 			options += " --embed-thumbnail --embed-metadata";
+		}
+		
+		if (caseSubtitles.isSelected())
+		{
+			options += " --write-subs";
 		}
 		
 		if (caseTimecode.isSelected())

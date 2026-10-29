@@ -116,6 +116,7 @@ public class Main {
 	public static Properties language = new Properties();
 	public static URL soundURL;
 	public static URL soundErrorURL;
+	public static boolean disableEndingSound = false;
 	public static JFrame frame = new JFrame();
 	public static int minHeight = 731;
 	public static int extendedWidth = 1350;
@@ -171,6 +172,7 @@ public class Main {
 
 	public static DefaultListModel<String> list = new DefaultListModel<String>();
 	protected static PopupMenu dropFiles;
+	public static JLabel sortName;
 	public static JList<String> fileList;
 	public static JLabel addToList = new JLabel();
 	public static String loadedFunction = null;
@@ -507,9 +509,12 @@ public class Main {
 	public static String stabilisation = "";
 	public static JCheckBox caseDeflicker;
 	public static JCheckBox caseBanding;
+	public static JSlider sliderBanding;
 	public static JCheckBox caseLimiter;
 	public static JCheckBox caseDetails;
 	public static JSlider sliderDetails;
+	public static JCheckBox caseDeblock;
+	public static JSlider sliderDeblock;
 	public static JCheckBox caseAddGrain;
 	public static JSlider sliderAddGrain;
 	public static JCheckBox caseDenoise;

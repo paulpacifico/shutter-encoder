@@ -274,7 +274,7 @@ public class SubtitlesTimeline {
 				
 				VideoPlayerUtils.waveform = null;
 				
-				VideoPlayerUtils.addWaveform(true);
+				VideoPlayerUtils.generateWaveform(true);
 			}
 
 			@Override
@@ -320,7 +320,7 @@ public class SubtitlesTimeline {
 				frame.setBounds(0, GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height - frame.getHeight(),Toolkit.getDefaultToolkit().getScreenSize().width, 270);		
 
 				//Waveform
-				VideoPlayerUtils.addWaveform(true);
+				VideoPlayerUtils.generateWaveform(true);
 			}    		
     	});
     	    	
@@ -332,7 +332,7 @@ public class SubtitlesTimeline {
             	frame.setSize(Math.round(frame.getWidth() / 100) * 100, frame.getHeight());
             	
             	//Waveform
-        		VideoPlayerUtils.addWaveform(true);
+        		VideoPlayerUtils.generateWaveform(true);
             }
         });
     	
@@ -1207,7 +1207,7 @@ public class SubtitlesTimeline {
 						
 						if (caseShowWaveform.isEnabled() && caseShowWaveform.isSelected())
 						{
-							VideoPlayerUtils.addWaveform(true);
+							VideoPlayerUtils.generateWaveform(true);
 							waveform.setVisible(true);
 						}
 					}
@@ -1269,7 +1269,7 @@ public class SubtitlesTimeline {
 									} while (System.currentTimeMillis() - mouseScrollTime < 300);
 									
 									//Waveform
-									VideoPlayerUtils.addWaveform(true);
+									VideoPlayerUtils.generateWaveform(true);
 								}							
 								
 							});						
@@ -1475,7 +1475,7 @@ public class SubtitlesTimeline {
 				enableAutoScroll = true;
 				
 				//Waveform
-				VideoPlayerUtils.addWaveform(true);
+				VideoPlayerUtils.generateWaveform(true);
 			}
 			
 		});
@@ -1652,7 +1652,7 @@ public class SubtitlesTimeline {
 								}
 								
 								//Waveform
-								VideoPlayerUtils.addWaveform(true);
+								VideoPlayerUtils.generateWaveform(true);
 							}
 							
 						});
@@ -1801,7 +1801,7 @@ public class SubtitlesTimeline {
 					
 					if (caseShowWaveform.isEnabled() && caseShowWaveform.isSelected())
 					{
-						VideoPlayerUtils.addWaveform(true);
+						VideoPlayerUtils.generateWaveform(true);
 						waveform.setVisible(true);
 					}
 				}

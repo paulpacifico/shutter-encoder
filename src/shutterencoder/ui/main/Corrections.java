@@ -105,33 +105,7 @@ public class Corrections extends Main {
 			}
 
 		});
-
-		caseBanding = new JCheckBox(Main.language.getProperty("caseBanding"));
-		caseBanding.setName("caseBanding");
-		caseBanding.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
-		caseBanding.setSize(caseBanding.getPreferredSize().width + 10, 23);
-
-		caseBanding.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-
-				if (VideoPlayerUtils.playerIsPlaying())
-				{
-					try {
-						VideoPlayerUtils.loadImageThread.join();
-					} catch (InterruptedException er) {
-					    Thread.currentThread().interrupt();
-					}
-					
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
-				}
-				else
-					VideoPlayerUtils.loadImage();
-			}
-
-		});
-
+		
 		caseLimiter = new JCheckBox(Main.language.getProperty("caseLimiter"));
 		caseLimiter.setName("caseLimiter");
 		caseLimiter.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
@@ -169,22 +143,18 @@ public class Corrections extends Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseDetails.isSelected() == false) {
-					sliderDetails.setValue(0);
-					
-					if (VideoPlayerUtils.playerIsPlaying())
-					{
-						try {
-							VideoPlayerUtils.loadImageThread.join();
-						} catch (InterruptedException er) {
-						    Thread.currentThread().interrupt();
-						}
-						
-						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
 					}
-					else
-						VideoPlayerUtils.loadImage();
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -228,6 +198,161 @@ public class Corrections extends Main {
 			public void mouseReleased(MouseEvent e) {
 				VideoPlayerUtils.restartPlayback();
 			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+					sliderDetails.setValue(0);
+			}
+
+		});
+		
+		caseDeblock = new JCheckBox("Deblock: 0");
+		caseDeblock.setName("caseDeblock");
+		caseDeblock.setToolTipText(Main.language.getProperty("tooltipDeblock"));
+		caseDeblock.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
+		caseDeblock.setSize(caseDetails.getWidth(), 23);
+
+		caseDeblock.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
+			}
+
+		});
+
+		sliderDeblock = new JSlider();
+		sliderDeblock.setName("sliderDeblock");
+		sliderDeblock.setMinorTickSpacing(1);
+		sliderDeblock.setMaximum(100);
+		sliderDeblock.setMinimum(0);
+		sliderDeblock.setValue(0);
+		sliderDeblock.setSize(120, 22);
+
+		sliderDeblock.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+
+				int value = sliderDeblock.getValue();
+
+				if (value != 0)
+					caseDeblock.setSelected(true);
+				else
+					caseDeblock.setSelected(false);
+
+				caseDeblock.setText("Deblock: " + value);
+
+				VideoPlayerUtils.loadImage();
+			}
+
+		});
+
+		sliderDeblock.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {				
+				caseDeblock.setSelected(true);
+				sliderDeblock.setEnabled(true);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				VideoPlayerUtils.restartPlayback();
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+					sliderDeblock.setValue(0);
+			}
+
+		});
+		
+		caseBanding = new JCheckBox(Main.language.getProperty("caseBanding") + Main.language.getProperty("colon") + " 0");
+		caseBanding.setName("caseBanding");
+		caseBanding.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
+		caseBanding.setSize(caseDetails.getWidth(), 23);
+
+		caseBanding.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				}
+				else
+					VideoPlayerUtils.loadImage();
+			}
+
+		});
+
+		sliderBanding = new JSlider();
+		sliderBanding.setName("sliderBanding");
+		sliderBanding.setMinorTickSpacing(1);
+		sliderBanding.setMaximum(100);
+		sliderBanding.setMinimum(0);
+		sliderBanding.setValue(0);
+		sliderBanding.setSize(120, 22);
+
+		sliderBanding.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+
+				int value = sliderBanding.getValue();
+
+				if (value != 0)
+					caseBanding.setSelected(true);
+				else
+					caseBanding.setSelected(false);
+
+				caseBanding.setText(Main.language.getProperty("caseBanding") + Main.language.getProperty("colon") + " " + value);
+
+				VideoPlayerUtils.loadImage();
+			}
+
+		});
+
+		sliderBanding.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {				
+				caseBanding.setSelected(true);
+				sliderBanding.setEnabled(true);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				VideoPlayerUtils.restartPlayback();
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+					sliderBanding.setValue(0);
+			}
 
 		});
 
@@ -241,22 +366,18 @@ public class Corrections extends Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseAddGrain.isSelected() == false) {
-					sliderAddGrain.setValue(0);
-
-					if (VideoPlayerUtils.playerIsPlaying())
-					{
-						try {
-							VideoPlayerUtils.loadImageThread.join();
-						} catch (InterruptedException er) {
-						    Thread.currentThread().interrupt();
-						}
-						
-						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
 					}
-					else
-						VideoPlayerUtils.loadImage();
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -300,6 +421,12 @@ public class Corrections extends Main {
 			public void mouseReleased(MouseEvent e) {
 				VideoPlayerUtils.restartPlayback();
 			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+					sliderAddGrain.setValue(0);
+			}
 
 		});
 		
@@ -313,22 +440,18 @@ public class Corrections extends Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseDenoise.isSelected() == false) {
-					sliderDenoise.setValue(0);
-
-					if (VideoPlayerUtils.playerIsPlaying())
-					{
-						try {
-							VideoPlayerUtils.loadImageThread.join();
-						} catch (InterruptedException er) {
-						    Thread.currentThread().interrupt();
-						}
-						
-						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
 					}
-					else
-						VideoPlayerUtils.loadImage();
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -372,6 +495,12 @@ public class Corrections extends Main {
 			public void mouseReleased(MouseEvent e) {
 				VideoPlayerUtils.restartPlayback();
 			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+					sliderDenoise.setValue(0);
+			}
 
 		});
 
@@ -385,22 +514,18 @@ public class Corrections extends Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseSmoothExposure.isSelected() == false) {
-					sliderSmoothExposure.setValue(0);
-
-					if (VideoPlayerUtils.playerIsPlaying())
-					{
-						try {
-							VideoPlayerUtils.loadImageThread.join();
-						} catch (InterruptedException er) {
-						    Thread.currentThread().interrupt();
-						}
-						
-						VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				if (VideoPlayerUtils.playerIsPlaying())
+				{
+					try {
+						VideoPlayerUtils.loadImageThread.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
 					}
-					else
-						VideoPlayerUtils.loadImage();
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 				}
+				else
+					VideoPlayerUtils.loadImage();
 			}
 
 		});
@@ -444,22 +569,34 @@ public class Corrections extends Main {
 			public void mouseReleased(MouseEvent e) {
 				VideoPlayerUtils.restartPlayback();
 			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2)
+					sliderSmoothExposure.setValue(0);
+			}
 
 		});
 
 		caseStabilisation.setLocation(7, 14);
 		grpCorrections.add(caseStabilisation);
 		caseDeflicker.setLocation(7, caseStabilisation.getLocation().y + 17);
-		grpCorrections.add(caseDeflicker);
-		caseBanding.setLocation(7, caseDeflicker.getLocation().y + 17);
-		grpCorrections.add(caseBanding);
-		caseLimiter.setLocation(7, caseBanding.getLocation().y + 17);
-		grpCorrections.add(caseLimiter);
+		grpCorrections.add(caseDeflicker);		
+		caseLimiter.setLocation(7, caseDeflicker.getLocation().y + 17);
+		grpCorrections.add(caseLimiter);			
 		caseDetails.setLocation(7, caseLimiter.getLocation().y + 17);
 		grpCorrections.add(caseDetails);
 		sliderDetails.setLocation(grpCorrections.getWidth() - sliderDetails.getWidth() - 14, caseDetails.getLocation().y);
-		grpCorrections.add(sliderDetails);		
-		caseAddGrain.setLocation(7, caseDetails.getLocation().y + 17);
+		grpCorrections.add(sliderDetails);			
+		caseDeblock.setLocation(7, caseDetails.getLocation().y + 17);
+		grpCorrections.add(caseDeblock);
+		sliderDeblock.setLocation(grpCorrections.getWidth() - sliderDeblock.getWidth() - 14, caseDeblock.getLocation().y);
+		grpCorrections.add(sliderDeblock);
+		caseBanding.setLocation(7, caseDeblock.getLocation().y + 17);
+		grpCorrections.add(caseBanding);		
+		sliderBanding.setLocation(grpCorrections.getWidth() - sliderBanding.getWidth() - 14, caseBanding.getLocation().y);
+		grpCorrections.add(sliderBanding);			
+		caseAddGrain.setLocation(7, caseBanding.getLocation().y + 17);
 		grpCorrections.add(caseAddGrain);
 		sliderAddGrain.setLocation(sliderDetails.getX(), caseAddGrain.getLocation().y);
 		grpCorrections.add(sliderAddGrain);		

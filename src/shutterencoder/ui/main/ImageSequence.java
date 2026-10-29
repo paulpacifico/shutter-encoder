@@ -24,7 +24,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 import java.util.Locale;
 
 import javax.swing.DefaultComboBoxModel;
@@ -98,21 +97,7 @@ public class ImageSequence extends Main {
 					FFprobe.analyzedMedia = null;
 					
 					if (caseEnableSequence.isSelected())
-					{
-						String[] data = new String[list.getSize()];
-	
-						for (int i = 0; i < list.getSize(); i++) {
-							data[i] = (String) list.getElementAt(i);
-						}
-	
-						Arrays.sort(data);
-						list.clear();
-	
-						for (int i = 0; i < data.length; i++) {
-							list.addElement(data[i].toString());
-						}
-						addToList.setVisible(false);
-	
+					{	
 						caseSequenceFPS.setEnabled(true);
 					}
 					else
