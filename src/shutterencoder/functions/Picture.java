@@ -147,9 +147,12 @@ public class Picture extends Main {
 						
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
-				
+						
 						//LUTs
 						filterComplex = Colorimetry.setLUT(filterComplex);
+						
+						//Deband
+						filterComplex = Corrections.setDeband(filterComplex);
 						
 						//Levels
 						filterComplex = Colorimetry.setLevels(filterComplex);
@@ -166,14 +169,17 @@ public class Picture extends Main {
 						//Deflicker
 						filterComplex = Corrections.setDeflicker(filterComplex);
 						
-						//Deband
-						filterComplex = Corrections.setDeband(filterComplex);
+						//Deblock
+		            	filterComplex = Corrections.setDeblock(filterComplex);
+		            	
+		            	//Denoise
+			    		filterComplex = Corrections.setDenoiser(filterComplex, true);
 							 
 						//Details
-		            	filterComplex = Corrections.setDetails(filterComplex);				
-														            	
-						//Denoise
-			    		filterComplex = Corrections.setDenoiser(filterComplex, true);
+		            	filterComplex = Corrections.setDetails(filterComplex);
+		            	
+		            	//Grain
+		            	filterComplex = Corrections.setGrain(filterComplex);
 			    		
 			    		//Exposure
 						filterComplex = Corrections.setSmoothExposure(filterComplex);	

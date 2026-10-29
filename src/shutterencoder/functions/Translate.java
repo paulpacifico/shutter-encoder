@@ -149,7 +149,7 @@ public class Translate extends Main {
     
     private static String translateChunk(String text, String sourceLang, String targetLang) throws Exception {
         String urlStr = String.format(
-            "https://translate.googleapis.com/translate_a/single?client=gtx&sl=%s&tl=%s&dt=t&q=%s",
+            "https://translate.googleapis.com/translate_a/single?client=at&sl=%s&tl=%s&dt=t&q=%s",
             URLEncoder.encode(sourceLang, "UTF-8"),
             URLEncoder.encode(targetLang, "UTF-8"),
             URLEncoder.encode(text, "UTF-8")

@@ -19,12 +19,15 @@
 
 package shutterencoder.functions;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Timecode;
@@ -37,6 +40,7 @@ import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
+import shutterencoder.utils.Utils;
 
 public class BlackDetection extends Main {
 
@@ -147,7 +151,16 @@ public class BlackDetection extends Main {
 			{
 				if (FFmpeg.blackFrame.length() > 0)
 				{
-					JOptionPane.showMessageDialog(frame, FFmpeg.blackFrame, Main.language.getProperty("functionBlackDetection"), JOptionPane.ERROR_MESSAGE);
+					JTextArea textArea = new JTextArea(FFmpeg.blackFrame.toString());
+					textArea.setEditable(false);
+					textArea.setLineWrap(true);
+					textArea.setWrapStyleWord(true);
+					
+					JScrollPane scrollPane = new JScrollPane(textArea);
+					scrollPane.getViewport().setBackground(Utils.c35);
+					scrollPane.setPreferredSize(new Dimension(500, 300));
+					
+					JOptionPane.showMessageDialog(frame, scrollPane, Main.language.getProperty("functionBlackDetection"), JOptionPane.ERROR_MESSAGE);
 				}
 				else
 					JOptionPane.showMessageDialog(frame, Main.language.getProperty("noErrorDetected"), Main.language.getProperty("functionBlackDetection"), JOptionPane.INFORMATION_MESSAGE);

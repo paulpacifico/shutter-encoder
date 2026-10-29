@@ -1557,7 +1557,7 @@ public class FFmpeg extends Main {
 		    			
 		    			tcBlackFrame += ":" + formatter.format((int) (images / (1000 / FFprobe.currentFPS)));
 		    			
-    	 				blackFrame.append(tcBlackFrame + System.lineSeparator());
+    	 				blackFrame.append(language.getProperty("grpTimecode") + " " + tcBlackFrame + System.lineSeparator());
 	    	 		}
 	    	 	}
 	     }

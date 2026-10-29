@@ -602,14 +602,17 @@ public class VideoEncoders extends Main {
 						//Deflicker
 						filterComplex = Corrections.setDeflicker(filterComplex);
 						
-						//Details
-		            	filterComplex = Corrections.setDetails(filterComplex);	
+						//Deblock
+		            	filterComplex = Corrections.setDeblock(filterComplex);
+						
+		            	//Denoise
+			    		filterComplex = Corrections.setDenoiser(filterComplex, false);
 		            	
-		            	//Details
+						//Details
+		            	filterComplex = Corrections.setDetails(filterComplex);	 
+		            	
+		            	//Grain
 		            	filterComplex = Corrections.setGrain(filterComplex);
-														            	
-						//Denoise
-			    		filterComplex = Corrections.setDenoiser(filterComplex, false);	
 			    		
 			    		//Exposure
 						filterComplex = Corrections.setSmoothExposure(filterComplex);	

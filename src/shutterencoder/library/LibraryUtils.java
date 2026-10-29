@@ -1261,7 +1261,7 @@ public class LibraryUtils extends Main {
 	}
 
 	public static void playerWaveform(final String cmd) {
-				
+
 		try {
 						
 			ProcessBuilder processFFMPEG = new ProcessBuilder(VideoPlayerCore.formatCommand(cmd));

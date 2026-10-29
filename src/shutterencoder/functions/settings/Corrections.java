@@ -89,17 +89,19 @@ public class Corrections extends Main {
 		
 	public static String setDeband(String filterComplex) {
 		
-		if (Main.caseBanding.isSelected())
+		if (caseBanding.isSelected())
 		{
+			int range = Math.round(sliderBanding.getValue() * 48 / 100.0f);
+			
 			if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(filterComplex))
 			{
-				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "deband=1:deband_radius=32");
+				filterComplex = Libplacebo.setLibplaceboFilter(filterComplex, "deband=1:deband_radius=" + range);
 			}
 			else
 			{
 				if (filterComplex != "") filterComplex += ",";
 				
-				filterComplex += "deband=r=32";
+				filterComplex += "deband=r=" + range;
 			}
 		}	
 		
@@ -139,6 +141,24 @@ public class Corrections extends Main {
 		return filterComplex;
 	}
 	
+	public static String setDeblock(String filterComplex) {
+		
+		if (Main.caseDeblock.isSelected())
+		{
+		    int value = Main.sliderDeblock.getValue();
+
+		    if (filterComplex != "") filterComplex += ",";
+		    
+		    double normalized = value / 100.0;
+
+		    int qpStrength = 1 + (int) Math.round((normalized * normalized) * 63.0);
+
+		    filterComplex += "pp7=qp=" + qpStrength + ":mode=0";
+		}
+		
+		return filterComplex;
+	}
+	
 	public static String setGrain(String filterComplex) {
 
 	    if (Main.caseAddGrain.isSelected())
@@ -147,7 +167,7 @@ public class Corrections extends Main {
 
 	        if (filterComplex != "") filterComplex += ",";
 
-	        int grainAmount = (int)(value * 0.2);
+	        float grainAmount = (float) (value * 0.2);
 	        
 	        filterComplex += "noise=c0s=" + grainAmount + ":c1s=0:c2s=0:c3s=0:c0f=t+u";
 	    }

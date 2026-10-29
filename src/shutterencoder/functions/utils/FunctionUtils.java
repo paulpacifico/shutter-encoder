@@ -497,11 +497,11 @@ public class FunctionUtils extends Main {
 		String labelName;
 		
 		if (number > 1 && number < 1000)
-			labelName = number + " " + Main.language.getProperty("filesEnded");
+			labelName = number + " " + Main.language.getProperty("filesEnded") + " / ";
 		else if( number <= 1)
-			labelName = number + " " +  Main.language.getProperty("fileEnded");
+			labelName = number + " " +  Main.language.getProperty("fileEnded") + " / ";
 		else
-			labelName = number / 1000 + "k " + Main.language.getProperty("filesEnded");		
+			labelName = number / 1000 + "k " + Main.language.getProperty("filesEnded") + " / ";		
 		
 		return labelName;
 	}

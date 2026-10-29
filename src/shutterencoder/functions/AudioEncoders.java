@@ -431,7 +431,9 @@ public class AudioEncoders extends Main {
 				
 		//Audio normalization		
 		if (caseNormalizeAudio.isSelected() && caseNormalizeAudio.isVisible())
-		{				
+		{		
+			disableEndingSound = true;
+			
         	AudioNormalization.main(file);
         							
         	try {
@@ -439,6 +441,8 @@ public class AudioEncoders extends Main {
 			} catch (InterruptedException e) {
 			    Thread.currentThread().interrupt();
 			}
+        	
+        	disableEndingSound = false;
         	
         	lblCurrentEncoding.setText(file.getName());
 						

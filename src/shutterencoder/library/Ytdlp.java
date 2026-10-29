@@ -33,6 +33,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -169,22 +172,34 @@ public class Ytdlp extends Main {
 					ProcessBuilder processYOUTUBEDL;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						if (options != "")
+						if (options.isEmpty() == false)
 						{
-							String opts[] = options.split(" ");
-							if (opts.length == 3)
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], "--restrict-filenames", "--ffmpeg-location", FFmpeg.PathToFFMPEG, "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
-							else if (opts.length == 5)
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], opts[3], opts[4], "--restrict-filenames", "--ffmpeg-location", FFmpeg.PathToFFMPEG, "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
-							else
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, opts[1], opts[2], opts[3], opts[4], opts[5], opts[6], "--restrict-filenames", "--ffmpeg-location", FFmpeg.PathToFFMPEG, "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
+						    String[] opts = options.trim().split("\\s+");
+
+						    List<String> args = new ArrayList<>();
+
+						    args.add(PathToYOUTUBEDL);
+						    args.add(format);
+						    args.add(cmd);
+
+						    args.addAll(Arrays.asList(opts));
+
+						    args.add("--restrict-filenames");
+						    args.add("--ffmpeg-location");
+						    args.add(FFmpeg.PathToFFMPEG);
+						    args.add("--no-continue");
+						    args.add("--no-part");
+						    args.add("-o");
+						    args.add(outputFile.getAbsolutePath());
+
+						    processYOUTUBEDL = new ProcessBuilder(args);
 						}
 						else
 							processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, format, cmd, "--restrict-filenames", "--ffmpeg-location", FFmpeg.PathToFFMPEG, "--no-continue", "--no-part", "-o","" + '"' + outputFile +'"');
 					}
 					else
 					{
-						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c", PathToYOUTUBEDL + " " + format + " "+ cmd + options + " --restrict-filenames --no-continue --ffmpeg-location " + FFmpeg.PathToFFMPEG + " --no-part -o " + '"' + outputFile + '"');
+						processYOUTUBEDL = new ProcessBuilder("/bin/bash", "-c", PathToYOUTUBEDL + " " + format + " " + cmd + options + " --restrict-filenames --no-continue --ffmpeg-location " + FFmpeg.PathToFFMPEG + " --no-part -o " + '"' + outputFile + '"');
 					}
 									
 					isRunning = true;	
@@ -380,15 +395,19 @@ public class Ytdlp extends Main {
 					ProcessBuilder processYOUTUBEDL;
 					if (System.getProperty("os.name").contains("Windows"))
 					{
-						if (options != "")
+						if (options.isEmpty() == false)
 						{
-							String opts[] = options.split(" ");
-							if (opts.length == 3)
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, "-F", cmd, opts[1], opts[2]);
-							else if (opts.length == 5)
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, "-F", cmd, opts[1], opts[2], opts[3], opts[4]);
-							else
-								processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, "-F", cmd, opts[1], opts[2], opts[3], opts[4], opts[5], opts[6]);
+						    String[] opts = options.trim().split("\\s+");
+
+						    List<String> args = new ArrayList<>();
+
+						    args.add(PathToYOUTUBEDL);
+						    args.add("-F");
+						    args.add(cmd);
+
+						    args.addAll(Arrays.asList(opts));
+
+						    processYOUTUBEDL = new ProcessBuilder(args);
 						}
 						else
 							processYOUTUBEDL = new ProcessBuilder(PathToYOUTUBEDL, "-F", cmd);
