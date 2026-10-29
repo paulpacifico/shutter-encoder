@@ -207,7 +207,7 @@ public class Corrections extends Main {
 
 		});
 		
-		caseDeblock = new JCheckBox("Deblock: 0");
+		caseDeblock = new JCheckBox(Main.language.getProperty("caseDeblock") + Main.language.getProperty("colon") + " 0");
 		caseDeblock.setName("caseDeblock");
 		caseDeblock.setToolTipText(Main.language.getProperty("tooltipDeblock"));
 		caseDeblock.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
@@ -254,7 +254,7 @@ public class Corrections extends Main {
 				else
 					caseDeblock.setSelected(false);
 
-				caseDeblock.setText("Deblock: " + value);
+				caseDeblock.setText(Main.language.getProperty("caseDeblock") + Main.language.getProperty("colon") + " " + value);
 
 				VideoPlayerUtils.loadImage();
 			}
