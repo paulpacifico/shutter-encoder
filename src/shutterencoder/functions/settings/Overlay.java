@@ -218,10 +218,19 @@ public class Overlay extends Main {
 				}
 			}
 			
+			int xOffset = 0;
+			int yOffset = 0;
+			
+			if (Main.caseEnableCrop.isSelected())
+			{
+				xOffset = Integer.parseInt(Main.textCropPosX.getText());
+				yOffset = Integer.parseInt(Main.textCropPosY.getText());
+			}
+			
 	      	if (Main.caseShowFileName.isSelected())
 	      	{
 	      		if (filterComplex != "") filterComplex += ",";
-	      			filterComplex += "drawtext=" + overlayFont + ":text='" + file + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(Main.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Main.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundNameAlpha;
+	      			filterComplex += "drawtext=" + overlayFont + ":text='" + file + "':r=" + rate + ":x=" + Math.round((Integer.parseInt(Main.textNamePosX.getText()) - xOffset) / imageRatio) + ":y=" + Math.round((Integer.parseInt(Main.textNamePosY.getText()) - yOffset) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundNameAlpha;
 	      	}
 	      	
 	      	if (Main.caseAddText.isSelected())
@@ -229,7 +238,7 @@ public class Overlay extends Main {
 	      		String text = FunctionUtils.setPrefixSuffix(Main.overlayText.getText(), true);						
 					      		
 	      		if (filterComplex != "") filterComplex += ",";
-	      			filterComplex += "drawtext=" + overlayFont + ":text='" + text + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(Main.textNamePosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Main.textNamePosY.getText()) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundNameAlpha;
+	      			filterComplex += "drawtext=" + overlayFont + ":text='" + text + "':r=" + rate + ":x=" + Math.round((Integer.parseInt(Main.textNamePosX.getText()) - xOffset) / imageRatio) + ":y=" + Math.round((Integer.parseInt(Main.textNamePosY.getText()) - yOffset) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundNameAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textNameSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundNameAlpha;
 	      	}
 	      	
 		   	if ((Main.caseAddTimecode.isSelected() || Main.caseShowTimecode.isSelected()))
@@ -255,10 +264,10 @@ public class Overlay extends Main {
 		   		if (Main.caseAddTimecode.isSelected() && Main.lblTimecode.getText().equals(Main.language.getProperty("lblFrameNumber")))
 		   		{
 		   			String startNumber = String.format("%.0f", Integer.parseInt(tc1) * 3600 * FFprobe.currentFPS + Integer.parseInt(tc2) * 60 * FFprobe.currentFPS + Integer.parseInt(tc3) * FFprobe.currentFPS + Integer.parseInt(tc4));
-		   			filterComplex += "drawtext=" + overlayFont + ":text='%{frame_num}': start_number=" + startNumber + ":x=" + Math.round(Integer.parseInt(Main.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Main.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundTcAlpha;
+		   			filterComplex += "drawtext=" + overlayFont + ":text='%{frame_num}': start_number=" + startNumber + ":x=" + Math.round((Integer.parseInt(Main.textTcPosX.getText()) - xOffset) / imageRatio) + ":y=" + Math.round((Integer.parseInt(Main.textTcPosY.getText()) - yOffset) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundTcAlpha;
 		   		}
 		   		else
-		   			filterComplex += "drawtext=" + overlayFont + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + Math.round(Integer.parseInt(Main.textTcPosX.getText()) / imageRatio) + ":y=" + Math.round(Integer.parseInt(Main.textTcPosY.getText()) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundTcAlpha + ":tc24hmax=1";	      
+		   			filterComplex += "drawtext=" + overlayFont + ":timecode='" + tc1 + "\\:" + tc2 + "\\:" + tc3 + "\\" + dropFrame + tc4 + "':r=" + rate + ":x=" + Math.round((Integer.parseInt(Main.textTcPosX.getText()) - xOffset) / imageRatio) + ":y=" + Math.round((Integer.parseInt(Main.textTcPosY.getText()) - yOffset) / imageRatio) + ":fontcolor=0x" + Main.foregroundHex + Main.foregroundTcAlpha + ":fontsize=" + Math.round(Integer.parseInt(Main.textTcSize.getText()) / imageRatio) + ":box=1:boxcolor=0x" + Main.backgroundHex + Main.backgroundTcAlpha + ":tc24hmax=1";	      
 		   	}   
 		}
 		
@@ -559,19 +568,28 @@ public class Overlay extends Main {
 				}
 			}
 
+			int xOffset = 0;
+			int yOffset = 0;
+			
+			if (Main.caseEnableCrop.isSelected())
+			{
+				xOffset = Integer.parseInt(Main.textCropPosX.getText());
+				yOffset = Integer.parseInt(Main.textCropPosY.getText());
+			}
+			
 			float size = (float) Integer.parseInt(Main.textWatermarkSize.getText()) / 100;			
 
         	if (filterComplex != "") 	
         	{
             	filterComplex = "[0:v]" + filterComplex + "[v];[1:v]scale=iw*" + ((double) 1 / imageRatio) * size + ":ih*" + ((double) 1 / imageRatio) * size +			
         				",lut=a=val*" + ((float) Integer.parseInt(Main.textWatermarkOpacity.getText()) / 100) + 
-        				"[scaledwatermark];[v][scaledwatermark]overlay=" + Math.round(Integer.parseInt(Main.textWatermarkPosX.getText()) / imageRatio) + ":" + Math.round(Integer.parseInt(Main.textWatermarkPosY.getText()) / imageRatio);
+        				"[scaledwatermark];[v][scaledwatermark]overlay=" + Math.round((Integer.parseInt(Main.textWatermarkPosX.getText()) - xOffset) / imageRatio) + ":" + Math.round((Integer.parseInt(Main.textWatermarkPosY.getText()) - yOffset) / imageRatio);
         	}
         	else
         	{	
             	filterComplex = "[1:v]scale=iw*" + ((double) 1 / imageRatio) * size + ":ih*" + ((double) 1 / imageRatio) * size +
         				",lut=a=val*" + ((float) Integer.parseInt(Main.textWatermarkOpacity.getText()) / 100) + 
-        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + Math.round(Integer.parseInt(Main.textWatermarkPosX.getText()) / imageRatio) + ":" + Math.round(Integer.parseInt(Main.textWatermarkPosY.getText()) / imageRatio);
+        				"[scaledwatermark];[0:v][scaledwatermark]overlay=" + Math.round((Integer.parseInt(Main.textWatermarkPosX.getText()) - xOffset) / imageRatio) + ":" + Math.round((Integer.parseInt(Main.textWatermarkPosY.getText()) - yOffset) / imageRatio);
         	}
 
         }

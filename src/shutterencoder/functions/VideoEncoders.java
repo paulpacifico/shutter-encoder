@@ -567,7 +567,7 @@ public class VideoEncoders extends Main {
 						filterComplex = Image.setRotate(filterComplex, false);
 			        	
 			        	//Crop
-						if (setCroppingLast() == false && comboResolution.getSelectedItem().toString().contains("AI") == false)  //Cropping is made inside the upscale statement using Image.setCrop())
+						if (comboResolution.getSelectedItem().toString().contains("AI") == false) //Cropping is made before upscaling
 				        {
 							filterComplex = Image.setCrop(filterComplex, file);
 				        }
@@ -736,12 +736,6 @@ public class VideoEncoders extends Main {
 			            
 						//Fade-in Fade-out
 						filterComplex = Transitions.setVideoFade(filterComplex, false);
-						
-						//Crop
-						if (setCroppingLast() && comboResolution.getSelectedItem().toString().contains("AI") == false)  //Cropping is made inside the upscale statement using Image.setCrop())
-				        {
-							filterComplex = Image.setCrop(filterComplex, file);
-				        }
 										
 		            	//Audio
 			            if (comboFonctions.getSelectedItem().toString().equals("DV"))
@@ -1324,22 +1318,7 @@ public class VideoEncoders extends Main {
     	else
     		return true;   		
 	}
-	
-	public static boolean setCroppingLast() {
 		
-		//Always crop after these options
-		if (Main.caseAddTimecode.isSelected()
-    	|| Main.caseShowTimecode.isSelected()
-    	|| Main.caseAddText.isSelected()
-    	|| Main.caseShowFileName.isSelected()    	
-    	|| Main.caseAddWatermark.isSelected())
-    	{
-    		return true;
-    	}
-    	else
-    		return false;   
-	}
-	
 	public static String setCodec() {
 		
 		String selectedGPU = "";

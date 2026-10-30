@@ -505,7 +505,7 @@ public class FFprobe extends Main {
 							 }
 														 
 							 //Audio stream
-				        	 if (line.contains("Audio:") && (line.contains("Could not find codec parameters")) == false)
+				        	 if (line.contains("Audio:") && line.contains("Could not find codec parameters") == false)
 				        	 {
 				        		 hasAudio = true;
 				        		 
