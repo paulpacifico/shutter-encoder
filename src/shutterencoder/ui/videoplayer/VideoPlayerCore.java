@@ -37,6 +37,7 @@ import java.nio.ByteOrder;
 import java.nio.ShortBuffer;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -1729,8 +1730,10 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		
 		//Add filters
 		filter = " -vf " + '"' + filter;
-				
-		if (caseVuMeter.isSelected() && FFprobe.hasAudio && Main.caseAddSubtitles.isSelected() == false && VideoPlayerUtils.preview == null)
+			
+		boolean disableVumeter = Arrays.asList(FFprobe.audioCodecs).contains("apple_apac");
+		
+		if (caseVuMeter.isSelected() && FFprobe.hasAudio && Main.caseAddSubtitles.isSelected() == false && VideoPlayerUtils.preview == null && disableVumeter == false)
 		{
 			String aspeed = "";
 						

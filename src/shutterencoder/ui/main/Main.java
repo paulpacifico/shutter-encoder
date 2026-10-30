@@ -94,6 +94,7 @@ import shutterencoder.ui.others.Update;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.renderers.SplashRenderer;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class Main {
@@ -692,7 +693,7 @@ public class Main {
 		System.setProperty("apple.awt.textAntialiasing", "on");
 		System.setProperty("swing.aatext", "true");		
 		
-		// Path for AI models
+		//Path for AI models
 		Ncnn.modelsPath = Main.class.getProtectionDomain().getCodeSource().getLocation().getPath();
 		if (System.getProperty("os.name").contains("Windows")) {
 			Ncnn.modelsPath = Ncnn.modelsPath.substring(1, Ncnn.modelsPath.length() - 1);
@@ -701,24 +702,49 @@ public class Main {
 		}
 		Ncnn.modelsPath = Ncnn.modelsPath.substring(0, (int) (Ncnn.modelsPath.lastIndexOf("/"))).replace("%20", " ") + "/Library/models";
 
-		// Checking java x86 or arm version
+		//Checking java x86 or arm version
 		Utils.getJavaArch();
 
-		// Drop files
-		if (args.length != 0) {
-			for (int i = 0; i < args.length; i++) {
-				droppedFiles.add(i, args[i]);
-			}
-		}
+		//Direct command args
+		File presetFile = null;
+		boolean autoStart = false;
 
+		if (args != null && args.length > 0)
+		{
+		    for (int i = 0; i < args.length; i++) 
+		    {
+		        String arg = args[i];		        
+		        if ("--preset".equals(arg))
+		        {
+		            // Check if there is a next argument for the filename
+		            if (i + 1 < args.length)
+		            {
+		                presetFile = new File(args[i + 1]);
+		                i++; // Skip the next argument since we consumed it as the filename
+		            }
+		            else
+		                System.err.println("Error: The --preset option requires a file as an argument.");
+		           
+		        }
+		        else if ("--autostart".equals(arg))
+		        {
+		            autoStart = true;
+		        }
+		        else if (new File(arg).getName().contains(".enc") == false) // If it's not a flag, treat it as a dropped file/regular argument
+		        {
+		            droppedFiles.add(arg);
+		        }
+		    }
+		}
+		
 		Utils.setLanguage();
 		SplashRenderer.increment();
 		Utils.loadThemes();
 		SplashRenderer.increment();
 
-		// Documents Shutter Encoder
+		//Documents
 		if (documents.exists() == false) {
-			// Do not create it if the location is different
+			//Do not create it if the location is different
 			if (settingsXML.exists() == false)
 				documents.mkdirs();
 
@@ -726,12 +752,45 @@ public class Main {
 				documents.mkdirs();
 		}
 		
-		new Main().initializeUI();
+		new Main().initializeUI(presetFile != null);
 
-		ImageIO.setUseCache(false); // IMPORTANT use RAM instead of HDD cache
+		ImageIO.setUseCache(false); //IMPORTANT use RAM instead of HDD cache
+		
+		//Load preset
+		if (presetFile != null)
+		{
+			fileList.setSelectedIndex(0);
+			
+			VideoPlayerUtils.setMedia();
+			try {
+				while (VideoPlayerUtils.loadMedia == null) //Wait for the process to initialize
+					Thread.sleep(1);
+				
+				VideoPlayerUtils.loadMedia.join();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+			
+			Utils.loadSettings(presetFile);
+		}
+		
+		//Autostart		
+		if (autoStart && !droppedFiles.isEmpty() && presetFile != null)
+		{
+			try {
+				while (Utils.loadEncFile == null) //Wait for the process to initialize
+					Thread.sleep(1);
+				
+				Utils.loadEncFile.join();
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
+			
+			btnStart.doClick();
+		}
 	}
 
-	public void initializeUI() {		
+	public void initializeUI(boolean presetFile) {		
 		
 		Desktop desktop = Desktop.getDesktop();
 		if (desktop.isSupported(Desktop.Action.APP_ABOUT)) {
@@ -1199,8 +1258,7 @@ public class Main {
 					int s = droppedFiles.toString().lastIndexOf('.');
 					String ext = droppedFiles.toString().substring(s);
 
-					if (ext.equals(".enc") == false && droppedFiles.isHidden() == false
-							&& droppedFiles.getName().contains("."))
+					if (ext.equals(".enc") == false && droppedFiles.isHidden() == false && droppedFiles.getName().contains("."))
 						list.addElement(droppedFiles.toString());
 				} else
 					Utils.findFiles(droppedFiles.toString());
@@ -1256,7 +1314,7 @@ public class Main {
 		btnStart.requestFocus();
 		UIController.changeWidth();
 
-		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0)
+		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0 && presetFile == false)
 		{
 			Thread t = new Thread(new Runnable() {
 

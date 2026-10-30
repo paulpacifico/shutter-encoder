@@ -2184,7 +2184,10 @@ public class VideoPlayerUI {
 			fullscreenFrame.getContentPane().setLayout(null);
 	        fullscreenFrame.setFocusableWindowState(true);	   
 	        fullscreenFrame.getContentPane().setBackground(Color.BLACK);
-	        fullscreenFrame.setTitle(new File(VideoPlayerCore.videoPath).getName());		
+	        
+	        if (VideoPlayerCore.videoPath != null)
+	        	fullscreenFrame.setTitle(new File(VideoPlayerCore.videoPath).getName());		
+	        
 	        fullscreenFrame.setUndecorated(true);
 	        fullscreenFrame.add(player);
 	        

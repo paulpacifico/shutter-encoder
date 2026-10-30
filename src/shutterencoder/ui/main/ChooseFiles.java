@@ -267,7 +267,6 @@ public class ChooseFiles extends Main {
 		addToList.setVerticalAlignment(SwingConstants.CENTER);
 		fileList.add(addToList);
 
-		
 		scrollBar = new JScrollPane();
 		scrollBar.getViewport().add(fileList);
 		scrollBar.setBounds(10, 44 + sortName.getHeight(), 292, frame.getHeight() - 495);
