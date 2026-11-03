@@ -102,7 +102,7 @@ public class Main {
 	/*
 	 * Initialisation
 	 */
-	public static String actualVersion = "20.4";
+	public static String actualVersion = "20.5";
 	public static String getLanguage = "";
 	public static String arch = "x86_64";
 	public static long availableMemory;
@@ -707,13 +707,14 @@ public class Main {
 
 		//Direct command args
 		File presetFile = null;
+		File outputFolder = null;
 		boolean autoStart = false;
 
 		if (args != null && args.length > 0)
 		{
 		    for (int i = 0; i < args.length; i++) 
 		    {
-		        String arg = args[i];		        
+		        String arg = args[i];
 		        if ("--preset".equals(arg))
 		        {
 		            // Check if there is a next argument for the filename
@@ -726,10 +727,35 @@ public class Main {
 		                System.err.println("Error: The --preset option requires a file as an argument.");
 		           
 		        }
+		        else if ("--output".equals(arg) || "-o".equals(arg))
+		        {
+		            if (i + 1 < args.length) {
+		            	outputFolder = new File(args[i + 1]);
+		                i++;
+		            } else {
+		                System.err.println("Error: The --output option requires a directory path.");
+		            }
+		        }
 		        else if ("--autostart".equals(arg))
 		        {
-		            autoStart = true;
-		        }
+		            autoStart = true;		        
+			    }
+		        else if ("--help".equals(arg)) {
+		        	System.out.println("Usage: \"Shutter Encoder\" [files...] [options]");
+		            System.out.println();
+		            System.out.println("Available options:");
+		            System.out.println("  --preset <fichier.enc>  : Load a preset file at startup");
+		            System.out.println("  --output, -o <dir>      : Set a custom output directory");
+		            System.out.println("  --autostart             : Start processing as soon as files and preset are loaded");
+		            System.out.println("  --version               : Display application version");
+		            System.out.println("  --help                  : Display this help message");
+		            System.out.println();
+		            System.exit(0);
+			    }
+		        else if ("--version".equals(arg)) {
+		            System.out.println("Shutter Encoder v." + TopBar.actualVersion);
+		            System.exit(0);
+		    	}
 		        else if (new File(arg).getName().contains(".enc") == false) // If it's not a flag, treat it as a dropped file/regular argument
 		        {
 		            droppedFiles.add(arg);
@@ -772,11 +798,7 @@ public class Main {
 			}
 			
 			Utils.loadSettings(presetFile);
-		}
-		
-		//Autostart		
-		if (autoStart && !droppedFiles.isEmpty() && presetFile != null)
-		{
+			
 			try {
 				while (Utils.loadEncFile == null) //Wait for the process to initialize
 					Thread.sleep(1);
@@ -785,7 +807,23 @@ public class Main {
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
 			}
+		}
+		
+		//Output folder
+		if (outputFolder != null)
+		{
+			if (outputFolder.isFile())
+				lblDestination1.setText(outputFolder.getParent());
+			else
+				lblDestination1.setText(outputFolder.toString());
 			
+			caseChangeFolder1.setSelected(true);
+			
+		}
+		
+		//Autostart		
+		if (autoStart && !droppedFiles.isEmpty() && presetFile != null)
+		{
 			btnStart.doClick();
 		}
 	}

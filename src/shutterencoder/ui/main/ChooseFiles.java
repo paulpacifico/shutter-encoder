@@ -93,7 +93,7 @@ public class ChooseFiles extends Main {
 
 		final boolean[] sortAscending = { true };
 
-		sortName = new JLabel(language.getProperty("name") + "  ▲");
+		sortName = new JLabel(language.getProperty("name") + " ▲");
 		sortName.setBackground(Utils.c35);
 		sortName.setOpaque(false);
 		sortName.setBorder(BorderFactory.createEmptyBorder(2, 6, 2, 2));
@@ -107,6 +107,8 @@ public class ChooseFiles extends Main {
 				
 				if (btnStart.getText().equals(language.getProperty("btnStartFunction")) == false || btnStart.isEnabled() == false)
 					return;
+				
+				String item = fileList.getSelectedValue();
 				
 		        List<String> files = new ArrayList<>();
 
@@ -138,6 +140,10 @@ public class ChooseFiles extends Main {
 
 		        sortAscending[0] = !sortAscending[0];
 		        sortName.setText(sortAscending[0] ? language.getProperty("name") + " ▲" : language.getProperty("name") + " ▼");
+		        
+		        fileList.setSelectedValue(item, true);
+		        VideoPlayerUtils.setMedia();
+		        
 		    }
 		});
 		
