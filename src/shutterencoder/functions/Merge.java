@@ -129,7 +129,7 @@ public class Merge extends Main {
 						if (cancelled == false)
 						{
 							String attachedPic = "";
-							if (FFprobe.attachedPic)
+							if (FFprobe.attachedPic && FFprobe.audioOnly)
 								attachedPic = " -disposition:v:0 attached_pic";
 							
 							String cmd = timecode + openGOP + " -video_track_timescale 90000 -c:v copy -c:s copy" + audio + " -map v:0?" + attachedPic + audioMapping + metadatas + " -map s? -y ";
