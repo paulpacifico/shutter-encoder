@@ -90,7 +90,7 @@ Shutter Encoder uses a **custom Java runtime** built with **jlink**, based on **
 - [Whisper-Ctranslate2](https://github.com/Softcatala/whisper-ctranslate2) - High-Performance Speech-to-Text (used for audio transcription)
 - [BackgroundRemover](https://github.com/nadermx/backgroundremover) - AI-Powered Image/Video Matting (used for background removal)
 - [Demucs](https://github.com/facebookresearch/demucs) - Music Source Separation (used for audio separation)
-- [DeOldify](https://github.com/jantic/DeOldify) - Image and Video Restoration (used of colorization)
+- [DeOldify](https://github.com/jantic/DeOldify) - Image and Video Restoration (used for colorization)
 - [FFmpeg](https://ffmpeg.org/) - Audio/video encoding, decoding, filtering, muxing and transcoding (core processing engine of Shutter Encoder)
 - [7-Zip](https://www.7-zip.org/) - Archive extraction and compression
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) - Web video downloading engine
