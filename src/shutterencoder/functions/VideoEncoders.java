@@ -1856,7 +1856,7 @@ public class VideoEncoders extends Main {
 					}
 					else if (comboAccel.getSelectedItem().equals("VAAPI"))
 					{
-						return " -global_quality " + FunctionUtils.setVideoBitrate() + limitedBitrate;
+						return " -global_quality:v " + FunctionUtils.setVideoBitrate() + limitedBitrate;
 					}
 						
 		    		return " -crf " + FunctionUtils.setVideoBitrate() + gpu + limitedBitrate;         
