@@ -445,7 +445,8 @@ public class StatusBar extends Main {
 					if (lblVBR.getText().equals("CQ") && comboFonctions.getSelectedItem().toString().equals("AV1"))
 					{
 						String[] values = new String[257];					
-						if (System.getProperty("os.name").contains("Windows") && debitVideo.getItemCount() != 257)
+						if ((System.getProperty("os.name").contains("Windows")
+								|| comboAccel.getSelectedItem().equals("VAAPI")) && debitVideo.getItemCount() != 257)
 						{
 							values[0] = language.getProperty("lblBest");
 							for (int i = 1; i < 256; i++) {
