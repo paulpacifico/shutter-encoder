@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -226,9 +226,8 @@ public class VideoPlayerUI {
 	    else 
 	    {
 	    	screenRefreshRate = (double) 1000 / refreshRate;
-	    }
-	        						
-		player();        		
+	    } 						
+		     		
 		buttons();		
 		sliders();	
 		grpIn();
@@ -1054,6 +1053,7 @@ public class VideoPlayerUI {
 	private void buttons() {		 
     	
 		btnPrevious = new JButton("<");
+		btnPrevious.setVisible(false);
 		btnPrevious.setToolTipText("←");
 		btnPrevious.setFont(new Font(Main.mainFont, Font.BOLD, 12));
 		btnPrevious.setBackground(new Color(30,30,35, 0));
@@ -1152,6 +1152,7 @@ public class VideoPlayerUI {
 		});
 		
 		btnNext = new JButton(">");
+		btnNext.setVisible(false);
 		btnNext.setToolTipText("→");
 		btnNext.setFont(new Font(Main.mainFont, Font.BOLD, 12));	
 		btnNext.setBackground(new Color(30,30,35, 0));
@@ -1229,6 +1230,8 @@ public class VideoPlayerUI {
 		});
 		
 		btnPlay = new JButton(new FlatSVGIcon("resources/play.svg", 15, 15));
+		btnPlay.setName("play");
+		btnPlay.setVisible(false);
 		btnPlay.setMargin(new Insets(0,0,0,0));		
 		btnPlay.setBackground(new Color(30,30,35, 0));
 		btnPlay.setBorder(null);
@@ -1321,6 +1324,7 @@ public class VideoPlayerUI {
 		});
 		
 		btnStop = new JButton(new FlatSVGIcon("resources/stop.svg", 15, 15));		
+		btnStop.setVisible(false);
 		btnStop.setMargin(new Insets(0,0,0,0));	
 		btnStop.setBackground(new Color(30,30,35, 0));
 		btnStop.setBorder(null);
@@ -1380,6 +1384,7 @@ public class VideoPlayerUI {
 		});
 
 		btnMarkIn = new JButton("[");
+		btnMarkIn.setVisible(false);
 		btnMarkIn.setToolTipText("I");
 		btnMarkIn.setFont(new Font(Main.mainFont, Font.BOLD, 12));	
 		btnMarkIn.setBackground(new Color(30,30,35, 0));
@@ -1432,6 +1437,7 @@ public class VideoPlayerUI {
 		});
 		
 		btnGoToIn = new JButton("[<");
+		btnGoToIn.setVisible(false);
 		btnGoToIn.setToolTipText("⇧+I");
 		btnGoToIn.setMargin(new Insets(0,0,0,0));
 		btnGoToIn.setFont(new Font(Main.mainFont, Font.BOLD, 12));	
@@ -1508,6 +1514,7 @@ public class VideoPlayerUI {
 		});
 		
 		btnMarkOut = new JButton("]");
+		btnMarkOut.setVisible(false);
 		btnMarkOut.setToolTipText("O");
 		btnMarkOut.setFont(new Font(Main.mainFont, Font.BOLD, 12));		
 		btnMarkOut.setBackground(new Color(30,30,35, 0));
@@ -1560,6 +1567,7 @@ public class VideoPlayerUI {
 		});
 				
 		btnGoToOut = new JButton(">]");
+		btnGoToOut.setVisible(false);
 		btnGoToOut.setToolTipText("⇧+O");
 		btnGoToOut.setMargin(new Insets(0,0,0,0));
 		btnGoToOut.setFont(new Font(Main.mainFont, Font.BOLD, 12));			
@@ -1628,6 +1636,7 @@ public class VideoPlayerUI {
 		});
    
 		btnEdit = new JButton(new FlatSVGIcon("resources/cut.svg", 15, 15));
+		btnEdit.setVisible(false);
 		btnEdit.setName("cut");
 		btnEdit.setToolTipText("C");
 		btnEdit.setMargin(new Insets(0,0,0,0));		
@@ -1652,6 +1661,7 @@ public class VideoPlayerUI {
 		});
 				
 		btnReset = new JButton(new FlatSVGIcon("resources/reset.svg", 15, 15));
+		btnReset.setVisible(false);
 		btnReset.setToolTipText(Main.language.getProperty("btnReset") + Main.language.getProperty("colon") + " R");
 		btnReset.setMargin(new Insets(0,0,0,0));		
 		btnReset.setBackground(new Color(30,30,35, 0));
@@ -1715,6 +1725,7 @@ public class VideoPlayerUI {
 				}
 				
 		};
+		panelForButtons.setVisible(false);
 		Main.frame.getContentPane().add(panelForButtons);
 
 		showFPS = new JLabel("25 fps");
@@ -1724,6 +1735,7 @@ public class VideoPlayerUI {
 		Main.frame.getContentPane().add(showFPS);
 		
 		comboPlayerQuality.setName("comboPlayerQuality");
+		comboPlayerQuality.setVisible(false);
 		comboPlayerQuality.setFont(new Font(Main.mainFont, Font.PLAIN, 11));
 		comboPlayerQuality.setMaximumRowCount(4);
 		comboPlayerQuality.setSize(50, 16);
@@ -1805,7 +1817,7 @@ public class VideoPlayerUI {
         catch (Exception ignored) {}
 	}
 	
-	private void player() {		
+	public static void player() {		
 
 		player = new JPanel() {
 
@@ -3103,6 +3115,7 @@ public class VideoPlayerUI {
 	private void grpIn(){
 				
 		caseInH = new JTextField();
+		caseInH.setVisible(false);
 		caseInH.setName("caseInH");
 		caseInH.setText("00");
 		caseInH.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -3111,6 +3124,7 @@ public class VideoPlayerUI {
 		Main.frame.getContentPane().add(caseInH);
 		
 		caseInM = new JTextField();
+		caseInM.setVisible(false);
 		caseInM.setName("caseInM");
 		caseInM.setText("00");
 		caseInM.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -3119,6 +3133,7 @@ public class VideoPlayerUI {
 		Main.frame.getContentPane().add(caseInM);
 		
 		caseInS = new JTextField();
+		caseInS.setVisible(false);
 		caseInS.setName("caseInS");
 		caseInS.setText("00");
 		caseInS.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -3128,6 +3143,7 @@ public class VideoPlayerUI {
 		Main.frame.getContentPane().add(caseInS);
 		
 		caseInF = new JTextField();
+		caseInF.setVisible(false);
 		caseInF.setName("caseInF");
 		caseInF.setText("00");
 		caseInF.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -3502,6 +3518,7 @@ public class VideoPlayerUI {
 	private void grpOut(){
 		
 		caseOutH = new JTextField();
+		caseOutH.setVisible(false);
 		caseOutH.setName("caseOutH");
 		caseOutH.setText("00");
 		caseOutH.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -3510,6 +3527,7 @@ public class VideoPlayerUI {
 		Main.frame.getContentPane().add(caseOutH);
 				
 		caseOutM = new JTextField();
+		caseOutM.setVisible(false);
 		caseOutM.setName("caseOutM");
 		caseOutM.setText("00");
 		caseOutM.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -3518,6 +3536,7 @@ public class VideoPlayerUI {
 		Main.frame.getContentPane().add(caseOutM);
 		
 		caseOutS = new JTextField();
+		caseOutS.setVisible(false);
 		caseOutS.setName("caseOutS");
 		caseOutS.setText("00");
 		caseOutS.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -3526,6 +3545,7 @@ public class VideoPlayerUI {
 		Main.frame.getContentPane().add(caseOutS);
 		
 		caseOutF = new JTextField();
+		caseOutF.setVisible(false);
 		caseOutF.setName("caseOutF");
 		caseOutF.setText("00");
 		caseOutF.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -3903,9 +3923,11 @@ public class VideoPlayerUI {
 		casePlaySound.setName("casePlaySound");	
 		casePlaySound.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		casePlaySound.setSelected(true);
+		casePlaySound.setVisible(false);
 		Main.frame.getContentPane().add(casePlaySound);
 					
 		caseInternalTc = new JCheckBox(Main.language.getProperty("caseTcInterne"));
+		caseInternalTc.setVisible(false);
 		caseInternalTc.setFont(new Font(Main.mainFont, Font.PLAIN, 12));
 		Main.frame.getContentPane().add(caseInternalTc);	
 		
@@ -3952,6 +3974,7 @@ public class VideoPlayerUI {
 		Main.frame.getContentPane().add(lblSplitSec);
 		
 		comboMode.setName("comboMode");
+		comboMode.setVisible(false);
 		comboMode.setFont(new Font(Main.mainFont, Font.PLAIN, 11));
 		comboMode.setMaximumRowCount(3);
 		comboMode.setSize(76, 22);
@@ -3990,6 +4013,7 @@ public class VideoPlayerUI {
 		});
 		
 		lblMode = new JLabel(Main.language.getProperty("mode"));
+		lblMode.setVisible(false);
 		lblMode.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblMode.setFont(new Font(Main.mainFont, Font.PLAIN, 13));
 		if (Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionSubtitles")) == false && Main.comboFonctions.getSelectedItem().equals(Main.language.getProperty("functionReplaceAudio")) == false)

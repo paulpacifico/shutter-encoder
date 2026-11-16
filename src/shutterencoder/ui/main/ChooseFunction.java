@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import org.apache.commons.io.FileUtils;
@@ -952,7 +953,7 @@ public class ChooseFunction extends Main {
 			}
 
 		});
-
+		
 		comboFonctions.getEditor().getEditorComponent().addKeyListener(new KeyAdapter() {
 
 			String text = "";
@@ -1004,13 +1005,22 @@ public class ChooseFunction extends Main {
 						boolean addColorizeFunction = false;
 						boolean addBlurFaces = false;
 						boolean addBackgroundRemover = false;
+						String cat = "";
+						boolean catAdded = true;
+						
 						for (int i = 0; i < comboFonctions.getItemCount(); i++)
 						{
 							if (functionsList.get(i).toString().length() >= text.length())
 							{
+								if (functionsList.get(i).toString().contains(":"))
+								{
+									cat = functionsList.get(i).toString();
+									catAdded = false;
+								}
+							
 							    if (functionsList.get(i).toString().toLowerCase().substring(0, text.length()).contains(text)
 							    && functionsList.get(i).toString().contains(":") == false)
-							    {
+							    {							    	
 							        if (functionsList.get(i).toString().equals(language.getProperty("functionTranscribe")))
 							        {
 							            addTranscribeFunction = true;
@@ -1032,7 +1042,15 @@ public class ChooseFunction extends Main {
 							            addBackgroundRemover = true;
 							        }
 							        else
-							            newList.add(functionsList.get(i).toString());
+							        {	
+							        	if (catAdded == false)
+							        	{
+								        	newList.add(cat);
+								        	catAdded = true;
+							        	}
+							        	
+							        	newList.add(functionsList.get(i).toString());
+							        }
 							    }
 							}
 						}
@@ -1068,9 +1086,35 @@ public class ChooseFunction extends Main {
 						if (newList.isEmpty() == false)
 						{
 							comboFonctions.setModel(new DefaultComboBoxModel(newList.toArray()));
-							comboFonctions.showPopup();
+
+							if (comboFonctions.getSelectedItem() != null && comboFonctions.getSelectedItem().toString().contains(":"))
+							{
+								int nextIndex = comboFonctions.getSelectedIndex() + 1;
+							   
+							    if (nextIndex < comboFonctions.getItemCount()) {								    	 
+							        comboFonctions.getEditor().setItem(comboFonctions.getItemAt(nextIndex));
+							    }
+							}
 							
 							debounceTimer = new Timer(DEBOUNCE_DELAY, event -> {
+								
+								if (comboFonctions.getSelectedItem() != null && comboFonctions.getSelectedItem().toString().contains(":"))
+								{
+									int nextIndex = comboFonctions.getSelectedIndex() + 1;
+								   
+								    if (nextIndex < comboFonctions.getItemCount()) {								    	 
+								        comboFonctions.setSelectedIndex(nextIndex);
+								    }
+								}
+																
+								SwingUtilities.invokeLater(() -> {
+									
+									if (comboFonctions.getItemCount() > 2)
+										comboFonctions.showPopup();									    
+																		
+									comboFonctions.getEditor().getEditorComponent().requestFocusInWindow();
+								});
+																
 		                        UIController.changeFilters();
 		                        UIController.changeFunction(true);
 		                    });
@@ -1107,6 +1151,39 @@ public class ChooseFunction extends Main {
 					}
 				}
 			}
+			
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+			    if (e.getKeyCode() == KeyEvent.VK_DOWN ||
+			        e.getKeyCode() == KeyEvent.VK_UP) {
+
+			        e.consume();
+
+			        int index = comboFonctions.getSelectedIndex();
+
+			        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+
+			            if (index < comboFonctions.getItemCount() - 1) {
+			                comboFonctions.setSelectedIndex(index + 1);
+			            }
+
+			        } else if (e.getKeyCode() == KeyEvent.VK_UP) {
+
+			            if (index > 0) {
+			                comboFonctions.setSelectedIndex(index - 1);
+			            }
+			        }
+
+			        SwingUtilities.invokeLater(() -> {
+
+			            comboFonctions.showPopup();
+
+			            comboFonctions.getEditor().getEditorComponent().requestFocusInWindow();
+			        });
+			    }
+			}
+			
 		});
 
 		String AllFilters[] = { language.getProperty("aucun"), ".mp3", ".wav", ".aif", ".m4a", ".avi", ".flv", ".mp4",

@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,7 @@ public class Crop extends Main {
 		grpCrop.setOpaque(false);
 		grpCrop.setBackground(Utils.c30);
 		grpCrop.setSize(312, 17);
-		grpCrop.setLocation(frame.getWidth(), grpImageAdjustement.getY());
+		grpCrop.setLocation(frame.getWidth(), grpImageAdjustment.getY());
 		frame.getContentPane().add(grpCrop);
 
 		grpCrop.addMouseListener(new MouseAdapter() {

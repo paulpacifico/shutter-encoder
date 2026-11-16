@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -595,9 +595,7 @@ public class UIController extends Main {
 		}
 
 		setGPUOptions();
-
-		lblV.setLocation(lblShutterEncoder.getX() + lblShutterEncoder.getWidth(), 5);
-
+		
 		int grpX = frame.getWidth() - 312 - 12;
 		
 		grpFileInformation.setLocation(grpX, grpFileInformation.getLocation().y);
@@ -610,7 +608,7 @@ public class UIController extends Main {
 		grpSubtitles.setLocation(grpX, grpSubtitles.getLocation().y);
 		grpWatermark.setLocation(grpX, grpWatermark.getLocation().y);
 		grpColorimetry.setLocation(grpX, grpColorimetry.getLocation().y);
-		grpImageAdjustement.setLocation(grpX, grpImageAdjustement.getLocation().y);
+		grpImageAdjustment.setLocation(grpX, grpImageAdjustment.getLocation().y);
 		grpCorrections.setLocation(grpX, grpCorrections.getLocation().y);
 		grpTransitions.setLocation(grpX, grpTransitions.getLocation().y);
 		grpImageSequence.setLocation(grpX, grpImageSequence.getLocation().y);
@@ -666,8 +664,8 @@ public class UIController extends Main {
 			grpSubtitles.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getLocation().y + height);
 			grpWatermark.setLocation(grpWatermark.getLocation().x, grpWatermark.getLocation().y + height);
 			grpColorimetry.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getLocation().y + height);
-			grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x,
-					grpImageAdjustement.getLocation().y + height);
+			grpImageAdjustment.setLocation(grpImageAdjustment.getLocation().x,
+					grpImageAdjustment.getLocation().y + height);
 			grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y + height);
 			grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y + height);
 			grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y + height);
@@ -731,8 +729,10 @@ public class UIController extends Main {
 		}
 		else
 		{
-			lblShutterEncoder.setBounds((frame.getWidth() - lblShutterEncoder.getPreferredSize().width) / 2 - 28, 1, lblShutterEncoder.getPreferredSize().width + 10, 24);
+			lblShutterEncoder.setLocation((frame.getWidth() - lblShutterEncoder.getPreferredSize().width) / 2 - 28, 1);
 		}
+		
+		lblV.setLocation(lblShutterEncoder.getX() + lblShutterEncoder.getWidth(), 5);
 	}
 	
 	public static void setButtonsLocation() {
@@ -748,20 +748,23 @@ public class UIController extends Main {
 	
 	public static void setGPUOptions() {
 
-		String function = comboFonctions.getSelectedItem().toString();
-
-		if ("Apple ProRes".equals(function) && System.getProperty("os.name").contains("Mac") && arch.equals("arm64")
-		|| "Apple ProRes".equals(function) && System.getProperty("os.name").contains("Windows")
-		|| "H.264".equals(function) || "H.265".equals(function) || "H.266".equals(function)
-		|| "AV1".equals(function) || System.getProperty("os.name").contains("Windows") && "VP9".equals(function)
-		|| System.getProperty("os.name").contains("Windows") && "FFV1".equals(function)
-		|| System.getProperty("os.name").contains("Windows") && language.getProperty("functionPicture").equals(function) && comboFilter.getSelectedItem().toString().equals(".avif"))
+		if (comboFonctions != null)
 		{
-			lblHWaccel.setVisible(true);
-			comboAccel.setVisible(true);
-		} else {
-			lblHWaccel.setVisible(false);
-			comboAccel.setVisible(false);
+			String function = comboFonctions.getSelectedItem().toString();
+	
+			if ("Apple ProRes".equals(function) && System.getProperty("os.name").contains("Mac") && arch.equals("arm64")
+			|| "Apple ProRes".equals(function) && System.getProperty("os.name").contains("Windows")
+			|| "H.264".equals(function) || "H.265".equals(function) || "H.266".equals(function)
+			|| "AV1".equals(function) || System.getProperty("os.name").contains("Windows") && "VP9".equals(function)
+			|| System.getProperty("os.name").contains("Windows") && "FFV1".equals(function)
+			|| System.getProperty("os.name").contains("Windows") && language.getProperty("functionPicture").equals(function) && comboFilter.getSelectedItem().toString().equals(".avif"))
+			{
+				lblHWaccel.setVisible(true);
+				comboAccel.setVisible(true);
+			} else {
+				lblHWaccel.setVisible(false);
+				comboAccel.setVisible(false);
+			}
 		}
 
 		if (Settings.btnDisableVideoPlayer.isSelected())
@@ -905,7 +908,7 @@ public class UIController extends Main {
 							grpSubtitles.setSize(grpSubtitles.getSize().width, 17);
 							grpWatermark.setSize(grpWatermark.getSize().width, 17);
 							grpColorimetry.setSize(grpColorimetry.getSize().width, 17);
-							grpImageAdjustement.setSize(grpImageAdjustement.getSize().width, 17);
+							grpImageAdjustment.setSize(grpImageAdjustment.getSize().width, 17);
 							grpCorrections.setSize(grpCorrections.getSize().width, 17);
 							grpTransitions.setSize(grpTransitions.getSize().width, 17);
 							grpImageSequence.setSize(grpImageSequence.getSize().width, 17);
@@ -939,7 +942,7 @@ public class UIController extends Main {
 							grpSubtitles.setVisible(false);
 							grpWatermark.setVisible(false);
 							grpColorimetry.setVisible(false);
-							grpImageAdjustement.setVisible(false);
+							grpImageAdjustment.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
 							grpImageSequence.setVisible(false);
@@ -997,7 +1000,7 @@ public class UIController extends Main {
 							grpSubtitles.setVisible(false);
 							grpWatermark.setVisible(false);
 							grpColorimetry.setVisible(false);
-							grpImageAdjustement.setVisible(false);
+							grpImageAdjustment.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
 							grpImageSequence.setVisible(false);
@@ -1294,7 +1297,7 @@ public class UIController extends Main {
 							grpSubtitles.setVisible(false);
 							grpWatermark.setVisible(false);
 							grpColorimetry.setVisible(false);
-							grpImageAdjustement.setVisible(false);
+							grpImageAdjustment.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
 							grpImageSequence.setVisible(false);
@@ -1352,7 +1355,7 @@ public class UIController extends Main {
 							grpSubtitles.setVisible(false);
 							grpWatermark.setVisible(false);
 							grpColorimetry.setVisible(false);
-							grpImageAdjustement.setVisible(false);
+							grpImageAdjustment.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
 							grpImageSequence.setVisible(true);
@@ -1368,16 +1371,18 @@ public class UIController extends Main {
 								|| "AC3".equals(function) || "Opus".equals(function) || "Vorbis".equals(function)
 								|| "Dolby Digital Plus".equals(function) || "Dolby TrueHD".equals(function)) {
 
-							if (anim) {
-								if (function.equals("MP3")
-										|| function.equals("AAC")
-										|| function.equals("Vorbis")) {
+							if (anim)
+							{
+								if (function.equals("MP3") || function.equals("AAC") || function.equals("Vorbis"))
+								{
 									comboFilter.setSelectedIndex(9);
-								} else if (function.equals("AC3")
-										|| function
-												.equals("Dolby Digital Plus")) {
+								}
+								else if (function.equals("AC3") || function.equals("Dolby Digital Plus"))
+								{
 									comboFilter.setSelectedIndex(7);
-								} else if (function.equals("Opus")) {
+								}
+								else if (function.equals("Opus"))
+								{
 									comboFilter.setSelectedIndex(11);
 								}
 							}
@@ -1409,7 +1414,7 @@ public class UIController extends Main {
 							grpSubtitles.setVisible(false);
 							grpWatermark.setVisible(false);
 							grpColorimetry.setVisible(false);
-							grpImageAdjustement.setVisible(false);
+							grpImageAdjustment.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(true);
 							grpImageSequence.setVisible(false);
@@ -1473,7 +1478,7 @@ public class UIController extends Main {
 							grpWatermark.setVisible(false);
 							grpAudio.setVisible(false);
 							grpColorimetry.setVisible(false);
-							grpImageAdjustement.setVisible(false);
+							grpImageAdjustment.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
 							grpImageSequence.setVisible(false);
@@ -1731,12 +1736,12 @@ public class UIController extends Main {
 							grpColorimetry.setVisible(true);
 							grpColorimetry.setLocation(grpColorimetry.getX(),
 									grpWatermark.getSize().height + grpWatermark.getLocation().y + 6);
-							grpImageAdjustement.setVisible(true);
-							grpImageAdjustement.setLocation(grpImageAdjustement.getX(),
+							grpImageAdjustment.setVisible(true);
+							grpImageAdjustment.setLocation(grpImageAdjustment.getX(),
 									grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);
 							grpCorrections.setVisible(true);
 							grpCorrections.setLocation(grpCorrections.getX(),
-									grpImageAdjustement.getSize().height + grpImageAdjustement.getLocation().y + 6);
+									grpImageAdjustment.getSize().height + grpImageAdjustment.getLocation().y + 6);
 							grpTransitions.setVisible(true);
 							grpTransitions.setLocation(grpTransitions.getX(),
 									grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
@@ -2004,12 +2009,12 @@ public class UIController extends Main {
 							grpColorimetry.setVisible(true);
 							grpColorimetry.setLocation(grpColorimetry.getX(),
 									grpWatermark.getSize().height + grpWatermark.getLocation().y + 6);
-							grpImageAdjustement.setVisible(true);
-							grpImageAdjustement.setLocation(grpImageAdjustement.getX(),
+							grpImageAdjustment.setVisible(true);
+							grpImageAdjustment.setLocation(grpImageAdjustment.getX(),
 									grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);
 							grpCorrections.setVisible(true);
 							grpCorrections.setLocation(grpCorrections.getX(),
-									grpImageAdjustement.getSize().height + grpImageAdjustement.getLocation().y + 6);
+									grpImageAdjustment.getSize().height + grpImageAdjustment.getLocation().y + 6);
 							grpTransitions.setVisible(true);
 							grpTransitions.setLocation(grpTransitions.getX(),
 									grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
@@ -2599,12 +2604,12 @@ public class UIController extends Main {
 							grpColorimetry.setVisible(true);
 							grpColorimetry.setLocation(grpColorimetry.getX(),
 									grpWatermark.getSize().height + grpWatermark.getLocation().y + 6);
-							grpImageAdjustement.setVisible(true);
-							grpImageAdjustement.setLocation(grpImageAdjustement.getX(),
+							grpImageAdjustment.setVisible(true);
+							grpImageAdjustment.setLocation(grpImageAdjustment.getX(),
 									grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);
 							grpCorrections.setVisible(true);
 							grpCorrections.setLocation(grpCorrections.getX(),
-									grpImageAdjustement.getSize().height + grpImageAdjustement.getLocation().y + 6);
+									grpImageAdjustment.getSize().height + grpImageAdjustment.getLocation().y + 6);
 							grpTransitions.setVisible(true);
 							grpTransitions.setLocation(grpTransitions.getX(),
 									grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
@@ -3175,12 +3180,12 @@ public class UIController extends Main {
 							grpColorimetry.setVisible(true);
 							grpColorimetry.setLocation(grpColorimetry.getX(),
 									grpWatermark.getSize().height + grpWatermark.getLocation().y + 6);
-							grpImageAdjustement.setVisible(true);
-							grpImageAdjustement.setLocation(grpImageAdjustement.getX(),
+							grpImageAdjustment.setVisible(true);
+							grpImageAdjustment.setLocation(grpImageAdjustment.getX(),
 									grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);
 							grpCorrections.setVisible(true);
 							grpCorrections.setLocation(grpCorrections.getX(),
-									grpImageAdjustement.getSize().height + grpImageAdjustement.getLocation().y + 6);
+									grpImageAdjustment.getSize().height + grpImageAdjustment.getLocation().y + 6);
 							grpTransitions.setVisible(true);
 							grpTransitions.setLocation(grpTransitions.getX(),
 									grpCorrections.getSize().height + grpCorrections.getLocation().y + 6);
@@ -3501,7 +3506,7 @@ public class UIController extends Main {
 							grpSubtitles.setVisible(false);
 							grpWatermark.setVisible(false);
 							grpColorimetry.setVisible(false);
-							grpImageAdjustement.setVisible(false);
+							grpImageAdjustment.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
 							grpImageSequence.setVisible(false);
@@ -3754,7 +3759,7 @@ public class UIController extends Main {
 									grpSetAudio.getSize().height + grpSetAudio.getLocation().y + 6);
 							grpWatermark.setVisible(false);
 							grpColorimetry.setVisible(false);
-							grpImageAdjustement.setVisible(false);
+							grpImageAdjustment.setVisible(false);
 							grpCorrections.setVisible(false);
 							grpTransitions.setVisible(false);
 							grpImageSequence.setVisible(false);
@@ -3889,12 +3894,12 @@ public class UIController extends Main {
 							grpColorimetry.setVisible(true);
 							grpColorimetry.setLocation(grpColorimetry.getX(),
 									grpWatermark.getSize().height + grpWatermark.getLocation().y + 6);
-							grpImageAdjustement.setVisible(true);
-							grpImageAdjustement.setLocation(grpImageAdjustement.getX(),
+							grpImageAdjustment.setVisible(true);
+							grpImageAdjustment.setLocation(grpImageAdjustment.getX(),
 									grpColorimetry.getSize().height + grpColorimetry.getLocation().y + 6);
 							grpCorrections.setVisible(true);
 							grpCorrections.setLocation(grpCorrections.getX(),
-									grpImageAdjustement.getSize().height + grpImageAdjustement.getLocation().y + 6);
+									grpImageAdjustment.getSize().height + grpImageAdjustment.getLocation().y + 6);
 							grpTransitions.setVisible(false);
 							grpImageSequence.setVisible(false);
 							grpImageFilter.setVisible(false);
@@ -4001,7 +4006,7 @@ public class UIController extends Main {
 					grpSubtitles.setVisible(false);
 					grpWatermark.setVisible(false);
 					grpColorimetry.setVisible(false);
-					grpImageAdjustement.setVisible(false);
+					grpImageAdjustment.setVisible(false);
 					grpCorrections.setVisible(false);
 					grpTransitions.setVisible(false);
 					grpImageSequence.setVisible(false);
@@ -4194,7 +4199,7 @@ public class UIController extends Main {
 	            {
 	                settingsScrollBar.setVisible(true);
 	                
-	                if (expanding && (grpPanel.getName() == null || !grpPanel.getName().equals("grpImageAdjustement"))) {
+	                if (expanding && (grpPanel.getName() == null || !grpPanel.getName().equals("grpImageAdjustment"))) {
 	                    // Scroll down when expanding
 	                    for (Component c2 : frame.getContentPane().getComponents()) {
 	                        if (c2 instanceof JPanel && c2.isVisible() && c2.getX() == grpPanel.getX()) {
@@ -5165,7 +5170,7 @@ public class UIController extends Main {
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(false);
 		}
-		components = grpImageAdjustement.getComponents();
+		components = grpImageAdjustment.getComponents();
 		for (int i = 0; i < components.length; i++) {
 			components[i].setEnabled(false);
 		}
@@ -5538,7 +5543,7 @@ public class UIController extends Main {
 		}
 
 		if (inputDeviceIsRunning == false) {
-			components = grpImageAdjustement.getComponents();
+			components = grpImageAdjustment.getComponents();
 			for (int i = 0; i < components.length; i++) {
 				components[i].setEnabled(true);
 			}

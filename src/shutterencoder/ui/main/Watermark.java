@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -365,8 +365,8 @@ public class Watermark extends Main {
 							caseAddWatermark.doClick();
 							inputDevice.doClick();
 							inputDeviceIsRunning = false;
-							grpImageAdjustement.setEnabled(true);
-							Component[] components = Main.grpImageAdjustement.getComponents();
+							grpImageAdjustment.setEnabled(true);
+							Component[] components = Main.grpImageAdjustment.getComponents();
 							for (int i = 0; i < components.length; i++) {
 								components[i].setEnabled(true);
 							}

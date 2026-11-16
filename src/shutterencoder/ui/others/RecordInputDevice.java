@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -469,8 +469,8 @@ public class RecordInputDevice {
 				
 				//Important
 				Main.inputDeviceIsRunning = true;
-				Main.grpImageAdjustement.setEnabled(false);
-				Component[] components = Main.grpImageAdjustement.getComponents();
+				Main.grpImageAdjustment.setEnabled(false);
+				Component[] components = Main.grpImageAdjustment.getComponents();
 				for (int i = 0; i < components.length; i++) {
 					components[i].setEnabled(false);
 				}

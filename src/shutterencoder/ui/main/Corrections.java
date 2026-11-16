@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ public class Corrections extends Main {
 		grpCorrections.setVisible(false);
 		grpCorrections.setOpaque(false);
 		grpCorrections.setBackground(Utils.c30);
-		grpCorrections.setBounds(frame.getWidth(), grpImageAdjustement.getY() + grpImageAdjustement.getHeight() + 6,
+		grpCorrections.setBounds(frame.getWidth(), grpImageAdjustment.getY() + grpImageAdjustment.getHeight() + 6,
 				312, 17);
 		frame.getContentPane().add(grpCorrections);
 

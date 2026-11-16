@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import shutterencoder.library.Anonymizer;
 import shutterencoder.library.BackgroundRemover;
@@ -147,6 +148,7 @@ public class Main {
 	public static StringBuilder errorList = new StringBuilder();
 	public static NumberFormat formatter = new DecimalFormat("00");
 	public static NumberFormat formatterToMs = new DecimalFormat("000");
+	public static boolean allowDragAndDrop = false;
 
 	public static int MousePositionX;
 	public static int MousePositionY;
@@ -478,8 +480,8 @@ public class Main {
 	private static Thread scrollThread;
 	private boolean allowScrolling = false;
 
-	// grpImageAdjustement
-	public static JPanel grpImageAdjustement;
+	// grpImageAdjustment
+	public static JPanel grpImageAdjustment;
 	public static JButton btnResetColor;
 	public static JCheckBox caseEnableColorimetry;
 	public static JComboBox<String> comboRGB;
@@ -687,7 +689,7 @@ public class Main {
 
 	public static void main(String[] args) {
 		
-		new SplashRenderer();
+		SwingUtilities.invokeLater(() -> new SplashRenderer());
 
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("apple.awt.textAntialiasing", "on");
@@ -765,6 +767,7 @@ public class Main {
 		
 		Utils.setLanguage();
 		SplashRenderer.increment();
+		
 		Utils.loadThemes();
 		SplashRenderer.increment();
 
@@ -880,29 +883,6 @@ public class Main {
 		if (System.getProperty("os.name").contains("Mac") == false)
 			frame.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("resources/icon.png")).getImage());
 
-		frame.addWindowListener(new WindowAdapter() {
-
-			@Override
-			public void windowClosing(WindowEvent e) {
-				Settings.saveSettings();
-			}
-
-		});
-
-		frame.addComponentListener(new ComponentAdapter() {
-
-			public void componentResized(ComponentEvent e) {
-
-				if (windowDrag == false)
-				{
-					if (VideoPlayerUI.player != null)
-						VideoPlayerUI.resizeAll();
-				}
-				else
-					UIController.resizeAll(frame.getWidth(), 0);
-			}
-		});
-
 		soundURL = this.getClass().getClassLoader().getResource("resources/complete.wav");
 		soundErrorURL = this.getClass().getClassLoader().getResource("resources/error.wav");
 
@@ -961,63 +941,61 @@ public class Main {
 		Progress.grpProgress();
 		SplashRenderer.increment();
 		
-		Scaling.grpScaling();
-		SplashRenderer.increment();
-		
-		ImageFilter.grpImageFilter();
-		SplashRenderer.increment();
-		
-		SetAudio.grpSetAudio();
-		SplashRenderer.increment();
-		
-		Audio.grpAudio();
-		SplashRenderer.increment();
-		
-		Advanced.grpAdvanced();
-		SplashRenderer.increment();
-		
-		ImageAdjustement.grpImageAdjustement();
-		SplashRenderer.increment();
-		
-		Crop.grpCrop();
-		SplashRenderer.increment();
-		
-		SetTimecode.grpSetTimecode();
-		SplashRenderer.increment();
-		
-		Overlay.grpOverlay();
-		SplashRenderer.increment();
-		
-		Subtitles.grpSubtitles();
-		SplashRenderer.increment();
-		
-		Watermark.grpWatermark();
-		SplashRenderer.increment();
-		
-		Colorimetry.grpColorimetry();
-		SplashRenderer.increment();
-		
-		Corrections.grpCorrections();
-		SplashRenderer.increment();
-		
-		Transitions.grpTransitions();
-		SplashRenderer.increment();
-		
-		ImageSequence.grpImageSequence();
-		SplashRenderer.increment();
-		
-		Bitrate.grpBitrate();
-		SplashRenderer.increment();
-		
 		FileInformation.grpFileInformation();
 		SplashRenderer.increment();
 		
-		Reset.btnReset();
-		SplashRenderer.increment();
+		//Load only the video player black frame
+		VideoPlayerUI.player();  
+		
+		int maxWidth = Main.frame.getWidth() - 40 - Main.grpChooseFiles.getWidth() * 2;
+		int height = (int) (maxWidth / FFprobe.imageRatio);	
+		VideoPlayerUI.player.setSize(maxWidth, height);
+		
+		int y = frame.getHeight() / 2 - VideoPlayerUI.player.getHeight() / 2;
+		VideoPlayerUI.player.setLocation((frame.getWidth() - VideoPlayerUI.player.getSize().width) / 2, y);
+						
+		//Frame can be displayed
+		SplashRenderer.instance.dispose();
+		Utils.changeFrameVisibility(frame, false);
+
+		//loaded everything after		
+		Scaling.grpScaling();
+		
+		ImageFilter.grpImageFilter();
+		
+		SetAudio.grpSetAudio();
+		
+		Audio.grpAudio();
+		
+		Advanced.grpAdvanced();
+		
+		ImageAdjustment.grpImageAdjustment();
+		
+		Crop.grpCrop();		
+		
+		SetTimecode.grpSetTimecode();		
+		
+		Overlay.grpOverlay();		
+		
+		Subtitles.grpSubtitles();		
+		
+		Watermark.grpWatermark();		
+		
+		Colorimetry.grpColorimetry();		
+		
+		Corrections.grpCorrections();		
+		
+		Transitions.grpTransitions();		
+		
+		ImageSequence.grpImageSequence();		
+		
+		Bitrate.grpBitrate();		
+				
+		Reset.btnReset();		
 		
 		//Load the video player finally
-		new VideoPlayerUI();
-		SplashRenderer.increment();
+		new VideoPlayerUI();		
+		allowDragAndDrop = true;
 		
 		settingsScrollBar = new JScrollBar();
 		settingsScrollBar.setVisible(false);
@@ -1122,8 +1100,8 @@ public class Main {
 													grpWatermark.getLocation().y + i);
 											grpColorimetry.setLocation(grpColorimetry.getLocation().x,
 													grpColorimetry.getLocation().y + i);
-											grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x,
-													grpImageAdjustement.getLocation().y + i);
+											grpImageAdjustment.setLocation(grpImageAdjustment.getLocation().x,
+													grpImageAdjustment.getLocation().y + i);
 											grpCorrections.setLocation(grpCorrections.getLocation().x,
 													grpCorrections.getLocation().y + i);
 											grpTransitions.setLocation(grpTransitions.getLocation().x,
@@ -1307,9 +1285,11 @@ public class Main {
 		}
 
 		//Load settings
-		new Settings();
-		SplashRenderer.increment();
+		new Settings();		
 
+		//Focus on start function button
+		btnStart.requestFocus();
+		
 		Ytdlp.update();
 		Exiftool.run('"' + "" + '"'); // Preload the binary
 
@@ -1346,11 +1326,6 @@ public class Main {
 				}
 			}
 		}
-		
-		SplashRenderer.instance.dispose();
-		Utils.changeFrameVisibility(frame, false);
-		btnStart.requestFocus();
-		UIController.changeWidth();
 
 		if (Settings.btnLoadPreset.isSelected() && Settings.comboLoadPreset.getItemCount() > 0 && presetFile == false)
 		{
@@ -1383,6 +1358,29 @@ public class Main {
 
 		if (Settings.btnDisableUpdate.isSelected() == false)
 			Update.newVersion();
+		
+		frame.addWindowListener(new WindowAdapter() {
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				Settings.saveSettings();
+			}
+
+		});
+
+		frame.addComponentListener(new ComponentAdapter() {
+
+			public void componentResized(ComponentEvent e) {
+
+				if (windowDrag == false)
+				{
+					if (VideoPlayerUI.player != null)
+						VideoPlayerUI.resizeAll();
+				}
+				else
+					UIController.resizeAll(frame.getWidth(), 0);
+			}
+		});
 
 		availableMemory = Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
 	}

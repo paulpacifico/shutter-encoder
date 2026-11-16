@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -445,8 +445,8 @@ public class StatusBar extends Main {
 					if (lblVBR.getText().equals("CQ") && comboFonctions.getSelectedItem().toString().equals("AV1"))
 					{
 						String[] values = new String[257];					
-						if ((System.getProperty("os.name").contains("Windows")
-								|| comboAccel.getSelectedItem().equals("VAAPI")) && debitVideo.getItemCount() != 257)
+						if ((System.getProperty("os.name").contains("Windows") || comboAccel.getSelectedItem().equals("VAAPI"))
+						&& debitVideo.getItemCount() != 257)
 						{
 							values[0] = language.getProperty("lblBest");
 							for (int i = 1; i < 256; i++) {
@@ -657,7 +657,7 @@ public class StatusBar extends Main {
 
 		});
 
-		lblYears = new JLabel("2013-2026");
+		lblYears = new JLabel("2013-2027");
 		lblYears.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYears.setForeground(Color.WHITE);
 		lblYears.setFont(new Font(mainFont, Font.PLAIN, 12));
@@ -771,5 +771,6 @@ public class StatusBar extends Main {
 
 		frame.getContentPane().add(statusBar);
 
+		UIController.setGPUOptions();
 	}
 }

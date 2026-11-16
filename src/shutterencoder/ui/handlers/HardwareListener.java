@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -381,7 +381,7 @@ public class HardwareListener extends Main {
 					grpSubtitles.setLocation(grpSubtitles.getLocation().x, grpSubtitles.getLocation().y + i);
 					grpWatermark.setLocation(grpWatermark.getLocation().x, grpWatermark.getLocation().y + i);
 					grpColorimetry.setLocation(grpColorimetry.getLocation().x, grpColorimetry.getLocation().y + i);
-					grpImageAdjustement.setLocation(grpImageAdjustement.getLocation().x, grpImageAdjustement.getLocation().y + i);
+					grpImageAdjustment.setLocation(grpImageAdjustment.getLocation().x, grpImageAdjustment.getLocation().y + i);
 					grpCorrections.setLocation(grpCorrections.getLocation().x, grpCorrections.getLocation().y + i);
 					grpTransitions.setLocation(grpTransitions.getLocation().x, grpTransitions.getLocation().y + i);
 					grpImageSequence.setLocation(grpImageSequence.getLocation().x, grpImageSequence.getLocation().y + i);

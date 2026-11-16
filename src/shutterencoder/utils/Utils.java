@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -85,7 +85,6 @@ import com.formdev.flatlaf.ui.FlatLineBorder;
 import com.formdev.flatlaf.util.SystemFileChooser;
 
 import shutterencoder.functions.Transcribe;
-import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.Bmxtranswrap;
 import shutterencoder.library.Dcraw;
@@ -1396,7 +1395,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValueallR = document.createElement("Value");
-					cValueallR.appendChild(document.createTextNode(String.valueOf(Colorimetry.allR)));
+					cValueallR.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.allR)));
 					componentallR.appendChild(cValueallR);
 	
 					color.appendChild(componentallR);
@@ -1416,7 +1415,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValueallG = document.createElement("Value");
-					cValueallG.appendChild(document.createTextNode(String.valueOf(Colorimetry.allG)));
+					cValueallG.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.allG)));
 					componentallG.appendChild(cValueallG);
 	
 					color.appendChild(componentallG);
@@ -1436,7 +1435,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValueallB = document.createElement("Value");
-					cValueallB.appendChild(document.createTextNode(String.valueOf(Colorimetry.allB)));
+					cValueallB.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.allB)));
 					componentallB.appendChild(cValueallB);
 	
 					color.appendChild(componentallB);
@@ -1456,7 +1455,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuehighR = document.createElement("Value");
-					cValuehighR.appendChild(document.createTextNode(String.valueOf(Colorimetry.highR)));
+					cValuehighR.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.highR)));
 					componenthighR.appendChild(cValuehighR);
 	
 					color.appendChild(componenthighR);
@@ -1476,7 +1475,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuehighG = document.createElement("Value");
-					cValuehighG.appendChild(document.createTextNode(String.valueOf(Colorimetry.highG)));
+					cValuehighG.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.highG)));
 					componenthighG.appendChild(cValuehighG);
 	
 					color.appendChild(componenthighG);
@@ -1496,7 +1495,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuehighB = document.createElement("Value");
-					cValuehighB.appendChild(document.createTextNode(String.valueOf(Colorimetry.highB)));
+					cValuehighB.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.highB)));
 					componenthighB.appendChild(cValuehighB);
 	
 					color.appendChild(componenthighB);
@@ -1516,7 +1515,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuemediumR = document.createElement("Value");
-					cValuemediumR.appendChild(document.createTextNode(String.valueOf(Colorimetry.mediumR)));
+					cValuemediumR.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.mediumR)));
 					componentmediumR.appendChild(cValuemediumR);
 	
 					color.appendChild(componentmediumR);
@@ -1536,7 +1535,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuemediumG = document.createElement("Value");
-					cValuemediumG.appendChild(document.createTextNode(String.valueOf(Colorimetry.mediumG)));
+					cValuemediumG.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.mediumG)));
 					componentmediumG.appendChild(cValuemediumG);
 	
 					color.appendChild(componentmediumG);
@@ -1556,7 +1555,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuemediumB = document.createElement("Value");
-					cValuemediumB.appendChild(document.createTextNode(String.valueOf(Colorimetry.mediumB)));
+					cValuemediumB.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.mediumB)));
 					componentmediumB.appendChild(cValuemediumB);
 	
 					color.appendChild(componentmediumB);										
@@ -1576,7 +1575,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuelowR = document.createElement("Value");
-					cValuelowR.appendChild(document.createTextNode(String.valueOf(Colorimetry.lowR)));
+					cValuelowR.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.lowR)));
 					componentlowR.appendChild(cValuelowR);
 	
 					color.appendChild(componentlowR);
@@ -1596,7 +1595,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuelowG = document.createElement("Value");
-					cValuelowG.appendChild(document.createTextNode(String.valueOf(Colorimetry.lowG)));
+					cValuelowG.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.lowG)));
 					componentlowG.appendChild(cValuelowG);
 	
 					color.appendChild(componentlowG);
@@ -1616,7 +1615,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuelowB = document.createElement("Value");
-					cValuelowB.appendChild(document.createTextNode(String.valueOf(Colorimetry.lowB)));
+					cValuelowB.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.lowB)));
 					componentlowB.appendChild(cValuelowB);
 	
 					color.appendChild(componentlowB);
@@ -1636,7 +1635,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuevibranceValue = document.createElement("Value");
-					cValuevibranceValue.appendChild(document.createTextNode(String.valueOf(Colorimetry.vibranceValue)));
+					cValuevibranceValue.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.vibranceValue)));
 					componentvibranceValue.appendChild(cValuevibranceValue);
 	
 					color.appendChild(componentvibranceValue);
@@ -1656,7 +1655,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuevibranceR = document.createElement("Value");
-					cValuevibranceR.appendChild(document.createTextNode(String.valueOf(Colorimetry.vibranceR)));
+					cValuevibranceR.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.vibranceR)));
 					componentvibranceR.appendChild(cValuevibranceR);
 	
 					color.appendChild(componentvibranceR);
@@ -1676,7 +1675,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuevibranceG = document.createElement("Value");
-					cValuevibranceG.appendChild(document.createTextNode(String.valueOf(Colorimetry.vibranceG)));
+					cValuevibranceG.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.vibranceG)));
 					componentvibranceG.appendChild(cValuevibranceG);
 	
 					color.appendChild(componentvibranceG);
@@ -1696,7 +1695,7 @@ public class Utils extends Main {
 					
 					//Value
 					Element cValuevibranceB = document.createElement("Value");
-					cValuevibranceB.appendChild(document.createTextNode(String.valueOf(Colorimetry.vibranceB)));
+					cValuevibranceB.appendChild(document.createTextNode(String.valueOf(shutterencoder.functions.settings.ImageAdjustment.vibranceB)));
 					componentvibranceB.appendChild(cValuevibranceB);
 	
 					color.appendChild(componentvibranceB);
@@ -1835,7 +1834,7 @@ public class Utils extends Main {
 												{
 													continue;
 												}
-												
+																								
 												//For lock icon only
 												if (p.getName() != "" && p.getName() != null)
 												{
@@ -2079,7 +2078,7 @@ public class Utils extends Main {
 														((JSpinner) p).setVisible(Boolean.valueOf(eElement.getElementsByTagName("Visible").item(0).getFirstChild().getTextContent()));
 													}
 													else if (p instanceof JPanel)
-													{
+													{													
 														//Value
 														String s[] = eElement.getElementsByTagName("Value").item(0).getFirstChild().getTextContent().replace("]", "").replace("r=", "").replace("g=", "").replace("b=", "").split("\\[");
 														String s2[] = s[1].split(",");
@@ -2304,9 +2303,9 @@ public class Utils extends Main {
 							{
 								String index = debitVideo.getSelectedItem().toString();
 								
-								int worstIndex = comboFonctions.getSelectedItem().equals("AV1")
-										&& comboAccel.getSelectedItem().equals("VAAPI") ? 256 : 52;
+								int worstIndex = comboFonctions.getSelectedItem().equals("AV1") && comboAccel.getSelectedItem().equals("VAAPI") ? 256 : 52;
 								String[] values = new String[worstIndex + 1];
+								
 								values[0] = language.getProperty("lblBest");
 								for (int i = 1 ; i < worstIndex ; i++)
 								{

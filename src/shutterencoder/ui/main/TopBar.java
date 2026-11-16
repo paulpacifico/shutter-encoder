@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -376,6 +376,7 @@ public class TopBar extends Main{
 
 		lblShutterEncoder = new JLabel(language.getProperty("panelShutter"));
 		lblShutterEncoder.setFont(new Font("Magneto", Font.PLAIN, 17));
+		lblShutterEncoder.setSize(lblShutterEncoder.getPreferredSize().width + 10, 24);
 		topPanel.add(lblShutterEncoder);
 
 		lblV = new JLabel("v" + actualVersion);
@@ -496,7 +497,7 @@ public class TopBar extends Main{
 
 		});
 
-		UIController.setTitleLocation(false);
+		UIController.setTitleLocation(true);
 		UIController.setButtonsLocation();
 	}
 }

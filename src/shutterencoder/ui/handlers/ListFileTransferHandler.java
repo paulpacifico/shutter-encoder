@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -44,10 +44,11 @@ public class ListFileTransferHandler extends TransferHandler {
 
 	public boolean canImport(JComponent arg0, DataFlavor[] arg1) {
 
-		for (int i = 0; i < arg1.length; i++) {
+		for (int i = 0; i < arg1.length; i++)
+		{
 			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Main.inputDeviceIsRunning == false
-					&& Main.comboFonctions.getSelectedItem().equals("DVD Rip") == false) {
+			if (flavor.equals(DataFlavor.javaFileListFlavor) && Main.allowDragAndDrop && Main.inputDeviceIsRunning == false && Main.comboFonctions.getSelectedItem().equals("DVD Rip") == false)
+			{
 				return true;
 			}
 		}
@@ -55,7 +56,7 @@ public class ListFileTransferHandler extends TransferHandler {
 	}
 
 	public boolean importData(JComponent comp, Transferable t) {
-
+		
 		DataFlavor[] flavors = t.getTransferDataFlavors();
 
 		for (int i = 0; i < flavors.length; i++) {

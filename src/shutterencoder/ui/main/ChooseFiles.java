@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -152,6 +152,7 @@ public class ChooseFiles extends Main {
 		fileList.setCellRenderer(new FilesCellRenderer());
 		fileList.setFixedCellHeight(17);
 		fileList.setToolTipText(language.getProperty("rightClick"));
+		fileList.setSize(292, frame.getHeight() - 495);
 
 		fileList.getModel().addListDataListener(new ListDataListener() {
 			
@@ -166,8 +167,8 @@ public class ChooseFiles extends Main {
 						caseDisplay.setSelected(false);
 
 					inputDeviceIsRunning = false;
-					grpImageAdjustement.setEnabled(true);
-					Component[] components = Main.grpImageAdjustement.getComponents();
+					grpImageAdjustment.setEnabled(true);
+					Component[] components = Main.grpImageAdjustment.getComponents();
 					for (int i = 0; i < components.length; i++) {
 						components[i].setEnabled(true);
 					}
@@ -271,6 +272,7 @@ public class ChooseFiles extends Main {
 		addToList.setFont(new Font(mainFont, Font.PLAIN, 16));
 		addToList.setHorizontalAlignment(SwingConstants.CENTER);
 		addToList.setVerticalAlignment(SwingConstants.CENTER);
+		addToList.setSize(fileList.getSize());
 		fileList.add(addToList);
 
 		scrollBar = new JScrollPane();
@@ -299,8 +301,8 @@ public class ChooseFiles extends Main {
 						caseDisplay.setSelected(false);
 
 					inputDeviceIsRunning = false;
-					grpImageAdjustement.setEnabled(true);
-					Component[] components = Main.grpImageAdjustement.getComponents();
+					grpImageAdjustment.setEnabled(true);
+					Component[] components = Main.grpImageAdjustment.getComponents();
 					for (int i = 0; i < components.length; i++) {
 						components[i].setEnabled(true);
 					}

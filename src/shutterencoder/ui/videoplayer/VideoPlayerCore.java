@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ import shutterencoder.functions.settings.AdvancedFeatures;
 import shutterencoder.functions.settings.AudioSettings;
 import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.Corrections;
+import shutterencoder.functions.settings.ImageAdjustment;
 import shutterencoder.functions.settings.ImageSequence;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.settings.Transitions;
@@ -1522,7 +1523,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		//Zoom
 		if (Main.caseEnableColorimetry.isSelected() && Main.sliderZoom.getValue() != 0)
 		{	
-			filter = Colorimetry.setZoom(filter);	
+			filter = ImageAdjustment.setZoom(filter);	
 		}
 
 		//Reduce quality
@@ -1648,7 +1649,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 		//Colorimetry
 		if (Main.caseEnableColorimetry.isSelected())
 		{			
-			String color = Colorimetry.setEQ(false);
+			String color = ImageAdjustment.setEQ(false);
 						
 			if (filter != "" && color != "")
 			{
