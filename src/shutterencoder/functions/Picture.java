@@ -1,5 +1,5 @@
 /*******************************************************************************************
-* Copyright (C) 2026 PACIFICO PAUL
+* Copyright (C) 2027 PACIFICO PAUL
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ import shutterencoder.functions.settings.Colorimetry;
 import shutterencoder.functions.settings.Corrections;
 import shutterencoder.functions.settings.Filter;
 import shutterencoder.functions.settings.Image;
+import shutterencoder.functions.settings.ImageAdjustment;
 import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.settings.Overlay;
 import shutterencoder.functions.settings.Timecode;
@@ -164,7 +165,7 @@ public class Picture extends Main {
 						filterComplex = Image.setRotate(filterComplex, false);
 						
 						//Color
-						filterComplex = Colorimetry.setColor(filterComplex);
+						filterComplex = ImageAdjustment.setColor(filterComplex);
 						
 						//Deflicker
 						filterComplex = Corrections.setDeflicker(filterComplex);
@@ -205,7 +206,7 @@ public class Picture extends Main {
 				        //Zoom
 						if (Main.sliderZoom.getValue() != 0)
 						{		
-							filterComplex = Colorimetry.setZoom(filterComplex);
+							filterComplex = ImageAdjustment.setZoom(filterComplex);
 						}
 				        
 				        //Scaling

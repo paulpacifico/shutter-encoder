@@ -1,0 +1,513 @@
+/*******************************************************************************************
+* Copyright (C) 2027 PACIFICO PAUL
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; either version 2 of the License, or
+* (at your option) any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License along
+* with this program; if not, write to the Free Software Foundation, Inc.,
+* 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+* 
+********************************************************************************************/
+
+package shutterencoder.functions.settings;
+
+import shutterencoder.library.FFprobe;
+import shutterencoder.ui.main.Main;
+
+public class ImageAdjustment extends Main  {
+	
+	public static int allR = 0;
+    public static int allG = 0;
+    public static int allB = 0;
+    public static int highR = 0;
+    public static int highG = 0;
+    public static int highB = 0;
+    public static int mediumR = 0;
+    public static int mediumG = 0;
+    public static int mediumB = 0;
+    public static int lowR = 0;
+    public static int lowG = 0;
+    public static int lowB = 0;
+    public static String balanceAll = "";
+    public static String balanceHigh = "";
+    public static String balanceMedium = "";
+    public static String balanceLow = "";
+    public static int vibranceValue = 0;
+    public static int vibranceR = 0;
+    public static int vibranceG = 0;
+    public static int vibranceB = 0;
+	
+	public static String setExposure(String eq) {
+
+		if (Main.sliderExposure.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+			
+			eq += "exposure=" + (float) ((float) Main.sliderExposure.getValue() / 100) * 3; 
+		}
+		
+		return eq;
+	}
+	
+	public static String setGamma(String eq) {		
+
+		if (Main.sliderGamma.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+			
+			eq += "eq=gamma=" + (1 + (float) Main.sliderGamma.getValue() / 100); 
+		}
+		
+		return eq;
+	}
+	
+	public static String setContrast(String eq) {
+		
+		if (Main.sliderContrast.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+
+			eq += "eq=contrast=" + (1 + (float) Main.sliderContrast.getValue() / 300); 
+		}
+		
+		return eq;
+	}
+    
+	public static String setWhite(String eq) {
+
+		if (Main.sliderWhite.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+			
+				
+			if (Main.sliderWhite.getValue() > 0)
+			{
+				float value = 1 - (float) Main.sliderWhite.getValue() / 200;				
+				eq += "colorlevels=rimax=" + value + ":gimax=" + value + ":bimax=" + value; 
+			}
+			else
+			{
+				float value = 1 + (float) Main.sliderWhite.getValue() / 200;
+				eq += "colorlevels=romax=" + value + ":gomax=" + value + ":bomax=" + value; 
+			}
+		}
+		
+		return eq;
+	}
+	
+	public static String setBlack(String eq) {
+
+		if (Main.sliderBlack.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+				
+			if (Main.sliderBlack.getValue() > 0)
+			{
+				float value = (float) Main.sliderBlack.getValue() / 400;				
+				eq += "colorlevels=romin=" + value + ":gomin=" + value + ":bomin=" + value; 				 
+			}
+			else
+			{
+				float value = 0 - (float) Main.sliderBlack.getValue() / 400;
+				eq += "colorlevels=rimin=" + value + ":gimin=" + value + ":bimin=" + value;
+			}
+				
+		}
+		
+		return eq;
+	}
+	
+	public static String setHighlights(String eq) {
+
+	    int value = Main.sliderHighlights.getValue();
+
+	    if (value != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float amount = 0.15f * value / 100.0f;
+
+	        eq += "curves=master='"
+	            + "0/0 "
+	            + "0.25/0.25 "
+	            + "0.50/0.50 "
+	            + "0.625/" + Math.max(0.0f, Math.min(1.0f, (0.625f + amount * 0.15f))) + " "
+	            + "0.75/"  + Math.max(0.0f, Math.min(1.0f, (0.75f  + amount * 0.45f))) + " "
+	            + "0.875/" + Math.max(0.0f, Math.min(1.0f, (0.875f + amount * 0.90f))) + " "
+	            + "0.95/"  + Math.max(0.0f, Math.min(1.0f, (0.95f  + amount))) + " "
+	            + "1/1'";
+	    }
+	    	    
+	    return eq;
+	}
+	
+	public static String setMediums(String eq) {
+
+	    int value = Main.sliderMediums.getValue();
+
+	    if (value != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float amount = 0.16f * value / 100.0f;
+
+	        eq += "curves=master='"
+	            + "0/0 "
+	            + "0.25/" + Math.max(0.0f, Math.min(1.0f, (0.25f + amount * 0.35f))) + " "
+	            + "0.40/" + Math.max(0.0f, Math.min(1.0f, (0.40f + amount * 0.75f))) + " "
+	            + "0.50/" + Math.max(0.0f, Math.min(1.0f, (0.50f + amount))) + " "
+	            + "0.60/" + Math.max(0.0f, Math.min(1.0f, (0.60f + amount * 0.75f))) + " "
+	            + "0.75/" + Math.max(0.0f, Math.min(1.0f, (0.75f + amount * 0.35f))) + " "
+	            + "1/1'";
+	    }
+
+	    return eq;
+	}
+
+	public static String setShadows(String eq) {
+
+	    int value = Main.sliderShadows.getValue();
+
+	    if (value != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float amount = 0.15f * value / 100.0f;
+
+	        eq += "curves=master='"
+	            + "0/0 "
+	            + "0.0625/" + Math.max(0.0f, Math.min(1.0f, (0.0625f + amount * 0.45f))) + " "
+	            + "0.125/"  + Math.max(0.0f, Math.min(1.0f, (0.125f  + amount * 0.85f))) + " "
+	            + "0.20/"   + Math.max(0.0f, Math.min(1.0f, (0.20f   + amount))) + " "
+	            + "0.30/"   + Math.max(0.0f, Math.min(1.0f, (0.30f   + amount * 0.55f))) + " "
+	            + "0.40/0.40 "
+	            + "0.50/0.50 "
+	            + "0.75/0.75 "
+	            + "1/1'";
+	    }
+
+	    return eq;
+	}
+	
+	public static String setWB(String eq) {
+
+		if (Main.sliderBalance.getValue() != 6500)
+		{
+			if (eq != "")
+				eq += ",";
+
+			eq += "colortemperature=" + Main.sliderBalance.getValue() + ":pl=1"; 
+		}
+		
+		return eq;
+	}
+	
+	public static String setHUE(String eq) {
+
+		if (Main.sliderHUE.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+
+			eq += "hue=h=" + (0 - Main.sliderHUE.getValue()); 
+		}
+		
+		return eq;
+	}
+	
+	public static String setBalance(String eq) {		
+		
+		float r = (float) Main.sliderRED.getValue() / 400;
+		float g = (float) Main.sliderGREEN.getValue() / 400;
+		float b = (float) Main.sliderBLUE.getValue() / 400;
+		
+		if (Main.comboRGB.getSelectedItem().equals(Main.language.getProperty("setAll")))
+			balanceAll = "rs="+r+":gs="+g+":bs="+b+":rm="+r+":gm="+g+":bm="+b+":rh="+r+":gh="+g+":bh="+b;			
+			
+		if (Main.comboRGB.getSelectedItem().equals(Main.language.getProperty("setLow")))	
+			balanceLow = "rs="+r+":gs="+g+":bs="+b;	
+		
+		else if (Main.comboRGB.getSelectedItem().equals(Main.language.getProperty("setMedium")))		
+			balanceMedium = "rm="+r+":gm="+g+":bm="+b;	
+		
+		else if (Main.comboRGB.getSelectedItem().equals(Main.language.getProperty("setHigh")))
+			balanceHigh = "rh="+r+":gh="+g+":bh="+b;
+		
+		if (balanceAll != "" && balanceAll.equals("rs=0.0:gs=0.0:bs=0.0:rm=0.0:gm=0.0:bm=0.0:rh=0.0:gh=0.0:bh=0.0") == false)
+		{
+			if (eq != "")
+				eq += ",";
+			
+			eq += "colorbalance=" + balanceAll;
+		}
+		
+		//Permet de compléter tout l'eq à chaque fois
+		if (balanceLow != "" || balanceMedium != "" || balanceHigh != "")
+		{
+			if (balanceAll != "" && balanceAll.equals("rs=0.0:gs=0.0:bs=0.0:rm=0.0:gm=0.0:bm=0.0:rh=0.0:gh=0.0:bh=0.0") == false)
+				eq += ",colorbalance=";
+			else if (eq != "")
+				eq += ",colorbalance=";
+			else
+				eq = "colorbalance=";
+			
+			if (balanceLow == "")
+				balanceLow = "rs=0:gs=0:bs=0";
+			
+			if (balanceMedium == "")
+				balanceMedium = "rm=0:gm=0:bm=0";
+			
+			if (balanceHigh == "")
+				balanceHigh = "rh=0:gh=0:bh=0";
+			
+			eq += balanceLow + ":" + balanceMedium + ":" + balanceHigh;
+		}
+
+
+		return eq;
+	}
+	
+	public static String setSaturation(String eq) {
+
+	    int value = Main.sliderSaturation.getValue();
+
+	    if (value != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float v = value / 100.0f;
+	        float saturation;
+
+	        if (v >= 0.0f)
+	        {
+	            saturation = 1.0f + 0.65f * v;
+	        }
+	        else
+	        {
+	            saturation = 1.0f + 0.85f * v;
+
+	            if (v <= -1.0f)
+	                saturation = 0.0f;
+	        }
+
+	        eq += "eq=saturation=" + saturation;
+	    }
+
+	    return eq;
+	}
+	
+	public static String setVibrance(String eq) {
+
+	    if (vibranceValue != 0) {
+
+	        if (!eq.isEmpty())
+	            eq += ",";
+
+	        float v = vibranceValue / 100.0f;
+
+	        float amount = (float) Math.copySign(
+	            Math.pow(Math.abs(v), 0.75),
+	            v
+	        ) * 0.75f;
+
+	        eq += "vibrance=" + amount
+	            + ":rbal=" + ((100.0f + vibranceR) / 100.0f)
+	            + ":gbal=" + ((100.0f + vibranceG) / 100.0f)
+	            + ":bbal=" + ((100.0f + vibranceB) / 100.0f);
+	    }
+
+	    return eq;
+	}	
+	
+	public static String setSharpness(String eq) {
+	
+		if (Main.sliderGrain.getValue() != 0)
+		{
+		    if (!eq.isEmpty())
+		        eq += ",";
+
+		    float slider = Main.sliderGrain.getValue() / 100.0f;
+		    float amount;
+
+		    if (Main.sliderGrain.getValue() > 0)
+		    {
+		        amount = 1.0f * slider * slider;
+		        eq += "unsharp=7:7:" + String.format("%.3f", amount) + ":5:5:0";
+		    }
+		    else
+		    {
+		        amount = -0.80f * slider * slider;
+		        eq += "unsharp=5:5:" + String.format("%.3f", amount) + ":5:5:0";
+		    }
+		}
+
+		return eq;
+	}
+			
+	public static String setVignette(String eq) {
+
+	    if (Main.sliderVignette.getValue() != 0)
+	    {
+	        if (eq != "")
+	            eq += ",";
+
+	        float padFactor = 1.5f;
+	        String pre = "pad=trunc(iw*" + padFactor + "):trunc(ih*" + padFactor
+	                    + "):(ow-iw)/2:(oh-ih)/2:black,";
+	        String post = ",crop=iw/" + padFactor + ":ih/" + padFactor;
+
+	        int sliderVal = Main.sliderVignette.getValue(); // -100..100
+	        float maxAngle = (float) (Math.PI / 2);
+	        float angle = maxAngle * (Math.abs(sliderVal) / 100f);
+
+	        if (sliderVal > 0)
+	            eq += pre + "vignette=" + angle + ":mode=backward:aspect=" + FFprobe.imageRatio + post;
+	        else
+	            eq += pre + "vignette=" + angle + ":aspect=" + FFprobe.imageRatio + post;
+	    }
+
+	    return eq;
+	}
+	
+	public static String setAngle(String eq) {
+
+		if (Main.sliderAngle.getValue() != 0)
+		{
+			if (eq != "")
+				eq += ",";
+			
+			float angle;
+			if (Main.sliderAngle.getValue() > 0)
+				angle = (float) ((float) ((float) Main.sliderAngle.getValue() / 10) * Math.PI) / 180;
+			else
+				angle = (float) ((float) (0 - (float) Main.sliderAngle.getValue() / 10) * Math.PI) / 180;
+			
+			float ratio = (float) FFprobe.imageWidth / FFprobe.imageHeight;
+			float h = (float) ( (float) FFprobe.imageHeight / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
+			float w = (float) h * ratio;
+			if (ratio < 1)
+			{
+				ratio = (float) FFprobe.imageHeight / FFprobe.imageWidth;
+				w = (float) ( (float) FFprobe.imageWidth / ( ( (float) ratio * Math.sin(angle) ) + Math.cos(angle) ) );
+				h = (float) w * ratio;
+			}
+			
+			w = (float) (2 - ((float) FFprobe.imageWidth / w));
+			h = (float) (2 - ((float) FFprobe.imageHeight / h));			
+						
+			if (comboResolution.getSelectedItem().toString().equals(language.getProperty("source")))
+			{
+				eq += "rotate=" + ((float) Main.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h + ",scale=" + FFprobe.imageWidth + ":" + FFprobe.imageHeight; 
+			}
+			else
+				eq += "rotate=" + ((float) Main.sliderAngle.getValue() / 10) + "*PI/180:ow=iw*" + w + ":oh=ih*" + h; 
+		}
+		
+		return eq;
+	}
+	
+	public static String setZoom(String eq) {
+
+		if (sliderZoom.getValue() != 0)
+		{			
+			if (eq != "")
+				eq += ",";
+			
+			float zoomValue = (float) 1 - ((float) sliderZoom.getValue() / 2 / 100);
+			
+			eq += "crop=iw*" + zoomValue + ":ih*" + zoomValue; 
+		}
+		
+		return eq;
+	}
+			
+	public static String setColor(String filterComplex) {
+		
+		if (grpColorimetry.isVisible() && Main.caseEnableColorimetry.isSelected() && setEQ(true).equals("") == false)
+		{			
+			if (filterComplex != "") filterComplex += ",";
+			
+			//Important
+			setEQ(true);
+						
+			filterComplex += colorimetryValues;	
+		}
+
+		return filterComplex;
+	}
+	
+	public static String setEQ(boolean finalEQ) {
+		
+		String eq = "";
+		
+		//Highlights 
+		eq = setHighlights(eq);
+		
+		//Mediums 
+		eq = setMediums(eq);
+		
+		//Shadows 
+		eq = setShadows(eq);
+		
+		//Exposure
+		eq = setExposure(eq);
+		
+		//Gamma
+		eq = setGamma(eq);
+		
+		//Contrast
+		eq = setContrast(eq);
+		
+		//White
+		eq = setWhite(eq);
+
+		//Black
+		eq = setBlack(eq);
+				
+		//White Balance 
+		eq = setWB(eq);
+		
+		//Hue
+		eq = setHUE(eq);
+				
+		//Balance
+		eq = setBalance(eq);
+		
+		//Saturation
+		eq = setSaturation(eq);
+		
+		//Vibrance
+		eq = setVibrance(eq);
+				
+		//Grain
+		eq = setSharpness(eq);
+				
+		//Angle
+		eq = setAngle(eq);
+		
+		//Vignette
+		eq = setVignette(eq);
+		
+		//FinalEQ
+		Main.colorimetryValues = eq.replace("\"", "'");
+		
+		return eq;
+	}
+}
