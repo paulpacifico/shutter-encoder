@@ -2304,13 +2304,15 @@ public class Utils extends Main {
 							{
 								String index = debitVideo.getSelectedItem().toString();
 								
-								String[] values = new String[53];
+								int worstIndex = comboFonctions.getSelectedItem().equals("AV1")
+										&& comboAccel.getSelectedItem().equals("VAAPI") ? 256 : 52;
+								String[] values = new String[worstIndex + 1];
 								values[0] = language.getProperty("lblBest");
-								for (int i = 1 ; i < 52 ; i++)
+								for (int i = 1 ; i < worstIndex ; i++)
 								{
 									values[i] = String.valueOf(i);
 								}			
-								values[52] = language.getProperty("lblWorst");
+								values[worstIndex] = language.getProperty("lblWorst");
 								debitVideo.setModel(new DefaultComboBoxModel<String>(values));
 								debitVideo.setSelectedItem(index);
 							}

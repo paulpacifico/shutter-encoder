@@ -381,7 +381,8 @@ public class Bitrate extends Main {
 					if (debitVideo.getSelectedItem().toString().equals(language.getProperty("lblBest")))
 						debitVideo.setSelectedIndex(1);
 					else if (debitVideo.getSelectedItem().toString().equals(language.getProperty("lblWorst")))
-						debitVideo.setSelectedIndex(51);
+						debitVideo.setSelectedIndex(comboAccel.getSelectedItem().equals("VAAPI")
+								&& comboFonctions.getSelectedItem().equals("AV1") ? 255 : 51);
 
 				} catch (Exception e1) {
 				}
@@ -580,7 +581,8 @@ public class Bitrate extends Main {
 					
 					String[] values = new String[257];					
 					if (comboFonctions.getSelectedItem().toString().equals("AV1")
-					&& System.getProperty("os.name").contains("Windows")
+					&& (System.getProperty("os.name").contains("Windows")
+							|| comboAccel.getSelectedItem().equals("VAAPI"))
 					&& comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 					{
 						values[0] = language.getProperty("lblBest");

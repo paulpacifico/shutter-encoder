@@ -980,6 +980,13 @@ public class FunctionUtils extends Main {
 		bestBitrateMode = false;
 		goodBitrateMode = false;
 		autoBitrateMode = false;
+
+		if ("AV1".equals(comboFonctions.getSelectedItem()) && "VAAPI".equals(comboAccel.getSelectedItem())
+				&& lblVBR.getText().equals("CQ"))
+		{
+			if (debitVideo.getSelectedItem().equals(language.getProperty("lblBest"))) return 1;
+			if (debitVideo.getSelectedItem().equals(language.getProperty("lblWorst"))) return 255;
+		}
 				
 		if (debitVideo.getSelectedItem().equals(language.getProperty("lblBest").toLowerCase()) || debitVideo.getSelectedItem().equals(language.getProperty("lblGood").toLowerCase()) || debitVideo.getSelectedItem().equals("auto"))
 		{			
