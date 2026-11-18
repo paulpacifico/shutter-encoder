@@ -76,7 +76,6 @@ import shutterencoder.functions.Translate;
 import shutterencoder.functions.VMAF;
 import shutterencoder.functions.VideoEncoders;
 import shutterencoder.functions.VideoInserts;
-import shutterencoder.functions.settings.InputAndOutput;
 import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.Anonymizer;
 import shutterencoder.library.Bmxtranswrap;
@@ -101,6 +100,7 @@ import shutterencoder.ui.renderers.CollapsiblePanel;
 import shutterencoder.ui.renderers.ComboBoxRenderer;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
+import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class ChooseFunction extends Main {
@@ -152,23 +152,12 @@ public class ChooseFunction extends Main {
 
 					if (btnStart.getText().equals(language.getProperty("btnResumeFunction")))
 						FFmpeg.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le détruire
-				
-					if (InputAndOutput.segments != "")
-					{
-						FFmpeg.process.destroyForcibly();
-						
-						try {
-							FFmpeg.runProcess.interrupt();
-						} catch(Exception err) {}
-					}
-					else
-					{
-						try {
-							FFmpeg.writer.write('q');
-							FFmpeg.writer.flush();
-							FFmpeg.writer.close();
-						} catch (IOException er) {}	
-					}
+									
+					FFmpeg.process.destroyForcibly();
+					
+					try {
+						FFmpeg.runProcess.interrupt();
+					} catch(Exception err) {}					
 
 					Thread wait = new Thread(() -> {
 
@@ -435,7 +424,7 @@ public class ChooseFunction extends Main {
 			@SuppressWarnings("deprecation")
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+								
 				lblCurrentEncoding.setForeground(Color.LIGHT_GRAY);
 				
 				FunctionUtils.yesToAll = false;
@@ -448,11 +437,33 @@ public class ChooseFunction extends Main {
 				}
 
 				if ((btnStart.getText().equals(language.getProperty("btnStartFunction")) || btnStart.getText().equals(language.getProperty("btnAddToRender"))) && list.getSize() > 0)
-				{
+				{												
 					grpDestination.setSelectedIndex(0);
 					FFmpeg.error = false;
 					FFmpeg.errorLog.setLength(0);
 					errorList.setLength(0);
+					
+					//Stop setTime to be loaded
+					Main.doNotLoadImage = true;
+					
+					// Waveform					
+					if (VideoPlayerUtils.addWaveformIsRunning)
+					{		
+						VideoPlayerUtils.stopWaveformCreation();
+						
+						try {
+							VideoPlayerUtils.addWaveform.join();
+						} catch (InterruptedException er) {
+						    Thread.currentThread().interrupt();
+						}
+					}
+					
+					// Thumbnails
+					if (VideoPlayerCore.thumbnails != null)
+					{			
+						VideoPlayerUtils.allThumbnails = null;
+						VideoPlayerUtils.stopThumbnailsCreation();
+					}
 					
 					// Temps écoulé
 					lblElapsedTime.setVisible(false);
@@ -905,51 +916,66 @@ public class ChooseFunction extends Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				if (comboFonctions.getSelectedItem().toString().contains("-")
-				&& comboFonctions.getSelectedItem().toString().contains(":")
-				&& comboFonctions.getSelectedItem().toString().contains("ffmpeg") == false
-				&& comboFonctions.getSelectedItem().toString().contains("exiftool") == false)
-				{
-					comboFonctions.setSelectedIndex(comboFonctions.getSelectedIndex() + 1);
-				}
+				new Thread(() -> {
 
-				if (newList.isEmpty() == false && comboFonctions.getSelectedItem().toString().contains(language.getProperty("btnManage").toUpperCase()) == false)
-				{
-					comboFonctions.hidePopup();
-					comboFonctions.setModel(new DefaultComboBoxModel(newList.toArray()));
-					UIController.changeFilters();
-					UIController.changeFunction(true);
-					UIController.changeSections(false);
-					comboFonctions.showPopup();
+					//Wait for UI to be loaded
+			        try {
+			            Main.uiLoaded.await();
+			        } catch (InterruptedException ex) {
+			            Thread.currentThread().interrupt();
+			        }
 
-					newList.clear();
-				}
+			        SwingUtilities.invokeLater(() -> {
 
-				if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) && Settings.modelIsSaving == false) 
-				{
-					if (scanIsRunning == false) {
-						try {
-							frame.setOpacity(0.5f);
-						} catch (Exception er) {}
+			        	if (comboFonctions.getSelectedItem().toString().contains("-")
+	    				&& comboFonctions.getSelectedItem().toString().contains(":")
+	    				&& comboFonctions.getSelectedItem().toString().contains("ffmpeg") == false
+	    				&& comboFonctions.getSelectedItem().toString().contains("exiftool") == false)
+	    				{
+	    					comboFonctions.setSelectedIndex(comboFonctions.getSelectedIndex() + 1);
+	    				}
 
-						new VideoWeb();
-						frame.setOpacity(1.0f);
-					}
-				}
+	    				if (newList.isEmpty() == false && comboFonctions.getSelectedItem().toString().contains(language.getProperty("btnManage").toUpperCase()) == false)
+	    				{
+	    					comboFonctions.hidePopup();
+	    					comboFonctions.setModel(new DefaultComboBoxModel(newList.toArray()));
+	    					UIController.changeFilters();
+	    					UIController.changeFunction(true);
+	    					UIController.changeSections(false);
+	    					comboFonctions.showPopup();
+
+	    					newList.clear();
+	    				}
+
+	    				if (comboFonctions.getSelectedItem().equals(language.getProperty("functionWeb")) && Settings.modelIsSaving == false) 
+	    				{
+	    					if (scanIsRunning == false) {
+	    						try {
+	    							frame.setOpacity(0.5f);
+	    						} catch (Exception er) {}
+
+	    						new VideoWeb();
+	    						frame.setOpacity(1.0f);
+	    					}
+	    				}
+	    				
+	    				if (comboFonctions.getSelectedItem().toString().contains(language.getProperty("btnManage").toUpperCase()))
+	    				{		
+	    					UIController.changeWidth();
+	    					
+	    					try {
+	    						frame.setOpacity(0.5f);
+	    					} catch (Exception er) {}
+	    					
+	    					new ManageFunctions();	
+	    					frame.setOpacity(1.0f);
+	    					
+	    					comboFonctions.setSelectedItem("");
+	    				}
+			        });
+
+			    }).start();
 				
-				if (comboFonctions.getSelectedItem().toString().contains(language.getProperty("btnManage").toUpperCase()))
-				{		
-					UIController.changeWidth();
-					
-					try {
-						frame.setOpacity(0.5f);
-					} catch (Exception er) {}
-					
-					new ManageFunctions();	
-					frame.setOpacity(1.0f);
-					
-					comboFonctions.setSelectedItem("");
-				}
 			}
 
 		});
@@ -963,193 +989,208 @@ public class ChooseFunction extends Main {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-
-				// Stop the running timer on every keystroke
-		        if (debounceTimer != null && debounceTimer.isRunning()) {
-		            debounceTimer.stop();
-		        }
 				
-				if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")
-				|| comboFonctions.getEditor().getItem().toString().contains("exiftool"))
-				{
-					UIController.changeFilters();
-					UIController.changeWidth();
+				new Thread(() -> {
 
-					topPanel.setBounds(0, 0, frame.getWidth(), 28);
-					topImage.setBounds(0, 0, topPanel.getWidth(), 24);
-					
-					UIController.setButtonsLocation();
+					//Wait for UI to be loaded
+			        try {
+			            Main.uiLoaded.await();
+			        } catch (InterruptedException ex) {
+			            Thread.currentThread().interrupt();
+			        }
 
-					addToList.setText(language.getProperty("dropFilesHere"));
+			        SwingUtilities.invokeLater(() -> {
 
-					if (list.getSize() == 0)
-						addToList.setVisible(true);
-					else
-						addToList.setVisible(false);
-					
-				} else {
-					
-					if (comboFonctions.getEditor().toString().length() <= 1)
-						text = String.valueOf(e.getKeyChar()).toLowerCase();
-
-					if (Character.isLetterOrDigit(e.getKeyChar()))
-					{						
-						comboFonctions.setModel(new DefaultComboBoxModel(functionsList.toArray(new String[0])));
+			        	// Stop the running timer on every keystroke
+				        if (debounceTimer != null && debounceTimer.isRunning()) {
+				            debounceTimer.stop();
+				        }
 						
-						text += String.valueOf(e.getKeyChar()).toLowerCase();
-
-						ArrayList<String> newList = new ArrayList<String>();
-						
-						boolean addTranscribeFunction = false;
-						boolean addSeparationFunction = false;
-						boolean addColorizeFunction = false;
-						boolean addBlurFaces = false;
-						boolean addBackgroundRemover = false;
-						String cat = "";
-						boolean catAdded = true;
-						
-						for (int i = 0; i < comboFonctions.getItemCount(); i++)
+						if (comboFonctions.getEditor().getItem().toString().contains("ffmpeg")
+						|| comboFonctions.getEditor().getItem().toString().contains("exiftool"))
 						{
-							if (functionsList.get(i).toString().length() >= text.length())
-							{
-								if (functionsList.get(i).toString().contains(":"))
-								{
-									cat = functionsList.get(i).toString();
-									catAdded = false;
-								}
+							UIController.changeFilters();
+							UIController.changeWidth();
+
+							topPanel.setBounds(0, 0, frame.getWidth(), 28);
+							topImage.setBounds(0, 0, topPanel.getWidth(), 24);
 							
-							    if (functionsList.get(i).toString().toLowerCase().substring(0, text.length()).contains(text)
-							    && functionsList.get(i).toString().contains(":") == false)
-							    {							    	
-							        if (functionsList.get(i).toString().equals(language.getProperty("functionTranscribe")))
-							        {
-							            addTranscribeFunction = true;
-							        }
-							        else if (functionsList.get(i).toString().equals(language.getProperty("functionSeparation")))
-							        {
-							            addSeparationFunction = true;
-							        }
-							        else if (functionsList.get(i).toString().equals(language.getProperty("functionColorize")))
-							        {
-							            addColorizeFunction = true;
-							        }
-							        else if (functionsList.get(i).toString().equals(language.getProperty("functionBlurFaces")))
-							        {
-							        	addBlurFaces = true;
-							        }
-							        else if (functionsList.get(i).toString().equals(language.getProperty("functionBackgroundRemover")))
-							        {
-							            addBackgroundRemover = true;
-							        }
-							        else
-							        {	
-							        	if (catAdded == false)
-							        	{
-								        	newList.add(cat);
-								        	catAdded = true;
-							        	}
-							        	
-							        	newList.add(functionsList.get(i).toString());
-							        }
-							    }
-							}
-						}
-						
-						if (addTranscribeFunction)
-						{
-							newList.add(language.getProperty("functionTranscribe"));
-						}
-						
-						if (addSeparationFunction)
-						{
-							newList.add(language.getProperty("functionSeparation"));
-						}
-						
-						if (addColorizeFunction)
-						{
-							newList.add(language.getProperty("functionColorize"));
-						}
-						
-						if (addBlurFaces)
-						{
-							newList.add(language.getProperty("functionBlurFaces"));
-						}
-						
-						if (addBackgroundRemover)
-						{
-							newList.add(language.getProperty("functionBackgroundRemover"));
-						}
+							UIController.setButtonsLocation();
 
-						// Pour éviter d'afficher le premier item
-						comboFonctions.getEditor().setItem(text);
+							addToList.setText(language.getProperty("dropFilesHere"));
 
-						if (newList.isEmpty() == false)
-						{
-							comboFonctions.setModel(new DefaultComboBoxModel(newList.toArray()));
-
-							if (comboFonctions.getSelectedItem() != null && comboFonctions.getSelectedItem().toString().contains(":"))
-							{
-								int nextIndex = comboFonctions.getSelectedIndex() + 1;
-							   
-							    if (nextIndex < comboFonctions.getItemCount()) {								    	 
-							        comboFonctions.getEditor().setItem(comboFonctions.getItemAt(nextIndex));
-							    }
-							}
+							if (list.getSize() == 0)
+								addToList.setVisible(true);
+							else
+								addToList.setVisible(false);
 							
-							debounceTimer = new Timer(DEBOUNCE_DELAY, event -> {
+						} else {
+							
+							if (comboFonctions.getEditor().toString().length() <= 1)
+								text = String.valueOf(e.getKeyChar()).toLowerCase();
+
+							if (Character.isLetterOrDigit(e.getKeyChar()))
+							{						
+								comboFonctions.setModel(new DefaultComboBoxModel(functionsList.toArray(new String[0])));
 								
-								if (comboFonctions.getSelectedItem() != null && comboFonctions.getSelectedItem().toString().contains(":"))
-								{
-									int nextIndex = comboFonctions.getSelectedIndex() + 1;
-								   
-								    if (nextIndex < comboFonctions.getItemCount()) {								    	 
-								        comboFonctions.setSelectedIndex(nextIndex);
-								    }
-								}
-																
-								SwingUtilities.invokeLater(() -> {
-									
-									if (comboFonctions.getItemCount() > 2)
-										comboFonctions.showPopup();									    
-																		
-									comboFonctions.getEditor().getEditorComponent().requestFocusInWindow();
-								});
-																
-		                        UIController.changeFilters();
-		                        UIController.changeFunction(true);
-		                    });
-		                    debounceTimer.setRepeats(false);
-		                    debounceTimer.start();
-						}
-					}
-					else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE)
-					{
-						if (ManageFunctions.selectedFunctions != null)
-						{
-							comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
-						}
-						else
-							comboFonctions.setModel(new DefaultComboBoxModel(functionsList.toArray(new String[0])));
-						
-						comboFonctions.getEditor().setItem("");
-						comboFonctions.hidePopup();
-						UIController.changeFilters();
-						UIController.changeSections(true);
-						UIController.changeWidth();
-						text = "";
-					} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-						e.consume();// Contournement pour éviter le listeDrop
-					} else
-						comboFonctions.hidePopup();
-				}
+								text += String.valueOf(e.getKeyChar()).toLowerCase();
 
-				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-					if (VideoPlayerUI.btnPlay.isVisible() && list.getSize() > 0) {
-						VideoPlayerUI.btnPlay.requestFocus();
-					} else {
-						frame.requestFocus();
-					}
-				}
+								ArrayList<String> newList = new ArrayList<String>();
+								
+								boolean addTranscribeFunction = false;
+								boolean addSeparationFunction = false;
+								boolean addColorizeFunction = false;
+								boolean addBlurFaces = false;
+								boolean addBackgroundRemover = false;
+								String cat = "";
+								boolean catAdded = true;
+								
+								for (int i = 0; i < comboFonctions.getItemCount(); i++)
+								{
+									if (functionsList.get(i).toString().length() >= text.length())
+									{
+										if (functionsList.get(i).toString().contains(":"))
+										{
+											cat = functionsList.get(i).toString();
+											catAdded = false;
+										}
+									
+									    if (functionsList.get(i).toString().toLowerCase().substring(0, text.length()).contains(text)
+									    && functionsList.get(i).toString().contains(":") == false)
+									    {							    	
+									        if (functionsList.get(i).toString().equals(language.getProperty("functionTranscribe")))
+									        {
+									            addTranscribeFunction = true;
+									        }
+									        else if (functionsList.get(i).toString().equals(language.getProperty("functionSeparation")))
+									        {
+									            addSeparationFunction = true;
+									        }
+									        else if (functionsList.get(i).toString().equals(language.getProperty("functionColorize")))
+									        {
+									            addColorizeFunction = true;
+									        }
+									        else if (functionsList.get(i).toString().equals(language.getProperty("functionBlurFaces")))
+									        {
+									        	addBlurFaces = true;
+									        }
+									        else if (functionsList.get(i).toString().equals(language.getProperty("functionBackgroundRemover")))
+									        {
+									            addBackgroundRemover = true;
+									        }
+									        else
+									        {	
+									        	if (catAdded == false)
+									        	{
+										        	newList.add(cat);
+										        	catAdded = true;
+									        	}
+									        	
+									        	newList.add(functionsList.get(i).toString());
+									        }
+									    }
+									}
+								}
+								
+								if (addTranscribeFunction)
+								{
+									newList.add(language.getProperty("functionTranscribe"));
+								}
+								
+								if (addSeparationFunction)
+								{
+									newList.add(language.getProperty("functionSeparation"));
+								}
+								
+								if (addColorizeFunction)
+								{
+									newList.add(language.getProperty("functionColorize"));
+								}
+								
+								if (addBlurFaces)
+								{
+									newList.add(language.getProperty("functionBlurFaces"));
+								}
+								
+								if (addBackgroundRemover)
+								{
+									newList.add(language.getProperty("functionBackgroundRemover"));
+								}
+
+								// Pour éviter d'afficher le premier item
+								comboFonctions.getEditor().setItem(text);
+
+								if (newList.isEmpty() == false)
+								{
+									comboFonctions.setModel(new DefaultComboBoxModel(newList.toArray()));
+
+									if (comboFonctions.getSelectedItem() != null && comboFonctions.getSelectedItem().toString().contains(":"))
+									{
+										int nextIndex = comboFonctions.getSelectedIndex() + 1;
+									   
+									    if (nextIndex < comboFonctions.getItemCount()) {								    	 
+									        comboFonctions.getEditor().setItem(comboFonctions.getItemAt(nextIndex));
+									    }
+									}
+									
+									debounceTimer = new Timer(DEBOUNCE_DELAY, event -> {
+										
+										if (comboFonctions.getSelectedItem() != null && comboFonctions.getSelectedItem().toString().contains(":"))
+										{
+											int nextIndex = comboFonctions.getSelectedIndex() + 1;
+										   
+										    if (nextIndex < comboFonctions.getItemCount()) {								    	 
+										        comboFonctions.setSelectedIndex(nextIndex);
+										    }
+										}
+																		
+										SwingUtilities.invokeLater(() -> {
+											
+											if (comboFonctions.getItemCount() > 2)
+												comboFonctions.showPopup();									    
+																				
+											comboFonctions.getEditor().getEditorComponent().requestFocusInWindow();
+										});
+																		
+				                        UIController.changeFilters();
+				                        UIController.changeFunction(true);
+				                    });
+				                    debounceTimer.setRepeats(false);
+				                    debounceTimer.start();
+								}
+							}
+							else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE || e.getKeyCode() == KeyEvent.VK_ESCAPE)
+							{
+								if (ManageFunctions.selectedFunctions != null)
+								{
+									comboFonctions.setModel(new DefaultComboBoxModel(ManageFunctions.selectedFunctions));
+								}
+								else
+									comboFonctions.setModel(new DefaultComboBoxModel(functionsList.toArray(new String[0])));
+								
+								comboFonctions.getEditor().setItem("");
+								comboFonctions.hidePopup();
+								UIController.changeFilters();
+								UIController.changeSections(true);
+								UIController.changeWidth();
+								text = "";
+							} else if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+								e.consume();// Contournement pour éviter le listeDrop
+							} else
+								comboFonctions.hidePopup();
+						}
+
+						if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+							if (VideoPlayerUI.btnPlay.isVisible() && list.getSize() > 0) {
+								VideoPlayerUI.btnPlay.requestFocus();
+							} else {
+								frame.requestFocus();
+							}
+						}
+
+			        });
+
+			    }).start();
 			}
 			
 			@Override

@@ -52,6 +52,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.concurrent.CountDownLatch;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -148,7 +149,7 @@ public class Main {
 	public static StringBuilder errorList = new StringBuilder();
 	public static NumberFormat formatter = new DecimalFormat("00");
 	public static NumberFormat formatterToMs = new DecimalFormat("000");
-	public static boolean allowDragAndDrop = false;
+	public static CountDownLatch uiLoaded = new CountDownLatch(1);
 
 	public static int MousePositionX;
 	public static int MousePositionY;
@@ -755,7 +756,7 @@ public class Main {
 		            System.exit(0);
 			    }
 		        else if ("--version".equals(arg)) {
-		            System.out.println("Shutter Encoder v." + TopBar.actualVersion);
+		            System.out.println("Shutter Encoder v" + TopBar.actualVersion);
 		            System.exit(0);
 		    	}
 		        else if (new File(arg).getName().contains(".enc") == false) // If it's not a flag, treat it as a dropped file/regular argument
@@ -800,7 +801,7 @@ public class Main {
 				Thread.currentThread().interrupt();
 			}
 			
-			Utils.loadSettings(presetFile);
+			Utils.loadSettings(presetFile, null);
 			
 			try {
 				while (Utils.loadEncFile == null) //Wait for the process to initialize
@@ -957,7 +958,7 @@ public class Main {
 		//Frame can be displayed
 		SplashRenderer.instance.dispose();
 		Utils.changeFrameVisibility(frame, false);
-
+		
 		//loaded everything after		
 		Scaling.grpScaling();
 		
@@ -994,8 +995,7 @@ public class Main {
 		Reset.btnReset();		
 		
 		//Load the video player finally
-		new VideoPlayerUI();		
-		allowDragAndDrop = true;
+		new VideoPlayerUI();	
 		
 		settingsScrollBar = new JScrollBar();
 		settingsScrollBar.setVisible(false);
@@ -1348,7 +1348,7 @@ public class Main {
 					{
 						Main.btnReset.doClick();
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-						Utils.loadSettings(new File(Functions.functionsFolder + "/" + Settings.comboLoadPreset.getSelectedItem()));
+						Utils.loadSettings(new File(Functions.functionsFolder + "/" + Settings.comboLoadPreset.getSelectedItem()), null);
 					}
 				}
 
@@ -1383,5 +1383,13 @@ public class Main {
 		});
 
 		availableMemory = Runtime.getRuntime().maxMemory() - Runtime.getRuntime().totalMemory() + Runtime.getRuntime().freeMemory();
+		
+		uiLoaded.countDown();
+		
+		//Load the Media
+		if (fileList.getSelectedIndices().length > 0)
+		{
+			VideoPlayerUtils.setMedia();
+		}
 	}
 }

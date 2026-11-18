@@ -47,7 +47,7 @@ public class ListFileTransferHandler extends TransferHandler {
 		for (int i = 0; i < arg1.length; i++)
 		{
 			DataFlavor flavor = arg1[i];
-			if (flavor.equals(DataFlavor.javaFileListFlavor) && Main.allowDragAndDrop && Main.inputDeviceIsRunning == false && Main.comboFonctions.getSelectedItem().equals("DVD Rip") == false)
+			if (flavor.equals(DataFlavor.javaFileListFlavor) && Main.inputDeviceIsRunning == false && Main.comboFonctions.getSelectedItem().equals("DVD Rip") == false)
 			{
 				return true;
 			}
@@ -126,7 +126,7 @@ public class ListFileTransferHandler extends TransferHandler {
 
 								if (ext.toLowerCase().equals(".enc"))
 								{
-									Utils.loadSettings(new File(file.toString()));
+									Utils.loadSettings(new File(file.toString()), null);
 								}
 								else if (file.isHidden() == false)
 								{

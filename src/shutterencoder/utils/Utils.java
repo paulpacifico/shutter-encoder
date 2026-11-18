@@ -731,7 +731,7 @@ public class Utils extends Main {
 				{
 					if (f.getName().toLowerCase().equals(".enc"))
 					{
-						loadSettings(f);
+						loadSettings(f, null);
 					}
 				else if (f.isHidden() == false)
 				{
@@ -1776,10 +1776,6 @@ public class Utils extends Main {
 		 }
 	}
 		
-	public static void loadSettings(File encFile) {
-		loadSettings(encFile, null);
-	}
-
 	@SuppressWarnings("rawtypes")
 	public static void loadSettings(File encFile, Runnable onLoaded) {
 	
@@ -2370,22 +2366,55 @@ public class Utils extends Main {
 					}
 				});
 				loadEncFile.start();		
-
+				
 				Thread wait = new Thread(() -> {
 					
+					//Wait for UI to be loaded
+					try {
+					    Main.uiLoaded.await();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					//Wait for the preset to be loaded
 					try {
 						loadEncFile.join();
 					} catch (InterruptedException e) {
 						Thread.currentThread().interrupt();
 					}
+					
+					//Wait FFprobe process
+					try {
+						while (FFprobe.processData == null) //Wait for the process to initialize
+							Thread.sleep(1);
 						
-					VideoPlayerCore.playerProcess(0, null);
+						FFprobe.processData.join();
+					} catch (InterruptedException er) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					//Wait for loadMedia()
+					try {
+						VideoPlayerCore.loadMedia.join();
+					} catch (InterruptedException e) {
+					    Thread.currentThread().interrupt();
+					}
+					
+					VideoPlayerCore.playerFreeze();
 					LibraryUtils.checkGPUCapabilities(VideoPlayerCore.videoPath);
+					
+					//Set subtitles
+					if (caseAddSubtitles.isSelected())
+					{
+						FunctionUtils.addSubtitles(true);
+					}
 					
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-					if (onLoaded != null)
+					if (onLoaded != null) //Used for the render queue with presets
+					{
 						SwingUtilities.invokeLater(onLoaded);
+					}
 
 				});
 				wait.start();
@@ -2692,8 +2721,8 @@ public class Utils extends Main {
 		
 		try {
 			if (btnStart.getText().equals(Main.language.getProperty("btnResumeFunction")))
-				FFmpeg.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le
-										// détruire
+				FFmpeg.resumeProcess(); // Si le process est en pause il faut le rédemarrer avant de le détruire
+			
 			FFmpeg.process.destroyForcibly();
 			
 			VideoPlayerUtils.stopWaveformCreation();

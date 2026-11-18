@@ -229,6 +229,7 @@ public class VideoPlayerOverlay extends Main {
 	            String line;
 	            int subNumber = 0;
 	            boolean startWriting = false;
+	            double setTime = 0.0;
 	            
 	            while ((line = bufferedReader.readLine()) != null)
 	            {	            	
@@ -247,17 +248,11 @@ public class VideoPlayerOverlay extends Main {
 	    				int inF = Integer.parseInt(inTimecode[3]);
 	    				 					
 	    				double subsInTime = (inH + inM + inS) * FFprobe.accurateFPS + inF / VideoPlayerUI.inputFramerateMS;
-
+	    				setTime = subsInTime;
+	    				
 	    				//Reset player position to the first sub
 	    				if (subNumber == 0 && firstSub)
-	            		{    		
-	    					while (VideoPlayerCore.setTime.isAlive())
-							{
-								try {
-									Thread.sleep(1);
-								} catch (InterruptedException e) {}
-							}
-	    					VideoPlayerCore.playerSetTime(subsInTime);
+	            		{
 	    					break;
 	            		}
 	    				else
@@ -313,11 +308,26 @@ public class VideoPlayerOverlay extends Main {
 	        			bufferedWriter.newLine();
 	        		}
 	
-	            }   
+	            } 
 	
 	            bufferedReader.close();  
 	            bufferedWriter.close();
-	            	            
+	            
+	            if (firstSub && VideoPlayerUI.isPiping == false)
+	            {
+		            //Wait setTime thread to finish	
+					if (VideoPlayerCore.setTime != null)
+					{
+						try {
+							VideoPlayerCore.setTime.join();
+						} catch (InterruptedException ex) {
+							ex.printStackTrace();
+							Thread.currentThread().interrupt();
+						}
+					}
+					VideoPlayerCore.playerSetTime(setTime);
+	            }
+	            	            	            
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

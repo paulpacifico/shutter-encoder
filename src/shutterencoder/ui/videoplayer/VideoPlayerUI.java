@@ -199,7 +199,7 @@ public class VideoPlayerUI {
 	public static int MousePositionY;
 	
 	public VideoPlayerUI() {  	
-				
+
 		GraphicsConfiguration config = Main.frame.getGraphicsConfiguration();
 		GraphicsDevice myScreen = config.getDevice();
 		GraphicsEnvironment env = GraphicsEnvironment.getLocalGraphicsEnvironment();
@@ -1172,9 +1172,9 @@ public class VideoPlayerUI {
 					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame + 1);
 				}
 				
-				if (VideoPlayerUtils.preview != null || Main.caseAddSubtitles.isSelected())
+				if (VideoPlayerUtils.preview != null)
 				{												
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame + 1);
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
 					
 					//Wait setTime thread to finish	
 					if (VideoPlayerCore.setTime != null)
@@ -4429,11 +4429,11 @@ public class VideoPlayerUI {
 				{
 					VideoPlayerCore.playerFreeze();
 				}
-				else if (fileDuration <= 40)
+				else if (fileDuration <= 40 && VideoPlayerCore.frameVideo == null)
 				{
 					VideoPlayerUtils.loadImage();
 				}
-				else if (btnPlay.isEnabled())
+				else if (btnPlay.isEnabled() && VideoPlayerCore.frameVideo == null)
 				{			
 					VideoPlayerCore.playerFreeze();
 				}
@@ -4451,6 +4451,6 @@ public class VideoPlayerUI {
 		}
 				
 		Main.statusBar.setBounds(0, Main.frame.getHeight() - 23, Main.frame.getWidth(), 22);		
-		Main.lblYears.setBounds(Main.frame.getWidth() - Main.lblYears.getPreferredSize().width - 10, Main.lblBy.getY(), Main.lblYears.getPreferredSize().width + 4, 15);
+		Main.lblYears.setBounds(Main.frame.getWidth() - Main.lblYears.getPreferredSize().width - 17, Main.lblBy.getY(), Main.lblYears.getPreferredSize().width + 4, 15);
 	}
 }

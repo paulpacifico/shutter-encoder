@@ -95,10 +95,8 @@ public class Subtitles extends Main {
 		caseAddSubtitles.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
+			public void actionPerformed(ActionEvent arg0) {				
 				FunctionUtils.addSubtitles(caseAddSubtitles.isSelected());
-				
 			}
 		});
 
@@ -132,7 +130,7 @@ public class Subtitles extends Main {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 
-				if (caseAddSubtitles.isSelected() && VideoPlayerCore.loadMedia.isAlive() == false) //LoadMedia already load the subs
+				if (caseAddSubtitles.isSelected() && VideoPlayerCore.loadMedia != null && VideoPlayerCore.loadMedia.isAlive() == false) //LoadMedia already load the subs
 				{
 					FunctionUtils.addSubtitles(false);
 					if (VideoPlayerUtils.loadImageThread != null)

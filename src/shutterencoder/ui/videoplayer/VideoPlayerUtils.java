@@ -88,12 +88,16 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	public static Process processLoadImage;
 	
 	public static void setMedia() {
+						
+		//Wait for UI to finish loading
+		if (Main.uiLoaded.getCount() > 0)
+			return;
 		
 		loadMedia = new Thread(new Runnable()
 		{
 			@Override
 			public void run()
-			{    			
+			{				
 				if (FFmpeg.isRunning == false
 		    	|| (Main.btnStart.getText().equals(Main.language.getProperty("btnPauseFunction")) == false
 		    	&& Main.btnStart.getText().equals(Main.language.getProperty("resume")) == false
@@ -128,7 +132,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 						
 						//Reset when changing file													
 						if (Main.fileList.getSelectedValue().equals(videoPath) == false && (new File(Main.fileList.getSelectedValue()).isFile() || Main.scanIsRunning) || Main.inputDeviceIsRunning)
-						{				
+						{
 							//Stop player
 							if (playerIsPlaying())
 							{
@@ -146,7 +150,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 									ex.printStackTrace();
 									Thread.currentThread().interrupt();
 								}
-					        }
+					        }							
 							
 							//Clear the buffer
 							if (bufferedFrames.size() > 0)
@@ -340,7 +344,7 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 										} catch (InterruptedException e) {
 										    Thread.currentThread().interrupt();
 										}
-									}
+									}						        
 									FunctionUtils.addSubtitles(true);
 								}
 								

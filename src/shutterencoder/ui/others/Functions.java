@@ -245,7 +245,7 @@ public class Functions {
 				
 				Main.btnReset.doClick();
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				Utils.loadSettings(new File(functionsFolder + "/" + presetsList.getSelectedValue()));
+				Utils.loadSettings(new File(functionsFolder + "/" + presetsList.getSelectedValue()), null);
 			}
 			
 		});
@@ -344,7 +344,7 @@ public class Functions {
 					{					
 						Main.btnReset.doClick();
 						frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-						Utils.loadSettings(new File(functionsFolder + "/" + presetsList.getSelectedValue()));
+						Utils.loadSettings(new File(functionsFolder + "/" + presetsList.getSelectedValue()), null);
 					}
 				}
 			}

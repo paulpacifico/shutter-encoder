@@ -1164,7 +1164,7 @@ public class ChooseFiles extends Main {
 						
 						if (ext.equals(".enc"))
 						{
-							Utils.loadSettings(files[i]);
+							Utils.loadSettings(files[i], null);
 						}
 
 						File file = files[i];
@@ -1232,8 +1232,7 @@ public class ChooseFiles extends Main {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				list.clear();
-				
+				list.clear();				
 			}
 			
 		});;

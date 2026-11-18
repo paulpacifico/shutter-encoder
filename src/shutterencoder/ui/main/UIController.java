@@ -431,7 +431,7 @@ public class UIController extends Main {
 			}
 		}
 
-		lblYears.setBounds(frame.getWidth() - lblYears.getWidth() - 10, lblBy.getY(), lblYears.getWidth() + 4, 15);
+		lblYears.setBounds(frame.getWidth() - lblYears.getWidth() - 17, lblBy.getY(), lblYears.getWidth() + 4, 15);
 		
 		// Checking maximum screen width
 		GraphicsConfiguration config = frame.getGraphicsConfiguration();
@@ -1373,18 +1373,20 @@ public class UIController extends Main {
 
 							if (anim)
 							{
-								if (function.equals("MP3") || function.equals("AAC") || function.equals("Vorbis"))
-								{
-									comboFilter.setSelectedIndex(9);
-								}
-								else if (function.equals("AC3") || function.equals("Dolby Digital Plus"))
-								{
-									comboFilter.setSelectedIndex(7);
-								}
-								else if (function.equals("Opus"))
-								{
-									comboFilter.setSelectedIndex(11);
-								}
+								try {
+									if (function.equals("MP3") || function.equals("AAC") || function.equals("Vorbis"))
+									{
+										comboFilter.setSelectedIndex(9);
+									}
+									else if (function.equals("AC3") || function.equals("Dolby Digital Plus"))
+									{
+										comboFilter.setSelectedIndex(7);
+									}
+									else if (function.equals("Opus"))
+									{
+										comboFilter.setSelectedIndex(11);
+									}
+								} catch (Exception er) {}
 							}
 
 							addToList.setText(language.getProperty("filesVideoOrAudio"));
@@ -5096,6 +5098,9 @@ public class UIController extends Main {
 
 	public static void disableAll() {
 
+		//Back to default from btnStart to avoid setTime to be loaded
+		Main.doNotLoadImage = false;
+		
 		Utils.breakSleepMode = false;
 		Utils.disableSleepMode();
 
@@ -5706,7 +5711,7 @@ public class UIController extends Main {
 	}
 
 	public static void endOfFunction() {
-
+		
 		if (errorList.length() != 0)
 		{
 			if (Settings.btnDisableSound.isSelected() == false && disableEndingSound == false)

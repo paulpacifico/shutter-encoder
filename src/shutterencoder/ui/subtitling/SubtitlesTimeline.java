@@ -222,9 +222,20 @@ public class SubtitlesTimeline {
 								 
 					 if (q == 0)
 					 {
-						 if (Main.caseAddSubtitles.isSelected())
-							 FunctionUtils.addSubtitles(false);
-						 
+						if (Main.caseAddSubtitles.isSelected())
+						{	
+							FunctionUtils.addSubtitles(false);	
+							
+							if (VideoPlayerUtils.loadImageThread != null)
+							{
+								try {
+									VideoPlayerUtils.loadImageThread.join();
+								} catch (InterruptedException e) {
+								    Thread.currentThread().interrupt();
+								}
+							}
+						}
+						
 						FunctionUtils.addSubtitles(true);
 					 }
 					 else

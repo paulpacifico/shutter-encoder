@@ -19,18 +19,24 @@
 
 package shutterencoder.ui.main;
 
+import java.awt.Toolkit;
+import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseMotionListener;
 
 import javax.swing.DefaultComboBoxModel;
@@ -55,6 +61,11 @@ import shutterencoder.utils.Utils;
 
 public class StatusBar extends Main {
 
+	private static Point dragStart;
+	private static Point lastDragPoint;
+	private static Rectangle initialBounds;
+	private static int resizeDirection;
+	
 	public static void statusBar() {
 
 		statusBar = new JPanel();
@@ -65,90 +76,132 @@ public class StatusBar extends Main {
 		statusBar.setBorder(new MatteBorder(1, 0, 0, 0, new Color(45, 45, 45)));
 		statusBar.setBounds(0, frame.getHeight() - 23, extendedWidth, 22);
 
-		statusBar.addMouseListener(new MouseListener() {
-
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {
-
-				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-
-			@Override
-			public void mousePressed(MouseEvent e) {
-				windowDrag = true;
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent e) {
-
-				if (VideoPlayerCore.setTime != null && VideoPlayerUI.isPiping == false)
-				{
-					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload
-				}
-
-				windowDrag = false;
-
-				// IMPORTANT
-				if (FFprobe.totalLength <= 40 && VideoPlayerUtils.preview != null)
-				{
-					VideoPlayerUtils.preview = null;
-				}
-
-				UIController.resizeAll(frame.getWidth(), 0);
-			}
-
+		statusBar.addMouseListener(new MouseAdapter() {
+		
+		    @Override
+		    public void mousePressed(MouseEvent e) {
+		
+		        dragStart = e.getLocationOnScreen();
+		        lastDragPoint = new Point(dragStart);
+		        initialBounds = frame.getBounds();
+		
+		        resizeDirection = statusBar.getCursor().getType();
+		
+		        windowDrag = true;
+		    }
+				
 		});
-
-		statusBar.addMouseMotionListener(new MouseMotionListener() {
-
-			@Override
-			public void mouseDragged(MouseEvent e) {
-
-				int i = e.getY() - 10;
-
-				if (frame.getSize().getHeight() + i < 650)
-					i = 0;
-
-				int width = e.getX() + 10;
-
-				if (windowDrag) {
-					UIController.resizeAll(width, i);
-				}
-
-			}
-
-			@Override
-			public void mouseMoved(MouseEvent e) {
-
-				if (MouseInfo.getPointerInfo().getLocation().x
-						- Main.frame.getLocation().x > Main.frame.getSize().width - 20) {
+		
+		statusBar.addMouseMotionListener(new MouseMotionAdapter() {
+		
+		    @Override
+		    public void mouseMoved(MouseEvent e) {
+		    	
+		    	if (MouseInfo.getPointerInfo().getLocation().x - Main.frame.getLocation().x > Main.frame.getSize().width - 20)
+		    	{
 					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
-				} else if ((MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y) > frame.getSize().height
-						- 20) {
+				}
+		    	else if (MouseInfo.getPointerInfo().getLocation().x < Main.frame.getX() + 20)
+		    	{
+					Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+				}
+		    	else if ((MouseInfo.getPointerInfo().getLocation().y - frame.getLocation().y) > frame.getSize().height - 20)
+		    	{
 					frame.setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
-				} else {
-					if (Main.windowDrag == false && Main.frame.getCursor()
-							.equals(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)) == false) {
+				}
+		    	else
+		    	{
+					if (Main.windowDrag == false && Main.frame.getCursor().equals(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR)) == false)
+					{
 						Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					}
 				}
-			}
+		    }
+		
+		    @Override
+		    public void mouseDragged(MouseEvent e) {
+		
+		        if (!windowDrag || dragStart == null)
+		            return;
+		        
+		        Point mouse = e.getLocationOnScreen();
+		        Point barLocation = statusBar.getLocationOnScreen();
+
+		        int dx = mouse.x - dragStart.x;
+		        int dy = mouse.y - lastDragPoint.y;
+
+		        boolean belowStatusBarTop = mouse.y >= barLocation.y + statusBar.getHeight();
+
+	        	if (dy > 0 && !belowStatusBarTop) {
+	        	    dy = 0;
+	        	}
+		
+		        int width = initialBounds.width;
+		
+		        boolean southWest = resizeDirection == Cursor.SW_RESIZE_CURSOR;
+		        boolean southEast = resizeDirection == Cursor.SE_RESIZE_CURSOR;
+		        boolean south = resizeDirection == Cursor.S_RESIZE_CURSOR;
+		
+		        if (southWest) {
+		            width -= dx;
+		        }
+		        else if (southEast) {
+		            width += dx;
+		        }
+		        else if (south) {
+		            width = frame.getWidth();
+		        }
+		
+		        // Preserve the original right edge when resizing SW
+		        int rightEdge = initialBounds.x + initialBounds.width;
+		
+		        UIController.resizeAll(width, dy);
+		
+		        if (southWest)
+		            frame.setLocation(rightEdge - frame.getWidth(), initialBounds.y);		       
+		
+		        lastDragPoint = mouse;
+		    }
 		});
 
+		Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
+			
+		        if (event instanceof MouseEvent)
+		        {
+		            MouseEvent e = (MouseEvent) event;
+
+		            if (e.getID() == MouseEvent.MOUSE_RELEASED && windowDrag)
+		            {		            	
+		                windowDrag = false;
+
+		                dragStart = null;
+		                lastDragPoint = null;
+		                initialBounds = null;
+
+		                if (VideoPlayerCore.setTime != null && !VideoPlayerUI.isPiping)
+				        {		
+				            VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);
+				        }
+				        
+				        windowDrag = false;
+
+				        // IMPORTANT
+				        if (FFprobe.totalLength <= 40 && VideoPlayerUtils.preview != null)
+				        {
+				            VideoPlayerUtils.preview = null;
+				        }
+				
+				        UIController.resizeAll(frame.getWidth(), 0);
+		            }
+		        }
+		    },
+		    AWTEvent.MOUSE_EVENT_MASK
+		);
+		
 		lblBy = new JLabel(language.getProperty("lblCrParPaul"));
 		lblBy.setFont(new Font(mainFont, Font.PLAIN, 12));
 		lblBy.setForeground(Color.WHITE);
-		lblBy.setBounds(6, 4, lblBy.getPreferredSize().width, 15);
+		lblBy.setBounds(13, 4, lblBy.getPreferredSize().width, 15);
 		statusBar.add(lblBy);
 
 		lblBy.addMouseListener(new MouseListener() {
@@ -174,7 +227,7 @@ public class StatusBar extends Main {
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent arg0) {
+			public void mouseEntered(MouseEvent e) {				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
@@ -661,10 +714,10 @@ public class StatusBar extends Main {
 		lblYears.setHorizontalAlignment(SwingConstants.RIGHT);
 		lblYears.setForeground(Color.WHITE);
 		lblYears.setFont(new Font(mainFont, Font.PLAIN, 12));
-		lblYears.setBounds(frame.getWidth() - lblYears.getPreferredSize().width - 10, lblBy.getY(), lblYears.getPreferredSize().width + 4, 15);
+		lblYears.setBounds(frame.getWidth() - lblYears.getPreferredSize().width - 17, lblBy.getY(), lblYears.getPreferredSize().width + 4, 15);
 		statusBar.add(lblYears);
 
-		lblYears.addMouseListener(new MouseListener() {
+		lblYears.addMouseListener(new MouseAdapter() {
 
 			public void mouseClicked(MouseEvent arg0) {
 				final JFrame oldVersions = new JFrame();
@@ -672,8 +725,7 @@ public class StatusBar extends Main {
 				oldVersions.getContentPane().setBackground(Utils.c30);
 				oldVersions.setBackground(new Color(1.0f, 1.0f, 1.0f, 1.0f));
 				oldVersions.setSize(1600, 423);
-				oldVersions.setShape(new AntiAliasedRoundRectangle(0, 0, oldVersions.getWidth() + 18,
-						oldVersions.getHeight(), 15, 15));
+				oldVersions.setShape(new AntiAliasedRoundRectangle(0, 0, oldVersions.getWidth() + 18, oldVersions.getHeight(), 15, 15));
 				
 				if (System.getProperty("os.name").contains("Mac") == false)
 					oldVersions.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("resources/icon.png")).getImage());
@@ -704,8 +756,7 @@ public class StatusBar extends Main {
 
 				});
 
-				JLabel image = new JLabel(
-						new ImageIcon(getClass().getClassLoader().getResource("resources/2013-2016.jpg")));
+				JLabel image = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("resources/2013-2016.jpg")));
 				image.setSize(1600, 423);
 				image.addMouseListener(new MouseListener() {
 
@@ -738,8 +789,7 @@ public class StatusBar extends Main {
 
 					@Override
 					public void mouseDragged(MouseEvent e) {
-						oldVersions.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX,
-								MouseInfo.getPointerInfo().getLocation().y - MousePositionY);
+						oldVersions.setLocation(MouseInfo.getPointerInfo().getLocation().x - MousePositionX, MouseInfo.getPointerInfo().getLocation().y - MousePositionY);
 					}
 
 					@Override
@@ -751,20 +801,12 @@ public class StatusBar extends Main {
 				oldVersions.getContentPane().add(image);
 			}
 
-			public void mouseEntered(MouseEvent arg0) {
+			public void mouseEntered(MouseEvent e) {				
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 			}
 
 			public void mouseExited(MouseEvent arg0) {
 				frame.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
-
-			public void mousePressed(MouseEvent arg0) {
-
-			}
-
-			public void mouseReleased(MouseEvent arg0) {
-
 			}
 
 		});

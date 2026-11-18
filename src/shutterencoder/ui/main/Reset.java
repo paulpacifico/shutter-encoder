@@ -35,7 +35,6 @@ import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFprobe;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
-import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
 
 public class Reset extends Main {
@@ -53,9 +52,7 @@ public class Reset extends Main {
 
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-
 				doNotLoadImage = true;
-
 			}
 
 			@Override
@@ -763,20 +760,17 @@ public class Reset extends Main {
 					VideoPlayerCore.playerCurrentFrame = position;
 					VideoPlayerUI.resizeAll();
 					
-					if (VideoPlayerUtils.playerIsPlaying())
+					if (VideoPlayerCore.setTime != null)
 					{
-						if (VideoPlayerCore.setTime != null)
-						{
-							try {
-								VideoPlayerCore.setTime.join();
-							} catch (InterruptedException ex) {
-								ex.printStackTrace();
-								Thread.currentThread().interrupt();
-							}
+						try {
+							VideoPlayerCore.setTime.join();
+						} catch (InterruptedException ex) {
+							ex.printStackTrace();
+							Thread.currentThread().interrupt();
 						}
-						
-						VideoPlayerCore.playerLoop = true;
-					}
+					}		
+					
+					VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame);					
 				}
 			}
 

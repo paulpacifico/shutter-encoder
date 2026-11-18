@@ -76,7 +76,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 
 	//Player
 	public static Process playerVideo;
-    public static Process bufferVideo;
     public static Process playerAudio;	
     public static String videoPath = null;
     public static Thread loadMedia;
@@ -113,7 +112,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
     private static ByteBuffer byteBuffer;
     private static ShortBuffer shortBuffer;
     
-	private static final ExecutorService videoProcessExecutor =
+	public static final ExecutorService videoProcessExecutor =
     Executors.newCachedThreadPool(r -> {
         Thread t = new Thread(r, "ffmpeg-prestart");
         t.setDaemon(true);
@@ -160,11 +159,13 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	
 	public static void playerProcess(double inputTime, Process preStartedVideoProcess) {
 
-	    if (Utils.loadEncFile != null && Utils.loadEncFile.isAlive())
-	        return;
+	    if ((Utils.loadEncFile != null && Utils.loadEncFile.isAlive()))
+		{
+	    	return;
+		}
 
 	    try {
-
+	    	
 	        //VIDEO STREAM
 	        playerVideo = (preStartedVideoProcess != null)
 	                ? preStartedVideoProcess
@@ -612,17 +613,6 @@ public class VideoPlayerCore extends VideoPlayerUI {
 			}
 		}
 	}
-		
-	public static void playerPlay() {
-		
-	    synchronized (playerLock)
-	    {
-	        if (playerVideo == null || playerVideo.isAlive() == false)
-	        {
-	            playerProcess(playerCurrentFrame, null);
-	        }
-	    }
-	}
 	
 	public static void playerStop() {
 		
@@ -700,7 +690,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 	}
 	
 	public static void playerSetTime(double inputTime) {
-					
+							
 		if (fileDuration <= 40)
 			return;
 		 
@@ -715,8 +705,8 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				setTime = new Thread(new Runnable() {
 	
 					@Override
-					public void run() {					
-						
+					public void run() {	
+																		
 						previewUpscale = false;
 						Main.frame.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						
