@@ -96,6 +96,7 @@ public class FunctionUtils extends Main {
 	public static boolean autoBitrateMode;
 	public static boolean deleteSRT = false;
 	private static StringBuilder mailFileList = new StringBuilder();
+	public static boolean subsLoaded = false;
 	
 	public static boolean analyze(File file, boolean isRaw, boolean isVideoPlayer) throws InterruptedException {
 		
@@ -151,7 +152,7 @@ public class FunctionUtils extends Main {
 			}
 			 
 			if (analyzeError(file.toString()))
-			 return false;
+				return false;
 		}
 		
 		if (isRaw == false && extension.toLowerCase().equals(".pdf") == false)
@@ -1357,6 +1358,11 @@ public class FunctionUtils extends Main {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static void addSubtitles(boolean add) {
 		
+		if (Utils.loadEncFile != null && Utils.loadEncFile.isAlive())
+			return;
+		
+		subsLoaded = false;
+		
 		if (VideoPlayerCore.videoPath != null && add)
 		{
 			deleteSRT = false;
@@ -1703,9 +1709,7 @@ public class FunctionUtils extends Main {
 								Main.subtitlesBurn = true;
 
 								try {
-									FileUtils.copyFile(
-											fc.getSelectedFile(),
-											Main.subtitlesFile);
+									FileUtils.copyFile(fc.getSelectedFile(), Main.subtitlesFile);
 								} catch (IOException e) {
 								}
 							} else {
@@ -1746,11 +1750,7 @@ public class FunctionUtils extends Main {
 						VideoPlayerUI.sliderSpeed.setEnabled(false);
 						VideoPlayerUI.sliderSpeed.setValue(2);
 						VideoPlayerUI.lblSpeed.setText("x1");
-						VideoPlayerUI.lblSpeed.setBounds(
-								VideoPlayerUI.sliderSpeed.getX() - VideoPlayerUI.lblSpeed.getPreferredSize().width
-										- 2,
-								VideoPlayerUI.sliderSpeed.getY() + 2,
-								VideoPlayerUI.lblSpeed.getPreferredSize().width, 16);
+						VideoPlayerUI.lblSpeed.setBounds(VideoPlayerUI.sliderSpeed.getX() - VideoPlayerUI.lblSpeed.getPreferredSize().width - 2, VideoPlayerUI.sliderSpeed.getY() + 2, VideoPlayerUI.lblSpeed.getPreferredSize().width, 16);
 					} else {
 						JOptionPane.showConfirmDialog(frame, Main.language.getProperty("invalidSubtitles"),
 								Main.language.getProperty("subtitlesFileError"), JOptionPane.PLAIN_MESSAGE);
@@ -1764,8 +1764,7 @@ public class FunctionUtils extends Main {
 					|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionCut"))
 					|| subtitlesBurn == false) {
 				Main.casePreserveSubs.setSelected(false);
-			}
-			
+			}			
 		}
 		else if (add == false)
 		{			
@@ -1781,11 +1780,13 @@ public class FunctionUtils extends Main {
 			VideoPlayerUI.player.remove(subsCanvas);
 			VideoPlayerUI.player.repaint();
 
-			if (autoBurn == false && autoEmbed == false) {
-				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and
-																			// reload the frame
+			if (autoBurn == false && autoEmbed == false)
+			{
+				VideoPlayerCore.playerSetTime(VideoPlayerCore.playerCurrentFrame); // Use VideoPlayer.resizeAll and reload the frame
+				
+				
 			}
-
+			
 			for (Component c : grpSubtitles.getComponents()) {
 				if (c instanceof JCheckBox == false) {
 					c.setEnabled(false);
@@ -1796,7 +1797,6 @@ public class FunctionUtils extends Main {
 
 			VideoPlayerUI.sliderSpeed.setEnabled(true);
 		}
-		
 	}
 		
 	public static void addFileForMail(final String file)

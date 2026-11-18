@@ -1048,10 +1048,10 @@ public class VideoEncoders extends Main {
 								
 								if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 								{
-									FFmpeg.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd + output);
+									FFmpeg.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + gpuDecoding + " -i " + '"' + file.toString() + '"' + cmd + output);
 								}
 								else
-									FFmpeg.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + output);
+									FFmpeg.run(loop + stream + inputFramerate + gpuDecoding + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd + output);
 								
 								try {
 									FFmpeg.runProcess.join();
@@ -1063,10 +1063,10 @@ public class VideoEncoders extends Main {
 								{
 									if (grpImageSequence.isVisible() && caseEnableSequence.isSelected())
 									{
-										FFmpeg.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + " -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + output);
+										FFmpeg.run(" -safe 0 -f concat -r " + caseSequenceFPS.getSelectedItem().toString().replace(",", ".") + gpuDecoding + " -i " + '"' + file.toString() + '"' + cmd.replace("-pass 1", "-pass 2") + output);
 									}
 									else
-										FFmpeg.run(loop + stream + inputFramerate + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);		
+										FFmpeg.run(loop + stream + inputFramerate + gpuDecoding + " -i " + '"' + fileOut + '"' + InputAndOutput.setInputString(InputAndOutput.inPoint, " -i " + '"' + file.toString() + '"', InputAndOutput.outPoint) + cmd.replace("-pass 1", "-pass 2") + output);		
 									
 									try {
 										FFmpeg.runProcess.join();

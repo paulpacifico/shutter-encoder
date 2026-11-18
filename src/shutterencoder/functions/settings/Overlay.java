@@ -305,8 +305,8 @@ public class Overlay extends Main {
 						VideoPlayerUtils.loadImageThread.join();
 					} catch (InterruptedException e) {
 					    Thread.currentThread().interrupt();
-					}
-				}
+					}			
+				}	
 				FunctionUtils.addSubtitles(true);
 			}
 									

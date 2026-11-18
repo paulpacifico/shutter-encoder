@@ -559,7 +559,7 @@ public class Rewrap extends Main {
 					} catch (InterruptedException e) {
 					    Thread.currentThread().interrupt();
 					}
-				}
+				}	
 				FunctionUtils.addSubtitles(true);
 			}
 

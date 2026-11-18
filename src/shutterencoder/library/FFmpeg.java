@@ -88,8 +88,10 @@ public class FFmpeg extends Main {
 	public static boolean isRunning = false;
 	public static BufferedWriter writer;
 	public static Thread runProcess = new Thread();
+	public static Thread runProcessSilently = new Thread();
 	private static Thread displayThread;
 	public static Process process;
+	public static Process processSilently;
 	private static Process processAudio;
 	private static InputStream audio = null;	
 	private static AudioInputStream audioInputStream = null;
@@ -286,7 +288,7 @@ public class FFmpeg extends Main {
 
 						//IMPORTANT
 						if (cmd.contains("cropdetect") == false
-						&& btnStart.getText().equals(language.getProperty("btnPauseFunction"))|| btnStart.getText().equals(language.getProperty("btnStopRecording")))
+						&& btnStart.getText().equals(language.getProperty("btnPauseFunction")) || btnStart.getText().equals(language.getProperty("btnStopRecording")))
 						{
 							VideoPlayerUI.resizeAll();
 						}
@@ -361,6 +363,16 @@ public class FFmpeg extends Main {
 						}					
 						int exitCode = process.waitFor();
 						
+						try {
+							stdin.close();
+						} catch (IOException e) {}
+						try {
+							video.close();
+						} catch (IOException e) {}		
+						try {
+							videoInputStream.close();
+						} catch (IOException e) {}
+						
 						if (exitCode != 0)
 						{
 							if (cancelled == false)
@@ -395,7 +407,7 @@ public class FFmpeg extends Main {
 		
 		error = false;
 		
-		runProcess = new Thread(new Runnable()  {
+		runProcessSilently = new Thread(new Runnable()  {
 			
 			@Override
 			public void run() {
@@ -407,23 +419,27 @@ public class FFmpeg extends Main {
 					if (System.getProperty("os.name").contains("Windows"))
 					{														
 						processFFMPEG = new ProcessBuilder('"' + PathToFFMPEG + '"' + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner " + cmd);								
-						process = processFFMPEG.start();					
+						processSilently = processFFMPEG.start();					
 					}
 					else
 					{													
 						processFFMPEG = new ProcessBuilder("/bin/bash", "-c" , PathToFFMPEG + " -strict " + Settings.comboStrict.getSelectedItem() + " -hide_banner " + cmd);							
-						process = processFFMPEG.start();
+						processSilently = processFFMPEG.start();
 					}	
 					
 					String line;
-					BufferedReader input = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+					BufferedReader input = new BufferedReader(new InputStreamReader(processSilently.getErrorStream()));
 					
 					while ((line = input.readLine()) != null)
 					{			
 						getOutputLog.append(line + System.lineSeparator());
 					}
-					int exitCode = process.waitFor();
+					int exitCode = processSilently.waitFor();
 					
+					try {
+						input.close();
+					} catch (IOException e) {}
+										
 					if (exitCode != 0)
 					{
 						if (cancelled == false)
@@ -437,7 +453,7 @@ public class FFmpeg extends Main {
 				}
 			}
 		});		
-		runProcess.start();
+		runProcessSilently.start();
 	}
 	
 	public static void checkForErrors(String output) {
