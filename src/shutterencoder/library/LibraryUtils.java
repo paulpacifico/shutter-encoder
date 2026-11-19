@@ -145,7 +145,7 @@ public class LibraryUtils extends Main {
 	                                }
 
 	                                checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
-	                                        + " -f lavfi -wi nullsrc -frames:v 1 -c:v " + codec
+	                                        + " -filter_hw_device gpu -f lavfi -i nullsrc -frames:v 1 -c:v " + codec
 	                                        + "_vulkan -b:v 5000k -vf format=nv12,hwupload -f null -\"");
 	                                if (!FFmpeg.error) graphicsAccel.add("Vulkan Video");
 	                            }
@@ -183,7 +183,7 @@ public class LibraryUtils extends Main {
 	                    	if (isWindows && isIntegratedGPU == false)
 	                    	{
 	                    		checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
-	                    				+ " -f lavfi -i nullsrc -frames:v 1 -c:v prores_ks_vulkan -s 640x360"
+	                    				+ " -filter_hw_device gpu -f lavfi -i nullsrc -frames:v 1 -c:v prores_ks_vulkan -s 640x360"
 	                    				+ " -vf format=nv12,hwupload -pix_fmt yuv422p10 -f null -\"");
                                 if (!FFmpeg.error) graphicsAccel.add("Vulkan Video");
 	                    	}
@@ -199,7 +199,7 @@ public class LibraryUtils extends Main {
 	                        if (isWindows)
 	                        {
 	                            checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
-	                                    + " -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3"
+	                                    + " -filter_hw_device gpu -f lavfi -i nullsrc -frames:v 1 -c:v ffv1_vulkan -level 3"
 	                                    + " -vf format=nv12,hwupload -f null -\"");
 	                            if (!FFmpeg.error) graphicsAccel.add("Vulkan Video");
 	                        }
@@ -245,7 +245,7 @@ public class LibraryUtils extends Main {
 	                                if (!FFmpeg.error) graphicsAccel.add("AMD AMF Encoder");
 	
 	                                checkHWaccel("-init_hw_device vulkan=gpu:" + vulkanGPUIndex
-	                                        + " -f lavfi -i nullsrc -frames:v 1 -cw:v av1_vulkan"
+	                                        + " -filter_hw_device gpu -f lavfi -i nullsrc -frames:v 1 -c:v av1_vulkan"
 	                                        + " -b:v 5000k -vf format=nv12,hwupload -f null -\"");
 	                                if (!FFmpeg.error) graphicsAccel.add("Vulkan Video");
 	                            }
@@ -658,7 +658,7 @@ public class LibraryUtils extends Main {
 						}
 						
 						//Vulkan
-						vulkanAvailable = gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex + "  -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
+						vulkanAvailable = gpuFilter(" -hwaccel vulkan -hwaccel_output_format vulkan -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex + " -filter_hw_device gpu -i " + '"' + file + '"' + " -vf scale_vulkan=640:360,hwdownload,format=" + bitDepth + " -an -frames:v 1 -f null -" + '"');
 						
 						if (comboAccel.getSelectedItem().equals(language.getProperty("aucune").toLowerCase()) == false)
 						{								
@@ -700,7 +700,7 @@ public class LibraryUtils extends Main {
 					if (comboGPUDecoding.getSelectedItem().toString().equals("vulkan")
 					|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")) //Always need to choose the GPU
 					{
-						device = " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex;						
+						device = " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex + " -filter_hw_device gpu";						
 					}
 					else if (comboGPUDecoding.getSelectedItem().toString().equals("qsv"))
 					{
@@ -795,7 +795,7 @@ public class LibraryUtils extends Main {
 			{
 				if (hasNvidiaGPU || hasAMDGPU || hasIntelGPU && GPUCount > 1) //Make sure integrated GPU is not used because it's slower
 				{
-					String device = " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex;
+					String device = " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex + " -filter_hw_device gpu";
 					
 					libplaceboAvailable = gpuFilter(device + selectedGPU + " -i " + '"' + file + '"' + " -vf libplacebo=w=640:h=360 -an -frames:v 1 -f null -" + '"');
 				}
@@ -1010,7 +1010,7 @@ public class LibraryUtils extends Main {
 		|| comboGPUFilter.getSelectedItem().toString().equals("vulkan")
 		|| Libplacebo.useLibplaceboFilters && filterComplex.contains("libplacebo")) //Always need to choose the GPU
 		{
-			gpuDecoding += " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex;
+			gpuDecoding += " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex + " -filter_hw_device gpu";
 		}	
 		else if (comboAccel.getSelectedItem().equals("VAAPI"))			
 		{

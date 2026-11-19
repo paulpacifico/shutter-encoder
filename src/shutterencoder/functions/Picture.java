@@ -33,6 +33,7 @@ import shutterencoder.functions.settings.Overlay;
 import shutterencoder.functions.settings.Timecode;
 import shutterencoder.functions.utils.FilterComplex;
 import shutterencoder.functions.utils.FunctionUtils;
+import shutterencoder.functions.utils.Libplacebo;
 import shutterencoder.library.Dcraw;
 import shutterencoder.library.FFmpeg;
 import shutterencoder.library.FFprobe;
@@ -53,6 +54,7 @@ import shutterencoder.utils.Utils;
 public class Picture extends Main {
 		
 	private static boolean isGPUCompatible = false;
+	private static boolean useLibplaceboFilters = false;
 	
 	public static void main(boolean encode, boolean videoPlayerCapture) {
 
@@ -142,9 +144,11 @@ public class Picture extends Main {
 										
 						//Saving the GPU value
 						isGPUCompatible = LibraryUtils.isGPUCompatible;
-						
+						useLibplaceboFilters  = Libplacebo.useLibplaceboFilters;
+												
 						//No GPU acceleration when using this function
 						LibraryUtils.isGPUCompatible = false;
+						Libplacebo.useLibplaceboFilters = false;						
 						
 			            //Deinterlace
 						String filterComplex = setDeinterlace(extension, isRaw);
@@ -411,10 +415,8 @@ public class Picture extends Main {
 						}
 						
 						//Re-enable GPU decoding for screenshots
-						if (videoPlayerCapture)
-						{
-							LibraryUtils.isGPUCompatible = isGPUCompatible; 
-						}
+						LibraryUtils.isGPUCompatible = isGPUCompatible; 
+						Libplacebo.useLibplaceboFilters = useLibplaceboFilters;						
 						
 						if (FFmpeg.saveCode == false && btnStart.getText().equals(Main.language.getProperty("btnAddToRender")) == false)
 						{							

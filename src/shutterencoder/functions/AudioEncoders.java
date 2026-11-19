@@ -442,6 +442,9 @@ public class AudioEncoders extends Main {
 			    Thread.currentThread().interrupt();
 			}
         	
+        	//IMPORTANT	        	
+        	FunctionUtils.setOutputDestination("", file);
+        	
         	disableEndingSound = false;
         	
         	lblCurrentEncoding.setText(file.getName());

@@ -26,6 +26,7 @@ import javax.swing.JComboBox;
 
 import shutterencoder.functions.AudioNormalization;
 import shutterencoder.functions.Colorize;
+import shutterencoder.functions.utils.FunctionUtils;
 import shutterencoder.library.FFmpeg;
 import shutterencoder.library.FFprobe;
 import shutterencoder.ui.main.Main;
@@ -268,6 +269,9 @@ public class AudioSettings extends Main {
 				} catch (InterruptedException e) {
 				    Thread.currentThread().interrupt();
 				}
+	        	
+	        	//IMPORTANT	        	
+	        	FunctionUtils.setOutputDestination("", file);
 	        	
 	        	disableEndingSound = false;
 	        	

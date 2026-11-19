@@ -222,6 +222,9 @@ public class Rewrap extends Main {
 							    Thread.currentThread().interrupt();
 							}
 				        	
+				        	//IMPORTANT	        	
+				        	FunctionUtils.setOutputDestination("", file);
+				        	
 				        	disableEndingSound = false;
 				        	
 				        	if (cancelled)

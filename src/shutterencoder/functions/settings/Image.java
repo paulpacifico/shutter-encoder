@@ -545,8 +545,7 @@ public class Image extends Main {
 
 		if (Libplacebo.useLibplaceboFilters && Libplacebo.checkLibplaceboFilter(previousFilter) && filterComplex.contains("scale=") && filterComplex.contains("scale=iw") == false) //scale=iw is used for the watermark scaling
 		{
-			filterComplex = Libplacebo.setLibplaceboFilter(previousFilter,
-					filterComplex.replaceAll(".*scale=(\\d+):(\\d+).*", "w=$1:h=$2") + ":downscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":upscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":reset_sar=1");
+			filterComplex = Libplacebo.setLibplaceboFilter(previousFilter, filterComplex.replaceAll(".*scale=(\\d+):(\\d+).*", "w=$1:h=$2") + ":downscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":upscaler=" + setScaleAlgorithm("LIBPLACEBO") + ":reset_sar=1");
 		}
 						
 		return filterComplex;
@@ -619,7 +618,9 @@ public class Image extends Main {
                         return "nearest";
                     case "bilinear":
                     case "area":
-                        return "bilinear";                    
+                        return "bilinear";  
+                    case "spline":
+                    	return "spline36";
                     case "gaussian":
                         return "gaussian";
                     case "lanczos":

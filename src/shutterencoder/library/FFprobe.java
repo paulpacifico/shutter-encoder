@@ -956,10 +956,10 @@ public class FFprobe extends Main {
 					do {
 						
 						line = br.readLine();
-						
+
 						//Console.consoleFFPROBE.append(line + System.lineSeparator());
 					
-						 if (line == null || intra == 2 || i > 20000 || gopCount > 500)
+						 if (line == null || intra == 2 || i > 20000 || gopCount > 500 || line.equals("pict_type=?"))
 						 {
 							isRunning = false;
 				            process.destroy();
@@ -972,8 +972,8 @@ public class FFprobe extends Main {
 						 }
 						 else
 						 {
-							if (line.equals("pict_type=I")) {
-								
+							if (line.equals("pict_type=I"))
+							{								
 								intra ++;
 								
 								if (intra == 2)
@@ -985,7 +985,7 @@ public class FFprobe extends Main {
 								    gopCount += 1;
 								}
 							}
-							if (line.equals("pict_type=P")) {
+							else if (line.equals("pict_type=P")) {
 								
 								if (isGOPWindow)
 									GOP.newImage('P', gopSpace);
@@ -993,7 +993,7 @@ public class FFprobe extends Main {
 							    gopSpace += 112;
 							    gopCount += 1;
 							}
-							if (line.equals("pict_type=B")) {
+							else if (line.equals("pict_type=B")) {
 								
 								if (isGOPWindow)
 									GOP.newImage('B', gopSpace);
