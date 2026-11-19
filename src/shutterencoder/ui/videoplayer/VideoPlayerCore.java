@@ -1210,7 +1210,7 @@ public class VideoPlayerCore extends VideoPlayerUI {
 				|| Main.comboGPUFilter.getSelectedItem().toString().equals("vulkan")
 				|| Libplacebo.useLibplaceboFilters) //Always need to choose the GPU
 				{
-					device = " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex;
+					device = " -init_hw_device vulkan=gpu:" + LibraryUtils.vulkanGPUIndex + " -filter_hw_device gpu";
 				}	
 				else if (Main.comboAccel.getSelectedItem().equals("VAAPI"))			
 				{

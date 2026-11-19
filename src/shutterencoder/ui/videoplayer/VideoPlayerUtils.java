@@ -27,7 +27,6 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -1380,12 +1379,6 @@ public class VideoPlayerUtils extends VideoPlayerCore {
 	    {
 			addWaveform.interrupt();
 			
-			try {
-				LibraryUtils.waveformWriter.write('q');
-				LibraryUtils.waveformWriter.flush();
-				LibraryUtils.waveformWriter.close();
-			} catch (IOException er) {}
-	        
 	        if (LibraryUtils.waveformProcess != null && LibraryUtils.waveformProcess.isAlive())
 	        {
 	        	LibraryUtils.waveformProcess.destroyForcibly();

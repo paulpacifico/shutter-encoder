@@ -767,10 +767,8 @@ public class Main {
 		}
 		
 		Utils.setLanguage();
-		SplashRenderer.increment();
 		
 		Utils.loadThemes();
-		SplashRenderer.increment();
 
 		//Documents
 		if (documents.exists() == false) {
@@ -925,25 +923,18 @@ public class Main {
 		
 		//Load panels
 		TopBar.topBar();
-		SplashRenderer.increment();
 		
 		StatusBar.statusBar();
-		SplashRenderer.increment();
 		
 		ChooseFiles.grpChooseFiles();
-		SplashRenderer.increment();
 		
 		ChooseFunction.grpChooseFunction();
-		SplashRenderer.increment();
 		
 		Destination.grpDestination();
-		SplashRenderer.increment();
 		
 		Progress.grpProgress();
-		SplashRenderer.increment();
 		
 		FileInformation.grpFileInformation();
-		SplashRenderer.increment();
 		
 		//Load only the video player black frame
 		VideoPlayerUI.player();  

@@ -33,10 +33,14 @@ import shutterencoder.utils.Utils;
 public class SplashRenderer extends JWindow {
 
 	public static SplashRenderer instance;
-	private BufferedImage bufferImage;
-	public static volatile float progress = 0.0f;
+	private BufferedImage bufferImage;	
 	private float textAlpha = 0.0f;
 	private Timer fadeTimer;
+	private int indeterminatePosition = 0;
+	private int indeterminateDirection = 1;
+	private final int segmentWidth = 55;
+	private final int animationSpeed = 3;
+	private Timer progressTimer;
 	private static Image splashScreen;
 	private static Font font = new Font("Montserrat", Font.PLAIN, 12);
 	
@@ -55,11 +59,29 @@ public class SplashRenderer extends JWindow {
 	        textAlpha += 0.05f;
 	        if (textAlpha >= 1.0f) {
 	            textAlpha = 1.0f;
-	            ((javax.swing.Timer)e.getSource()).stop();
+	            ((Timer)e.getSource()).stop();
 	        }
 	        repaint();
 	    });
 	    fadeTimer.start();
+	    
+	    progressTimer = new Timer(16, e -> {
+	        int barWidth = 200;
+
+	        indeterminatePosition += animationSpeed * indeterminateDirection;
+
+	        if (indeterminatePosition >= barWidth - segmentWidth) {
+	            indeterminatePosition = barWidth - segmentWidth;
+	            indeterminateDirection = -1;
+	        } else if (indeterminatePosition <= 0) {
+	            indeterminatePosition = 0;
+	            indeterminateDirection = 1;
+	        }
+
+	        repaint();
+	    });
+
+	    progressTimer.start();
 	}
 	
 	private void initializeBuffer() {
@@ -158,15 +180,23 @@ public class SplashRenderer extends JWindow {
 	            xBar, yBar, barWidth, barHeight, 4, 4
 	        );
 	
-	        // Progression
-	        int progressWidth = (int) (barWidth * progress);
-	
-	        if (progressWidth > 0) {
-	            bufferGraphics.setColor(Utils.themeColor);
-	            bufferGraphics.fillRoundRect(
-	                xBar, yBar, progressWidth, barHeight, 4, 4
-	            );
-	        }
+	        // Progress background
+	        bufferGraphics.setColor(Utils.c42);
+	        bufferGraphics.fillRoundRect(
+	            xBar, yBar, barWidth, barHeight, 4, 4
+	        );
+
+	        // Indeterminate bouncing progress
+	        bufferGraphics.setColor(Utils.themeColor);
+
+	        bufferGraphics.fillRoundRect(
+	            xBar + indeterminatePosition,
+	            yBar,
+	            segmentWidth,
+	            barHeight,
+	            4,
+	            4
+	        );
 	
 	    } finally {
 	        bufferGraphics.dispose();
@@ -179,16 +209,6 @@ public class SplashRenderer extends JWindow {
 	        screenGraphics.drawImage(bufferImage, 0, 0, this);
 	    } finally {
 	        screenGraphics.dispose();
-	    }
-	}
-      
-	public static void increment() {
-	    progress = Math.min(1.0f, progress + 0.11111f);
-	    
-	    SplashRenderer splash = instance;
-
-	    if (splash != null) {
-	        splash.repaint();
 	    }
 	}
 }
