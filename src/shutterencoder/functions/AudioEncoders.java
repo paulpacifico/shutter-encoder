@@ -36,6 +36,7 @@ import shutterencoder.ui.others.Ftp;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 import shutterencoder.utils.Utils;
@@ -67,8 +68,21 @@ public class AudioEncoders extends Main {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
+				int cutIndex = 0;
+				int lastFile = -1;
+				
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{
+					//Allows to use multi-cuts with splitMode
+			        if (i != lastFile)
+			        {
+			            cutIndex = 0;
+			            lastFile = i;
+			        }
+
+			        InputAndOutput.currentCut = InputAndOutput.isSplitCuts() ? VideoPlayerMultiCuts.cutSegments.get(cutIndex) : null;
+			        String cutSuffix = InputAndOutput.isSplitCuts() ? "_" + String.format("%02d", cutIndex + 1) : "";
+					
 					//Render queue only accept selected files
 					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
@@ -131,6 +145,12 @@ public class AudioEncoders extends Main {
 						{
 							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 						}	
+						
+						//Increment suffix for multi-cuts in splitMode
+						if (InputAndOutput.isSplitCuts())
+						{
+							extensionName += cutSuffix;
+						}
 						
 						//DRC
 						String DRC = "";
@@ -264,7 +284,7 @@ public class AudioEncoders extends Main {
 						}
 						
 						//Split video
-						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) && VideoPlayerMultiCuts.cutSegments.size() == 0)
 						{
 							container = "_%03d" + container;
 						}
@@ -369,6 +389,16 @@ public class AudioEncoders extends Main {
 						
 					} catch (InterruptedException e) {
 						FFmpeg.error  = true;
+					}
+					
+					if (InputAndOutput.isSplitCuts())
+					{
+						cutIndex++;
+
+			            if (cutIndex < VideoPlayerMultiCuts.cutSegments.size())
+			            {
+			                i--;   // the for's i++ brings it back to the same file
+			            }
 					}
 				}	
 

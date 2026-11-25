@@ -65,6 +65,7 @@ import shutterencoder.ui.others.RecordInputDevice;
 import shutterencoder.ui.others.RenderQueue;
 import shutterencoder.ui.others.Settings;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.ui.videoplayer.VideoPlayerUtils;
 
@@ -112,8 +113,21 @@ public class VideoEncoders extends Main {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
+				int cutIndex = 0;
+				int lastFile = -1;
+				
 				for (int i = 0 ; i < list.getSize() ; i++)
-				{	
+				{						
+					//Allows to use multi-cuts with splitMode
+			        if (i != lastFile)
+			        {
+			            cutIndex = 0;
+			            lastFile = i;
+			        }
+
+			        InputAndOutput.currentCut = InputAndOutput.isSplitCuts() ? VideoPlayerMultiCuts.cutSegments.get(cutIndex) : null;
+			        String cutSuffix = InputAndOutput.isSplitCuts() ? "_" + String.format("%02d", cutIndex + 1) : "";
+					
 					//Render queue only accept selected files
 					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
@@ -207,6 +221,12 @@ public class VideoEncoders extends Main {
 							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 						}												
 						
+						//Increment suffix for multi-cuts in splitMode
+						if (InputAndOutput.isSplitCuts())
+						{
+							extensionName += cutSuffix;
+						}
+						
 						//Container
 						String container = comboFilter.getSelectedItem().toString();						
 						switch (comboFonctions.getSelectedItem().toString())
@@ -275,7 +295,7 @@ public class VideoEncoders extends Main {
 						
 						//Split video
 						String forceKeyFrames = "";
-						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) && VideoPlayerMultiCuts.cutSegments.size() == 0)
 						{
 							forceKeyFrames = " -force_key_frames " + '"' + "expr:gte(t,n_forced*" + VideoPlayerUI.splitValue.getText() + ")" + '"';
 							container = "_%03d" + container;
@@ -849,12 +869,12 @@ public class VideoEncoders extends Main {
 						{
 							output = "-flags:v +global_header -f tee " + '"' + fileOut.toString().replace("\\", "/") + "|[f=flv]" + textStream.getText();
 									
-							if (caseDisplay.isSelected() && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
+							if (caseDisplay.isSelected() && (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false || VideoPlayerMultiCuts.cutSegments.size() > 0))
 								output += "|[f=matroska]pipe:1" + '"';
 							else
 								output += '"';
 						}
-						else if (caseDisplay.isSelected() && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false)
+						else if (caseDisplay.isSelected() && (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) == false || VideoPlayerMultiCuts.cutSegments.size() > 0))
 						{
 							switch (comboFonctions.getSelectedItem().toString())
 							{
@@ -1228,7 +1248,17 @@ public class VideoEncoders extends Main {
 						}
 					} catch (InterruptedException | IOException e) {
 						FFmpeg.error  = true;
-					}			
+					}	
+					
+					if (InputAndOutput.isSplitCuts())
+					{
+						cutIndex++;
+
+			            if (cutIndex < VideoPlayerMultiCuts.cutSegments.size())
+			            {
+			                i--;   // the for's i++ brings it back to the same file
+			            }
+					}
 				}
 								
 				FunctionUtils.OPAtomFolder = null;

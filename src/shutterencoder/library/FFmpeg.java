@@ -1129,6 +1129,13 @@ public class FFmpeg extends Main {
 			{
 				fileLength = Integer.parseInt(Settings.txtImageDuration.getText()) * 1000;
 			}
+			else if (InputAndOutput.isSplitCuts())
+			{
+				double totalIn =  (InputAndOutput.currentCut.inH * 3600 + InputAndOutput.currentCut.inM * 60 + InputAndOutput.currentCut.inS);
+				double totalOut = (InputAndOutput.currentCut.outH * 3600 + InputAndOutput.currentCut.outM * 60 + InputAndOutput.currentCut.outS);
+				
+				fileLength = (int) (totalOut - totalIn);
+			}
 			else if (InputAndOutput.segments != "")
 			{		
 				fileLength = 0;
@@ -1137,7 +1144,7 @@ public class FFmpeg extends Main {
 					double totalIn =  (seg.inH * 3600 + seg.inM * 60 + seg.inS);
 					double totalOut = (seg.outH * 3600 + seg.outM * 60 + seg.outS);
 					fileLength += totalOut - totalIn;
-				}
+				}				
 			}
 			else if (VideoPlayerUI.playerMarkIn > 0 || VideoPlayerUI.playerMarkOut < VideoPlayerUtils.waveformContainer.getWidth())
 			{

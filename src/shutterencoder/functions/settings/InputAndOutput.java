@@ -36,6 +36,7 @@ public class InputAndOutput extends Main {
 	public static double savedInPoint = 0;
 	public static double savedOutPoint = 0;
 	public static String segments = "";
+	public static CutSegment currentCut;
 		
 	public static void getInputAndOutput(boolean setInputAndOutput) {
 				
@@ -48,7 +49,10 @@ public class InputAndOutput extends Main {
 			//Multi cuts feature
 			if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false)
 			{
-				setMultiCuts();
+				if (isSplitCuts() == false)
+				{
+					setMultiCuts();
+				}
 			}
 			else
 			{
@@ -95,7 +99,11 @@ public class InputAndOutput extends Main {
 			}
 		}
 	}
-
+	
+	public static boolean isSplitCuts() {
+	    return VideoPlayerMultiCuts.cutSegments.isEmpty() == false && VideoPlayerMultiCuts.cutSegments.size() > 0 && VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode"));
+	}
+	
 	private static String setMultiCuts() {
 			
 		String function = comboFonctions.getSelectedItem().toString();
@@ -184,8 +192,33 @@ public class InputAndOutput extends Main {
 	public static String setInputString(String beforeInput, String file, String afterInput) {
 		
 		String inputFiles = "";
-		if (segments != "")
+		
+		if (isSplitCuts())
 		{
+			double in  = VideoPlayerMultiCuts.getSegmentTime(currentCut.inH, currentCut.inM, currentCut.inS, currentCut.inF);
+		    double out = VideoPlayerMultiCuts.getSegmentTime(currentCut.outH, currentCut.outM, currentCut.outS, currentCut.outF);
+		    double total = out - in;
+
+		    //Set input point
+		    inputFiles = beforeInput + " -ss " + (long) (in * VideoPlayerUI.inputFramerateMS) + "ms";
+
+		    if ((comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture"))
+		        || comboFonctions.getSelectedItem().toString().contains("JPEG")) && caseCreateSequence.isSelected())
+		    {
+		        double outputFPS = FFprobe.accurateFPS / Float.parseFloat(comboInterpret.getSelectedItem().toString().replace(",", "."));
+		        inputFiles += " -frames:v " + (int) Math.ceil(total / outputFPS) + afterInput;
+		    }
+		    else if (caseConform.isSelected() && comboConform.getSelectedItem().toString().equals(language.getProperty("conformBySpeed")))
+		    {
+		        inputFiles += " -frames:v " + total + afterInput;
+		    }
+		    else
+		        inputFiles += " -t " + (long) Math.floor(total * ((float) 1000 / FFprobe.accurateFPS)) + "ms" + afterInput;
+
+		    return inputFiles + file;
+		}
+		else if (segments.isEmpty() == false)
+	    {
 			//Catch lavfi and the second -i inputFile
 			String lavfi = "";
 			if (afterInput.contains(" -f lavfi"))
@@ -216,10 +249,10 @@ public class InputAndOutput extends Main {
 	        }
 				        
 			boolean isFirstInput = true;			
-			for (CutSegment seg : VideoPlayerMultiCuts.cutSegments)
+			for (CutSegment s : VideoPlayerMultiCuts.cutSegments)
         	{
-				double in = VideoPlayerMultiCuts.getSegmentTime(seg.inH, seg.inM, seg.inS, seg.inF);
-                double out = VideoPlayerMultiCuts.getSegmentTime(seg.outH, seg.outM, seg.outS, seg.outF);
+				double in = VideoPlayerMultiCuts.getSegmentTime(s.inH, s.inM, s.inS, s.inF);
+                double out = VideoPlayerMultiCuts.getSegmentTime(s.outH, s.outM, s.outS, s.outF);
                 double total = out - in;
                 
                 String inputHardware = beforeInput;

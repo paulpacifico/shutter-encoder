@@ -1390,14 +1390,14 @@ public class FFprobe extends Main {
 						
 		String[] t = time.split(":");
 		
-		int heures = Integer.parseInt(t[0]);
-		int minutes = Integer.parseInt(t[1]);
-		int secondes = Integer.parseInt(t[2]);
-		int images = (int) (Integer.parseInt(t[3]) * 10);
+		int h = Integer.parseInt(t[0]);
+		int m = Integer.parseInt(t[1]);
+		int s = Integer.parseInt(t[2]);
+		int f = (int) (Integer.parseInt(t[3]) * 10);
 		
-		int totalMiliSecondes = (heures * 3600000) + (minutes * 60000) + (secondes * 1000) + images;  
+		int totalMs = (h * 3600000) + (m * 60000) + (s * 1000) + f;  
 		
-		return totalMiliSecondes;
+		return totalMs;
 		
 	}
 }

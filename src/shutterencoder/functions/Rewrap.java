@@ -61,8 +61,21 @@ public class Rewrap extends Main {
 				
 				lblFilesEnded.setText(FunctionUtils.completedFiles(FunctionUtils.completed));
 
+				int cutIndex = 0;
+				int lastFile = -1;
+				
 				for (int i = 0 ; i < list.getSize() ; i++)
 				{
+					//Allows to use multi-cuts with splitMode
+			        if (i != lastFile)
+			        {
+			            cutIndex = 0;
+			            lastFile = i;
+			        }
+
+			        InputAndOutput.currentCut = InputAndOutput.isSplitCuts() ? VideoPlayerMultiCuts.cutSegments.get(cutIndex) : null;
+			        String cutSuffix = InputAndOutput.isSplitCuts() ? "_" + String.format("%02d", cutIndex + 1) : "";
+					
 					//Render queue only accept selected files
 					if (btnStart.getText().equals(Main.language.getProperty("btnAddToRender")))
 					{
@@ -144,6 +157,12 @@ public class Rewrap extends Main {
 						{
 							extensionName = FunctionUtils.setPrefixSuffix(txtExtension.getText(), false);
 						}
+						
+						//Increment suffix for multi-cuts in splitMode
+						if (InputAndOutput.isSplitCuts())
+						{
+							extensionName += cutSuffix;
+						}
 												
 						//Function cut without re-encoding
 						String newExtension = extension;
@@ -201,7 +220,7 @@ public class Rewrap extends Main {
 							newExtension = comboFilter.getSelectedItem().toString();
 												
 						//Split video
-						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")))
+						if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(language.getProperty("splitMode")) && VideoPlayerMultiCuts.cutSegments.size() == 0)
 						{
 							extensionName = "_%03d" + extensionName;
 						}
@@ -350,6 +369,16 @@ public class Rewrap extends Main {
 								FileUtils.deleteDirectory(tempFolder);
 							} catch (IOException e) {}
 						}								
+					}
+					
+					if (InputAndOutput.isSplitCuts())
+					{
+						cutIndex++;
+
+			            if (cutIndex < VideoPlayerMultiCuts.cutSegments.size())
+			            {
+			                i--;   // the for's i++ brings it back to the same file
+			            }
 					}
 				}	
 				

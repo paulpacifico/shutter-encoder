@@ -262,7 +262,7 @@ public class Picture extends Main {
 						String inputCodec = Colorimetry.setInputCodec(extension);
 												
 						//Compression
-						String compression = setCompression();		
+						String compression = setCompression(videoPlayerCapture);		
 						
 						//Output folder
 						String labelOutput = FunctionUtils.setOutputDestination("", file);	
@@ -284,7 +284,7 @@ public class Picture extends Main {
 						String container = setExtension();
 											
 						//singleFrame
-						String singleFrame = setFrame();	
+						String singleFrame = setFrame(videoPlayerCapture);	
 						
 						//Output name
 						String fileOutputName =  labelOutput.replace("\\", "/") + "/" + prefix + fileName.replace(extension, extensionName + container); 
@@ -512,7 +512,7 @@ public class Picture extends Main {
 		}
 	}
 
-	private static String setCompression() {
+	private static String setCompression(boolean videoPlayerCapture) {
 
 		if (comboFonctions.getSelectedItem().toString().equals("JPEG"))
 		{
@@ -521,7 +521,13 @@ public class Picture extends Main {
 		}
 		else if (comboFonctions.getSelectedItem().toString().equals("JPEG XL"))
 		{			
-			return " -c:v libjxl -q:v " + Integer.valueOf(comboFilter.getSelectedItem().toString().replace("%", ""));
+			String codec = "libjxl";
+			if (FFprobe.totalLength > 40 && videoPlayerCapture == false)
+			{
+				codec = "libjxl_anim -f image2pipe";
+			}
+			
+			return " -c:v " + codec + " -q:v " + Integer.valueOf(comboFilter.getSelectedItem().toString().replace("%", ""));
 		}
 		else if (comboFilter.getSelectedItem().toString().equals(".png"))
 		{
@@ -600,7 +606,7 @@ public class Picture extends Main {
 		return ".jpg";		
 	}
 
-	private static String setFrame() {
+	private static String setFrame(boolean videoPlayerCapture) {
 	
 		if (caseCreateSequence.isSelected())
 		{			
@@ -610,7 +616,8 @@ public class Picture extends Main {
 		{
 			return " -loop 0 -r " + comboImageOption.getSelectedItem().toString().replace(",", ".").replace(" " + Main.language.getProperty("fps"), "");
 		}
-		else if (comboFilter.getSelectedItem().toString().equals(".apng"))
+		else if (comboFilter.getSelectedItem().toString().equals(".apng")
+				|| comboFonctions.getSelectedItem().toString().equals("JPEG XL") && FFprobe.totalLength > 40 && videoPlayerCapture == false)
 		{
 			return " -r " + comboImageOption.getSelectedItem().toString().replace(" " + Main.language.getProperty("fps"), "").replace(",", ".");
 		}
