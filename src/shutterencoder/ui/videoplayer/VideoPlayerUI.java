@@ -1657,6 +1657,7 @@ public class VideoPlayerUI {
 					VideoPlayerMultiCuts.editCurrentSegment();
 					
 					updateCutMode();
+					updateIconsPositions();
 				}
 			}
 			
@@ -3991,6 +3992,7 @@ public class VideoPlayerUI {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {				
 				updateCutMode();
+				updateIconsPositions();
 			}
 	
 		});
@@ -4078,6 +4080,35 @@ public class VideoPlayerUI {
 		}
 		
 		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);
+	}
+	
+	private static void updateIconsPositions() {		
+		
+		caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY() - 2, caseVuMeter.getPreferredSize().width, 23);
+		caseShowWaveform.setBounds(caseVuMeter.getX() - caseShowWaveform.getPreferredSize().width - 2, caseVuMeter.getY(), caseShowWaveform.getPreferredSize().width, 23);
+		
+		if (FFprobe.hasAudio)
+		{
+			caseShowThumbnails.setBounds(caseShowWaveform.getX() - caseShowThumbnails.getPreferredSize().width, caseShowWaveform.getY() + 2, caseShowThumbnails.getPreferredSize().width, 23);	
+		}
+		else
+			caseShowThumbnails.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY(), caseShowThumbnails.getPreferredSize().width, 23);
+		
+		if (casePlaySound.getX() + casePlaySound.getWidth() >= caseShowThumbnails.getX())
+		{
+			caseShowThumbnails.setBounds(caseInternalTc.getX(), caseInternalTc.getY() + caseInternalTc.getHeight() + 2, caseShowThumbnails.getPreferredSize().width, 23);
+			caseShowWaveform.setBounds(caseShowThumbnails.getX() + caseShowThumbnails.getWidth(), caseShowThumbnails.getY() - 2, caseShowWaveform.getPreferredSize().width, 23);
+			caseVuMeter.setBounds(caseShowWaveform.getX() + caseShowWaveform.getWidth() + 4, caseShowWaveform.getY(), caseVuMeter.getPreferredSize().width, 23);
+		}
+		
+		if (casePlaySound.getX() + casePlaySound.getWidth() >= lblMode.getX())
+		{
+			lblMode.setBounds(caseVuMeter.getX() + caseVuMeter.getWidth() + 4, caseInternalTc.getY() + caseInternalTc.getHeight() + 4, lblMode.getPreferredSize().width, 16);
+			comboMode.setLocation(lblMode.getX() + lblMode.getWidth() + 4, lblMode.getY() - 3);	
+			
+			splitValue.setBounds(comboMode.getX() + comboMode.getWidth() + 2, comboMode.getY() + 3, 34, 16);
+			lblSplitSec.setBounds(splitValue.getX() + splitValue.getWidth() + 2, lblMode.getY(), lblSplitSec.getPreferredSize().width, 16);
+		}
 	}
 	
 	public static void resizeAll() {
@@ -4374,6 +4405,7 @@ public class VideoPlayerUI {
 			else
 				casePlaySound.setBounds(caseInternalTc.getX(), caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
 			
+			//ComboMode position
 			updateCutMode();	
 			
 			//Sliders
@@ -4393,31 +4425,7 @@ public class VideoPlayerUI {
 			}
 			
 			//Icons positions
-			caseVuMeter.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY() - 2, caseVuMeter.getPreferredSize().width, 23);
-			caseShowWaveform.setBounds(caseVuMeter.getX() - caseShowWaveform.getPreferredSize().width - 2, caseVuMeter.getY(), caseShowWaveform.getPreferredSize().width, 23);
-			
-			if (FFprobe.hasAudio)
-			{
-				caseShowThumbnails.setBounds(caseShowWaveform.getX() - caseShowThumbnails.getPreferredSize().width, caseShowWaveform.getY() + 2, caseShowThumbnails.getPreferredSize().width, 23);	
-			}
-			else
-				caseShowThumbnails.setBounds(lblMode.getX() - caseVuMeter.getPreferredSize().width - 5, caseInternalTc.getY(), caseShowThumbnails.getPreferredSize().width, 23);
-			
-			if (casePlaySound.getX() + casePlaySound.getWidth() >= caseShowThumbnails.getX())
-			{
-				caseShowThumbnails.setBounds(caseInternalTc.getX(), caseInternalTc.getY() + caseInternalTc.getHeight() + 2, caseShowThumbnails.getPreferredSize().width, 23);
-				caseShowWaveform.setBounds(caseShowThumbnails.getX() + caseShowThumbnails.getWidth(), caseShowThumbnails.getY() - 2, caseShowWaveform.getPreferredSize().width, 23);
-				caseVuMeter.setBounds(caseShowWaveform.getX() + caseShowWaveform.getWidth() + 4, caseShowWaveform.getY(), caseVuMeter.getPreferredSize().width, 23);
-			}
-			
-			if (casePlaySound.getX() + casePlaySound.getWidth() >= lblMode.getX())
-			{
-				lblMode.setBounds(caseVuMeter.getX() + caseVuMeter.getWidth() + 4, caseInternalTc.getY() + caseInternalTc.getHeight() + 4, lblMode.getPreferredSize().width, 16);
-				comboMode.setLocation(lblMode.getX() + lblMode.getWidth() + 4, lblMode.getY() - 3);	
-				
-				splitValue.setBounds(comboMode.getX() + comboMode.getWidth() + 2, comboMode.getY() + 3, 34, 16);
-				lblSplitSec.setBounds(splitValue.getX() + splitValue.getWidth() + 2, lblMode.getY(), lblSplitSec.getPreferredSize().width, 16);
-			}
+			updateIconsPositions();
 			
 			if (Main.windowDrag == false && VideoPlayerCore.videoPath != null && isPiping == false)
 			{									
