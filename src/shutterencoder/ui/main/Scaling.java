@@ -588,8 +588,7 @@ public class Scaling extends Main {
 		comboImageOption.setFont(new Font(mainFont, Font.PLAIN, 11));
 		comboImageOption.setEditable(false);
 		comboImageOption.setSize(90, 16);
-		comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(),
-				lblImageQuality.getLocation().y);
+		comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
 		grpResolution.add(comboImageOption);
 	}
 }

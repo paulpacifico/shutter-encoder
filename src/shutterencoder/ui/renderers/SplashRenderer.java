@@ -39,7 +39,7 @@ public class SplashRenderer extends JWindow {
 	private int indeterminatePosition = 0;
 	private int indeterminateDirection = 1;
 	private final int segmentWidth = 55;
-	private final int animationSpeed = 3;
+	private final int animationSpeed = 2;
 	private Timer progressTimer;
 	private static Image splashScreen;
 	private static Font font = new Font("Montserrat", Font.PLAIN, 12);

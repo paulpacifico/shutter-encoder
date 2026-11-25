@@ -96,6 +96,8 @@ public class FileOverwriteWindow  {
 							
 				frame.dispose();
 				
+				//Back to default from btnStart to avoid setTime to be loaded
+				Main.doNotLoadImage = false;
 			}
 			
 		});

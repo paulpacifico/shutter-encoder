@@ -1138,6 +1138,7 @@ public class ChooseFiles extends Main {
         });
 
 		btnBrowse = new JButton(language.getProperty("btnBrowse"));
+		btnBrowse.setFont(new Font(boldFont, Font.PLAIN, 12));
 		btnBrowse.setBounds(scrollBar.getX(), 19, 113, 21);
 		grpChooseFiles.add(btnBrowse);
 

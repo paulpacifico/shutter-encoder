@@ -4918,17 +4918,18 @@ public class UIController extends Main {
 	
 		if (comboFonctions.getSelectedItem().toString().contains("JPEG")
 		|| comboFonctions.getSelectedItem().toString().equals(language.getProperty("functionPicture")))
-		{
+		{			
 			if (comboFilter.getSelectedItem().toString().equals(".png")) {
 				if (comboImageOption.getItemAt(0).equals("0%") == false) {
 					comboImageOption.setModel(new DefaultComboBoxModel<String>(new String[] { "0%", "5%",
 							"10%", "15%", "20%", "25%", "30%", "35%", "40%", "45%", "50%", "55%", "60%",
 							"65", "70%", "75%", "80%", "85%", "90%", "95%", "100%" }));
 				}
-				comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(),
-						lblImageQuality.getLocation().y);
+				comboImageOption.setLocation(lblImageQuality.getX() + lblImageQuality.getWidth(), lblImageQuality.getLocation().y);
 				comboImageOption.setSize(50, 16);
 				comboImageOption.setEditable(false);
+				
+				
 				lblImageQuality.setText("Comp.:");
 				grpResolution.add(lblImageQuality);
 				grpResolution.add(comboImageOption);
@@ -4965,9 +4966,11 @@ public class UIController extends Main {
 				lblScreenshot.setLocation(comboImageOption.getX() + comboImageOption.getWidth() + 9, 21);
 				comboImageOption.repaint();
 			} else if (comboFilter.getSelectedItem().toString().equals(".gif")
-					|| comboFilter.getSelectedItem().toString().equals(".apng")) {
-				if (comboImageOption.getItemAt(0)
-						.equals("15 " + Main.language.getProperty("fps")) == false) {
+					|| comboFilter.getSelectedItem().toString().equals(".apng")
+					|| comboFonctions.getSelectedItem().toString().equals("JPEG XL") && FFprobe.totalLength > 40)
+			{
+				if (comboImageOption.getItemAt(0).equals("15 " + Main.language.getProperty("fps")) == false)
+				{
 					String fps[] = new String[17];
 					int a = 0;
 					for (int f = 15; f < 24; f++) {
@@ -4986,8 +4989,7 @@ public class UIController extends Main {
 
 					comboImageOption.setModel(new DefaultComboBoxModel<String>(fps));
 				}
-				comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6,
-						lblImageQuality.getLocation().y);
+				comboImageOption.setLocation(comboResolution.getX() + comboResolution.getWidth() + 6, lblImageQuality.getLocation().y);
 				comboImageOption.setSize(90, 16);
 				comboImageOption.setEditable(false);
 				grpResolution.remove(lblImageQuality);
@@ -5243,7 +5245,6 @@ public class UIController extends Main {
 
 			if (caseDisplay.isSelected() == false)
 			{
-				changeWidth();
 				caseRunInBackground.setEnabled(true);
 			}
 
@@ -5862,9 +5863,8 @@ public class UIController extends Main {
 			VideoPlayerUtils.generateWaveform(false);
 		}
 
-		if (scanIsRunning == false) {
-			enableAll();
-		}
+		if (scanIsRunning == false)
+			enableAll();		
 
 		if (cancelled == true) {
 			lblCurrentEncoding.setForeground(Utils.red);

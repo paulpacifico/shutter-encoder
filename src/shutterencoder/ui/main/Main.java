@@ -945,7 +945,7 @@ public class Main {
 		
 		int y = frame.getHeight() / 2 - VideoPlayerUI.player.getHeight() / 2;
 		VideoPlayerUI.player.setLocation((frame.getWidth() - VideoPlayerUI.player.getSize().width) / 2, y);
-						
+
 		//Frame can be displayed
 		SplashRenderer.instance.dispose();
 		Utils.changeFrameVisibility(frame, false);

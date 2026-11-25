@@ -76,6 +76,7 @@ import shutterencoder.ui.main.Main;
 import shutterencoder.ui.main.UIController;
 import shutterencoder.ui.renderers.AntiAliasedRoundRectangle;
 import shutterencoder.ui.videoplayer.VideoPlayerCore;
+import shutterencoder.ui.videoplayer.VideoPlayerMultiCuts;
 import shutterencoder.ui.videoplayer.VideoPlayerUI;
 import shutterencoder.utils.Utils;
 
@@ -1020,7 +1021,7 @@ import shutterencoder.utils.Utils;
 		
 		String cli[] = tableRow.getValueAt(item, 1).toString().split(" ");
 			
-		if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(Main.language.getProperty("splitMode")))
+		if (VideoPlayerUI.comboMode.getSelectedItem().toString().equals(Main.language.getProperty("splitMode")) && VideoPlayerMultiCuts.cutSegments.size() == 0)
 			fileOut = new File(fileOut.toString().replace("%03d", "000"));
 		
 		//Erreurs

@@ -911,7 +911,7 @@ public class VideoPlayerUI {
 			lblMode.setVisible(true);
 			comboMode.setVisible(true);
 			
-			if (comboMode.getSelectedItem().equals(Main.language.getProperty("splitMode")))
+			if (comboMode.getSelectedItem().equals(Main.language.getProperty("splitMode")) && VideoPlayerMultiCuts.cutSegments.size() == 0)
 			{
 				splitValue.setVisible(true);
 				lblSplitSec.setVisible(true);
@@ -1655,6 +1655,8 @@ public class VideoPlayerUI {
 				if (caseApplyCutToAll.isSelected() == false)
 				{
 					VideoPlayerMultiCuts.editCurrentSegment();
+					
+					resizeAll();
 				}
 			}
 			
@@ -1699,6 +1701,8 @@ public class VideoPlayerUI {
 					VideoPlayerUtils.setFileList();
 					
 					caseApplyCutToAll.setEnabled(true);
+					
+					resizeAll();
 				}
 			}
 			
@@ -2342,7 +2346,7 @@ public class VideoPlayerUI {
                		}
 	                
 	                //Splitters
-	                if (comboMode.isVisible() && comboMode.getSelectedItem().equals(Main.language.getProperty("splitMode")))
+	                if (comboMode.isVisible() && comboMode.getSelectedItem().equals(Main.language.getProperty("splitMode")) && VideoPlayerMultiCuts.cutSegments.size() == 0)
 	                {
 		                g2.setColor(new Color(25, 27, 30));
 		                int alpha = 255;
@@ -3985,28 +3989,7 @@ public class VideoPlayerUI {
 		{
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-				lblSplitSec.setBounds(waveformScrollPane.getX() + waveformScrollPane.getWidth() - 6, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
-				splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);
-				
-				if (comboMode.getSelectedItem().equals(Main.language.getProperty("splitMode")))
-				{
-					splitValue.setVisible(true);
-					lblSplitSec.setVisible(true);
-					comboMode.setLocation(splitValue.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);
-					
-					caseApplyCutToAll.setEnabled(true);
-				}
-				else
-				{
-					splitValue.setVisible(false);
-					lblSplitSec.setVisible(false);
-					comboMode.setLocation(waveformScrollPane.getX() + waveformScrollPane.getWidth() - comboMode.getWidth(), caseInternalTc.getY() - 1);	
-					
-					caseApplyCutToAll.setEnabled(true);
-				}			
-
+			public void actionPerformed(ActionEvent arg0) {				
 				resizeAll();
 			}
 	
@@ -4070,7 +4053,7 @@ public class VideoPlayerUI {
 		});
 		
 	}
-
+	
 	public static void resizeAll() {
 							
 		if (Main.doNotLoadImage == false)	
@@ -4366,14 +4349,25 @@ public class VideoPlayerUI {
 				casePlaySound.setBounds(caseInternalTc.getX(), caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
 			
 			lblSplitSec.setBounds(waveformScrollPane.getX() + waveformScrollPane.getWidth() - 6, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
-			splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);		
+			splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);
 			
-			if (splitValue.isVisible())
+			if (comboMode.getSelectedItem().equals(Main.language.getProperty("splitMode")) && (VideoPlayerMultiCuts.cutSegments.isEmpty() || VideoPlayerMultiCuts.cutSegments.size() == 0))
 			{
+				splitValue.setVisible(true);
+				lblSplitSec.setVisible(true);
 				comboMode.setLocation(splitValue.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);
+				
+				caseApplyCutToAll.setEnabled(true);
 			}
 			else
-				comboMode.setLocation(waveformScrollPane.getX() + waveformScrollPane.getWidth() - comboMode.getWidth(), caseInternalTc.getY() - 1);		
+			{
+				splitValue.setVisible(false);
+				lblSplitSec.setVisible(false);
+				comboMode.setLocation(waveformScrollPane.getX() + waveformScrollPane.getWidth() - comboMode.getWidth(), caseInternalTc.getY() - 1);	
+				
+				if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && (VideoPlayerMultiCuts.cutSegments.isEmpty() || VideoPlayerMultiCuts.cutSegments.size() == 0))
+					caseApplyCutToAll.setEnabled(true);
+			}	
 			
 			lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);			
 
