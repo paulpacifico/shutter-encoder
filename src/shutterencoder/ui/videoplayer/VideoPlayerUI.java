@@ -1656,7 +1656,7 @@ public class VideoPlayerUI {
 				{
 					VideoPlayerMultiCuts.editCurrentSegment();
 					
-					resizeAll();
+					updateCutMode();
 				}
 			}
 			
@@ -3990,7 +3990,7 @@ public class VideoPlayerUI {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {				
-				resizeAll();
+				updateCutMode();
 			}
 	
 		});
@@ -4052,6 +4052,32 @@ public class VideoPlayerUI {
 			}	
 		});
 		
+	}
+	
+	private static void updateCutMode() {
+		
+		lblSplitSec.setBounds(waveformScrollPane.getX() + waveformScrollPane.getWidth() - 6, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
+		splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);
+		
+		if (comboMode.getSelectedItem().equals(Main.language.getProperty("splitMode")) && (VideoPlayerMultiCuts.cutSegments.isEmpty() || VideoPlayerMultiCuts.cutSegments.size() == 0))
+		{
+			splitValue.setVisible(true);
+			lblSplitSec.setVisible(true);
+			comboMode.setLocation(splitValue.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);
+			
+			caseApplyCutToAll.setEnabled(true);
+		}
+		else
+		{
+			splitValue.setVisible(false);
+			lblSplitSec.setVisible(false);
+			comboMode.setLocation(waveformScrollPane.getX() + waveformScrollPane.getWidth() - comboMode.getWidth(), caseInternalTc.getY() - 1);	
+			
+			if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && (VideoPlayerMultiCuts.cutSegments.isEmpty() || VideoPlayerMultiCuts.cutSegments.size() == 0))
+				caseApplyCutToAll.setEnabled(true);
+		}
+		
+		lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);
 	}
 	
 	public static void resizeAll() {
@@ -4348,29 +4374,8 @@ public class VideoPlayerUI {
 			else
 				casePlaySound.setBounds(caseInternalTc.getX(), caseInternalTc.getY(), casePlaySound.getPreferredSize().width, 23);
 			
-			lblSplitSec.setBounds(waveformScrollPane.getX() + waveformScrollPane.getWidth() - 6, caseInternalTc.getY() + 2, lblSplitSec.getPreferredSize().width, 16);
-			splitValue.setBounds(lblSplitSec.getX() - splitValue.getWidth() - 2, caseInternalTc.getY() + 2, 34, 16);
+			updateCutMode();	
 			
-			if (comboMode.getSelectedItem().equals(Main.language.getProperty("splitMode")) && (VideoPlayerMultiCuts.cutSegments.isEmpty() || VideoPlayerMultiCuts.cutSegments.size() == 0))
-			{
-				splitValue.setVisible(true);
-				lblSplitSec.setVisible(true);
-				comboMode.setLocation(splitValue.getX() - comboMode.getWidth() - 4, caseInternalTc.getY() - 1);
-				
-				caseApplyCutToAll.setEnabled(true);
-			}
-			else
-			{
-				splitValue.setVisible(false);
-				lblSplitSec.setVisible(false);
-				comboMode.setLocation(waveformScrollPane.getX() + waveformScrollPane.getWidth() - comboMode.getWidth(), caseInternalTc.getY() - 1);	
-				
-				if (VideoPlayerMultiCuts.cutSegments.isEmpty() == false && (VideoPlayerMultiCuts.cutSegments.isEmpty() || VideoPlayerMultiCuts.cutSegments.size() == 0))
-					caseApplyCutToAll.setEnabled(true);
-			}	
-			
-			lblMode.setBounds(comboMode.getX() - lblMode.getPreferredSize().width - 4, caseInternalTc.getY() + 3, lblMode.getPreferredSize().width, 16);			
-
 			//Sliders
 			sliderSpeed.setLocation(btnReset.getX() - sliderSpeed.getWidth() - 8, btnPrevious.getY() + 1);
 			lblSpeed.setBounds(sliderSpeed.getX() - lblSpeed.getPreferredSize().width - 2, sliderSpeed.getY() + 2, lblSpeed.getPreferredSize().width, 16);			
