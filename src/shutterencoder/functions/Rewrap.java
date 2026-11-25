@@ -206,7 +206,7 @@ public class Rewrap extends Main {
 						subtitles = setSubtitles(file.toString());
 						
 						//Map subtitles
-						mapSubtitles = setMapSubtitles();
+						mapSubtitles = setMapSubtitles(extension);
 													
 						//Output extension
 						if (comboFilter.getEditor().getItem().toString().equals(language.getProperty("aucun"))
@@ -625,7 +625,7 @@ public class Rewrap extends Main {
 		return "";
 	}
 	
-	private static String setMapSubtitles() {
+	private static String setMapSubtitles(String extension) {
 
 		if (Main.caseAddSubtitles.isSelected())
 		{			
@@ -651,12 +651,13 @@ public class Rewrap extends Main {
     					return " -c:s copy -map s?";
     			}
         	}
-        	else if (comboFilter.getSelectedItem().toString().equals(".mkv"))
+        	else if (comboFilter.getSelectedItem().toString().equals(".mkv")
+        	|| (comboFilter.getSelectedItem().toString().equals(language.getProperty("aucun")) && extension.equals(".mkv")))
         	{
-        		if (FFprobe.subtitlesCodec != "" && FFprobe.subtitlesCodec.equals("hdmv_pgs_subtitle"))
-        		{
-        			return " -c:s copy -map s?";
-        		}
+        		if (FFprobe.subtitlesCodec != "" && (FFprobe.subtitlesCodec.equals("hdmv_pgs_subtitle") || FFprobe.subtitlesCodec.equals("ass")))
+	    		{
+        			return " -c:s copy -map s? -map 0:t?";
+	    		}
         		else
         			return " -c:s srt -map s?";
         	}

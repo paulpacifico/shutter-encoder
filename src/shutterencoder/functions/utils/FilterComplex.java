@@ -183,7 +183,7 @@ public class FilterComplex extends Main {
 	    	{
 	    		if (FFprobe.subtitlesCodec != "" && (FFprobe.subtitlesCodec.equals("hdmv_pgs_subtitle") || FFprobe.subtitlesCodec.equals("ass")))
 	    		{
-	    			filterComplex += " -c:s copy -map s?";
+	    			filterComplex += " -c:s copy -map s? -map 0:t?";
 	    		}
 	    		else
 	    			filterComplex += " -c:s srt -map s?";
